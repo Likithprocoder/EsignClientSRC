@@ -1,0 +1,623 @@
+@media screen and (max-width: 800px) {
+    .proceedbackXYZ {
+        text-align: end;
+        margin-bottom: 7px;
+        display: flex;
+        /* text-align: left; */
+        padding-left: 20%
+    }
+
+    .mainclassz {
+        width: 100%;
+        height: fit-content;
+    }
+
+    .contentCssz {
+        width: 100%;
+        height: fit-content;
+        margin-right: 15px;
+    }
+
+    .MainFormCssz {
+        width: 100%;
+        height: fit-content;
+    }
+
+    .WholeContent {
+        width: 290px;
+        height: fit-content;
+    }
+
+    .procedConfAndcan {
+        width: 100%;
+        padding-top: 12px;
+        display: flex;
+        padding-left: 25%;
+    }
+
+    .DIVTOPUP204 {
+        width: 100%;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: start;
+    }
+
+    .DIVTOPUP2 {
+        width: 100%;
+        margin-left: 15px;
+        margin-bottom: 12px;
+    }
+
+    .DIVTOPUP203 {
+        width: 100%;
+        padding-left: 3%;
+    }
+
+    .DIVTOPUP208 {
+        display: flow-root;
+    }
+
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 80%;
+        max-height: 80%;
+        position: relative;
+    }
+}
+
+@media screen and (min-width: 801px) {
+    .proceedbackXYZ {
+        text-align: end;
+        margin-bottom: 7px;
+        display: flex;
+        /* text-align: left; */
+        padding-left: 75%
+    }
+
+    .mainclassz {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+    }
+
+    .contentCssz {
+        width: 70%;
+        height: fit-content;
+        margin-right: 15px;
+    }
+
+    .MainFormCssz {
+        width: 30%;
+        height: fit-content;
+    }
+
+    .WholeContent {
+        width: 400px;
+        height: fit-content;
+    }
+
+    .procedConfAndcan {
+        width: 100%;
+        padding-top: 12px;
+        display: flex;
+        padding-left: 35%;
+    }
+
+    .DIVTOPUP204 {
+        width: 24%;
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: end;
+    }
+
+    .DIVTOPUP2 {
+        display: flex;
+        width: 100%;
+        margin-left: 15px;
+        margin-bottom: 12px;
+    }
+
+    .DIVTOPUP203 {
+        width: 30%;
+        padding-left: 3%;
+    }
+
+    .DIVTOPUP208 {
+        display: flex;
+    }
+
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 40%;
+        max-height: 80%;
+        overflow: auto;
+        position: relative;
+        width: 38%;
+    }
+}
+
+/*Approve Temp CSS*/
+.TemNameCssApp {
+    font-family: initial;
+    font-size: 14px;
+    color: green;
+}
+
+.viewFileCss3 {
+    width: 40%;
+    padding-top: 8px;
+    color: red;
+}
+
+.viewFileCss321Css {
+    width: 60%;
+    text-align: start;
+    padding-top: 7px;
+}
+
+.spacingCss {
+    width: 400px;
+}
+
+.TextContentCss {
+    border: 3px solid #9dc1e3;
+    width: 400px;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: justify;
+    max-height: 300px;
+    height: fit-content;
+}
+
+.MoreInfoCss {
+    margin-top: 20px;
+}
+
+
+/*CorporateUsersTopUp CSS*/
+.DIVTOPUP1 {
+    width: 100%;
+    text-align: center;
+    font-family: auto;
+    color: darkcyan;
+}
+
+.topUpDropDown {
+    border: 2px solid rgb(157, 193, 227);
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 2px;
+}
+
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.headingOfModalXCss {
+    font-size: 22px;
+    text-align: center;
+    font-family: 'FontAwesome';
+    margin-bottom: 5px;
+    padding-left: 10px;
+}
+
+.scrollbarx {
+    overflow: overlay;
+    height: 410px;
+    box-shadow: 1px 1px 50px white;
+}
+
+.scrollbarx::-webkit-scrollbar-thumb {
+    background-color: darkgray;
+    border-radius: 10px;
+}
+
+.scrollbarx::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.inputHolderCss {
+    border: 1px solid #f5f5f5;
+    background-color: #f5f5f5;
+    padding: 10px;
+    padding-top: 15px;
+    border-radius: 20px
+}
+
+.Divo5Css {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.DIVTOPUP205 {
+    font-size: 16px;
+    width: 40%;
+    font-family: FontAwesome;
+}
+
+.DIVTOPUP207 {
+    width: 4%;
+}
+
+.DIVTOPUP206 {
+    font-size: 15px;
+    width: 56%;
+}
+
+.DIVTOPUP209 {
+    width: 56%;
+    margin-top: 3px;
+}
+
+.proceedbtnXVoucher {
+    border: 1px solid white;
+    width: 60px;
+    height: 34px;
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    background-color: #20a8d8;
+    font-family: inherit;
+}
+
+#customUnitsINput {
+    width: 40%;
+    padding: 0.35rem;
+    font-size: 14px;
+}
+
+#modalInputRefNumber {
+    width: 95%;
+    font-size: 13px;
+    border: 2px solid rgb(157 184 193);
+    border-radius: 6px;
+}
+
+#modalCommentInput {
+    width: 95%;
+    font-size: 13px;
+    border: 2px solid rgb(157 184 193);
+    border-radius: 6px;
+    min-height: 100px;
+    height: fit-content;
+}
+
+.btn-link {
+    font-weight: 400;
+    color: #20a8d8;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.cardBody {
+    padding: 2px;
+    padding-top: 5px;
+}
+
+/*TemplateList CSS*/
+
+
+/*ViewTemplate CSS*/
+.oneLabelBox {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+
+
+.form-Montroll {
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    width: 70%;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.input-Montroll {
+    border: 2px solid #8ba9c7;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.editFields {
+    width: 30%;
+    display: flex;
+}
+
+.editcss {
+    width: 45%;
+    height: 100%;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    display: inline-grid;
+    margin-right: 10px;
+}
+
+.proceedbtnxCss {
+    border: 1px solid white;
+    width: 100%;
+    height: 38px;
+    border-radius: 5px;
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    background-color: #20a8d8;
+}
+
+.tickMarkcss {
+    width: 55%;
+    height: 100%;
+    text-align: center;
+    font-size: 25px;
+}
+
+.form-montrol1z {
+    display: block;
+    width: 100%;
+    height: fit-content;
+    font-weight: 600;
+    color: #1e252c;
+    text-align: center;
+    font-size: 20px;
+}
+
+.inputCssRT {
+    width: 100%;
+    height: fit-content;
+    height: 250px;
+    background-color: #f5f5f5;
+    font-size: 15px;
+    height: 200px
+}
+
+.Divo6Css {
+    width: 100%;
+    padding-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.proceedCancelCss {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+}
+
+.cancelbtnxCss {
+    height: 40px;
+    width: 130px;
+    border-radius: 20px;
+    border: 1px solid white;
+    background-color: #f86c6b;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    font-family: inherit;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.proceedbtnX1Css {
+    width: 130px;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+    font-family: inherit;
+}
+
+.Divo4Css {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    padding-top: 5px;
+}
+
+.titleView {
+    font-size: 17px;
+}
+
+.titleName {
+    width: 60%;
+    font-size: 17px;
+    font-family: 'FontAwesome';
+}
+
+.InputName {
+    width: 40%;
+    /* text-align: center; */
+    font-size: 14px;
+    font-family: 'FontAwesome';
+    padding-top: 7px;
+}
+
+.inputname1 {
+    width: 60%;
+}
+
+.inputCss {
+    width: 100%;
+    height: 30px;
+    border: 3px solid #9dc1e3;
+    font-size: 13px;
+    border-radius: 5px;
+}
+
+.ScrollBarXz {
+    overflow: overlay;
+    max-height: 450px;
+}
+
+.ScrollBarXz::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.ScrollBarXz::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 10px;
+}
+
+.dangerbutton1x {
+    margin-right: 20px;
+}
+
+.dangerbutton1x:hover {
+    color: white;
+}
+
+.dangerbutton1x {
+    color: white;
+}
+
+.proceedCssv {
+    margin-left: 20px;
+}
+
+.greyBackCssz {
+    width: 100%;
+    height: fit-content;
+    padding: 10px;
+    background-color: gray;
+}
+
+.whiteBackCssz {
+    width: 100%;
+    height: fit-content;
+    background-color: white;
+    min-height: 600px;
+    min-width: 400px;
+    padding: 20px;
+    text-align: justify;
+}
+
+.FormBorderCssz {
+    border: 3px solid darkgoldenrod;
+    width: 100%;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.headingOfModal {
+    font-size: 22px;
+    text-align: start;
+    font-family: 'FontAwesome';
+    margin-bottom: 10px;
+    padding-left: 10px;
+    color: rgb(199, 152, 7);
+}
+
+.ScrollBarForApproveTemp::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.ScrollBarForApproveTemp::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.ScrollBarForApproveTemp {
+    overflow: overlay;
+    max-height: 300px;
+    height: fit-content;
+}
+
+.selectdropdown {
+    width: 100%;
+    height: 30px;
+    border: 2px solid #9dc1e3;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: auto;
+    padding-left: 10px;
+}
+
+.headingOfModalXcss {
+    font-size: 18px;
+    text-align: center;
+    font-family: 'FontAwesome';
+    margin-bottom: 5px;
+}
+
+.cancelBtn {
+    color: red;
+}
+
+.dotted-line {
+    border: 1px dotted #333;
+    /* You can adjust the color code (#333) and thickness as needed */
+    width: 100%;
+    /* Adjust width as needed */
+    margin: 5px 0;
+    /* Adjust margin as needed */
+}
+
+#repeatableHeading {
+    display: flex;
+    padding-left: 5px;
+    font-size: 16px;
+    color: green;
+}
+
+#repeatCount {
+    padding-left: 8px;
+    color: black;
+    font-weight: 400;
+}
+
+.mainHeading {
+    width: 100%;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.part2Css {
+    border: 3px dashed burlywood;
+    margin-top: 10px;
+    margin-left: 4px;
+    margin-right: 6px;
+    border-radius: 10px;
+}.invisiblePart2Css {
+    margin-top: 10px;
+    margin-left: 6px;
+    margin-right: 6px;
+    border-radius: 10px;
+    display: flex;
+    margin-bottom: 10px;
+}

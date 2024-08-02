@@ -1,0 +1,92 @@
+.WholeContentVocher {
+    width: 300px;
+    height: fit-content;
+}
+
+.headingOfModalXcss {
+    font-size: 18px;
+    text-align: center;
+    font-family: 'FontAwesome';
+    margin-bottom: 5px;
+}
+
+.inputHolderCssVocu {
+    border: 1px solid #f5f5f5;
+    background-color: #f5f5f5;
+    padding: 10px;
+    padding-top: 7px;
+    border-radius: 20px
+}
+
+.ScrollBarForApprove::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.ScrollBarForApprove::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.ScrollBarForApprove {
+    overflow: overlay;
+    height: fit-content;
+    max-height: 200px;
+}
+
+.Divo6Css {
+    height: 50px;
+    width: 100%;
+    padding-top: 15px;
+    text-align: center;
+}
+
+.proceedCancelCss {
+    width: 100%;
+}
+
+.proceedbtnXVoucher {
+    border: 1px solid white;
+    width: 60px;
+    height: 34px;
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    background-color: #20a8d8;
+    font-family: inherit;
+}
+
+.Divo4Css {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+}
+
+.titleNameVouc {
+    width: 55%;
+    font-size: 13px;
+    font-family: 'FontAwesome';
+}
+
+.titleVoucher {
+    width: 45%;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    font-size: 13px;
+    font-family: 'FontAwesome';
+    padding-left: 10px;
+}
+
+.MuiIconButton-label {
+    width: 100%;
+    display: flex;
+    align-items: inherit;
+    justify-content: inherit;
+    padding-bottom: 20px;
+}
+
+.paddingClass {
+    padding-top: 0px;
+}

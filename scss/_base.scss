@@ -1,0 +1,133 @@
+@import "./_vars";
+
+// helpers
+* {
+  padding: 0;
+  margin: 0;
+}
+
+// main appliation container
+.phion {
+  display: flex;
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  background-color: #eee; // background-color: red;
+}
+
+body {
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  font-family: $RUBIK;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  &:hover {
+    text-decoration: none !important;
+  }
+}
+
+.flex {
+  display: flex !important;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.idea1 {
+  border: 1px dashed red;
+}
+
+.idea2 {
+  border: 1px dashed blue;
+}
+
+.idea3 {
+  border: 1px dashed yellow;
+}
+
+.black-box {
+  height: 100px;
+  background-color: black;
+}
+
+.blue-box {
+  height: 100px;
+  background-color: blue;
+}
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page {
+  height: 100%;
+  width: 100%;
+}
+
+.main-app-space {
+  margin-top: 50px;
+  width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.main-app-container {
+  display: block;
+  width: 100%;
+}
+
+h1 {
+  text-align: left !important;
+  font-family: $RUBIK !important;
+  font-weight: $RUBIK_MEDIUM !important;
+  color: $PRIMARY_COLOR !important;
+  font-size: 30px !important;
+  margin: 0 !important;
+}
+
+h2 {
+  text-align: left !important;
+  font-family: $RUBIK !important;
+  font-weight: $RUBIK_REGULAR !important;
+  text-transform: uppercase;
+  color: $SECONDARY_COLOR !important;
+  font-size: 16px !important;
+  letter-spacing: 2px;
+  margin: 0 !important;
+}
+
+h3 {
+  padding-bottom: 5px;
+  text-align: left !important;
+  font-family: $RUBIK !important;
+  font-weight: $RUBIK_REGULAR !important;
+  color: $PRIMARY_COLOR !important;
+  font-size: 20px !important;
+  border-bottom: 1px solid $PRIMARY_COLOR;
+}
+
+h4 {
+  text-align: left !important;
+  font-family: $RUBIK !important;
+  font-weight: $RUBIK_REGULAR !important;
+  text-transform: uppercase;
+  color: #777 !important;
+  font-size: 16px !important;
+  margin: 0 !important;
+}
+
+.Toastify__toast-container {
+  z-index: 999999 !important;
+}

@@ -1,0 +1,20 @@
+@media (max-width: 480px) {
+    #captchaGroup {
+        display: block;
+    }
+
+    #captcha2 {
+        height: auto;
+        /* width: auto; */
+        width: -webkit-fill-available;
+    } 
+
+    #cardBody, .mx-5 {
+        margin-left: 0rem !important;
+        margin-right: 0rem !important;
+    }
+
+    .WholeContent {
+        width: 300px !important;
+    }
+}

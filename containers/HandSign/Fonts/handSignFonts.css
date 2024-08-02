@@ -1,0 +1,88 @@
+ 
+  @font-face {
+    font-family: 'Sofia';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./Sofia.ttf);
+  }
+  @font-face {
+    font-family: 'Rouge';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./Rouge.ttf);
+  }
+  @font-face {
+    font-family: 'Ruthie';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./Ruthie.woff2);
+  }
+  @font-face {
+    font-family: 'Comic';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./Comic.ttf);
+  }
+  @font-face {
+    font-family: 'Caveat';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./Caveat.ttf);
+  }
+  @font-face {
+    font-family: 'iLoveGlitter';
+    font-style: normal;
+    font-size: 36px;
+    font-weight: 100;
+    src: url(./ILoveGlitter.ttf);
+  }
+  @font-face {
+    font-family: 'goodfoot';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./goodfoot.ttf);
+  }
+  @font-face {
+    font-family: 'Cookie';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./Cookie.ttf);
+  }
+  @font-face {
+    font-family: 'Romanesco';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./Romanesco.ttf);
+  }
+  
+  @font-face {
+    font-family: 'DancingScript';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./DancingScript.ttf);
+  }
+  @font-face {
+    font-family: 'SueEllen';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./SueEllen.ttf);
+  }
+  @font-face {
+    font-family: 'Handle';
+    font-style: normal;
+    font-size: 20px;
+    font-weight: 100;
+    src: url(./Handle.ttf);
+  }
+  
+ 

@@ -1,0 +1,363 @@
+#note{
+  font-size: 14px;
+  color: black;
+  margin-top: 15px;
+  }
+  
+  #acccesscodenote{
+  font-size: 14px;
+  color: black;
+  /* margin-top: 15px;
+  margin-bottom: 5px; */
+  margin-left:10px;
+  }
+  
+  #p1,#p2,#p3{
+      margin-bottom: 0rem;
+  }
+   
+  #clientdownload{ 
+      font-size: 13px;
+      color: #167495; 
+  }
+  #clientdownloadspan{
+      margin-left: 80px;
+      /* margin-left: 20px; */
+      padding-top: -23px;
+      display: flex;
+      margin-top: -6px;
+      /* margin-bottom: 5px; */
+  }
+  
+  #acessCodediv{
+    margin-left: 2px;
+    display: flex;
+    margin-bottom: 10px
+  }
+  
+  #accesscodemsg1{
+    margin-bottom: 0.5rem;
+  }
+  
+  #documntsender0, #documntsender,#documntsender1,#signercommentsLabel,#docSignerName,#docSignerCmnts{
+  font-size: 15px;
+  color:black;
+  }
+  
+  #addCommentsId,#addcommentsOkbutton{
+      font-size: 13px;
+  }
+  
+  .rpv-core__icon {
+    color: white;
+  }
+  
+  .rpv-core__minimal-button {
+    background-color: grey;
+  }
+  
+  #aadhaarModeRadio{
+       margin-left: 27px  
+  } 
+  #otpSignModeRadio{
+          margin-top: 10px;  
+          /* margin-left: 10px  */
+  }
+  #generateOtpBtn{
+      margin-left: 12px
+  }
+  
+  #enteremaileotp{
+      margin-right: 7px;
+      margin-left: 1px;
+      margin-top: 5px;
+  }
+  
+  #entermobileotp{
+     margin-top: 5px; 
+  }
+  
+  #resentotpBtn{
+       margin-left: 10px;
+  }
+  
+  #emailotpinputfield{
+      margin-left: 5px;
+  }
+  
+  #resendotpbtn{
+          margin-left: 293px;
+  } 
+   
+  #otpmodalrow,#otpmodalrow2,#otpmodalrow1
+  {
+      width: 175%;
+  }
+  #coordinatemodalrow{
+      width: 175%;
+  }
+  #addcmntsmodalrow{
+      width: 175%;
+  }
+  #otpmodalpara-text{
+      max-width: 400px;
+  }
+  #coordninatemodalpara-text{
+      max-width: 400px;
+  }
+  
+  #addCommentsModalpara-text{
+    max-width: 400px;
+    margin-Top: 20px;
+  }
+  #opensignersCommentsModalpara-text{
+      max-width: min-content;
+      margin-Top: -20px;
+  }
+  #generateaccesscodeBtn{
+      width: 135px;
+  }
+  
+  #accesscodeval{
+      width: 135px;
+      /* height: 50px; */
+      margin-left: 20px;
+      font-size: 17px;
+      color: black;
+      background-color: white;
+  }
+  
+  
+  #selfDscTokenModeRadio{
+      margin-left: 60px;
+      margin-top: -3px;
+  }
+  
+  .parent-div{
+      /* width: 500px; */
+      /* width: 476.77px; */
+      border-radius: 0px !important;
+      /* height: 628px; */
+  }
+  
+  #signerCommentsid,#signerCommentsid1{
+   display: inline-flex;
+    /* width: 550px; */
+     width: 375px;
+    font-size: 15px;
+    line-height: 1.25;
+    color: #55595c;
+    background-color: #fff;
+    background-image: none;
+    background-clip: padding-box;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 3px;
+    margin: 2px;
+    /* margin-left: 10px; */
+  }
+  
+  @media screen and (min-width : 0px) and (max-width : 550px) {
+      .aggree-button {
+          width: 100%;
+          font-size: smaller;
+      }
+  
+      .para-text{
+          overflow: auto;
+      }
+  
+      .para-content {
+          /* height: 350px; */
+          height: 480px;
+          /* width: 320px; */
+          /* height: 175px; */
+      }
+
+      #paraContentId {
+        height: 375px;
+      }
+
+
+
+      #filename {
+        flex: none;
+      }
+  
+      #TCParagraph{
+          margin-top: auto;
+          font-size: medium;
+      }
+  
+      #addCommentsModalpara-text{
+      margin-top: 30px;
+      height: 215px;
+      width: 300px;
+      }
+  
+      #otpmodalrow1{
+          width: 80%; 
+      }
+  
+      #opensignersCommentsModalpara-text{
+      margin-top: 30px;
+      height: 215px;
+     
+      }
+  
+       #otpmodalrow2{
+          width: 80%; 
+      }
+    }
+  
+    @import url("https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css");
+  
+  .drag {
+      cursor: move;
+      width: 76px;
+      height: 38px;
+      padding: 0.3em;
+      margin: 4px;
+      border: 1px solid rgba(34, 33, 33, 0.12);
+      display: inline;
+      position: absolute;
+      word-wrap: break-word;
+      padding-right: 2%;
+      padding-top: 1%;
+      overflow: hidden;
+    }
+  
+    .drag #content {
+      font-size: 10px;
+    }
+    
+    .rpv-core__page-layer {
+      position: relative;
+      width: 100% !important;
+      /* -webkit-transform-origin: 0 0;
+     -moz-transform-origin: 0 0;
+     transform-origin: 0 0;
+     -ms-transform-origin: 0 0; */
+    }
+  
+    .rpv-core__text-layer{
+      z-index: -1 !important;
+    }
+    
+    img.close {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      height: 15px;
+      width: 15px;
+      cursor: pointer;
+    }
+
+    @media screen and (max-width : 480px) {
+      img.close {
+        position: absolute;
+        right: -2px;
+        top: -2px;
+        height: 14px;
+        width: 14px;
+        cursor: pointer;
+      }
+    }
+  
+    .btn-lg {
+      font-size: 15px !important;
+    }
+  
+    .form-control {
+      font-size: 15px !important;
+      height: fit-content !important;
+    }
+  
+    .rpv-thumbnail__list{
+      width: fit-content;
+      padding: 0px;
+    }
+  
+    .ui-resizable-handle {
+      height: 13px;
+      width: 13px;
+    }
+  
+    .range-field {
+      display:none;
+    }
+    
+    .showField {
+      display:block;
+    }
+  
+    .items {
+      display: flex;
+      justify-content: flex-start;
+    }
+  
+    .item-1 {
+      height: 60px;
+    }
+  
+    .current{
+      font-weight: 100;
+    }
+  
+    #range-fieldIdAdd {
+      height: 18px;
+      width: 80px;
+  }
+  
+  .rpv-core__inner-page{
+      height: 620px;
+      width: 460px;
+  }
+  
+  h1, .h1{
+    font-size: 1.1875rem !important;
+    color: indianred;
+  }
+  
+  #tooltip{
+    background-color: #6c6363;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 10px;
+  }
+  
+  @media screen and (min-width : 1030px) {
+    .banking-details-container {
+      margin-top: -70px;
+    }
+  }
+  
+  #firstPageRadio, #lastPageRadio, #allPageRadio {
+    margin-right: 30px;
+  }
+  
+  /* Apply styles for smaller screens (e.g., mobile devices) */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column-reverse;
+    }
+  }
+  
+  #viewModal {
+    margin-left: 5%;
+    margin-bottom: 0.5rem;
+  }
+
+  .tooltip {
+    z-index: 0;
+  }
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}

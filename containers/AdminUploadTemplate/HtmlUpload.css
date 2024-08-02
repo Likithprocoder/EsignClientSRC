@@ -1,0 +1,684 @@
+@media screen and (max-width: 800px) {
+        .o1 {
+                height: 100%;
+                width: 100%;
+        }
+
+        .o2 {
+                height: 50%;
+                width: 100%;
+                margin-right: 15px;
+                margin-bottom: 10px;
+        }
+
+        .o4 {
+                border: 3px solid darkgoldenrod;
+                width: 100%;
+                border-radius: 10px;
+        }
+
+}
+
+@media screen and (min-width: 800px) {
+        .o1 {
+                height: 100%;
+                width: 100%;
+                display: flex;
+        }
+
+        .o2 {
+                height: 50%;
+                width: 70%;
+                margin-right: 15px;
+        }
+
+        .o4 {
+                border: 3px solid darkgoldenrod;
+                width: 30%;
+                border-radius: 10px;
+        }
+
+
+}
+
+/*HTMLUpload*/
+.drophtml {
+        font-size: 18px;
+        font-weight: 400;
+        font-style: italic;
+        letter-spacing: 2px;
+}
+
+.UPLDIV1 {
+        height: 200px;
+        width: 360px;
+        display: flex;
+        text-align: center;
+        padding-top: 45px;
+}
+
+.uploadfilebtn {
+        width: 112px;
+        font-size: inherit;
+        background-color: burlywood;
+        color: white;
+        height: fit-content;
+        text-align: center;
+        font-size: 17px;
+        border-radius: 15px;
+        cursor: default;
+}
+
+.afterHtmlSelection {
+        font-family: cursive;
+}
+
+.inputhidden {
+        position: absolute;
+        inset: 0px;
+        opacity: 1e-05;
+        pointer-events: none;
+}
+
+.nameAndInput {
+        height: 280px;
+        width: 475px;
+        margin-left: auto;
+        margin-right: auto;
+}
+
+.upload-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 180px;
+        height: 44px;
+        border-radius: 22px 22px 22px 22px;
+        border: 1px;
+        background-color: #1dd1a1;
+        text-align: center;
+        box-shadow: #000;
+        outline: none;
+        font-family: Montserrat, sans-serif;
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+        -webkit-transition-duration: .25s;
+        transition-duration: .25s;
+}
+
+
+/*HTMLInput*/
+.Divo4Css {
+        height: fit-content;
+        width: 100%;
+        display: flex;
+}
+
+.title {
+        width: fit-content;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        font-size: 17px;
+        font-family: 'FontAwesome';
+        padding-left: 10px;
+        margin-right: 4px;
+}
+
+.titleName {
+        width: 60%;
+        font-size: 17px;
+        font-family: 'FontAwesome';
+}
+
+.inputHolderCss {
+        border: 1px solid #f5f5f5;
+        background-color: #f5f5f5;
+        padding: 10px;
+        padding-top: 15px;
+        border-radius: 20px
+}
+
+.Divo5Css {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+        margin-bottom: 5px;
+}
+
+.InputName {
+        width: 40%;
+        /* text-align: center; */
+        font-size: 14px;
+        font-family: 'FontAwesome';
+        padding-top: 7px;
+}
+
+.inputname1 {
+        width: 60%;
+}
+
+.inputCss {
+        width: 100%;
+        height: 30px;
+        border: 3px solid #9dc1e3;
+        font-size: 13px;
+        border-radius: 5px;
+        text-align: left;
+}
+
+.Divo6Css {
+        width: 100%;
+        padding-top: 15px;
+        display: flex;
+        justify-content: center;
+}
+
+.proceedCancelCss {
+        width: 40%;
+        display: flex;
+        justify-content: center;
+}
+
+.cancelbtn {
+        height: 40px;
+        width: 130px;
+        border-radius: 20px;
+        border: 1px solid white;
+        background-color: #f86c6b;
+        color: white;
+        font-size: 18px;
+        text-align: center;
+        margin-right: 15px;
+        font-family: inherit
+}
+
+.proceedbtnX {
+        border: 1px solid white;
+        width: 130px;
+        height: 40px;
+        border-radius: 20px;
+        color: white;
+        font-size: 18px;
+        text-align: center;
+        background-color: #4dbd74;
+        font-family: inherit;
+        margin-right: 15px;
+}
+
+.oneLabelBox {
+        display: flex;
+        margin-bottom: 10px;
+}
+
+.form-Montroll {
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        width: 70%;
+        margin-right: 5px;
+        margin-left: 5px;
+}
+
+.input-Montroll {
+        border: 2px solid #8ba9c7;
+        width: 100%;
+        font-size: 14px;
+        border-radius: 5px;
+}
+
+.editFields {
+        width: 30%;
+        display: flex;
+}
+
+.editcss {
+        width: 50%;
+        height: 100%;
+        text-align: center;
+        align-content: center;
+        align-items: center;
+        display: inline-grid;
+}
+
+.proceedbtn {
+        border: 1px solid white;
+        width: 100%;
+        height: 35px;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        text-align: center;
+        background-color: #20a8d8;
+        font-family: cursive;
+}
+
+.tickMarkcss {
+        width: 50%;
+        height: 100%;
+        text-align: center;
+        font-size: 25px;
+}
+
+.part2Css {
+        border: 3px dashed burlywood;
+        margin-top: 10px;
+        margin-left: 4px;
+        margin-right: 6px;
+        border-radius: 10px;
+}
+
+.invisiblePart2Css {
+        margin-top: 10px;
+        margin-left: 6px;
+        margin-right: 6px;
+        border-radius: 10px;
+        display: flex;
+        margin-bottom: 10px;
+}
+
+.mainHeading {
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: 5px;
+}
+
+.formcontroller {
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        width: 100%;
+        padding: 5px;
+}
+
+.temdesContentCss {
+        min-height: 20px;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        text-align: justify;
+        font-family: auto;
+        margin-right: 10px;
+        font-weight: 600;
+        padding: 5px;
+}
+
+#repeatableHeading {
+        display: flex;
+        padding-left: 15px;
+        font-size: 16px;
+        color: green;
+}
+
+#repeatCount {
+        padding-left: 8px;
+        color: black;
+        font-weight: 400;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.fileupload {
+        border: 2px dashed gray;
+        height: 225px;
+        width: 470px;
+        border-radius: 2%;
+        display: flex;
+        align-items: center;
+        background-color: #efefef;
+        cursor: pointer;
+}
+
+
+
+
+.or {
+        font-size: 25px;
+        font-style: italic;
+}
+
+
+
+
+
+
+.proceed {
+        height: 120px;
+        width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 170px;
+        padding-top: 70px;
+        padding-bottom: 100px;
+}
+
+.greyBackGroud {
+        background-color: gray;
+        height: 100%;
+        width: 100%;
+        padding: 10px;
+        padding-right: 10px;
+}
+
+.htmltext {
+        height: fit-content;
+        width: 100%;
+        padding: 20px;
+        text-align: justify;
+        padding-top: 25px;
+}
+
+.whitebackground {
+        background-color: white;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        width: 100%;
+        min-height: 600px;
+        min-width: 400px;
+}
+
+.scrollbar {
+        overflow: overlay;
+        height: 480px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+        background-color: white;
+        border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar {
+        height: 10px;
+        width: 10px;
+}
+
+
+.input-MontrollInput {
+        width: 100%;
+        font-size: 14px;
+        border-radius: 5px;
+}
+
+
+
+.MformDiv {
+        width: 80%;
+}
+
+.tDic {
+        width: 100%;
+        display: flex;
+        margin-bottom: 30px;
+}
+
+
+
+
+
+.editcssInput {
+        width: 50%;
+        height: 100%;
+        text-align: center;
+        align-content: center;
+        align-items: center;
+}
+
+.tickMarkcss {
+        width: 50%;
+        height: 100%;
+        text-align: center;
+        font-size: 25px;
+}
+
+.buttoncss {
+        border: 1px solid #9dc1e3;
+        border-radius: 2px;
+        color: white;
+        background: #9dc1e3;
+        font-size: 15px;
+        font-family: auto;
+}
+
+.buttoncss:hover {
+        border: 2px solid orange;
+}
+
+.WholeContent {
+        width: 400px;
+        height: fit-content;
+        z-index: 600;
+}
+
+.headingOfModalXcss {
+        font-size: 18px;
+        text-align: center;
+        font-family: 'FontAwesome';
+        margin-bottom: 5px;
+}
+
+.dotted-line {
+        border: 1px dotted #333;
+        /* You can adjust the color code (#333) and thickness as needed */
+        width: 100%;
+        /* Adjust width as needed */
+        margin: 5px 0;
+        /* Adjust margin as needed */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.proceedbtn:hover {
+        border: 1px solid #20a8d8;
+}
+
+.finalProceedCss {
+        height: fit-content;
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px
+}
+
+
+
+.selectdropdown {
+        width: 100%;
+        height: 30px;
+        border: 2px solid #9dc1e3;
+        border-radius: 5px;
+        font-size: 13px;
+        font-family: auto;
+        padding-left: 10px;
+}
+
+.s {
+        border: 1px solid white;
+        width: 130px;
+        height: 40px;
+        border-radius: 20px;
+        color: white;
+        font-size: 18px;
+        text-align: center;
+        background-color: #1dd1a1;
+        font-family: inherit;
+}
+
+.formcontroller1 {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        /* display: flex; */
+        padding-left: 5px;
+}
+
+.labelCss {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: auto;
+        margin-right: 5px;
+        padding-left: 2px;
+}
+
+.inputfield {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        padding-right: 5px;
+}
+
+.inputfieldCss {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        padding-right: 5px;
+        display: flex;
+}
+
+.redborderCss {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        border: 3px solid #e4e7ea;
+        background-color: #e4e7ea;
+        font-size: 14px;
+        border-radius: 5px;
+}
+
+
+
+#inputname {
+        /* vertical-align: middle; */
+        font-size: 16px;
+        font-family: auto;
+        vertical-align: -webkit-baseline-middle;
+}
+
+.input-Montroll1 {
+        border: 2px solid gold;
+        width: 100%;
+        font-size: 14px;
+        border-radius: 5px;
+        height: 100%;
+}
+
+.input-Montroll1Css {
+        border: 2px solid gold;
+        width: 100%;
+        font-size: 14px;
+        border-radius: 5px;
+        height: 40px;
+}
+
+
+
+
+.mainHeading1 {
+        width: 100%;
+        height: -webkit-fit-content;
+        height: -moz-fit-content;
+        height: fit-content;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 5px;
+        margin-top: 5px;
+}
+
+.borderLineCss {
+        border: 3px solid darkgoldenrod;
+        margin-top: 40px;
+}
+
+.part1Css {
+        border: 3px dashed burlywood;
+        margin-left: 10px;
+        margin-right: 10px;
+        padding-bottom: 10px;
+        border-radius: 10px;
+        margin-top: 15px;
+}
+
+
+
+
+.YellowLight {
+        background-color: yellow;
+}
+
+
+
+.blink {
+        animation: blinker 1s linear infinite;
+        color: red;
+        font-family: sans-serif;
+}
+
+@keyframes blinker {
+        50% {
+                opacity: 0;
+        }
+}
+
+#mandatoryRed {
+        color: red;
+}
+
+/* .fa {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 16px;
+        padding-top: 10px;
+    } */
+
+.AddedDrPListCsc {
+        padding: 3px;
+        width: 87%;
+        background-color: #efefef;
+}

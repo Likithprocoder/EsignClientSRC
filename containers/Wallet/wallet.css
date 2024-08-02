@@ -1,0 +1,28 @@
+#barprogress{
+    color:black;
+}
+
+#subsbtn{
+     width: 100px;
+         margin:auto;
+}
+
+#noActivePlans{
+     text-align: center; 
+}
+
+#subscribeDiv{
+  margin-right: "20%"; 
+}
+
+.progress-bar{
+  color: black;
+}
+
+#tooltip{
+  background-color: #6c6363;
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 10px;
+}

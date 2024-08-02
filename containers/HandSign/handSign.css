@@ -1,0 +1,203 @@
+.signatureCanvas{
+    border: 1px solid #c8ced3;
+    width: 100%;
+    position: inherit;
+    height: 218px;
+}
+
+.sigContainer{
+    text-align: center;
+    font-size: 28px;
+}
+#canvasMsg{
+    font-size: 17px;
+    margin-top: -2%;
+}
+
+#canvasMsg1,#canvasMsg2{
+    font-size: 17px;
+    text-align: center;
+    margin-top: 5px
+}
+.popup-content{
+    width: 475px !important;
+    position: relative;
+    background: rgb(255, 255, 255);
+    width: 50%;
+    margin: auto;
+    border: 1px solid rgb(187, 187, 187);
+    padding: 5px;
+}
+
+#signaturePadBtn{
+    margin-left: 15px;
+    /* margin-top: -25px; */
+}
+
+#sigContainerBtns{
+    margin: 3px;
+}
+
+.signUploadContainer{
+    margin-left: 5px;
+    margin-top: -10px;
+    padding: 0px 0px 3px 20px;
+}
+
+.signUploadInput{
+    width: 100%;
+    font-size: 14px;
+    margin: 0px 0px 10px 15px;
+    background-color: rgba(0, 0, 0, -0.85);
+}
+
+.signDisplayContainer{
+    color: black;
+    font-size: 13px;
+}
+
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #fff;
+    background-color: #20a8d8;
+    border-color: #20a8d8;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.custom-file-upload:hover{
+    background-color: #1985ac;
+}
+
+.signImgFileName{
+    margin: 15px 0px 0px 5px;
+    color: black;
+    font-size: 15px;
+}
+#enddate{
+    margin-left: 1px;
+  
+}
+
+#enddatefield{ 
+     margin-left: 2px;
+}
+.signerfield {
+
+    border: 1px solid #c8ced3;
+    display: inline-flex;
+    width: 250px;
+    font-size: 15px;
+    line-height: 1.25;
+    color: #55595c;
+    background-color: #fff;
+    background-image: none;
+    background-clip: padding-box;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    }
+
+ #createSignature{
+ font-size: 20px;
+ text-align: left;
+ color: black;
+
+ }
+ #SignaturepadDropZone{
+    height: 160px;
+    width: 400px;
+
+ }
+ #pdfContainerSignaturePad{
+    display: flex;
+    justify-content: center;
+    align-items: normal;
+    max-width: 430px;
+    max-height: 320px;
+    width: 80vw;
+    height: 80vw;
+ }
+ #nav-tab{
+     font-size: 20px;
+
+ }
+ #nav-home{
+     height: 300px ;
+     padding: 0rem 0rem 0rem 1rem;
+ }
+ #adoptBtn,#clearBtn,#closeBtn,#adoptUploadBtn{
+    font-size: 1rem;
+ }
+ .modal-title{
+     font-size: 26px;
+     color: #942b2b;
+ }
+
+ #signFontsCntr{
+    max-height: 155px;
+    overflow-y: auto;
+ }
+ #HsDropZone{
+     margin-top: -10px;
+ }
+ #signatureModal{
+    width: 500px !important;
+   }
+  
+     #textCanvas {
+      display: none;
+    }
+    #nav-tabContent{
+      height: 215px;
+    }
+    #signatureModalFooter{
+      justify-content: flex-start;
+    }
+  
+    #signatureTextProperties{
+      font-size : "20px";
+      text-transform: "Capitalize";
+    }
+  
+    #namefield{
+      font-size: 15px;
+      text-transform: capitalize;
+    }
+    
+    #radio-item1, #radio-item6{
+      font-size: 32px;
+      line-height: 1;
+    }
+  
+    #radio-item3{
+      font-size: 30px;
+    }
+    #radio-item2,#radio-item12{
+      font-size: 25px;
+    }
+    #radio-item4{
+      font-size: 31px;
+    }
+    #radio-item5{
+    font-size: 39px;
+    }
+    #radio-item10{
+        font-size: 34px;
+        line-height: 1;
+    }
+    #radio-item11{
+        font-size: 29px;
+    }
+     #radio-item7{
+       font-size: 23px;
+    }
+     #radio-item9{
+       font-size: 24px;
+    }
+    #radio-item8{
+    font-size: 34px;
+     }
+  
