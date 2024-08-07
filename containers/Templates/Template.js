@@ -190,12 +190,18 @@ function NewTemplate(props) {
     // to store the defaut repeatAble blocks with inputs with in.
     const [reptBlckOfInputs, setReptBlckOfInputs] = useState({});
 
+    const [cropWithHighRes, setCropWithHighRes] = useState(initialCropState);
+    
     const [appenedFormData, setAppenedFormData] = useState({
         boolean: false,
         type: ""
     });
 
+    const [screenSize, setScreenSize] = useState({});
+
     const [repeatContentUpdateHTML, setRepeatContentUpdateHTML] = useState();
+
+    const [cropedSize, setCropedSize] = useState(null);
 
     // holds the name of the blockName on which we currently we work.
     const [intFld, setIntFld] = useState({
@@ -2988,18 +2994,20 @@ function NewTemplate(props) {
                                             <text style={{ fontSize: "120%" }}>or</text>
                                             &nbsp;
                                             <td>
-                                                <BsCameraFill id={`${posts.key},${posts.fieldLable}`} style={{ fontSize: "250%", color: "#007bff" }} onClick={(e) => openCamera(e, e.currentTarget.id)} data-toggle="modal" data-target="#cameraModal"
+                                                <BsCameraFill id={`${posts.key},${posts.fieldLable}`} onClick={(e) => setupWebcam(e.currentTarget.id, facingMode)} style={{ fontSize: "250%", color: "#007bff" }} data-toggle="modal" data-target="#cameraModal"
                                                 />
                                                 <div className={`modal ${cameraIsOpen ? 'show' : ''}`} id="cameraModal" tabIndex="-1" aria-labelledby="cameraModalLabel" aria-hidden={!cameraIsOpen} data-backdrop="static">
-                                                    <div className="modal-dialog">
-                                                        <div className="modal-content" >
-                                                            <div className="modal-header">
-                                                                <h5 className="modal-title" id="cameraModalLabel" >Camera</h5><br></br>Note: Maximum of 400kb image can be captured.
+                                                    <div className="custom-modalTWO" >
+                                                        <div className="CustomModal-contentTWO  ScrollBarXCamera">
+                                                            <div className="">
+                                                                <div style={{ display: "flex", marginBottom: "5px", marginTop: "15px" }}>
+                                                                    <div style={{ width: "100%", textAlign: "end" }}>
+                                                                        <button type="button" className="btn btn-success rounded-pill" onClick={capturePhoto}>capture</button>
+                                                                    </div>
+                                                                </div>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" onClick={(e) => closeCamera(e)}><span aria-hidden="true">&times;</span></button>
-                                                            </div>
-                                                            <div className="modal-body" >
-                                                                {cameraIsOpen && !captureData && (
-                                                                    <div>
+                                                                {!captureData && (
+                                                                    <>
                                                                         {isMobile ? (
                                                                             <div>
                                                                                 <FaCameraRotate onClick={(e) => handleSwitchCamera(e)} style={{ marginBottom: "2%", fontSize: "200%", color: "#007bff" }} />
@@ -3007,45 +3015,18 @@ function NewTemplate(props) {
                                                                         ) : (
                                                                             <></>
                                                                         )}
-                                                                        <Webcam videoConstraints={{
-                                                                            facingMode: facingMode,
-                                                                            autoFocus: true, // Use the autofocus state
-                                                                        }}
-                                                                            screenshotFormat="image/png"
-                                                                            screenshotQuality={1}
-                                                                            ref={webcamRef}
-                                                                            imageSmoothing={true}
-                                                                            className="Webcam"
-                                                                        >
-                                                                            {({ getScreenshot }) => (
-                                                                                <button type="button" className="btn btn-success rounded-pill"
-                                                                                    style={{ marginTop: "2%" }}
-                                                                                    onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        // Check if getScreenshot is available
-                                                                                        if (getScreenshot) {
-                                                                                            const imageSrc = getScreenshot();
-                                                                                            console.log(imageSrc);
-                                                                                            setCaptureData(imageSrc);
-                                                                                        } else {
-                                                                                            console.error("getScreenshot is not available.");
-                                                                                        }
-                                                                                    }}
-                                                                                >
-                                                                                    Capture
-                                                                                </button>
-                                                                            )}
-                                                                        </Webcam>
-                                                                    </div>
+                                                                        <video  className="videoDisplay"   ref={webcamRef} width={screenSize["width"]} height={screenSize["height"]} ></video>
+                                                                    </>
                                                                 )}
                                                                 {captureData && (
+                                                                    // <div ref={resultRef} id="results"></div>
                                                                     <div>
                                                                         <ReactCrop crop={crop}
                                                                             onChange={c => handleCropChange(c)}
                                                                             id="reactCrop"
                                                                             aspect={aspect}
                                                                         >
-                                                                            <img src={captureData} alt="Captured" /><br />
+                                                                            <img height={screenSize["height"]} width={screenSize["width"]} src={captureData} alt="Captured" /><br />
                                                                         </ReactCrop>
 
                                                                         <form>
@@ -3096,26 +3077,27 @@ function NewTemplate(props) {
                                                                                 &nbsp;
                                                                             </div>
                                                                         </form>
+
                                                                         {croppedImageUrl ? (
                                                                             <div style={{ textAlign: "center" }}>
                                                                                 <h2 >Cropped Image:</h2>
-                                                                                <img src={croppedImageUrl} alt="Cropped" />
+                                                                                <img height={cropedSize["height"]} width={cropedSize["width"]} src={croppedImageUrl} alt="Cropped" />
                                                                             </div>
                                                                         ) : (<></>)}
                                                                     </div>
                                                                 )}
-                                                            </div>
-                                                            <div className="modal-footer">
-                                                                {!captureData ? (
-                                                                    <div>
-                                                                    </div>
-                                                                ) : (
-                                                                    <div>
-                                                                        <button id="cropper" type="button" className="btn btn-warning rounded-pill" onClick={handleCropComplete} hidden>Crop & Preview</button>&nbsp;
-                                                                        <button type="button" className="btn btn-warning rounded-pill" onClick={retakeImage}>Retake</button>&nbsp;
-                                                                        <button type="button" class="btn btn-success rounded-pill" id={`${posts.key},${index}`} onClick={(e) => capturedImage(e, captureData)}  >Proceed</button>
-                                                                    </div>
-                                                                )}
+                                                                <div style={{ textAlign: "end", marginTop: "10px" }}>
+                                                                    {!captureData ? (
+                                                                        <div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div>
+                                                                            <button id="cropper" type="button" className="btn btn-warning rounded-pill" onClick={handleCropComplete} hidden>Crop & Preview</button>&nbsp;
+                                                                            <button type="button" className="btn btn-warning rounded-pill" onClick={retakeImage}>Retake</button>&nbsp;
+                                                                            <button type="button" class="btn btn-success rounded-pill" id={`${posts.key},${index}`} onClick={(e) => capturedImage(e, captureData)}  >Proceed</button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -3861,8 +3843,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (21.01 / (2.5 * 3.15)) * 72,
-                    height: (29.62 / (2.5 * 3.15)) * 72
+                    width: (19.01 / (2.5 * 3.15)) * 72,
+                    height: (21.62 / (2.5 * 3.15)) * 72
                 };
             }
             else {
@@ -3875,7 +3857,8 @@ function NewTemplate(props) {
                     height: (29.62 / (2.5 * 1.8)) * 72
                 };
             }
-            setAspect(cropState.width / cropState.height)
+            setAspect(cropState.width / cropState.height);
+            setCropWithHighRes(convertCropDimensions(cropState));
             setCrop(cropState)
         }
         else if (event.target.value === "pp") {
@@ -3902,6 +3885,7 @@ function NewTemplate(props) {
                 };
             }
             setAspect(cropState.width / cropState.height)
+            setCropWithHighRes(convertCropDimensions(cropState));
             setCrop(cropState)
         }
         else if (event.target.value === "idvertical") {
@@ -3928,6 +3912,7 @@ function NewTemplate(props) {
                 };
             }
             setAspect(cropState.width / cropState.height)
+            setCropWithHighRes(convertCropDimensions(cropState));
             setCrop(cropState)
 
         }
@@ -3955,43 +3940,128 @@ function NewTemplate(props) {
                 };
             }
             setAspect(cropState.width / cropState.height)
+            setCropWithHighRes(convertCropDimensions(cropState));
             setCrop(cropState)
         }
         else {
             document.getElementById("cropper").setAttribute("hidden", "true");
+            setCroppedImageUrl(null);
             setAspect(null)
             setCrop(initialCropState)
         }
     };
-    //opening camera
-    const openCamera = async (e, id) => {
-        // alert(id)
-        e.preventDefault();
-        setIterationId(id)
-        setAllowLoader(false);
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
+    const setupWebcam = (id, facingMode) => {
+        setIterationId(id);
+        let width = "";
+        let height = "";
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            // const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            // const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            // width = Math.round(screenWidth * 0.85);
+            // height = Math.round(screenHeight * 0.7);
+            width = 270;
+            height = 480;
+        }
+        else {
+            // width = Math.round(window.innerWidth * 0.5);
+            // height = Math.round(window.innerHeight * 0.75);
+            width = 640;
+            height = 360;
+        };
+        setScreenSize({
+            width: width,
+            height: height
+        });
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                width: { exact: 1280 },
+                height: { exact: 720 },
+                facingMode: facingMode
+            }
+        }).then(stream => {
             if (webcamRef.current) {
                 webcamRef.current.srcObject = stream;
+                webcamRef.current.play();
             }
-            setAllowLoader(true);
-            setCameraIsOpen(true);
-        } catch (error) {
-            setAllowLoader(true);
-            console.error('Error accessing webcam:', error);
-            alert('Camera access denied. Please enable camera access in your browser settings.');
-        }
+        }).catch(err => {
+            console.error(`Error accessing ${facingMode} camera: `, err);
+        });
     };
+
+    const capturePhoto = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1280;
+        canvas.height = 720;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(webcamRef.current, 0, 0, canvas.width, canvas.height);
+        const dataUri = canvas.toDataURL('image/jpeg', 1.0);
+        setCaptureData(dataUri);
+        const stream = webcamRef.current.srcObject;
+        stream.getTracks().forEach(track => track.stop());
+        webcamRef.current.srcObject = null;
+    };
+
+    // useEffect(() => {
+    //     let width = "";
+    //     let height = "";
+    //     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    //         const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    //         const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    //         width = Math.round(screenWidth * 0.85);
+    //         height = Math.round(screenHeight * 0.5);
+    //     }
+    //     else {
+    //         width = Math.round(window.innerWidth * 0.5);
+    //         height = Math.round(window.innerHeight * 0.75);
+    //     };
+    //     setScreenSize({
+    //         width: width,
+    //         height: height
+    //     });
+    //     if (cameraOpen && webcamRef.current) {
+    //         console.log(facingMode);
+    //         // Initialize the webcam after the element is available
+    //         // window.Webcam.set({
+    //         //     width: width,
+    //         //     height: height,
+    //         //     dest_width: 1280, // setting of resolution
+    //         //     dest_height: 720, // setting of resolution
+    //         //     image_format: 'jpeg', // Change to 'jpeg' if you prefer JPEG
+    //         //     jpeg_quality: 100, // Use if format is 'jpeg'
+    //         //     force_flash: false, // disable flash fallback
+    //         // });
+    //         // window.Webcam.attach(webcamRef.current, function (err) {
+    //         //     if (err) {
+    //         //         console.error('Webcam attach error:', err);
+    //         //     }
+    //         // });
+    //     }
+
+    //     return () => {
+    //         if (cameraOpen) {
+    //             // window.Webcam.reset();
+    //         };
+    //     };
+    // }, [cameraOpen]);
+
+    // const capturePhoto = (event) => {
+    //     event.preventDefault();
+    //     window.Webcam.snap((data_uri) => {
+    //         if (data_uri) {
+    //             console.log(data_uri);
+    //             setCaptureData(data_uri);
+    //             window.Webcam.reset(); // after capturing the photo reseting the webcam();
+    //         } else {
+    //             console.error('Failed to capture photo, data_uri is null');
+    //         };
+    //     });
+    // };
+
     //closing camera
     const closeCamera = (e) => {
         setAllowLoader(false);
-        setSelectedOption('None')
-        if (webcamRef.current && webcamRef.current.srcObject) {
-            const stream = webcamRef.current.srcObject;
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop());
-        }
+        setSelectedOption('None');
         e.preventDefault();
         //clearning the image captured 
         setCaptureData(null);
@@ -4001,18 +4071,40 @@ function NewTemplate(props) {
         //setting the cropping tool to default
         resetCropToDefault();
         setAllowLoader(true);
+        if (webcamRef.current && webcamRef.current.srcObject) {
+            const stream = webcamRef.current.srcObject;
+            stream.getTracks().forEach(track => track.stop());
+            webcamRef.current.srcObject = null;
+        };
     };
+
     // retake of image
     const retakeImage = () => {
         setSelectedOption('None')
         setCaptureData(null);
         setCroppedImageUrl(null);
+        setupWebcam(iterationId, facingMode);
         resetCropToDefault();
-    }
+    };
+
+    function convertCropDimensions(crop) {
+        const scaleX = 1280 / screenSize["width"];
+        const scaleY = 720 / screenSize["height"];
+        // displayin scaleY
+        return {
+            x: crop.x * scaleX,
+            y: crop.y * scaleY,
+            width: crop.width * scaleX,
+            height: crop.height * scaleY,
+            unit: '%'
+        };
+    };
+
     // corp change handle.
     const handleCropChange = (newCrop) => {
         setCrop(newCrop);
-        document.getElementById("cropper").removeAttribute("hidden")
+        setCropWithHighRes(convertCropDimensions(newCrop))
+        document.getElementById("cropper").removeAttribute("hidden");
     };
     // Function to reset the crop state to its initial values
     const resetCropToDefault = () => {
@@ -4024,26 +4116,27 @@ function NewTemplate(props) {
             const image = new Image();
             image.src = captureData;
             const canvas = document.createElement('canvas');
-            canvas.width = crop.width;
-            canvas.height = crop.height;
+            canvas.width = cropWithHighRes.width;
+            canvas.height = cropWithHighRes.height;
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(
                 image,
-                crop.x,
-                crop.y,
-                crop.width,
-                crop.height,
+                cropWithHighRes.x,
+                cropWithHighRes.y,
+                cropWithHighRes.width,
+                cropWithHighRes.height,
                 0,
                 0,
-                crop.width,
-                crop.height
+                cropWithHighRes.width,
+                cropWithHighRes.height
             );
             // Convert the cropped image to a data URL
-            const croppedURL = canvas.toDataURL('image/jpeg', '0.1');
-            // const croppedURL = canvas.toDataURL('image/jpeg',"0.1");
+            const croppedURL = canvas.toDataURL('image/jpeg', 1.0);
             // Set the cropped image URL
+            console.log(croppedURL);
             setCroppedImageUrl(croppedURL);
+            setCropedSize(crop);
         }
     };
     const handleSwitchCamera = (e) => {
@@ -4051,6 +4144,7 @@ function NewTemplate(props) {
         // Toggle between 'user' and 'environment' for front and rear view camera respectively
         const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
         setFacingMode(newFacingMode);
+        setupWebcam(iterationId, newFacingMode);
     };
     const capturedImage = (e, captureData) => {
         closeCamera(e);
@@ -4070,6 +4164,8 @@ function NewTemplate(props) {
                             //setting radio button to none(default)
                             setSelectedOption('None')
                             $('#cameraModal').modal('show')
+                            setupWebcam(iterationId, facingMode);
+                            resetCropToDefault();
                         },
                     },
                     {
@@ -4094,12 +4190,22 @@ function NewTemplate(props) {
                     },
                 ], closeOnClickOutside: false,
             });
+            if (webcamRef.current && webcamRef.current.srcObject) {
+                const stream = webcamRef.current.srcObject;
+                stream.getTracks().forEach(track => track.stop());
+                webcamRef.current.srcObject = null;
+            };
         }
         else {
             if (crop.x == initialCropState.x && crop.y == initialCropState.y &&
                 crop.width == initialCropState.width && crop.height == initialCropState.height && crop.unit == initialCropState.unit) {
                 base64Data = captureData.split(",")[1];
                 proceedingWithImg(base64Data);
+                if (webcamRef.current && webcamRef.current.srcObject) {
+                    const stream = webcamRef.current.srcObject;
+                    stream.getTracks().forEach(track => track.stop());
+                    webcamRef.current.srcObject = null;
+                };
             }
             else {
                 confirmAlert({
@@ -4112,6 +4218,8 @@ function NewTemplate(props) {
                                 //setting radio button to none(default)
                                 setSelectedOption('None')
                                 $('#cameraModal').modal('show')
+                                setupWebcam(iterationId, facingMode);
+                                resetCropToDefault();
                             },
                         },
                         {
@@ -4132,28 +4240,34 @@ function NewTemplate(props) {
                                 const image = new Image();
                                 image.src = captureData;
                                 const canvas = document.createElement('canvas');
-                                canvas.width = crop.width;
-                                canvas.height = crop.height;
+                                canvas.width = cropWithHighRes.width;
+                                canvas.height = cropWithHighRes.height;
                                 let ctx = canvas.getContext('2d');
                                 ctx.drawImage(
                                     image,
-                                    crop.x,
-                                    crop.y,
-                                    crop.width,
-                                    crop.height,
+                                    cropWithHighRes.x,
+                                    cropWithHighRes.y,
+                                    cropWithHighRes.width,
+                                    cropWithHighRes.height,
                                     0,
                                     0,
-                                    crop.width,
-                                    crop.height
+                                    cropWithHighRes.width,
+                                    cropWithHighRes.height
                                 );
                                 let imageURL = canvas.toDataURL('image/jpeg');
                                 // let imageURL = canvas.toDataURL('image/jpeg',"0.1");
                                 base64Data = imageURL.split(",")[1];
                                 proceedingWithImg(base64Data);
+                                console.log(base64Data);
                             },
                         },
                     ], closeOnClickOutside: false,
                 });
+                if (webcamRef.current && webcamRef.current.srcObject) {
+                    const stream = webcamRef.current.srcObject;
+                    stream.getTracks().forEach(track => track.stop());
+                    webcamRef.current.srcObject = null;
+                };
             }
         }
         $('#cameraModal').modal('hide')
@@ -4608,8 +4722,7 @@ function NewTemplate(props) {
                     )
                 }
             </div >
-
-        </>
+    </>
     );
 }
 export default memo(NewTemplate);
