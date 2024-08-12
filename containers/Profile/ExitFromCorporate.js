@@ -196,7 +196,7 @@ const ExitFromCorporate = (props) => {
                 </div>
                 <div style={{ minHeight: "362px" }} className='parentgrpList scrollbarx' >
                     <div className='crpGrpList'>
-                        <span>Linked corporate group</span>
+                        <span>{corporateList.length > 1 ? "Linked corporate group" : "No groups linked"}</span>
                     </div>
                     {
                         corporateList.map((corporate, index) => (

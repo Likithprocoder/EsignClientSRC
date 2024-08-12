@@ -191,7 +191,7 @@ function NewTemplate(props) {
     const [reptBlckOfInputs, setReptBlckOfInputs] = useState({});
 
     const [cropWithHighRes, setCropWithHighRes] = useState(initialCropState);
-    
+
     const [appenedFormData, setAppenedFormData] = useState({
         boolean: false,
         type: ""
@@ -3015,7 +3015,7 @@ function NewTemplate(props) {
                                                                         ) : (
                                                                             <></>
                                                                         )}
-                                                                        <video  className="videoDisplay"   ref={webcamRef} width={screenSize["width"]} height={screenSize["height"]} ></video>
+                                                                        <video className="videoDisplay" ref={webcamRef} width={screenSize["width"]} height={screenSize["height"]} ></video>
                                                                     </>
                                                                 )}
                                                                 {captureData && (
@@ -3029,11 +3029,11 @@ function NewTemplate(props) {
                                                                             <img height={screenSize["height"]} width={screenSize["width"]} src={captureData} alt="Captured" /><br />
                                                                         </ReactCrop>
 
-                                                                        <form>
-                                                                            <div className="radio" style={{ fontfamily: "ui-monospace" }}>
-                                                                                <text>
-                                                                                    Select the size of the image
-                                                                                </text> &nbsp;
+                                                                        <div className="radio" >
+                                                                            <text>
+                                                                                Select the size of the image
+                                                                            </text> &nbsp;
+                                                                            <div>
                                                                                 <input
                                                                                     type="radio"
                                                                                     name="CropSize"
@@ -3049,8 +3049,10 @@ function NewTemplate(props) {
                                                                                     value="A4"
                                                                                     checked={selectedOption === 'A4'}
                                                                                     onChange={handleRadioChange}
-                                                                                />A4
-                                                                                &nbsp;
+                                                                                />A4&nbsp;
+                                                                            </div>
+                                                                            
+                                                                            <div>
                                                                                 <input
                                                                                     type="radio"
                                                                                     name="CropSize"
@@ -3065,8 +3067,10 @@ function NewTemplate(props) {
                                                                                     value="idvertical"
                                                                                     checked={selectedOption === 'idvertical'}
                                                                                     onChange={handleRadioChange}
-                                                                                />ID -Portrait
-                                                                                &nbsp;
+                                                                                />ID -Portrait&nbsp;
+                                                                            </div>
+                                                                            
+                                                                            <div>
                                                                                 <input
                                                                                     type="radio"
                                                                                     name="CropSize"
@@ -3074,9 +3078,8 @@ function NewTemplate(props) {
                                                                                     checked={selectedOption === 'idhorizontal'}
                                                                                     onChange={handleRadioChange}
                                                                                 />ID -Landscape
-                                                                                &nbsp;
                                                                             </div>
-                                                                        </form>
+                                                                        </div>
 
                                                                         {croppedImageUrl ? (
                                                                             <div style={{ textAlign: "center" }}>
@@ -3843,8 +3846,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (19.01 / (2.5 * 3.15)) * 72,
-                    height: (21.62 / (2.5 * 3.15)) * 72
+                    width: (21.01 / (2.5 * 2.7)) * 72,
+                    height: (29.62 / (2.5 * 2.7)) * 72
                 };
             }
             else {
@@ -3853,8 +3856,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (21.01 / (2.5 * 1.8)) * 72,
-                    height: (29.62 / (2.5 * 1.8)) * 72
+                    width: (21.01 / (2.5 * 2.2)) * 72,
+                    height: (29.62 / (2.5 * 2.2)) * 72
                 };
             }
             setAspect(cropState.width / cropState.height);
@@ -3897,8 +3900,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (5.4 / 2.5) * 72,
-                    height: (8.6 / 2.5) * 72
+                    width: (5.4 / 2.7) * 72,
+                    height: (8.6 / 2.7) * 72
                 };
             }
             else {
@@ -3907,8 +3910,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (5.4 / 1.5) * 72,
-                    height: (8.6 / 1.5) * 72
+                    width: (5.4 / 1.7) * 72,
+                    height: (8.6 / 1.7) * 72
                 };
             }
             setAspect(cropState.width / cropState.height)
@@ -3925,8 +3928,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (8.6 / 2.5) * 72,
-                    height: (5.4 / 2.5) * 72
+                    width: (8.6 / 2.7) * 72,
+                    height: (5.4 / 2.7) * 72
                 };
             }
             else {
@@ -3935,8 +3938,8 @@ function NewTemplate(props) {
                     unit: 'px',
                     x: 0,
                     y: 0,
-                    width: (8.6 / 1.5) * 72,
-                    height: (5.4 / 1.5) * 72
+                    width: (8.6 / 1.7) * 72,
+                    height: (5.4 / 1.7) * 72
                 };
             }
             setAspect(cropState.width / cropState.height)
@@ -3955,23 +3958,27 @@ function NewTemplate(props) {
         setIterationId(id);
         let width = "";
         let height = "";
+        let mobileOrWeb = "";
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             // const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
             // const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             // width = Math.round(screenWidth * 0.85);
             // height = Math.round(screenHeight * 0.7);
-            width = 270;
-            height = 480;
+            width = 292;
+            height = 518;
+            mobileOrWeb = "mobile";
         }
         else {
             // width = Math.round(window.innerWidth * 0.5);
             // height = Math.round(window.innerHeight * 0.75);
-            width = 640;
-            height = 360;
+            width = 704;
+            height = 396;
+            mobileOrWeb = "web";
         };
         setScreenSize({
             width: width,
-            height: height
+            height: height,
+            isMobOrWeb: mobileOrWeb
         });
         navigator.mediaDevices.getUserMedia({
             video: {
@@ -3991,11 +3998,19 @@ function NewTemplate(props) {
 
     const capturePhoto = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = 1280;
-        canvas.height = 720;
+        // check if the device is mobile or web
+        if (screenSize.isMobOrWeb === "mobile") {
+            canvas.width = 720;
+            canvas.height = 1280;
+        }
+        else {
+            canvas.width = 1280;
+            canvas.height = 720;
+        }
         const ctx = canvas.getContext('2d');
         ctx.drawImage(webcamRef.current, 0, 0, canvas.width, canvas.height);
-        const dataUri = canvas.toDataURL('image/jpeg', 1.0);
+        const dataUri = canvas.toDataURL('image/jpeg', 0.9);
+        console.log(dataUri);
         setCaptureData(dataUri);
         const stream = webcamRef.current.srcObject;
         stream.getTracks().forEach(track => track.stop());
@@ -4088,8 +4103,16 @@ function NewTemplate(props) {
     };
 
     function convertCropDimensions(crop) {
-        const scaleX = 1280 / screenSize["width"];
-        const scaleY = 720 / screenSize["height"];
+        let scaleX = "";
+        let scaleY = "";
+        if (screenSize.isMobOrWeb === "mobile") {
+            scaleX = 720 / screenSize["width"];
+            scaleY = 1280 / screenSize["height"];
+        }
+        else {
+            scaleX = 1280 / screenSize["width"];
+            scaleY = 720 / screenSize["height"];
+        }
         // displayin scaleY
         return {
             x: crop.x * scaleX,
@@ -4113,6 +4136,12 @@ function NewTemplate(props) {
     };
     const handleCropComplete = () => {
         if (captureData) {
+            // const ctx = canvas.getContext('2d');
+            // ctx.drawImage(webcamRef.current, 0, 0, canvas.width, canvas.height);
+            // const dataUri = canvas.toDataURL('image/jpeg', 1.0);
+            // console.log(dataUri);
+            // setCaptureData(dataUri);
+
             const image = new Image();
             image.src = captureData;
             const canvas = document.createElement('canvas');
@@ -4132,9 +4161,9 @@ function NewTemplate(props) {
                 cropWithHighRes.height
             );
             // Convert the cropped image to a data URL
-            const croppedURL = canvas.toDataURL('image/jpeg', 1.0);
-            // Set the cropped image URL
+            const croppedURL = canvas.toDataURL('image/jpeg', 0.9);
             console.log(croppedURL);
+            // Set the cropped image URL
             setCroppedImageUrl(croppedURL);
             setCropedSize(crop);
         }
@@ -4177,6 +4206,7 @@ function NewTemplate(props) {
                             setSelectedOption('None')
                             base64Data = captureData.split(",")[1];
                             proceedingWithImg(base64Data);
+                            console.log(base64Data);
                         },
                     },
                     {
@@ -4186,6 +4216,8 @@ function NewTemplate(props) {
                         onClick: () => {
                             base64Data = croppedImageUrl.split(",")[1];
                             proceedingWithImg(base64Data);
+                            console.log(base64Data);
+                            
                         },
                     },
                 ], closeOnClickOutside: false,
@@ -4230,12 +4262,13 @@ function NewTemplate(props) {
                                 setSelectedOption('None')
                                 base64Data = captureData.split(",")[1];
                                 proceedingWithImg(base64Data);
+                                console.log(base64Data);
                             },
                         },
                         {
                             label: "Cropped",
                             className: "confirmBtn",
-                            onClick: () => {
+                            onClick: () => {               
                                 //Cropping the image based on cropping tool position
                                 const image = new Image();
                                 image.src = captureData;
@@ -4254,7 +4287,7 @@ function NewTemplate(props) {
                                     cropWithHighRes.width,
                                     cropWithHighRes.height
                                 );
-                                let imageURL = canvas.toDataURL('image/jpeg');
+                                let imageURL = canvas.toDataURL('image/jpeg', 0.9);
                                 // let imageURL = canvas.toDataURL('image/jpeg',"0.1");
                                 base64Data = imageURL.split(",")[1];
                                 proceedingWithImg(base64Data);
@@ -4722,7 +4755,7 @@ function NewTemplate(props) {
                     )
                 }
             </div >
-    </>
+        </>
     );
 }
 export default memo(NewTemplate);

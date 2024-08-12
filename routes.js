@@ -247,8 +247,8 @@ const routes = [
     component: ReqcorpUsrs
   },
   {
-    path: "/exitFrmCorporate",
-    name: "Exit from the corporate",
+    path: "/exitFromCorporate",
+    name: "Exit or unlink from the corporate entity",
     component: extFrmCorp
   }
 

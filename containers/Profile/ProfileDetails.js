@@ -1096,7 +1096,7 @@ export default class ProfileDetails extends React.Component {
                   </div> */}
                 </div>
                 <a hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
-                  this.props.history.push("/exitFrmCorporate");
+                  this.props.history.push("/exitFromCorporate");
                 }}>Exit from corporate entity?</a>
               </CardBody>
             </Card>

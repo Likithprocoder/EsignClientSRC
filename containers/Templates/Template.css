@@ -1,5 +1,7 @@
 @media screen and (max-width: 800px) {
 
+
+
   .ScrollBarXCamera {
     overflow: overlay;
     max-height: 640px;
@@ -158,6 +160,10 @@
 
 @media screen and (min-width: 801px) {
 
+  .radio{
+    display: flex;
+  }
+  
   .ScrollBarXCamera {
     overflow: overlay;
     max-height: 580px;
