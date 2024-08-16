@@ -1,0 +1,144 @@
+#discriptionspan{
+  color:#20a8d8;
+  text-align: center;
+}
+
+#amountspan{
+font-size: 20px;
+color: rgb(11, 201, 11);
+text-align: center;
+}
+
+#subscard{
+    width: 250px;
+    /* //text-align: center; */
+}
+#buyBtn{
+    width: 120px;
+    /* margin-left: 20%; */
+  
+}
+
+#paratag{
+  text-align: center;   
+}
+
+#loginMsg{
+     text-align: center;
+     font-size: 13px;   
+} 
+
+/* hr.modal-seperation{
+  border-top: 1px dashed darkorange;
+} */
+
+#redeemBtn {
+  width: 120px;
+  /* border-radius: 5px; */
+  background-color: cornflowerblue;
+}
+
+.purchaseBtn{
+  text-align: -webkit-center;
+}
+
+.voucherBtn {
+  width: 100%;
+  text-align: -webkit-center;
+}
+
+.question-mark-container {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #f0f3f5;
+  text-align: center;
+  line-height: 20px;
+  color: #181b1e;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.question-mark {
+  display: inline-block;
+  font-weight: bold;
+}
+
+
+/* @media (min-width: 768px) { */
+.col-md-3 {
+    flex: 0 0 25%;
+    /* max-width: 27%; */
+    max-width: 100%;
+}
+/* } */
+
+/* .styles_modal__gNwvD .extra {
+  /* width: 36%; */
+  /* width: min-content; */
+/* } */
+
+.ModalWidth{
+  /* width: min-content; */
+  width: 440px;
+}
+
+.separator {
+  margin: 0px;
+  width: 380px;
+  border: 1px dashed #c79807;
+}
+
+#redeemmodalrow {
+  width: 100%;
+  height: 100%;
+}
+
+/*  */
+
+.ModalWidth {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .ModalWidth {
+    width: 96%;
+  }
+
+  .InputGroup {
+    flex-direction: column;
+  }
+
+  .separator {
+    width: 100%; /* Adjust the width of the separator for smaller screens */
+  }
+
+  .styles_modal__gNwvD {
+  width: 100%;
+  /* width: min-content; */
+    margin-top: 10%;
+  }
+
+  .para-text {
+    width: 105%;
+  }
+
+  #userCode {
+    margin-left: 4% !important;
+  }
+}
+
+/* Responsive Input Fields */
+.InputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button Styling */
+.submit-details {
+  text-align: center;
+}
+

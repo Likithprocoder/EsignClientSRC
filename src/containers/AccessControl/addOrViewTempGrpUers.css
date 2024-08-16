@@ -1,0 +1,431 @@
+@media screen and (max-width: 800px) {
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 80%;
+        max-height: 80%;
+        overflow: auto;
+        position: relative;
+    }
+
+    .findUsrCss {
+        width: 100%;
+    }
+
+    .inputDicCss {
+        width: 100%;
+        margin-bottom: 10px;
+        display: flex;
+    }
+
+    .FindBtnCss {
+        width: 100%;
+        height: fit-content;
+        margin-bottom: 10px;
+    }
+
+    .temGrpName {
+        width: 100%;
+        margin-bottom: 10px;
+        font-style: inherit;
+        font-size: 16px;
+        color: #39a0a3;
+        padding-top: 3px;
+    }
+
+    .AddUser01 {
+        border: 3px dashed burlywood;
+        border-radius: 5px;
+        width: 100%;
+        padding: 4px;
+        background-color: white;
+    }
+
+    .AddUser02 {
+        display: flex;
+        width: fit-content;
+        width: 100%;
+        font-size: 14px;
+
+    }
+
+    .AddUser03 {
+        display: flex;
+        width: fit-content;
+        width: 100%;
+        font-size: 14px;
+
+    }
+
+    .AddUser04 {
+        display: flex;
+        width: fit-content;
+        width: 100%;
+        font-size: 14px;
+
+    }
+
+    .AddUser05 {
+        display: flex;
+        width: fit-content;
+        width: 100%;
+        font-size: 14px;
+
+    }
+
+    .AddUser07 {
+        width: fit-content;
+    }
+
+    .viewAndAddUserBtn {
+        width: 25%;
+        padding: 5px;
+    }
+
+    .AddUser06 {
+        margin-bottom: 5px;
+        margin-right: 8px;
+        width: 22%;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 40%;
+        max-height: 80%;
+        overflow: auto;
+        position: relative;
+        width: 38%;
+    }
+
+    .findUsrCss {
+        display: flex;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .inputDicCss {
+        width: 42%;
+        display: flex;
+    }
+
+    .FindBtnCss {
+        width: 15%;
+        height: fit-content;
+        text-align: end;
+    }
+
+    .temGrpName {
+        width: 35%;
+        font-style: inherit;
+        font-size: 16px;
+        color: #39a0a3;
+        padding-top: 3px
+    }
+
+    .AddUser01 {
+        display: flex;
+        margin-bottom: 5px;
+        border: 3px dashed burlywood;
+        border-radius: 5px;
+        width: 100%;
+        padding: 4px;
+        background-color: white;
+    }
+
+    .AddUser02 {
+        display: flex;
+        width: fit-content;
+        margin-right: 5px;
+        width: 25%;
+        font-size: 14px;
+    }
+
+    .AddUser03 {
+        display: flex;
+        width: fit-content;
+        margin-right: 5px;
+        width: 24%;
+        font-size: 14px;
+
+    }
+
+    .AddUser04 {
+        display: flex;
+        width: fit-content;
+        margin-right: 5px;
+        width: 25%;
+        font-size: 14px;
+
+    }
+
+    .AddUser05 {
+        display: flex;
+        width: fit-content;
+        margin-right: 5px;
+        width: 8%;
+        font-size: 14px;
+
+    }
+
+    .AddUser07 {
+        width: 9%;
+    }
+
+    .viewAndAddUserBtn {
+        width: 15%;
+        padding: 5px;
+    }
+
+    .AddUser06 {
+        margin-bottom: 5px;
+        margin-right: 8px;
+        width: 9%;
+    }
+}
+
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.UserNameCss {
+    padding-top: 6px;
+}
+
+.mainBackgroundforApprove {
+    width: 100%;
+    height: 100%;
+    background-color: #f0f3f5;
+    border: 1px solid #c8ced3;
+    margin-top: 18px;
+}
+
+.tabCol02 {
+    background-color: rgb(232, 234, 245);
+    margin-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.tabCol03 {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    padding: 5px;
+    box-shadow: 0px 2px 5px gray;
+    margin-bottom: 10px
+}
+
+.tabCol04 {
+    width: 33%;
+    text-align: start;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    font-size: 14px;
+    font-family: 'FontAwesome';
+    font-weight: 550;
+}
+
+.scrollbarx {
+    overflow: overlay;
+    height: 410px;
+    box-shadow: 1px 1px 50px white;
+}
+
+.scrollbarx::-webkit-scrollbar-thumb {
+    background-color: darkgray;
+    border-radius: 10px;
+}
+
+.scrollbarx::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.tabCol01 {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-around;
+}
+
+.TemNameCssApp {
+    font-family: initial;
+    font-size: 14px;
+}
+
+#tempGroupListCss {
+    font-style: initial;
+    font-size: 17px;
+    font-weight: 500;
+    width: 50%;
+}
+
+.eachTempGroup {
+    display: flex;
+    height: 45px;
+    background-color: rgb(255, 255, 244);
+    margin-bottom: 10px;
+    width: 90%;
+    height: fit-content;
+    border-radius: 8px;
+    margin-left: 5px;
+}
+
+.groupNameCss {
+    width: 70%;
+    font-size: 16px;
+    margin-left: 5px;
+    padding: 8px;
+}
+
+.inputLableCss {
+    width: 20%;
+    font-style: inherit;
+    padding-top: 5px;
+}
+
+#deleteIconColor {
+    color: #f86c6b;
+}
+
+.headingOfModalXcss {
+    font-size: 18px;
+    text-align: center;
+    font-family: 'FontAwesome';
+    margin-bottom: 5px;
+}
+
+.WholeContent {
+    width: 400px;
+    height: fit-content;
+}
+
+.inputHolderCss {
+    border: 1px solid #f5f5f5;
+    background-color: #f5f5f5;
+    padding: 10px;
+    padding-top: 15px;
+    border-radius: 20px
+}
+
+.Divo5Css {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.InputName {
+    width: 40%;
+    font-size: 14px;
+    font-family: 'FontAwesome';
+    padding-top: 7px;
+}
+
+
+.inputname1 {
+    width: 60%;
+}
+
+.Divo6Css {
+    width: 100%;
+    padding-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.proceedCancelCss {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+}
+
+.cancelbtn {
+    height: 40px;
+    width: 130px;
+    border-radius: 20px;
+    border: 1px solid white;
+    background-color: #f86c6b;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    margin-right: 15px;
+    font-family: inherit
+}
+
+.proceedbtnX {
+    border: 1px solid white;
+    width: 130px;
+    height: 40px;
+    border-radius: 20px;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    background-color: #4dbd74;
+    font-family: inherit;
+    margin-right: 15px;
+}
+
+.inputCss {
+    width: 100%;
+    height: 30px;
+    border: 3px solid #9dc1e3;
+    font-size: 13px;
+    border-radius: 5px;
+}
+
+.ScrollBarForApprove::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.ScrollBarForApprove::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.ScrollBarForApprove {
+    overflow: overlay;
+    height: fit-content;
+    max-height: 200px;
+}
+
+.inputHolderCssVocu {
+    border: 1px solid #f5f5f5;
+    background-color: #f5f5f5;
+    padding: 10px;
+    padding-top: 7px;
+    border-radius: 20px
+}
+
+#corpMemCss {
+    margin-top: 20px;
+    display: flex;
+}
+
+.headingOfModalXcss {
+    font-size: 18px;
+    text-align: center;
+    font-family: 'FontAwesome';
+    margin-bottom: 5px;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}

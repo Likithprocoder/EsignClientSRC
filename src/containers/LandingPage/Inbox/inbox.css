@@ -1,0 +1,121 @@
+.dropbtn {
+  font-size: 14px;
+  border-radius: 16px;
+  border-color: #63c2de;
+  background-color: #63c2de;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  border: 1px solid black !important;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #e2f6fc;
+  min-width: 115px;
+  z-index: 90 !important;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 3px 10px;
+  /* padding: 5px 10px; */
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #76d8f3;
+  border: 1px;
+  border-color: black;
+  cursor: pointer;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #72c0d6;
+}
+
+#warningIcon {
+  margin: 4px 5px 0px 15px;
+  color: red;
+}
+#doc_name_td,
+#doc_owner_td {
+  cursor: pointer;
+}
+
+#pdf_view_td {
+  cursor: pointer;
+  color: #cc0004;
+  font-size: 20px;
+  margin: 5px;
+}
+
+#signerInfo {
+  padding-left: 5.5%;
+  padding-top: 7px;
+  width: 60%;
+}
+.MultiSignBtn {
+  display: -webkit-box;
+  background-color: #e4e5e6;
+}
+
+.cancelBtn {
+  padding-left: 3px !important;
+}
+#fileName1 {
+  padding-left: 53px;
+  padding-top: 10px;
+  width: 230px;
+}
+
+#pdfIcon {
+  color: rgb(231, 18, 18);
+  padding: 0%;
+  width: 0%;
+}
+#moreOptions {
+  margin-top: 7px;
+  margin-bottom: 3px;
+  width: 40%;
+  padding-right: 1.5%;
+}
+
+.MuiTableCell-root {
+  padding-left: 0% !important ;
+  padding-right: 0% !important;
+}
+#viewBtn,
+#signBtn,
+#sendReminderBtn,
+#cancelBtn {
+  line-height: 1;
+  float: right;
+  color: white;
+}
+
+#btnsDiv {
+  padding-top: 7px;
+  float: right;
+  width: 40%;
+  padding-right: 2%;
+}
+
+.MuiTableCell-root
+  .MuiTableCell-body
+  .MuiTableCell-paddingNone
+  .MuiTableCell-sizeSmall {
+  background-color: aqua;
+}

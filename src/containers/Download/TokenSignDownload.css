@@ -1,0 +1,63 @@
+#downloadEsign-btn{
+    margin: auto
+}
+
+
+
+#Msg{
+    
+    font-size: 30px;
+    margin-left: 0%;
+}
+
+
+#viewaftersigning{
+    max-height: 500px;
+    max-inline-size: -webkit-fill-available;
+    height: 85%;
+}
+
+#multipplMsg{
+    font-size: 1rem;
+    /* margin-bottom: 0rem; */
+}
+#success-alert{
+    font-size: 25px;
+    text-Align: center;
+}
+
+
+/* #performActionBreadcrumbid{
+    background-Color:#f5f4f4fa; 
+    border:1px solid;
+} */
+
+#completeSigningBtn{
+    margin: 0% 1% 0% 1%;
+    font-size :16px;
+   
+}
+
+#previewSignAgainBtn{
+    color:white;
+}
+#cancelSigningBtn,#previewSignAgainBtn
+{
+ margin: 0% 1% 0% 1%;
+ font-size :16px;
+
+}
+
+#discardOptionsdiv{
+     text-align:end;
+     margin-bottom:7px;
+}
+
+#warningIcon,#warningIconforCancel{
+    margin-right: 5px;
+    color: rgb(245, 172, 35);
+}
+
+#discardsigningdiv,#cancelandsigningdiv{
+ text-align:center;
+}

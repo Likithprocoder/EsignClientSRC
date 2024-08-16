@@ -1,0 +1,78 @@
+.styles_modal__gNwvD{
+    margin-top: 0px;
+}
+
+.modal-head-1 {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    height: 36px;
+    color: #FECA57;
+    text-align: center;
+}
+
+.styles_modal__gNwvD{
+    padding-top: 5px;
+}
+
+.form-control{
+    margin-bottom: 10px;
+}
+
+.mb-3, .my-3{
+    margin-bottom: 10px !important
+}
+
+.mb-4, .my-4{
+    margin-bottom: 10px !important
+    
+}
+/* #downloadEsign-btn{
+    margin: auto
+} */
+
+#viewaftersigning{
+  /* height: 85%; */
+  height: 90%;
+}
+
+/* #sisgn-text{
+    margin-left:20% ;
+} */
+#multipplMsg{
+    font-size: 1rem;
+    /* margin-bottom: 0rem; */
+}
+#success-alert{
+    font-size: 25px;
+    text-Align: center;
+}
+
+#completeSigningBtn{
+    margin: 0% 1% 0% 1%;
+    font-size :16px;
+
+}
+
+#previewSignAgainBtn{
+    color:white;
+}
+#cancelSigningBtn,#previewSignAgainBtn
+{
+ margin: 0% 1% 0% 1%;
+ font-size :16px;
+}
+
+#discardOptionsdiv{
+     text-align:end;
+     margin-bottom:7px;
+}
+
+#warningIcon,#warningIconforCancel{
+    margin-right: 5px;
+    color: rgb(245, 172, 35);
+}
+
+#discardsigningdiv,#cancelandsigningdiv{
+ text-align:center;
+}
