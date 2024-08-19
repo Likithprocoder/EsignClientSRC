@@ -1134,56 +1134,42 @@ export default class ProfileDetails extends React.Component {
                     </tr>
                   </tbody>
                 </table>
-                <div hidden={sessionStorage.getItem("roleID") !== "2"} id="disLinkToBecomCorpMem" style={{ display: 'flex', paddingTop: "6px" }}>
-                  <div style={{ paddingTop: "6px" }}>
+                <div hidden={sessionStorage.getItem("roleID") !== "2"} id="disLinkToBecomCorpMem" style={{ display: 'flex', paddingTop: "6px", marginBottom:"7px" }}>
+                  <a href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a>
+                  {/* <div style={{ paddingTop: "6px" }}>
                     To become member of the corporate entity.
                   </div>
                   <div>
                     <button className="btn btn-link" onClick={e => this.openModalForCorpAccount(e)}>Click here</button>
-                  </div>
+                  </div> */}
                 </div>
+                <a hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
+                  this.props.history.push("/exitFromCorporate");
+                }}>Exit from corporate entity?</a>
               </CardBody>
             </Card>
             <Row id="buttons" className="mb-3">
-          <Col xs="6" sm="6" md="3" lg="2">
-            <Button
-              color="primary"
-              className="px-4"
-              style={{ marginRight: "86px" }}
-              onClick={this.toEditPage}
-            >
-              Edit Profile
-            </Button>
-          </Col>
-          <Col xs="6" sm="6" md="3" lg="2">
-            {" "}
-            <Button
-              className="px-3"
-              color="primary"
-              style={{ marginLeft: "18px" }}
-              onClick={this.toChangePassword}
+
+              <Button
+                color="primary"
+                className="px-4"
+                style={{ marginRight: "7%", marginLeft: "4%" }}
+                onClick={this.toEditPage}
               >
-              Change Password
-            </Button>
-          </Col>
+                Edit Profile
+              </Button>
+              {" "}
+              <Button
+                className="px-3"
+                color="primary"
+                onClick={this.toChangePassword}
+              >
+                Change Password
+              </Button>
 
-          <Col xs="6" sm="6" md="3" lg="2">
-          <Button 
-            id="otpBtn"
-            className="px-4"
-            color="primary"
-            style={{ display: "none" }}
-            block
-            onClick={this.validateOTP}
-            >
-            Verify OTP
-          </Button>
-          </Col>
-        </Row>
+            </Row>
 
-        <Row className="mb-3">
-          <Col xs="12" md="5">
-            <div id="showPassword" style={{ display: "none" }}>
+            <div id="showPassword" style={{ display: "none", marginBottom: "15px" }}>
               <Card>
                 <CardHeader>
                   <b>Change Password</b>
@@ -1395,9 +1381,7 @@ export default class ProfileDetails extends React.Component {
               </Button> */}
             </div>
           </Col>
-        </Row>
-          </Col>
-          
+
           <Col xs="12" sm="6" md="6" lg="5">
             <Card>
               <CardHeader>

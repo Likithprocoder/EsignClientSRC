@@ -9,6 +9,7 @@ const Wallet = React.lazy(() => import("./containers/Wallet/Wallet"));
 const RateCard = React.lazy(() => import("./containers/Rate_Card/RateCard"));
 const Payment = React.lazy(() => import("./containers/Payment/Payment"));
 const Recharge = React.lazy(() => import("./containers/Upload/Recharge"));
+const extFrmCorp = React.lazy(() => import("./containers/Profile/ExitFromCorporate"));
 const PaymentDetails = React.lazy(() =>
   import("./containers/Reports/PaymentDetails")
 );
@@ -287,6 +288,11 @@ const routes = [
     name: "Employee List",
     component: EmployeeList
   },
+  {
+    path: "/exitFromCorporate",
+    name: "Exit or unlink from the corporate entity",
+    component: extFrmCorp
+  }
 
 ];
 export default routes;
