@@ -91,30 +91,32 @@ function ViewTempGroupUsers(props) {
                 paddingLeft: "0px",
                 width: "10%",
             },
-            render: (rowData) => {
-                return (
-                    <div style={{ display: "flex" }}>
-                        <div>
-                            <a
-                                className='fa fa-trash'
-                                type="submit"
-                                style={{ color: "red", fontSize: "20px" }}
-                                onClick={(event) =>
-                                    removeTheEndUsers(event, rowData)
+            render: (rowData) => {            
+                if (!(sessionStorage.getItem("roleID") === "1")) {
+                    return (
+                        <div style={{ display: "flex" }}>
+                            <div>
+                                <a
+                                    className='fa fa-trash'
+                                    type="submit"
+                                    style={{ color: "red", fontSize: "20px" }}
+                                    onClick={(event) =>
+                                        removeTheEndUsers(event, rowData)
+                                    }
+                                >
+                                </a>
+                            </div>
+                            <div style={{ marginLeft: "2px", marginRight: "2px" }} hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
+                                <>/</>
+                            </div>
+                            <div hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
+                                {
+                                    enableOrDisable(rowData)
                                 }
-                            >
-                            </a>
+                            </div>
                         </div>
-                        <div style={{ marginLeft: "2px", marginRight: "2px" }} hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
-                            <>/</>
-                        </div>
-                        <div hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
-                            {
-                                enableOrDisable(rowData)
-                            }
-                        </div>
-                    </div>
-                );
+                    );
+                }
             },
         },
     ];
@@ -431,7 +433,7 @@ function ViewTempGroupUsers(props) {
             />
             <div>
                 <div className='temGrpName' style={{ marginBottom: "5px" }}>
-                    <span >Template Group: </span>
+                    <span >{sessionStorage.getItem("roleID") === "1" ? "Corporate:" : "Template Group:"} </span>
                     <span style={{ fontSize: "16px" }}>{props.location.state.templateName}</span>
                 </div>
                 <MaterialTable

@@ -116,7 +116,7 @@ let URL = {
   getAllTemplateGrps: HOST + "getTemplateGrps",
   getUserDetails: HOST + "getUserDetails",
   viewAddedTemplateUsers: HOST + "viewTemplateUsers",
-  addTemplateUsers: HOST + "addTemplateUsers",
+  addCorporateUsers: HOST + "addCorporateUsers",
   removeTemplateUsers: HOST + "removeTemplateUsers",
   getCorpDetails: HOST + "getCorpDetails",
   modifygrpAdmin: HOST + "modifygrpAdmin",
