@@ -39,7 +39,7 @@ export default class TokenSignDownload extends React.Component {
       alertMsg: "",
       msg: "The signed document can be downloaded from this page, or from the Inbox later.",
       mode: "2",
-      Msg: "Electronic Signing Sucessful",
+      Msg: "Electronic Signing Sucessfull",
       pdfurl: "",
       docId: "",
       viewFileURl: "",
@@ -493,6 +493,7 @@ export default class TokenSignDownload extends React.Component {
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
   async getSignCoordinateDetails(data) {
+    // console.log(data);
     //getting access for external signer
     const response = await fetch(URL.getSignCoordinateDetails, {
       method: "POST",

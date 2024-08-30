@@ -45,7 +45,7 @@ export default class Inbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loaded: false,
+      loaded: true,
       inboxDataList: [],
       rowData: "",
       fileName: "",
@@ -75,7 +75,7 @@ export default class Inbox extends React.Component {
       maxUploadFileSize: "",
       signerListDetails: [],
       opensignersCommentsModal: false,
-      CommentsHeading:" ",
+      CommentsHeading: " ",
       totalPagesNum: null,
       signInfo: "",
       signPage: "",
@@ -96,7 +96,7 @@ export default class Inbox extends React.Component {
 
   componentDidMount() {
     this.getInbocDocDetails();
-    // this.getEmailValidation();
+    this.getEmailValidation();
     this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
     // console.log(typeof sessionStorage.getItem("maxFilesize"));
   }
@@ -143,7 +143,7 @@ export default class Inbox extends React.Component {
             authToken: responseJson.authToken,
           });
           sessionStorage.setItem("customDocName", responseJson.customDocName);
-          
+
           if (responseJson.hasOwnProperty("signerListDetails")) {
             this.setState({
               signerListDetails: responseJson.signerListDetails,
@@ -193,6 +193,7 @@ export default class Inbox extends React.Component {
   getInbocDocDetails = () => {
     var body = {
       authToken: sessionStorage.getItem("authToken"),
+      // docStatus: "pending"
     };
     this.setState({ loaded: false });
     fetch(URL.getInboxDocDetails, {
@@ -227,18 +228,19 @@ export default class Inbox extends React.Component {
           }
 
           this.setState({
-            inboxDataList: inboxDetails,
             loaded: true,
+            inboxDataList: inboxDetails,
           });
-          this.getEmailValidation();
+          this.setState({ loaded: true });
 
-        }else {
+
+        } else {
           this.setState({ loaded: true });
 
           if (responseJson.statusDetails.includes("not a string")) {
             this.props.history.push("/home");
           }
-         else if (responseJson.statusDetails === "Session Expired!!") {
+          else if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
             this.props.history.push("/login");
           } else {
@@ -248,7 +250,7 @@ export default class Inbox extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -333,10 +335,10 @@ export default class Inbox extends React.Component {
   async createFileforSigningasSender(filename, docID) {
     let response = await fetch(
       URL.downloadStoredFile +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&docID=" +
-        btoa(docID)
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken")) +
+      "&docID=" +
+      btoa(docID)
     );
     // console.log(response);
     let data = await response.blob();
@@ -352,7 +354,7 @@ export default class Inbox extends React.Component {
     var file1 = new File([data], this.state.fileName.split("@")[1], metadata);
     file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
 
-    let numPages=null;
+    let numPages = null;
     // Initialize array to store page dimensions
     const pageDimensions = [];
     let equalPageDimensionsCheck = true;
@@ -366,30 +368,32 @@ export default class Inbox extends React.Component {
 
       // Loop through each page to get its dimensions
       for (let i = 1; i <= numPages; i++) {
-          const page = await pdf.getPage(i);
-          const { width, height } = page.getViewport({ scale: 1 });
+        const page = await pdf.getPage(i);
+        const { width, height } = page.getViewport({ scale: 1 });
 
-          // Add page dimensions to the array
-          pageDimensions.push({
-              pageNumber: i,
-              width,
-              height
-          });
+        // Add page dimensions to the array
+        pageDimensions.push({
+          pageNumber: i,
+          width,
+          height
+        });
       }
 
       // Output page dimensions
+      console.log("Page dimensions:", pageDimensions);
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
 
-          if (pageDimensions[i].width !== pageDimensions[0].width || 
+          if (pageDimensions[i].width !== pageDimensions[0].width ||
             pageDimensions[i].height !== pageDimensions[0].height) {
-              equalPageDimensionsCheck = false;
-              this.setState({ equalPageDimensions: false});
-              break;
+            equalPageDimensionsCheck = false;
+            this.setState({ equalPageDimensions: false });
+            break;
           }
         }
       }
+      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -446,16 +450,18 @@ export default class Inbox extends React.Component {
   //-----------------Sign Draft File from inbox---
   //downloading PDF file
   async createFile(doc) {
+    // console.log(doc);
     let rowData = doc;
     let response = await fetch(
       URL.viewStoredFile +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&docID=" +
-        btoa(doc.DOC_ID)
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken")) +
+      "&docID=" +
+      btoa(doc.DOC_ID)
     );
     let data = await response.blob();
     let testResponse = await this.test(data, doc.DOC_NAME, doc.DOC_ID);
+    // console.log(data);
     //this.imageToPDF(data)
   }
 
@@ -467,9 +473,10 @@ export default class Inbox extends React.Component {
     // var file1 = new File([data], fileName.split("@")[1], metadata);
     // file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
     var file1 = new File([data], fileName.trim(), metadata); //------------file name construction-----------
+    // console.log(file1);
     file1.preview = window.URL.createObjectURL(new File([data], fileName.trim(), metadata));
 
-    let numPages=null;
+    let numPages = null;
     // Initialize array to store page dimensions
     const pageDimensions = [];
     try {
@@ -483,34 +490,36 @@ export default class Inbox extends React.Component {
 
       // Loop through each page to get its dimensions
       for (let i = 1; i <= numPages; i++) {
-          const page = await pdf.getPage(i);
-          const { width, height } = page.getViewport({ scale: 1 });
+        const page = await pdf.getPage(i);
+        const { width, height } = page.getViewport({ scale: 1 });
 
-          // Add page dimensions to the array
-          pageDimensions.push({
-              pageNumber: i,
-              width,
-              height
-          });
+        // Add page dimensions to the array
+        pageDimensions.push({
+          pageNumber: i,
+          width,
+          height
+        });
       }
-      this.setState({ pageDimensions: pageDimensions});
+      this.setState({ pageDimensions: pageDimensions });
 
       // Output page dimensions
+      console.log("Page dimensions:", pageDimensions);
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
 
-          if (pageDimensions[i].width !== pageDimensions[0].width || 
+          if (pageDimensions[i].width !== pageDimensions[0].width ||
             pageDimensions[i].height !== pageDimensions[0].height) {
-              this.setState({ equalPageDimensions: false});
-              break;
+            this.setState({ equalPageDimensions: false });
+            break;
           }
         }
       }
+      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
-    
+
     // let numPages=null;
     // try {
     //   const response = await fetch(file1.preview);
@@ -521,6 +530,7 @@ export default class Inbox extends React.Component {
     //   const regex = /\/Type\s*\/Page[^s]/g;
     //   const matches = pdfString.match(regex);
     //   numPages = matches ? matches.length : 0;
+    //   // console.log("Number of pages:", numPages);
     // } catch (error) {
     //   console.error("Error:", error);
     // }
@@ -532,6 +542,7 @@ export default class Inbox extends React.Component {
   //   var reader = new FileReader();
   //   reader.onloadend = function (e) {
   //     var data = reader.result;
+  //     // console.log("data" + data);
   //     if (files.name.includes(".jpg") || files.name.includes(".png")) {
   //       //  this.imageToPDF(files);
   //     } else {
@@ -568,6 +579,7 @@ export default class Inbox extends React.Component {
   // }
 
   onDrop(files, docId, numPages) {
+    // console.log(files);
     var file1 = files;
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -577,45 +589,46 @@ export default class Inbox extends React.Component {
         //  this.imageToPDF(files);
       } else {
         // document.getElementById("img2pdfmsg").style.display = "none";
-            //replaced the old function with the new api
-            const loadingTask = pdfjsforOnDrag.getDocument(typedarray);
-                loadingTask.promise.then(
-                  function(a) {a.getPage(1).then(
-                                function (b) {
-                                  var viewport = b.getViewport({ scale: 1 });
-                  
-                  let signCoordinates = {
-                    signCoordinates: this.state.signCoordinates,
-                    signInfo: this.state.signInfo,
-                    signMode: this.state.signMode,
-                    signPage: this.state.signPage,
-                    pageList: this.state.pageList
-                  }
+        //replaced the old function with the new api
+        const loadingTask = pdfjsforOnDrag.getDocument(typedarray);
+        loadingTask.promise.then(
+          function (a) {
+            a.getPage(1).then(
+              function (b) {
+                var viewport = b.getViewport({ scale: 1 });
 
-                  let data1 = {
-                    files: files,
-                    docId: docId,
-                    signCoordinates: signCoordinates,
-                    width: viewport.width, //-----------------hard coded width need to change (blocker for A3) -------------------
-                    height: viewport.height, //-----------------hard coded height need to change (blocker for A3)-------------------
-                    totalPagesNum: numPages,
-                    pageDimensions: this.state.pageDimensions,
-                    equalPageDimensions: this.state.equalPageDimensions,
-                  };
+                let signCoordinates = {
+                  signCoordinates: this.state.signCoordinates,
+                  signInfo: this.state.signInfo,
+                  signMode: this.state.signMode,
+                  signPage: this.state.signPage,
+                  pageList: this.state.pageList
+                }
 
-                  this.setState({ loaded: true });
-                  this.props.history.push({
-                    pathname: "/preview",
-                    frompath: "inbox",
-                    state: {
-                      details: data1,
-                    },
-                  });
-                }.bind(this)
-              );
-            }.bind(this)
-          )
-          .catch((e) => {});
+                let data1 = {
+                  files: files,
+                  docId: docId,
+                  signCoordinates: signCoordinates,
+                  width: viewport.width, //-----------------hard coded width need to change (blocker for A3) -------------------
+                  height: viewport.height, //-----------------hard coded height need to change (blocker for A3)-------------------
+                  totalPagesNum: numPages,
+                  pageDimensions: this.state.pageDimensions,
+                  equalPageDimensions: this.state.equalPageDimensions,
+                };
+
+                this.setState({ loaded: true });
+                this.props.history.push({
+                  pathname: "/preview",
+                  frompath: "inbox",
+                  state: {
+                    details: data1,
+                  },
+                });
+              }.bind(this)
+            );
+          }.bind(this)
+        )
+          .catch((e) => { });
       }
     }.bind(this);
     reader.readAsArrayBuffer(file1);
@@ -625,6 +638,7 @@ export default class Inbox extends React.Component {
 
   //--Check the file size and opening the modal to collect email details
   emailNotification = (e) => {
+    console.log(e);
     this.setState({ documentId: e.DOC_ID });
 
     var stroagelimtvalue = "KB";
@@ -655,7 +669,7 @@ export default class Inbox extends React.Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -704,8 +718,11 @@ export default class Inbox extends React.Component {
       })
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
+          // console.log(responseJson.statusDetails)
           var resData = responseJson.valdtnResp;
+          // console.log(resData);
           this.setState({ emailValidation: resData, loaded: true });
+          // console.log(sessionStorage.getItem("minToEmail"));
         } else {
           if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
@@ -719,7 +736,7 @@ export default class Inbox extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -731,6 +748,7 @@ export default class Inbox extends React.Component {
         this.setState({ loaded: true });
         alert(e);
       });
+    // console.log(sessionStorage);
   };
 
   //--API for Sending the Email request with attachment-----------
@@ -741,14 +759,14 @@ export default class Inbox extends React.Component {
     // let consecutiveChar = /(.)\1+/g;
     // let regMail = /[\w. ]+@([\w-]+\.)+[\w-]+/;
     let regMail = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[a-zA-Z]{2,6}$/;
-  
+
     var emailArrayTo = [];
     var emailArrayCc = [];
     var combinedEmailList = [];
 
     if (emailTo.trim()) {
       if (emailTo.includes(";")) {
-        var resultTo = emailTo.replaceAll(";",",").split(",");
+        var resultTo = emailTo.replaceAll(";", ",").split(",");
       } else {
         var resultTo = emailTo.split(",");
       }
@@ -797,12 +815,12 @@ export default class Inbox extends React.Component {
 
       if (emailCc.trim()) {
         if (emailCc.includes(";")) {
-          var resultCc = emailCc.replaceAll(";",",").split(",");
+          var resultCc = emailCc.replaceAll(";", ",").split(",");
         } else {
           var resultCc = emailCc.split(",");
         }
         for (var i = 0; i < resultCc.length; i++) {
-          if (resultCc[i].trim() !== "") { 
+          if (resultCc[i].trim() !== "") {
             if (resultCc[i].includes("@")) {
               var emailPart = resultCc[i].split("@");
               if (
@@ -844,8 +862,8 @@ export default class Inbox extends React.Component {
       if (emailArrayTo.length > this.state.emailValidation.maxEmail) {
         alert(
           "Can't exceed more than " +
-            this.state.emailValidation.maxEmail +
-            " Email IDs"
+          this.state.emailValidation.maxEmail +
+          " Email IDs"
         );
         return;
       } else if (
@@ -853,8 +871,8 @@ export default class Inbox extends React.Component {
       ) {
         alert(
           "Can't exceed more than " +
-            this.state.emailValidation.maxEmail +
-            " Email IDs"
+          this.state.emailValidation.maxEmail +
+          " Email IDs"
         );
         return;
       } else if (new Set(combinedEmailList).size !== combinedEmailList.length) {
@@ -865,15 +883,15 @@ export default class Inbox extends React.Component {
       ) {
         alert(
           "'Subject' has reached the maximum limit of " +
-            this.state.emailValidation.subjectLen +
-            " characters"
+          this.state.emailValidation.subjectLen +
+          " characters"
         );
         return;
       } else if (this.state.ebody.length > this.state.emailValidation.bodyLen) {
         alert(
           "'Body' has reached the maximum limit of " +
-            this.state.emailValidation.bodyLen +
-            " characters"
+          this.state.emailValidation.bodyLen +
+          " characters"
         );
         return;
       } else {
@@ -911,7 +929,7 @@ export default class Inbox extends React.Component {
                   {
                     label: "OK",
                     className: "confirmBtn",
-                    onClick: () => {},
+                    onClick: () => { },
                   },
                 ],
               });
@@ -932,7 +950,7 @@ export default class Inbox extends React.Component {
                     {
                       label: "OK",
                       className: "confirmBtn",
-                      onClick: () => {},
+                      onClick: () => { },
                     },
                   ],
                 });
@@ -953,6 +971,8 @@ export default class Inbox extends React.Component {
       alert("Please enter the Email ID");
       return;
     }
+    // console.log(combinedEmailList);
+    // console.log(combinedEmailList.length);
   };
 
   //-----------------View File--------------------
@@ -963,9 +983,10 @@ export default class Inbox extends React.Component {
       btoa(sessionStorage.getItem("authToken")) +
       "&docID=" +
       btoa(e.DOC_ID);
-      this.setState({ fileUrl: pdfurl });
-      this.setState({ fileName: e.DOC_NAME });
-      this.setState({ shown: true})
+    this.setState({ fileUrl: pdfurl });
+    this.setState({ fileName: e.DOC_NAME });
+    // console.log(pdfurl);
+    this.setState({ shown: true })
   };
 
   // For hiding sidebar toggler when viewing document using modal
@@ -976,7 +997,7 @@ export default class Inbox extends React.Component {
     document.getElementsByClassName(
       "d-md-down-none navbar-toggler"
     )[0].style.display = "";
-    this.setState({ shown: false});
+    this.setState({ shown: false });
   };
 
   // handlePageChange = (event) => {
@@ -989,35 +1010,35 @@ export default class Inbox extends React.Component {
   // };
 
   onRenderAnnotations(e) {
-        // Find all Link annotation
-        e.annotations.forEach((annotation) => {
-            if (annotation.annotationType === 2) { // 2 represents 'Link' type
-            // Find the anchor element associated with the annotation
-            const linkElement = e.container.querySelector(`[data-annotation-id="${annotation.id}"] a`);
-            if (linkElement) {
-                // // Set the target attribute to '_blank' to open in a new tab
-                // linkElement.setAttribute('target', '_blank');
-                // Remove the href attribute to disable the link
-                linkElement.removeAttribute('href');
-                // Optionally, you can also prevent the default behavior of the link
-                linkElement.addEventListener('click', (event) => {
-                    event.preventDefault();
-                });
-            }
+    // Find all Link annotation
+    e.annotations.forEach((annotation) => {
+      if (annotation.annotationType === 2) { // 2 represents 'Link' type
+        // Find the anchor element associated with the annotation
+        const linkElement = e.container.querySelector(`[data-annotation-id="${annotation.id}"] a`);
+        if (linkElement) {
+          // // Set the target attribute to '_blank' to open in a new tab
+          // linkElement.setAttribute('target', '_blank');
+          // Remove the href attribute to disable the link
+          linkElement.removeAttribute('href');
+          // Optionally, you can also prevent the default behavior of the link
+          linkElement.addEventListener('click', (event) => {
+            event.preventDefault();
+          });
         }
-        });
+      }
+    });
     // };
 
     return {
-        onAnnotationLayerRender: this.onRenderAnnotations,
+      onAnnotationLayerRender: this.onRenderAnnotations,
     };
-};
-
-customPlugin() {
-  return {
-    onAnnotationLayerRender: this.onRenderAnnotations,
   };
-};
+
+  customPlugin() {
+    return {
+      onAnnotationLayerRender: this.onRenderAnnotations,
+    };
+  };
 
 
   modalBody() {
@@ -1081,7 +1102,7 @@ customPlugin() {
             fileUrl={this.state.fileUrl}
             defaultScale={SpecialZoomLevel.PageWidth}
             plugins={[this.customPlugin()]}
-            // onPageChange={this.handlePageChange}
+          // onPageChange={this.handlePageChange}
           />
         </div>
       </div>
@@ -1104,7 +1125,7 @@ customPlugin() {
     if (unSigned === "undefined" || data.IS_OWNER == 1) {
       msg = (
         <div>
-          <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p>
+          <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p>
           <Row>
             <i className="fa fa-exclamation-triangle" id="warningIcon"></i>
             <p style={{ color: "red" }}>
@@ -1160,7 +1181,7 @@ customPlugin() {
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                     ],
                   });
@@ -1171,7 +1192,7 @@ customPlugin() {
         {
           label: "Cancel",
           className: "cancelBtn",
-          onClick: () => {},
+          onClick: () => { },
         },
       ],
     });
@@ -1192,7 +1213,7 @@ customPlugin() {
     if (unSigned === "undefined" || data.IS_OWNER == 1) {
       msg = (
         <div>
-          <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p>
+          <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p>
           <Row id="sendReminderAlert">
             <p>
               {unSignedCount + " pending " + signMsg + " will be sent reminder"}
@@ -1247,7 +1268,7 @@ customPlugin() {
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                     ],
                   });
@@ -1258,7 +1279,7 @@ customPlugin() {
         {
           label: "Cancel",
           className: "cancelBtn",
-          onClick: () => {},
+          onClick: () => { },
         },
       ],
     });
@@ -1280,7 +1301,7 @@ customPlugin() {
     if (unSigned === "undefined" || data.IS_OWNER == 0) {
       msg = (
         <div>
-          <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p>
+          <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p>
           <Row>
             <i className="fa fa-exclamation-triangle" id="warningIcon"></i>
             <p style={{ color: "red" }}>Document will be deleted permanently</p>
@@ -1290,7 +1311,7 @@ customPlugin() {
     } else {
       msg = (
         <div>
-          <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p>
+          <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p>
           <Row>
             <i className="fa fa-exclamation-triangle" id="warningIcon"></i>
             <p style={{ color: "red" }}>
@@ -1350,7 +1371,7 @@ customPlugin() {
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => {},
+                        onClick: () => { },
                       },
                     ],
                   });
@@ -1361,7 +1382,7 @@ customPlugin() {
         {
           label: "Cancel",
           className: "cancelBtn",
-          onClick: () => {},
+          onClick: () => { },
         },
       ],
     });
@@ -1513,7 +1534,7 @@ customPlugin() {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -1663,7 +1684,7 @@ customPlugin() {
           var declined = "" + rowData.DECLINED_LIST + "";
           var signedCount = 0;
           var unSignedCount = 0;
-          var declinedCount=0;
+          var declinedCount = 0;
           if (rowData.DOC_STATUS == -1 && rowData.SELF_SIGN == 1) {
             return <span style={{ color: "blue" }}>Unsigned</span>;
           } else if (rowData.SELF_SIGN == 1) {
@@ -1672,7 +1693,7 @@ customPlugin() {
             return <span id="signingCancelledid">Signing cancelled</span>;
           } else if (rowData.JOB_STATUS === "DE") {
             return <span id="signingdeclinedid">Signing Declined</span>;
-          }else {
+          } else {
             if (rowData.hasOwnProperty("SIGNED_LIST")) {
               var signedList = signed.split(",");
               signedCount = signedList.length;
@@ -1686,7 +1707,7 @@ customPlugin() {
               declinedCount = declinedList.length;
             }
             //Sign list completed
-            if (unSignedCount == 0 && declinedCount ==0) {
+            if (unSignedCount == 0 && declinedCount == 0) {
               var tootltipMsg = `Signed: &#013;${signed.replaceAll(
                 ",",
                 "&#013"
@@ -1701,8 +1722,8 @@ customPlugin() {
             else {
               var signedList = "";
               var tootltipMsg = "";
-            //contains signed, pending and declined signers
-               if (signedCount > 0 && unSignedCount > 0 && declinedCount>0) {
+              //contains signed, pending and declined signers
+              if (signedCount > 0 && unSignedCount > 0 && declinedCount > 0) {
                 tootltipMsg = `Signed: &#013;${signed.replaceAll(
                   ",",
                   "&#013"
@@ -1719,30 +1740,30 @@ customPlugin() {
                     Signed({signedCount}), Pending({unSignedCount}),Declined({declinedCount})
                   </span>
                 );
-                   //contains only pending signers
-              } else if (signedCount == 0 && unSignedCount > 0 && declinedCount==0)  {
+                //contains only pending signers
+              } else if (signedCount == 0 && unSignedCount > 0 && declinedCount == 0) {
                 tootltipMsg = `Pending: &#013;${unSigned.replaceAll(
                   ",",
                   "&#013"
                 )}`;
                 return (
                   <span style={{ color: "#da8302", title: { tootltipMsg } }}>
-                     Pending({unSignedCount})
+                    Pending({unSignedCount})
                   </span>
                 );
               }//contains only declined signers
-              else if (signedCount ==0 && unSignedCount ==0 && declinedCount>0)  {
+              else if (signedCount == 0 && unSignedCount == 0 && declinedCount > 0) {
                 tootltipMsg = `Declined: &#013;${declined.replaceAll(
                   ",",
                   "&#013"
                 )}`;
                 return (
                   <span style={{ color: "#f86c6b", title: { tootltipMsg } }}>
-                     Declined({declinedCount})
+                    Declined({declinedCount})
                   </span>
                 );
               }//only signed and pending signers
-              else if (signedCount > 0 && unSignedCount > 0 && declinedCount==0)  {
+              else if (signedCount > 0 && unSignedCount > 0 && declinedCount == 0) {
                 tootltipMsg = `Signed: &#013;${signed.replaceAll(
                   ",",
                   "&#013"
@@ -1756,7 +1777,7 @@ customPlugin() {
                   </span>
                 );
               }//only signed and declined signers
-              else if (signedCount > 0 && unSignedCount ==0 && declinedCount>0)  {
+              else if (signedCount > 0 && unSignedCount == 0 && declinedCount > 0) {
                 tootltipMsg = `Signed: &#013;${signed.replaceAll(
                   ",",
                   "&#013"
@@ -1771,7 +1792,7 @@ customPlugin() {
                 );
               }
               //only pending and declined signers
-              else if (signedCount == 0 && unSignedCount >0 && declinedCount>0)  {
+              else if (signedCount == 0 && unSignedCount > 0 && declinedCount > 0) {
                 tootltipMsg = `Pending: &#013;${unSigned.replaceAll(
                   ",",
                   "&#013"
@@ -1785,7 +1806,7 @@ customPlugin() {
                   </span>
                 );
               }
-              
+
             }
           }
         },
@@ -1823,7 +1844,7 @@ customPlugin() {
           scale={1.0}
           loadedClassName="loadedContent"
         />
-        {this.state.loaded && <MaterialTable
+        <MaterialTable
           columns={columns}
           icons={tableIcons}
           data={inboxData}
@@ -1884,20 +1905,20 @@ customPlugin() {
             (rowData) => {
               return rowData.isSignEnable
                 ? {
-                    icon: () => <BorderColor style={{ color: "#150178" }} />,
-                    tooltip: "Sign",
-                    onClick: (event, rowData) => this.CheckSigningMode(rowData),
-                    isFreeAction: false,
-                    hidden: false,
-                  }
+                  icon: () => <BorderColor style={{ color: "#150178" }} />,
+                  tooltip: "Sign",
+                  onClick: (event, rowData) => this.CheckSigningMode(rowData),
+                  isFreeAction: false,
+                  hidden: false,
+                }
                 : {
-                    icon: BorderColor,
-                    tooltip: "Sign",
-                    onClick: (event, rowData) => this.CheckSigningMode(rowData),
-                    // onClick: (event, rowData) => this.createFile(rowData),
-                    isFreeAction: false,
-                    hidden: true,
-                  };
+                  icon: BorderColor,
+                  tooltip: "Sign",
+                  onClick: (event, rowData) => this.CheckSigningMode(rowData),
+                  // onClick: (event, rowData) => this.createFile(rowData),
+                  isFreeAction: false,
+                  hidden: true,
+                };
             },
           ]}
           components={{
@@ -1932,9 +1953,9 @@ customPlugin() {
                 if (
                   rowData.IS_OWNER == 0 &&
                   (rowData.hasOwnProperty("DECLINED_LIST") &&
-                 !((rowData.hasOwnProperty("PENDING_LIST") ||
-                  rowData.hasOwnProperty("SIGNED_LIST")))
-                ) ){
+                    !((rowData.hasOwnProperty("PENDING_LIST") ||
+                      rowData.hasOwnProperty("SIGNED_LIST")))
+                  )) {
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
                   return (
@@ -1992,11 +2013,12 @@ customPlugin() {
                 else if (
                   rowData.IS_OWNER == 0 &&
                   (rowData.hasOwnProperty("PENDING_LIST") &&
-                 !( rowData.hasOwnProperty("DECLINED_LIST") ||
-                  rowData.hasOwnProperty("SIGNED_LIST")))
+                    !(rowData.hasOwnProperty("DECLINED_LIST") ||
+                      rowData.hasOwnProperty("SIGNED_LIST")))
                 ) {
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
+                  console.log("Only Declined")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2052,9 +2074,10 @@ customPlugin() {
                 else if (
                   rowData.IS_OWNER == 0 &&
                   (rowData.hasOwnProperty("SIGNED_LIST") &&
-                  !(rowData.hasOwnProperty("PENDING_LIST") ||
-                  rowData.hasOwnProperty("DECLINED_LIST")))
+                    !(rowData.hasOwnProperty("PENDING_LIST") ||
+                      rowData.hasOwnProperty("DECLINED_LIST")))
                 ) {
+                  console.log("Only Signed")
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
                   return (
@@ -2111,12 +2134,13 @@ customPlugin() {
                 //has  signed,declined and pending
                 else if (
                   rowData.IS_OWNER == 0 &&
-                  rowData.hasOwnProperty("DECLINED_LIST")&&
+                  rowData.hasOwnProperty("DECLINED_LIST") &&
                   rowData.hasOwnProperty("PENDING_LIST") &&
                   rowData.hasOwnProperty("SIGNED_LIST")
                 ) {
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
+                  console.log("ALL Three")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2176,14 +2200,15 @@ customPlugin() {
                 }
                 //only pending and declined
                 else if (
-               
+
                   rowData.IS_OWNER == 0 &&
 
-                  (rowData.hasOwnProperty("PENDING_LIST")&&rowData.hasOwnProperty("DECLINED_LIST") &&
-                  !(rowData.hasOwnProperty("SIGNED_LIST")))
-                 
+                  (rowData.hasOwnProperty("PENDING_LIST") && rowData.hasOwnProperty("DECLINED_LIST") &&
+                    !(rowData.hasOwnProperty("SIGNED_LIST")))
+
                 ) {
-                 
+
+                  console.log("only pending and declined");
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
                   return (
@@ -2231,7 +2256,7 @@ customPlugin() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div style={{ backgroundColor: " #e4e5e6" }}>
                         {this.signersInfo(rowData.PENDING_LIST, false)}
                       </div>
@@ -2244,10 +2269,11 @@ customPlugin() {
                 //has only pending and signed list
                 else if (
                   rowData.IS_OWNER == 0 &&
-                  (rowData.hasOwnProperty("SIGNED_LIST")&&rowData.hasOwnProperty("PENDING_LIST") &&
-                  !(rowData.hasOwnProperty("DECLINED_LIST")))
-                
+                  (rowData.hasOwnProperty("SIGNED_LIST") && rowData.hasOwnProperty("PENDING_LIST") &&
+                    !(rowData.hasOwnProperty("DECLINED_LIST")))
+
                 ) {
+                  console.log("only pending and Signed");
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2305,8 +2331,9 @@ customPlugin() {
                 //has only signed and declined
                 else if (
                   rowData.IS_OWNER == 0 &&
-                  (rowData.hasOwnProperty("SIGNED_LIST")&&rowData.hasOwnProperty("DECLINED_LIST")) && !(rowData.hasOwnProperty("PENDING_LIST"))
+                  (rowData.hasOwnProperty("SIGNED_LIST") && rowData.hasOwnProperty("DECLINED_LIST")) && !(rowData.hasOwnProperty("PENDING_LIST"))
                 ) {
+                  console.log("only signed and declined")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2361,65 +2388,65 @@ customPlugin() {
                       </div>
                     </div>
                   );
-                }  
+                }
                 //has only declined list and is owner
-                else if(
+                else if (
                   rowData.IS_OWNER == 1 &&
                   rowData.hasOwnProperty("DECLINED_LIST") && (!(
                     rowData.hasOwnProperty("PENDING_LIST") ||
-                  rowData.hasOwnProperty("SIGNED_LIST")
+                    rowData.hasOwnProperty("SIGNED_LIST")
                   ))
-                ){
+                ) {
                   return (
                     <div>
-                    <div class="MultiSignBtn">
-                      <div id="signerInfo">
-                        <table>
-                          <tr>
-                            <td>
-                              Sender:
-                              {" " + rowData.DOC_OWNER}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Status: Signing Declined </td>
-                          </tr>
-                        </table>
-                      </div>
+                      <div class="MultiSignBtn">
+                        <div id="signerInfo">
+                          <table>
+                            <tr>
+                              <td>
+                                Sender:
+                                {" " + rowData.DOC_OWNER}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Status: Signing Declined </td>
+                            </tr>
+                          </table>
+                        </div>
 
-                      <div id="btnsDiv">
-                        {" "}
-                        <button
-                          id="viewBtn"
-                          className="btn btn-primary rounded-pill"
-                          style={{ color: "white", marginLeft: "10px" }}
-                          onClick={(event) =>
-                            this.viewStoredFile(this.state.rowData)
-                          }
-                        >
-                          View
-                        </button>
-                        <button
-                          className="btn btn-success rounded-pill"
-                          id="emailNotification"
-                          style={{ marginLeft: "10px" }}
-                          onClick={(event) =>
-                            this.emailNotification(this.state.rowData)
-                          }
-                        >
-                          Email{" "}
-                        </button>
-                        <button
-                          className="btn btn-info rounded-pill"
-                          id="commentsId"
-                          style={{ marginLeft: "10px" }}
-                          onClick={(event) =>
-                            this.commentDetails(this.state.rowData)
-                          }
-                        >
-                          Comments{" "}
-                        </button>
-                        <button
+                        <div id="btnsDiv">
+                          {" "}
+                          <button
+                            id="viewBtn"
+                            className="btn btn-primary rounded-pill"
+                            style={{ color: "white", marginLeft: "10px" }}
+                            onClick={(event) =>
+                              this.viewStoredFile(this.state.rowData)
+                            }
+                          >
+                            View
+                          </button>
+                          <button
+                            className="btn btn-success rounded-pill"
+                            id="emailNotification"
+                            style={{ marginLeft: "10px" }}
+                            onClick={(event) =>
+                              this.emailNotification(this.state.rowData)
+                            }
+                          >
+                            Email{" "}
+                          </button>
+                          <button
+                            className="btn btn-info rounded-pill"
+                            id="commentsId"
+                            style={{ marginLeft: "10px" }}
+                            onClick={(event) =>
+                              this.commentDetails(this.state.rowData)
+                            }
+                          >
+                            Comments{" "}
+                          </button>
+                          <button
                             className="btn btn-danger rounded-pill"
                             id="cancelSigningInboxBtn"
                             style={{ marginLeft: "10px" }}
@@ -2429,8 +2456,8 @@ customPlugin() {
                           >
                             Cancel Signing
                           </button>
-                     
-                      </div>
+
+                        </div>
                       </div>
                       <div style={{ backgroundColor: " #f57e7d" }}>
                         {this.signersInfo(rowData.DECLINED_LIST, false)}
@@ -2440,8 +2467,8 @@ customPlugin() {
                 }// contains only signed list and pending list
                 else if (
                   rowData.IS_OWNER == 1 &&
-                  (rowData.hasOwnProperty("PENDING_LIST")&&rowData.hasOwnProperty("SIGNED_LIST") 
-                  &&!(rowData.hasOwnProperty("DECLINED_LIST")))
+                  (rowData.hasOwnProperty("PENDING_LIST") && rowData.hasOwnProperty("SIGNED_LIST")
+                    && !(rowData.hasOwnProperty("DECLINED_LIST")))
                 ) {
                   return (
                     <div>
@@ -2485,7 +2512,7 @@ customPlugin() {
                           >
                             Comments{" "}
                           </button>
-                           <button
+                          <button
                             className="btn btn-warning rounded-pill"
                             style={{ color: "white", marginLeft: "2%" }}
                             id="sendReminderBtn"
@@ -2506,7 +2533,7 @@ customPlugin() {
                           </button>
                         </div>
                       </div>
-                     
+
                       <div style={{ backgroundColor: " #e4e5e6" }}>
                         {this.signersInfo(rowData.SIGNED_LIST, true)}
                       </div>
@@ -2603,8 +2630,8 @@ customPlugin() {
                 } //contains only signed and declined list
                 else if (
                   rowData.IS_OWNER == 1 &&
-                  (rowData.hasOwnProperty("SIGNED_LIST")&&rowData.hasOwnProperty("DECLINED_LIST") &&
-                  !(rowData.hasOwnProperty("PENDING_LIST")))
+                  (rowData.hasOwnProperty("SIGNED_LIST") && rowData.hasOwnProperty("DECLINED_LIST") &&
+                    !(rowData.hasOwnProperty("PENDING_LIST")))
                 ) {
                   return (
                     <div>
@@ -2661,7 +2688,7 @@ customPlugin() {
                 } //contains only signed list 
                 else if (
                   rowData.IS_OWNER == 1 &&
-                  (rowData.hasOwnProperty("SIGNED_LIST") && !( rowData.hasOwnProperty("DECLINED_LIST") && rowData.hasOwnProperty("PENDING_LIST")))
+                  (rowData.hasOwnProperty("SIGNED_LIST") && !(rowData.hasOwnProperty("DECLINED_LIST") && rowData.hasOwnProperty("PENDING_LIST")))
                 ) {
                   return (
                     <div>
@@ -2710,14 +2737,14 @@ customPlugin() {
                       <div style={{ backgroundColor: " #e4e5e6" }}>
                         {this.signersInfo(rowData.SIGNED_LIST, true)}
                       </div>
-                      
+
                     </div>
                   );
                 }//contains only pending and declined list and the job status is declined
                 else if (
                   rowData.IS_OWNER == 1 && rowData.JOB_STATUS === "DE" &&
-                  (rowData.hasOwnProperty("PENDING_LIST")&&rowData.hasOwnProperty("DECLINED_LIST") 
-                  && !(rowData.hasOwnProperty("SIGNED_LIST")))
+                  (rowData.hasOwnProperty("PENDING_LIST") && rowData.hasOwnProperty("DECLINED_LIST")
+                    && !(rowData.hasOwnProperty("SIGNED_LIST")))
                 ) {
                   return (
                     <div>
@@ -2784,8 +2811,8 @@ customPlugin() {
                 //contains only pending and declined list
                 else if (
                   rowData.IS_OWNER == 1 &&
-                  (rowData.hasOwnProperty("PENDING_LIST")&&rowData.hasOwnProperty("DECLINED_LIST") 
-                  && !(rowData.hasOwnProperty("SIGNED_LIST")))
+                  (rowData.hasOwnProperty("PENDING_LIST") && rowData.hasOwnProperty("DECLINED_LIST")
+                    && !(rowData.hasOwnProperty("SIGNED_LIST")))
                 ) {
                   return (
                     <div>
@@ -2861,8 +2888,8 @@ customPlugin() {
                 }//only pending list
                 else if (
                   rowData.IS_OWNER == 1 &&
-                  (rowData.hasOwnProperty("PENDING_LIST") && !(rowData.hasOwnProperty("DECLINED_LIST") 
-                  && rowData.hasOwnProperty("SIGNED_LIST")))
+                  (rowData.hasOwnProperty("PENDING_LIST") && !(rowData.hasOwnProperty("DECLINED_LIST")
+                    && rowData.hasOwnProperty("SIGNED_LIST")))
                 ) {
                   var pendingList = rowData.PENDING_LIST.split(",");
                   var pendingListCount = pendingList.length;
@@ -3091,7 +3118,7 @@ customPlugin() {
               },
             },
           ]}
-        ></MaterialTable>}
+        ></MaterialTable>
         {shown && ReactDOM.createPortal(this.modalBody(), document.body)}
         <Row>
           <Col xs="12" sm="6" md="5">
@@ -3217,7 +3244,7 @@ customPlugin() {
                             backgroundColor: "#e8eaeb",
                             borderRadius: "unset",
                           }}
-                          // style={{ fontSize: "xxx-large", height: "35px"}}
+                        // style={{ fontSize: "xxx-large", height: "35px"}}
                         />
                       </InputGroupAddon>
                     </InputGroup>

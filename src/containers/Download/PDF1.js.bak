@@ -19,18 +19,6 @@ const PDF1 = (props) => {
         EnterFullScreenMenuItem: () => <></>,
         SwitchTheme: () => <></>,
         SwitchThemeMenuItem: () => <></>,
-        Print: () => <></>,
-        PrintMenuItem: () => <></>,
-        Zoom: () => <></>,
-        ZoomOut: () => <></>,
-        ZoomOutMenuItem: () => <></>,
-        ZoomIn: () => <></>,
-        ZoomInMenuItem: () => <></>,
-        Rotate: () => <></>,
-        RotateBackwardMenuItem: () => <></>,
-        RotateForwardMenuItem: () => <></>,
-        SwitchScrollMode: () => <></>,
-        SwitchScrollModeMenuItem: () => <></>,
       };
     };
 
@@ -71,7 +59,5 @@ const PDF1 = (props) => {
       </Worker>
     );
 };
+
 export default PDF1;
-
-
-
