@@ -149,6 +149,7 @@ let URL = {
   getCorpEmployee: HOST+"getCorpEmployee",
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
+  deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
 };
 
 module.exports = { URL };

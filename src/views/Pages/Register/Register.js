@@ -1078,8 +1078,6 @@ class Register extends Component {
       if (document.getElementById("typeOfReqVoucher").checked) {
         if (/^[a-zA-Z0-9]{10}$/.test(this.state.VoucherCode)) {
           canProceed = true
-
-
         } else {
           canProceed = false
           confirmAlert({

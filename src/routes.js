@@ -74,7 +74,6 @@ const UploadedTemplate = React.lazy(() => import("./containers/AdminUploadTempla
 const addOrViewTempGroup = React.lazy(() => import("./containers/AccessControl/TempGroupAddOrView"));
 const addEndUsrToTempGrp = React.lazy(() => import("./containers/AccessControl/AddEndUsrToTempGrp"));
 const viewTempGroupUsers = React.lazy(() => import("./containers/AccessControl/ViewTempGroupUsers"));
-const createTempGroup = React.lazy(() => import("./containers/AccessControl/CreateTempGroup"))
 // const Test = React.lazy(() => import('./containers/Test/test'))
 const VoucherUsageInfo = React.lazy(() => import("./containers/Voucher/VoucherDetial"));
 const getVoucherSummary = React.lazy(() => import("./containers/Voucher/VoucherSummary"));
@@ -228,11 +227,6 @@ const routes = [
     path: "/viewTempGrpUsr",
     name: "View Template Users",
     component: viewTempGroupUsers
-  },
-  {
-    path: "/createTemptgroup",
-    name: "Create Template Group",
-    component: createTempGroup
   },
   {
     path: "/voucherUsageInfo",

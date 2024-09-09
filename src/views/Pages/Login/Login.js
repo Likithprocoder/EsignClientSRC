@@ -184,6 +184,7 @@ class Login extends Component {
               sessionStorage.setItem("roleID", responseJson.roleId);
               var menus = JSON.stringify(responseJson.menu);
               sessionStorage.setItem("items", menus);
+              sessionStorage.setItem("corpId", responseJson.corporateID);
               this.props.history.push("/");
             } else {
               this.setState({ loaded: true });

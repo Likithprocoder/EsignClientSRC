@@ -82,6 +82,83 @@ export default class ApplicationInbox extends React.Component {
   }
 
   componentDidMount() {
+
+    // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+    // If corporate is disabled then redirect to the old page.
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({
+        authToken: sessionStorage.getItem("authToken"),
+        corpId: sessionStorage.getItem("corpId")
+      })
+    }
+
+    fetch(URL.getCorpDetails, options)
+      .then(response => (response.json()))
+      .then(data => {
+        if (data.status === "SUCCESS") {
+          if (data.details[0]["status"] === 0) {
+            confirmAlert({
+              message: "Your corporate is currently disabled. Please contact your administrator!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    this.props.history.push("/");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          };
+        }
+        else if (data.statusDetails === "Session Expired") {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/login");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+        else {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        confirmAlert({
+          message: `Something went wrong. please try again!`,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+            },
+          ], closeOnClickOutside: false
+        });
+        this.props.location.push('/login');
+      });
+
+
     // this.getInbocDocDetails();
     this.getEmailValidation();
     this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
@@ -100,91 +177,94 @@ export default class ApplicationInbox extends React.Component {
       .then((responseJson) => {
 
         if (responseJson.status == "SUCCESS") {
-          this.setState({ GroupNameAndCode: responseJson.details });
-          this.setState({ FirstGroupAndCode: responseJson.details[0] })
-          let today = new Date();
-          let firstDay = new Date();
-          firstDay.setDate(1)
-          let dd = String(today.getDate()).padStart(2, '0');
-          let firstDate = String(firstDay.getDate()).padStart(2, '0');
-          let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-          let yyyy = today.getFullYear();
-          let toDate = yyyy + '-' + mm + '-' + dd
-          let fromDate = yyyy + '-' + mm + '-' + firstDate;
-          let startDate = document.getElementById("fromDateContainer").defaultValue = fromDate;
-          let endDate = document.getElementById("toDateContainer").defaultValue = toDate;
-          let subGroup = "";
-          let grp_code = responseJson.details[0].code;
-          let gro_name = responseJson.details[0].name;
-          fetch(URL.getTempsForThatGroupCode, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              authToken: sessionStorage.getItem("authToken"),
-              grpCode: grp_code
-            }),
-          })
-            .then((response) => {
-              return response.json();
+          // To perform any operation there should be atleast one group present.
+          // If no group is present then dont allow to perform any operation.
+          if (responseJson.details.length != 0) {
+            this.setState({ GroupNameAndCode: responseJson.details });
+            this.setState({ FirstGroupAndCode: responseJson.details[0] })
+            let today = new Date();
+            let firstDay = new Date();
+            firstDay.setDate(1)
+            let dd = String(today.getDate()).padStart(2, '0');
+            let firstDate = String(firstDay.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let yyyy = today.getFullYear();
+            let toDate = yyyy + '-' + mm + '-' + dd
+            let fromDate = yyyy + '-' + mm + '-' + firstDate;
+            let startDate = document.getElementById("fromDateContainer").defaultValue = fromDate;
+            let endDate = document.getElementById("toDateContainer").defaultValue = toDate;
+            let subGroup = "";
+            let grp_code = responseJson.details[0].code;
+            let gro_name = responseJson.details[0].name;
+            fetch(URL.getTempsForThatGroupCode, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                authToken: sessionStorage.getItem("authToken"),
+                grpCode: grp_code
+              }),
             })
-            .then((responseJson) => {
-              if (responseJson.status == "success") {
-                if (responseJson.data.length !== 0) {
-                  this.setState({
-                    TemplateBasedOnTempCode: responseJson.data,
-                    templateCode: responseJson.data[0].code,
-                    templateName: responseJson.data[0].name
-                  })
-                  this.getInbocDocDetails(grp_code, subGroup, startDate, endDate, responseJson.data[0].code, "");
-                } else {
-                  this.setState({
-                    TemplateBasedOnTempCode: []
-                  })
+              .then((response) => {
+                return response.json();
+              })
+              .then((responseJson) => {
+                if (responseJson.status == "success") {
+                  if (responseJson.data.length !== 0) {
+                    this.setState({
+                      TemplateBasedOnTempCode: responseJson.data,
+                      templateCode: responseJson.data[0].code,
+                      templateName: responseJson.data[0].name
+                    })
+                    this.getInbocDocDetails(grp_code, subGroup, startDate, endDate, responseJson.data[0].code, "");
+                  } else {
+                    this.setState({
+                      TemplateBasedOnTempCode: []
+                    })
+                    confirmAlert({
+                      message: `No templates are avialable under the group '${gro_name}!'`,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            this.props.history.push("/applications");
+                          },
+                        },
+                      ],
+                    });
+                    return;
+                  }
+                }
+                else if (responseJson.statusDetails == "Session Expired") {
                   confirmAlert({
-                    message: `No templates are avialable under the group '${gro_name}!'`,
+                    message: "Session Expired!",
                     buttons: [
                       {
                         label: "OK",
                         className: "confirmBtn",
                         onClick: () => {
-                          this.props.history.push("/applications");
+                          this.props.history.push("/");
                         },
                       },
                     ],
                   });
-                  return;
                 }
-              }
-              else if (responseJson.statusDetails == "Session Expired") {
-                confirmAlert({
-                  message: "Session Expired!",
-                  buttons: [
-                    {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => {
-                        this.props.history.push("/");
+                else {
+                  confirmAlert({
+                    message: responseJson.statusDetail,
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { },
                       },
-                    },
-                  ],
-                });
-              }
-              else {
-                confirmAlert({
-                  message: responseJson.statusDetail,
-                  buttons: [
-                    {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => { },
-                    },
-                  ],
-                });
-              }
-            })
-
+                    ],
+                  });
+                }
+              })
+          };
         }
         else if (responseJson.statusDetails == "Session Expired") {
           confirmAlert({

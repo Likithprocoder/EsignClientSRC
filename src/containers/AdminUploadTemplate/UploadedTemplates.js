@@ -194,6 +194,82 @@ function RejectedTemplate(props) {
     }, [allowForTemp])
 
     useEffect(() => {
+
+        // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+        // If corporate is disabled then redirect to the old page.
+        const corpDataInputs = {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({
+                authToken: sessionStorage.getItem("authToken"),
+                corpId: sessionStorage.getItem("corpId")
+            })
+        }
+
+        fetch(URL.getCorpDetails, corpDataInputs)
+            .then(response => (response.json()))
+            .then(data => {
+                if (data.status === "SUCCESS") {
+                    if (data.details[0]["status"] === 0) {
+                        confirmAlert({
+                            message: "Your corporate is currently disabled. Please contact your administrator!",
+                            buttons: [
+                                {
+                                    label: "OK",
+                                    className: "confirmBtn",
+                                    onClick: () => {
+                                        props.history.push("/");
+                                    },
+                                },
+                            ], closeOnClickOutside: false
+                        });
+                    };
+                }
+                else if (data.statusDetails === "Session Expired") {
+                    confirmAlert({
+                        message: data.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/");
+                                },
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                }
+                else {
+                    confirmAlert({
+                        message: "Failed to load the uploaded templates. Please try after some time!",
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/");
+                                },
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                confirmAlert({
+                    message: `Something went wrong. please try again!`,
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn",
+                        },
+                    ], closeOnClickOutside: false
+                });
+                props.location.push('/login');
+            });
+
         const options = {
             method: "POST",
             headers: {
@@ -220,7 +296,7 @@ function RejectedTemplate(props) {
                                     props.history.push("/login");
                                 },
                             },
-                        ],closeOnClickOutside: false
+                        ], closeOnClickOutside: false
                     });
                 } else {
                     confirmAlert({
@@ -230,7 +306,7 @@ function RejectedTemplate(props) {
                                 label: "OK",
                                 className: "confirmBtn",
                             },
-                        ],closeOnClickOutside: false
+                        ], closeOnClickOutside: false
                     });
                 }
                 setLoader(true);
@@ -277,7 +353,7 @@ function RejectedTemplate(props) {
                                                     window.location.reload(false);
                                                 },
                                             },
-                                        ],closeOnClickOutside: false
+                                        ], closeOnClickOutside: false
                                     });
                                 } else {
                                     confirmAlert({
@@ -299,7 +375,7 @@ function RejectedTemplate(props) {
                     className: "cancelBtn",
                     onClick: () => { },
                 },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
         });
     }
 
@@ -340,10 +416,10 @@ function RejectedTemplate(props) {
                                     "label": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].label, "placeHolder": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].placeHolder, "inputDescription": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].inputDescription,
                                     "type": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].type, "minLength": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].minLength, "maxLength": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].maxLength,
                                     "minRange": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].minRange, "maxRange": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].maxRange, "inputField": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].inputField,
-                                    "isMandatory": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].isMandatory, 
-                                    "customValidation": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].customValidation, 
+                                    "isMandatory": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].isMandatory,
+                                    "customValidation": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].customValidation,
                                     "SearchAbleKey": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].SearchAbleKey,
-                                    "repeatBlock":  data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].repeatBlock
+                                    "repeatBlock": data.templateinputFields[key][Object.keys(data.templateinputFields[key])[0]].repeatBlock
                                 }
                             }));
                             setinput(oldvalue => ({
@@ -373,10 +449,10 @@ function RejectedTemplate(props) {
                                     "label": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].label, "placeHolder": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].placeHolder, "inputDescription": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].inputDescription,
                                     "type": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].type, "minLength": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].minLength, "maxLength": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].maxLength,
                                     "minRange": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].minRange, "maxRange": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].maxRange, "inputField": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].inputField,
-                                    "isMandatory": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].isMandatory, 
-                                    "customValidation": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].customValidation, 
+                                    "isMandatory": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].isMandatory,
+                                    "customValidation": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].customValidation,
                                     "SearchAbleKey": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].SearchAbleKey,
-                                    "repeatBlock":  data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].repeatBlock
+                                    "repeatBlock": data.radioTypeValues[key][Object.keys(data.radioTypeValues[key])[0]].repeatBlock
                                 }
                             }))
                         }
@@ -438,7 +514,7 @@ function RejectedTemplate(props) {
                                         props.history.push("/login");
                                     },
                                 },
-                            ],closeOnClickOutside: false
+                            ], closeOnClickOutside: false
                         });
                     }
                     else {
@@ -449,7 +525,7 @@ function RejectedTemplate(props) {
                                     label: "OK",
                                     className: "confirmBtn"
                                 },
-                            ],closeOnClickOutside: false
+                            ], closeOnClickOutside: false
                         });
                     }
                 }))
@@ -461,7 +537,7 @@ function RejectedTemplate(props) {
                             label: "OK",
                             className: "confirmBtn",
                         },
-                    ],closeOnClickOutside: false
+                    ], closeOnClickOutside: false
                 });
             })
     }
@@ -482,7 +558,7 @@ function RejectedTemplate(props) {
                     searchAbleKeys: searchAbleKey,// searchAble keys..
                     statusFlag: "1",
                     oldTemplateCode: templateDetaile.templateCode,
-                    lableInput:input,
+                    lableInput: input,
                     customFields: customFieldSet,//custom field details.
                     customFieldSearch: customField,//custom fields made searchAble keys.
                     customDropdownOption: selectCustomField,//drop down values

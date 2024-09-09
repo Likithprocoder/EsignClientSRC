@@ -287,6 +287,8 @@ function NewTemplate(props) {
     //when page is returned from edit details.
     // to detect on when device the user is working..
     useEffect(() => {
+
+        
         // Detect if the device is mobile based on the user agent string
         const checkIsMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         setIsMobile(checkIsMobile);
