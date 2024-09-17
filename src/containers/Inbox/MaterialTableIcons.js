@@ -17,6 +17,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import Attachment from '@material-ui/icons/Attachment';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -41,7 +42,8 @@ const tableIcons = {
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
   Attachment: forwardRef((props, ref) => <Attachment {...props} ref={ref} />),
-  InfoOutlinedIcon: forwardRef((props, ref) => <InfoOutlinedIcon {...props} ref={ref} />)
+  InfoOutlinedIcon: forwardRef((props, ref) => <InfoOutlinedIcon {...props} ref={ref} />),
+  NotificationsIcon: forwardRef((props, ref) => <NotificationsIcon {...props} ref={ref} />)
 };
 
 export default tableIcons;

@@ -11,6 +11,10 @@ import {
   Tooltip
 } from "reactstrap";
 import { URL } from "../URLConstant";
+import { Modal } from 'antd';
+// import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { NotificationOutlined } from '@ant-design/icons';
+import Notifications from "@material-ui/icons/Notifications";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,6 +49,7 @@ export default class Wallet extends React.Component {
       tooltipOpen: false,
       isHovered: false,
       planDescrip:"Current Plan",
+       isModalVisible: false, // State to control modal visibility
     };
   }
 
@@ -141,6 +146,12 @@ export default class Wallet extends React.Component {
             "is_KYC_verified",
             responseJson.is_KYC_verified
           );
+          // responseJson.pendingDocs = 1;//For testing purpose
+          if (responseJson.pendingDocs !== 0 &&  sessionStorage.getItem("actionExists") === "true") {
+            this.setState({ isModalVisible: true });
+          } else {
+            sessionStorage.setItem("actionExists", false); 
+          }
           sessionStorage.setItem("maxFilesize", responseJson.maxFilesize);
           //to check the role of the user to make the template groups visible(if corp admin) for voucher purchase
           sessionStorage.setItem("roleId", responseJson.roleId);
@@ -535,6 +546,33 @@ export default class Wallet extends React.Component {
       }
     }
   };
+  
+  // Function to handle button click
+  handleButtonClick = () => {
+    sessionStorage.setItem("actionExists", false);
+    this.setState({ isModalVisible: false });
+  };
+
+  handleButtonClick1 = () => {
+    sessionStorage.setItem("actionExists", false);
+    confirmAlert({
+      message: "Sign pending document will be available in pending actions inbox.",
+      buttons: [
+        {
+          label: "OK",
+          className: "confirmBtn",
+          onClick: () => {},
+        },
+      ],
+    });
+    this.setState({ isModalVisible: false });
+  }
+
+  handleActionClick = () => {
+    sessionStorage.setItem("actionExists", false);
+    this.setState({ isModalVisible: false });
+    this.props.history.push("/pendingActionsInbox");
+  };
 
   render() {
     const { openFirstModal } = this.state;
@@ -817,6 +855,33 @@ export default class Wallet extends React.Component {
             DocuExec
           </i>
         </h5>
+        <Modal
+          // title={
+            // <span style={{ fontSize: "20px", color: "#f86c6b"}}>
+            //   {/* <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: '10px' }} /> */}
+            //   <Notifications style={{ color: '#faad14', marginRight: '10px' }} />
+            //   You have pending action from your previous session. Please review and complete.
+            // </span>
+          // }
+          open={this.state.isModalVisible}
+          onCancel={this.handleButtonClick}
+          maskClosable={false}
+          footer={[
+            <Button key="cancel" type="link" color="primary" onClick={this.handleButtonClick1} style={{ marginRight: "10px"}} outline>
+              I'll do it later
+            </Button>,
+            <Button key="submit" type="primary" color="primary" onClick={this.handleActionClick}>
+              Complete Action
+            </Button>,
+          ]}
+        >
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            {/* <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: '10px' }} /> */}
+            <Notifications style={{ color: '#faad14', marginRight: '10px', fontSize: '65px', border: '1px solid rgb(255, 220, 150)' }} />
+            You have sign pending action from your previous session(s). Please review and complete.
+          </span>
+          {/* <p>You have pending action from your previous session. Please review and complete.</p> */}
+        </Modal>
       </div>
     );
   }

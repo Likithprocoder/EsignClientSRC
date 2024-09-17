@@ -268,7 +268,7 @@
 
 #tempGroupListCss {
     font-style: initial;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 500;
     width: 50%;
 }
@@ -285,7 +285,8 @@
 }
 
 .groupNameCss {
-    width: 70%;
+    /* width: 70%; */
+    width: 35%;
     font-size: 16px;
     margin-left: 5px;
     padding: 8px;
@@ -429,3 +430,15 @@
     right: 10px;
     cursor: pointer;
 }
+  
+  .inputGrp {
+    margin-bottom: 10px;
+  }
+
+  .styles_overlay__CLSq- {
+    z-index: 0;
+  }
+
+  #disableReason {
+    align-items: center;
+  }
