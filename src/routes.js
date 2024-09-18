@@ -300,7 +300,7 @@ const routes = [
     path: "/exitFromCorporate",
     name: "Exit or unlink from the corporate entity",
     component: extFrmCorp
-  }
+  },
   {
     path: "/getApiKeyList",
     name: "Api key List",
