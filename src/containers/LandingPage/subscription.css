@@ -29,6 +29,35 @@ text-align: center;
 } 
 
 
+@media screen and (max-width: 990px) {
+    .nav-item {
+        border-bottom: 1px solid grey;
+    }
+
+    #register {
+        margin: -3px 2px 2px 2px;
+    }
+
+    #login {
+        margin: 2px 2px 2px 0px;
+    }
+
+    .nav-link {
+        margin-right: 2px;
+    }
+
+    #servicesLink {
+        border-top: 1px solid grey;
+    }
+
+    #unOlist {
+        float: right;
+        text-align: right;
+        background-color: #343a40;
+    }
+        
+}
+
 
 
 
@@ -51,7 +80,7 @@ text-align: center;
 }
 .video-react {
     display: block;
-    vertical-align: top;
+    /* vertical-align: top; */
     box-sizing: border-box;
     color: #fff;
     background-color: #000;
@@ -131,7 +160,7 @@ video {
 }
 .video-react-icon, .video-react .video-react-closed-caption, .video-react .video-react-bezel .video-react-bezel-icon, .video-react .video-react-volume-level, .video-react .video-react-mute-control, .video-react .video-react-volume-menu-button, .video-react .video-react-play-control, .video-react .video-react-play-progress, .video-react .video-react-big-play-button {
     font-family: "video-react" !important;
-    speak: none;
+    /* speak: none; */
     font-style: normal;
     font-weight: normal;
     font-variant: normal;

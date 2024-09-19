@@ -83,7 +83,9 @@ const AddressBook = React.lazy(() => import("./containers/AddressBook/AddressBoo
 const AddressBookGroups = React.lazy(() => import("./containers/AddressBook/GroupManagement"));
 const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUsers"));
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
-const BulkRegistationSummary= React.lazy(() => import("./containers/BulkRegistration/BulkRegistationSummary"));
+const PendingActionInbox = React.lazy(() => import("./containers/PendingActions/PendingActionInbox"));
+const ApiKeyList = React.lazy(() => import("./containers/Profile/ApiKeyList"));
+const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegrations"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 
 
@@ -266,6 +268,11 @@ const routes = [
     name: "Add Users To Groups",
     component: AddUsersToGroup 
   },
+    {
+    path: "/pendingActionsInbox",
+    name: "Pending Actions",
+    component: PendingActionInbox 
+  },
   {
     path: "/designationBonus",
     name: "Designation Bonus Management",
@@ -289,9 +296,14 @@ const routes = [
     component: extFrmCorp
   },
   {
-    path: "/bulkRegistrationSummary",
-    name: "Bulk Registration Summary",
-    component: BulkRegistationSummary
+    path: "/getApiKeyList",
+    name: "Api key List",
+    component: ApiKeyList
+  },
+  {
+    path: "/apiIntegrationsPage",
+    name: "API Integrations",
+    component: APIIntegrations
   }
 
 ];

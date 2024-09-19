@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert } from "react-confirm-alert";
 
 var jsPDF = require("jspdf");//For generating PDF's in Javascript
+var Loader = require("react-loader");
 
 const pdfjs = require("pdfjs-dist");
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.js`;
@@ -28,6 +29,7 @@ export default class TokenSignDownload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loaded: true,
       key: "value",
       openFirstModal: false,
       email: "",
@@ -39,7 +41,7 @@ export default class TokenSignDownload extends React.Component {
       alertMsg: "",
       msg: "The signed document can be downloaded from this page, or from the Inbox later.",
       mode: "2",
-      Msg: "Electronic Signing Sucessfull",
+      Msg: "Electronic Signing Sucessful",
       pdfurl: "",
       docId: "",
       viewFileURl: "",
@@ -57,27 +59,43 @@ export default class TokenSignDownload extends React.Component {
       pageList: [],
       pageDimensions: "",
       equalPageDimensions: true,
+      isFinish: false,
     };
   }
+
   componentWillMount() {
     // console.log(this.props);
-    console.log(this.props.location.frompath);
+    // console.log(this.props.location.frompath);
     if (sessionStorage.hasOwnProperty("sealMsg")) {
       sessionStorage.setItem("sealMsg", "");
     }
     // if (this.props.location.frompath !== "" && this.props.location.frompath !== "/preview" && this.props.location.frompath !== "/docUpload" && this.props.location.frompath !== "/payments/esignTopup" && this.props.location.frompath !== "/payments/subscriptions") {
-    if (this.props.location.frompath !== "" && this.props.location.frompath !== "/preview") {
+    if (this.props.location.frompath !== "" && this.props.location.frompath === "/preview") {
+      this.setState({
+        mode: this.props.location.state.details.mode,
+        fileName: this.props.location.state.details.filename,
+        docId: this.props.location.state.details.docId,
+        txnrefNo: this.props.location.state.details.txnrefNo,
+        height: this.props.location.state.details.canvas_height,
+        width: this.props.location.state.details.canvas_width,
+        draftRefNumber: sessionStorage.getItem("draftRefNumber")
+      });
+    } else if (this.props.location.frompath !== "" && this.props.location.frompath === "/pendingActionsInbox" ) {
+      // console.log(this.props.location.state.details.docId);
+      this.setState({
+        // fileName: this.props.location.state.details.filename,
+        docId: this.props.location.state.details.docId,
+        txnrefNo: this.props.location.state.details.txnrefNo,
+        // height: this.props.location.state.details.canvas_height,
+        // width: this.props.location.state.details.canvas_width,
+        // draftRefNumber: sessionStorage.getItem("draftRefNumber")
+      });
+      // console.log("VIEWSIGNEDFILE");
+      // this.setState({ viewFileURl: URL.viewSignedFile, msg: "" });
+      // document.getElementById("discardOptionsdiv").style.display = "";
+    } else {
       this.props.history.push({ pathname: "/accountInfo" });
     }
-    this.setState({
-      mode: this.props.location.state.details.mode,
-      fileName: this.props.location.state.details.filename,
-      docId: this.props.location.state.details.docId,
-      txnrefNo: this.props.location.state.details.txnrefNo,
-      height: this.props.location.state.details.canvas_height,
-      width: this.props.location.state.details.canvas_width,
-      draftRefNumber: sessionStorage.getItem("draftRefNumber")
-    });
     sessionStorage.removeItem("draftRefNumber");
     if (this.props.location.state.details.mode === "3") {
       this.setState({ Msg: "DSC Token Signing Successful" });
@@ -92,7 +110,9 @@ export default class TokenSignDownload extends React.Component {
     // if (this.state.mode === "3") {
     //     this.setState({ Msg: "DSC Token Signing Successful" })
     // }
-    toast.success(this.state.Msg, { autoClose: 1000 });
+    if (this.props.location.frompath !== "/pendingActionsInbox" ) {
+      toast.success(this.state.Msg, { autoClose: 1000 });
+    }
     // toast.success(this.state.Msg);
 
     if (
@@ -113,11 +133,20 @@ export default class TokenSignDownload extends React.Component {
       }
     }
 
-    if (sessionStorage.getItem("externalSigner") === "false") {
+    if (sessionStorage.getItem("externalSigner") === "false" || this.props.location.frompath === "/pendingActionsInbox") {
+      // console.log("VIEWSIGNEDFILE");
       this.setState({ viewFileURl: URL.viewSignedFile, msg: "" });
       document.getElementById("discardOptionsdiv").style.display = "";
     } else {
+      // console.log("VIEWSTOREDFILE");
       this.setState({ viewFileURl: URL.viewStoredFile });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFinish !== this.state.isFinish) {
+      // Render or perform actions when isFinish changes
+      // console.log('isFinish state has changed');
     }
   }
 
@@ -335,6 +364,7 @@ export default class TokenSignDownload extends React.Component {
   //------------------complete signing and link to Inbox-----------------
   completeSigning = () => {
     this.setState({ loaded: false });
+    this.setState({ isFinish: true });
     let getDocDetailsData = {
       docId: this.state.docId,
       signedStatus: 1,
@@ -386,11 +416,9 @@ export default class TokenSignDownload extends React.Component {
         },
       ],
     });
-
-    // this.getstoredFilefrmTempDetails(getDocDetailsData);
   };
-  //----------------------take back to preview page with restoring the signing coordinates------------------------
 
+  //----------------------take back to preview page with restoring the signing coordinates------------------------
   previewandSignAgain = () => {
     this.setState({ loaded: false });
     let getDocDetailsData = {
@@ -422,7 +450,7 @@ export default class TokenSignDownload extends React.Component {
           label: "Proceed",
           className: "confirmBtn",
           onClick: () => {
-            this.setState({ loaded: true });
+            this.setState({ loaded: false });
             this.getstoredFilefrmTempDetails(getDocDetailsData);
           },
         },
@@ -435,7 +463,6 @@ export default class TokenSignDownload extends React.Component {
         },
       ],
     });
-    // this.getstoredFilefrmTempDetails(getDocDetailsData);
   };
 
   //Fetch call to get the docDetails from Temp_doc_details table based on users selection
@@ -447,6 +474,7 @@ export default class TokenSignDownload extends React.Component {
     };
 
     try {
+      this.setState({ loaded: false });
         const response = await fetch(URL.getstoredFilefrmTempDetails, {
             method: "POST",
             headers: {
@@ -456,19 +484,20 @@ export default class TokenSignDownload extends React.Component {
         });
 
         const responseJson = await response.json();
-        console.log("getstoredFilefrmTempDetails responseJson:", responseJson);
         if (responseJson.status === "SUCCESS") {
             document.getElementById("discardOptionsdiv").style.display = "none";
 
             if (responseJson.statusDetails.includes("Cancelled")) {
                 toast.error(responseJson.statusDetails, { autoClose: 1000 });
                 this.sleep(50000);
+                this.setState({ loaded: true });
                 this.props.history.push("/inbox");
             } else if (responseJson.statusDetails.includes("Updated")) {
                 await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
                 await this.createFile(this.state.txnrefNo, 0);
             } else {
                 toast.success(responseJson.statusDetails, { autoClose: 1000 });
+                this.setState({ loaded: true });
                 this.setState({
                     msg: "The signed document can be downloaded from this page, or from the Inbox later.",
                 });
@@ -480,7 +509,7 @@ export default class TokenSignDownload extends React.Component {
                     {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => {},
+                        onClick: () => {this.setState({ loaded: true });},
                     },
                 ],
             });
@@ -493,7 +522,7 @@ export default class TokenSignDownload extends React.Component {
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
   async getSignCoordinateDetails(data) {
-    // console.log(data);
+    this.setState({ loaded: false });
     //getting access for external signer
     const response = await fetch(URL.getSignCoordinateDetails, {
       method: "POST",
@@ -503,7 +532,6 @@ export default class TokenSignDownload extends React.Component {
       body: JSON.stringify(data),
     })
     const responseJson = await response.json();
-    console.log("getSignCoordinateDetails responseJson:", responseJson);
     if (responseJson.status == "SUCCESS"){
           this.setState({
             loaded: true,
@@ -559,7 +587,6 @@ export default class TokenSignDownload extends React.Component {
         signedStatus
     );
     let data = await response.blob();
-    console.log("createFile data:", data);
       let arrayBuffer = await this.blobToArrayBuffer(data);
     let testResponse = this.test(arrayBuffer);
   }
@@ -595,7 +622,7 @@ export default class TokenSignDownload extends React.Component {
               });
           }
           this.setState({ pageDimensions: pageDimensionsArr });
-          console.log(pageDimensionsArr);
+          // console.log(pageDimensionsArr);
 
           // Iterate through the array and compare dimensions
           for (let i = 1; i < pageDimensionsArr.length; i++) {
@@ -613,10 +640,8 @@ export default class TokenSignDownload extends React.Component {
     let metadata = {
       type: "application/pdf",
     };
-    console.log(this.state.fileName);
     var file1 = new File([data], this.state.fileName.split("@")[1], metadata);
     file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
-    console.log(file1);
 
     let signCoordinates = {
       signCoordinates: this.state.signCoordinates,
@@ -625,18 +650,19 @@ export default class TokenSignDownload extends React.Component {
       signPage: this.state.signPage,
       pageList: this.state.pageList
     }
-    // console.log({signCoordinates});
+    // console.log({pageDimensionsArr});
 
     let data1 = {
       files: file1,
       docId: this.state.docId,
       signCoordinates: signCoordinates,
-      height: this.state.height,
-      width: this.state.width,
+      height: (this.state.height === null) ? pageDimensionsArr[0].height : this.state.height,
+      width: (this.state.width === null) ? pageDimensionsArr[0].width : this.state.width,
       pageDimensions: pageDimensionsArr,
       equalPageDimensions: equalPageDimensionsValue
     };
     this.setState({ loaded: true });
+    // console.log({data1});
     this.props.history.push({
       pathname: "/preview",
       frompath: "/download/tokenSignDownload",
@@ -647,9 +673,30 @@ export default class TokenSignDownload extends React.Component {
   }
 
   render() {
-    let fileName = this.state.fileName;
+    const { isFinish, viewFileURl, docId, fileName } = this.state;
+    // let fileName = this.state.fileName;
+    // let isFinish = this.state.isFinish;
     return (
       <div>
+        <Loader
+          loaded={this.state.loaded}
+          lines={13}
+          radius={20}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#000"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner loader"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        />
         <ToastContainer></ToastContainer>
         <div className="login-main-container">
           <div className="" id="discardOptionsdiv" style={{ display: "none" }}>
@@ -681,7 +728,7 @@ export default class TokenSignDownload extends React.Component {
             {/* </ol>
             </nav> */}
           </div>
-          <PDF1
+          {/* {isFinish ? (<PDF1
             url={
               this.state.viewFileURl +
               "?at=" +
@@ -690,7 +737,26 @@ export default class TokenSignDownload extends React.Component {
               btoa(this.state.docId)
             }
             filename = {fileName}
+            finish = {isFinish}
+          />) : (<PDF1
+          url={
+            this.state.viewFileURl +
+            "?at=" +
+            btoa(sessionStorage.getItem("authToken")) +
+            "&docID=" +
+            btoa(this.state.docId)
+          }
+          filename = {fileName}
+          finish = {isFinish}
+        />)} */}
+
+          <PDF1
+            key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+            url={`${viewFileURl}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docId)}`}
+            filename={fileName}
+            finish={isFinish}  // Pass finish state to control Download button
           />
+
           <div style={{ marginTop: "1%", textAlign: "center" }}>
             <h5 id="multipplMsg">{this.state.msg}</h5>
           </div>

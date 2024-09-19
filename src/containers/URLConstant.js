@@ -116,7 +116,7 @@ let URL = {
   getAllTemplateGrps: HOST + "getTemplateGrps",
   getUserDetails: HOST + "getUserDetails",
   viewAddedTemplateUsers: HOST + "viewTemplateUsers",
-  addCorporateUsers: HOST + "addTemplateUsers",
+  addCorporateUsers: HOST + "addCorporateUsers",
   removeTemplateUsers: HOST + "removeTemplateUsers",
   getCorpDetails: HOST + "getCorpDetails",
   modifygrpAdmin: HOST + "modifygrpAdmin",
@@ -150,9 +150,11 @@ let URL = {
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
   deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
-  downloadInvoice:HOST+"downloadInvoice",
-  bulkRegistrationInfo: HOST + "bulkRegistrationInfo",
-
+   createCorporateEntity: HOST+"createCorporateEntity",
+  generateapikey: HOST+"generateapikey",
+  getApikeys: HOST+"getApikeys",
+  updateapikey: HOST+"updateapikey",
+  enableDisableCorpEntity: HOST+"enableDisableCorpEntity",
 };
 
 module.exports = { URL };

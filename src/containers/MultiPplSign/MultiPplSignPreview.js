@@ -133,7 +133,6 @@ const MultiPplSignPreview = (props) => {
 
   //-------Page change event...geting TotalPages, currentPage-----
   const handlePageChange = (event) => {
-    // console.log(event);
     //Storing total number of pages in session----
     sessionStorage.setItem("TotalPages", event.doc._pdfInfo.numPages);
     //Initializing a state variable currentPage----
@@ -147,7 +146,6 @@ const MultiPplSignPreview = (props) => {
   useLayoutEffect(() => {
     var data = props.location.state.details;
     setFileUrl(data.files.preview);
-    console.log(data);
 
     //Preparing equal and unequal pages incase of multiple page document
     const unequalPages = [];
@@ -166,8 +164,6 @@ const MultiPplSignPreview = (props) => {
       });
     }
     setUnequalPages(unequalPages);
-    console.log({unequalPages});
-    console.log({equalPages});
 
     let capturedDimensions = [];
     const checkForElement = async () => {
@@ -229,38 +225,11 @@ const MultiPplSignPreview = (props) => {
                       clientWidth: pageElement.clientWidth,
                       clientHeight: pageElement.clientHeight
                   };
-                  console.log(newDimensions);
                   // Assign values to clientDimensions array
                   capturedDimensions.push(newDimensions);
               }
           }
           jumpToPage(0);
-          console.log({capturedDimensions});
-
-        //   capturedDimensions = [
-        //     {
-        //         "pageNumber": "Page 1",
-        //         "clientWidth": 460,
-        //         "clientHeight": 627
-        //     },
-        //     {
-        //         "pageNumber": "Page 5",
-        //         "clientWidth": 460,
-        //         "clientHeight": 627
-        //     }, 
-        //     {
-        //         "pageNumber": "Page 8",
-        //         "clientWidth": 460,
-        //         "clientHeight": 627
-        //     }, 
-        //     {
-        //         "pageNumber": "Page 9",
-        //         "clientWidth": 460,
-        //         "clientHeight": 627
-        //     }, 
-
-        // ]
-
         let hasMatchingDimensions = true;
 
         while (hasMatchingDimensions) {
@@ -274,15 +243,12 @@ const MultiPplSignPreview = (props) => {
                   return equalPage && equalPage.clientHeight === unequalPageHeight;
               });
           });
-          console.log(matchFound);
 
           if (matchFound) {
             // Recapture the dimensions of unequal pages
             const recapturedDimensions = await recaptureDimensions(capturedDimensions, unequalPages, equalPages);
             // const recapturedDimensions = await recaptureDimensions(unequalPages);
-            console.log("Recapture dimensions completed");
             capturedDimensions = recapturedDimensions;
-            console.log({capturedDimensions});
 
             // Iterate over the total number of pages in the document
             for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
@@ -356,9 +322,7 @@ const MultiPplSignPreview = (props) => {
           }
           setFinalClientDimensions([...finalDimensions]);
           setLoaded(true);
-        }
-        console.log({finalDimensions});
-        // setLoaded(true);
+      }
       }
     };
 
@@ -366,7 +330,6 @@ const MultiPplSignPreview = (props) => {
       props.location.frompath === "/signerInfo" ||
       props.location.frompath === "/multiPplSignPreview"
     ) {
-      // console.log(props.location.state.details.files);
       setFile(props.location.state.details.files);
       setCanvas_width(props.location.state.details.width);
       setCanvas_height(props.location.state.details.height);
@@ -389,7 +352,6 @@ const MultiPplSignPreview = (props) => {
   }, []);
 
   const recaptureDimensions = async (capturedDimensions, unequalPages, equalPages) => {
-    console.log("recaptureDimensions");
     const recapturedDimensions = [];
 
     const unequalPagesToRecapture = unequalPages.filter(unequalPageNumber => {
@@ -404,11 +366,9 @@ const MultiPplSignPreview = (props) => {
 
     for (let i = 0; i < unequalPagesToRecapture.length; i++) {
         const pageNum = unequalPagesToRecapture[i];
-        console.log(pageNum);
         jumpToPage(pageNum - 1);
         await new Promise(resolve => setTimeout(resolve, 500));
         const pageElement = document.getElementById(`docuPageTest${pageNum}`);
-        console.log(pageElement);
         if (pageElement) {
             const pageNumberValue = pageElement.getAttribute('aria-label'); 
             const newDimensions = {
@@ -416,7 +376,6 @@ const MultiPplSignPreview = (props) => {
                 clientWidth: pageElement.clientWidth,
                 clientHeight: pageElement.clientHeight
             };
-            console.log(newDimensions);
             // Assign values to recapturedDimensions array
             recapturedDimensions.push(newDimensions);
         }
@@ -432,35 +391,6 @@ const MultiPplSignPreview = (props) => {
 
     return updatedDimensions;
   };
-
-
-  // const recaptureDimensions = async (unequalPages) => {
-  //   console.log("recaptureDimensions");
-  //   const recapturedDimensions = [];
-  //   console.log(unequalPages.length);
-  //   for (let i = 0; i < unequalPages.length; i++) {
-  //       const pageNum = unequalPages[i];
-  //       console.log(pageNum);
-  //       jumpToPage(pageNum - 1);
-  //       await new Promise(resolve => setTimeout(resolve, 500));
-  //       const pageElement = document.getElementById(`docuPageTest${pageNum}`);
-  //       console.log(pageElement);
-  //       if (pageElement) {
-  //           const pageNumberValue = pageElement.getAttribute('aria-label'); 
-  //           const newDimensions = {
-  //               pageNumber: pageNumberValue,
-  //               clientWidth: pageElement.clientWidth,
-  //               clientHeight: pageElement.clientHeight
-  //           };
-  //           console.log(newDimensions);
-  //           // Assign values to recapturedDimensions array
-  //           recapturedDimensions.push(newDimensions);
-  //       }
-  //   }
-  //   setFinalClientDimensions([...recapturedDimensions]);
-  //   setLoaded(true);
-  //   return Promise.resolve();  // Return a resolved promise
-  // };
 
   useEffect(() => {
     var data = props.location.state.details;
@@ -490,7 +420,6 @@ const MultiPplSignPreview = (props) => {
     }
 
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      // console.log("Mobile");
       // setOverflow("hidden");
       setOverflow("visible");
       document.getElementById("decorate").style.width = "";
@@ -505,7 +434,6 @@ const MultiPplSignPreview = (props) => {
       document.getElementById("parent-div").style.height = "30rem";
       document.getElementById("decorate").style.height = "520px";
     } else {
-      // console.log("Desktop");
     }
 
     if (btnCount == data.noSigns) {
@@ -535,21 +463,16 @@ const MultiPplSignPreview = (props) => {
 
   //---------Everytime page loads this is getting called and based on array values it returns Draggable div-----
   useEffect(() => {
-    // console.log(dragArray);
-
     if (dragArray) {
       dragArray.map((value, index) => {
         var count1 = value.signersBatch.slice("signer".length);
         // var count1 = value.count;
-        // console.log(count1);
         var dragId = value.dragId;
         var current_page = value.pageNo;
         var dragContainer = "#docuPageTest" + current_page;
         var isDragIdExists = document.getElementById(dragId);
 
         if (isDragIdExists === null) {
-          // console.log(count1);
-          // console.log(count2);
           //Returned drag div will get append to dragContainer----
           $(dragContainer).append(function () {
             return (
@@ -594,7 +517,6 @@ const MultiPplSignPreview = (props) => {
         }
       });
     }
-
   }, [currentPage, dragArray]);
   
   useEffect(() => {
@@ -653,7 +575,6 @@ const MultiPplSignPreview = (props) => {
   }, []);
 
   const freezePrevSignerSeals = () => {
-    console.log({prevSignersDragArray});
     if (prevSignersDragArray) {
       for (let i = 0; i < prevSignersDragArray.length; i++) {
           let dragObj = prevSignersDragArray[i];
@@ -707,17 +628,13 @@ const MultiPplSignPreview = (props) => {
   if (window.location.pathname === "/multiPplSignPreview") {
     window.ontouchstart = (e) => {
         if (e.target.id.includes("draggable")) {
-          // console.log("Before: "+containmentPage);
           setContainmentPage($("#" + e.target.id).data("dragpage"));
-          // console.log("After: "+containmentPage);
         }
     };
 
     window.ontouchmove = (e) => {
         if (e.target.id.includes("draggable")) {
-          // console.log("Before: "+containmentPage);
           setContainmentPage($("#" + e.target.id).data("dragpage"));
-          // console.log("After: "+containmentPage);
         }
     };
   }
@@ -759,7 +676,6 @@ const MultiPplSignPreview = (props) => {
             const batch = dragArray.filter(
               (dragArr) => dragArr.dragId == event.target.id
             );
-            // console.log(batch);
 
             let countVal = 0;
             for (let i = 0; i < dragArray.length; i++) {
@@ -773,7 +689,6 @@ const MultiPplSignPreview = (props) => {
                 }
               }
             }
-            // console.log(countVal);
 
             if (
               sessionStorage.getItem("TotalPages") != 1 &&
@@ -823,16 +738,13 @@ const MultiPplSignPreview = (props) => {
           maxWidth: window.innerWidth >= 468 ? 168 : 125,
 
           resize: function (event, ui) {
-            // console.log(event.target.id);
             var dragDivHeight;
             var dragDivWidth;
-            // console.log(sessionStorage.getItem("TotalPages"));
             for (
               let index = 0;
               index < sessionStorage.getItem("TotalPages");
               index++
             ) {
-              // console.log(index);
               //Getting particular draggable div------
               dragDiv = ui.helper[0];
               //Getting drag div's resized height and width-------
@@ -855,24 +767,20 @@ const MultiPplSignPreview = (props) => {
         const batch = dragArray.filter(
           (dragArr) => dragArr.dragId == event.target.id
         );
-        // console.log(batch);
 
         let countVal = 0;
         for (let i = 0; i < dragArray.length; i++) {
           if ("selectedPBatch" in dragArray[i]) {
           if (dragArray[i].selectedPBatch == batch[0].selectedPBatch) {
-            // console.log(dragArray[i].selectedPBatch == batch[0].selectedPBatch);
             countVal++;
           }
         }
         else if ("selectedABatch" in dragArray[i]) {
           if (dragArray[i].selectedABatch == batch[0].selectedABatch) {
-            // console.log(dragArray[i].selectedPBatch == batch[0].selectedPBatch);
             countVal++;
           }
         }
         }
-        // console.log(countVal);
 
         if (sessionStorage.getItem("TotalPages") != 1 && dragArray.length > 1) {
           if (
@@ -914,8 +822,6 @@ const MultiPplSignPreview = (props) => {
 
     //---------To ge the custom positioned DragId like when user select All page option and after dragging if he selected position option as cancel
     const getCustomDrags = (dragObjId) => {
-      // console.log(dragObjId);
-      // console.log(customPositionedDragIds);
       setCustomPositionedDragIds(customPositionedDragIds => [...customPositionedDragIds, dragObjId]);
     };
 
@@ -935,9 +841,7 @@ const MultiPplSignPreview = (props) => {
       .off()
       .on("click", function (e) {
         // count8 = count8++;
-        // console.log(count8);
         var parent = showIt(this);
-        //console.log(dragArray);
 
         //For removal of draggable from array------
         let closedDivId = parent.id;
@@ -947,11 +851,9 @@ const MultiPplSignPreview = (props) => {
           var filterdDragArray = dragArray.filter(
             (item) => item.dragId !== closedDivId
           );
-          // console.log(filterdDragArray)
           $("#" + closedDivId).remove();
           setDragArray(filterdDragArray);
           //For removal of draggable from UI---------
-          // console.log(closedDivId);
           $("#" + closedDivId).remove();
           toast.error("Seal removed from current page");
           // setExclusionDragIds(closedDivId);
@@ -1393,7 +1295,7 @@ const MultiPplSignPreview = (props) => {
 
   // On click of Add seals this function will be called
   const signaturePageSelected = (optnValue) => {
-    console.log(optnValue);
+    // console.log(optnValue);
     if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       setTooltipOpen(true);
     }
@@ -1823,26 +1725,6 @@ const MultiPplSignPreview = (props) => {
         }
       }
     }
-      // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      //   width_Ratio =
-      //     width /
-      //     (document.getElementById("docuPageTest" + currentPage).clientWidth -
-      //       20);//18
-      //   height_Ratio =
-      //     height /
-      //     (document.getElementById("docuPageTest" + currentPage).clientHeight -
-      //       9);//11.5
-      // } else {
-      //   width_Ratio =
-      //     width /
-      //     (document.getElementById("docuPageTest" + currentPage).clientWidth - 20);//14
-      //   height_Ratio =
-      //     height /
-      //     (document.getElementById("docuPageTest" + currentPage).clientHeight -
-      //       6);//11.5
-      // }
-    console.log({width_ratio_arr});
-    console.log({height_ratio_arr});
 
     let actuall_x = [];
     let actuall_y = [];
@@ -1852,11 +1734,9 @@ const MultiPplSignPreview = (props) => {
     let actuall_y1 = [];
     let actuall_width1 = [];
     let actuall_height1 = [];
-    // const signersBatchFilter = "signer" + signerBatchNum; // Specify the signersBatch value you want to filter by
-    // console.log(signersBatchFilter);
-    // const filteredElements = dragArray.filter(element => element.signersBatch === signersBatchFilter);
+
     const filteredElements = currentSignersList();
-    console.log({customPositionedDragIds});
+    // console.log({customPositionedDragIds});
     //-----Creating an Array of pageNo's which is customPositioned
     for (let j = 0; j < customPositionedDragIds.length; j++) {
       for (let i = 0; i < filteredElements.length; i++) {
@@ -1865,9 +1745,7 @@ const MultiPplSignPreview = (props) => {
         }
       }
     }
-    // console.log(pageListArr);
 
-    console.log({exclusionDragIds});
     //------Creating an Array of PageNo's where the drag divs are removed
     for (let j = 0; j < exclusionDragIds.length; j++) {
       for (let i = 0; i < filteredElements.length; i++) {
@@ -1876,7 +1754,6 @@ const MultiPplSignPreview = (props) => {
         }
       }
     }
-    // console.log({pageListArr});
 
     //------Creating an Array of pageNo's where selectedOptions are F/L/C
     for (let i = 0; i < filteredElements.length; i++) {
@@ -1967,10 +1844,6 @@ const MultiPplSignPreview = (props) => {
           Math.round(Number(defaultPositionedDragArray2[i].resizeDragHeight.slice(0, -2)) * height_ratio_arr[defaultPositionedDragArray2[i].pageNo - 1]), 10
         ));
       }
-      // console.log({actuall_x});
-      // console.log({actuall_y});
-      // console.log(actuall_width);
-      // console.log(actuall_height);
 
       //Calculating customPositioned Drag's x and y values
       for (let i = 0; i < customPositionedDragArray2.length; i++) {
@@ -2029,10 +1902,6 @@ const MultiPplSignPreview = (props) => {
         actuall_height.push(parseInt(Math.round(Number(filteredElements[i].resizeDragHeight.slice(0, -2)) * height_ratio_arr[filteredElements[i].pageNo - 1]), 10));
       }
     }
-    // console.log({actuall_x});
-    // console.log({actuall_y});
-    // console.log({actuall_x1});
-    // console.log({actuall_y1});
 
     let signPg = "";
     let pgList = [];
@@ -2720,30 +2589,27 @@ const MultiPplSignPreview = (props) => {
 //   }
 // };
 
-  const toggleModal = () => {
-    setModalOpen(!modalOpen);
- };
   const toggleModal1 = () => {
     setModalOpen1(!modalOpen1);
- };
+  };
 
  const toggleShowAllPages = () => {
   setShowAllPages(!showAllPages);
-};
+ };
 
-const handleBadgeClick = (badgeId) => {
-  if (cooling[badgeId]) return; // If cooling, ignore click
+  const handleBadgeClick = (badgeId) => {
+    if (cooling[badgeId]) return; // If cooling, ignore click
 
-  // Set cooling state for the clicked badge
-  setCooling(prev => ({ ...prev, [badgeId]: true }));
+    // Set cooling state for the clicked badge
+    setCooling(prev => ({ ...prev, [badgeId]: true }));
 
-  // Remove cooling state after timeout
-  setTimeout(() => {
-      setCooling(prev => ({ ...prev, [badgeId]: false }));
-  }, 750);
-};
+    // Remove cooling state after timeout
+    setTimeout(() => {
+        setCooling(prev => ({ ...prev, [badgeId]: false }));
+    }, 750);
+  };
 
-const groupPages = (pages) => {
+  const groupPages = (pages) => {
   if (pages.length === 0) return [];
 
   const ranges = [];
@@ -2775,8 +2641,7 @@ const groupPages = (pages) => {
   }
 
   return ranges;
-};
-
+  };
 
 const shouldShowToggle = (totalPages, pagesToSign) => {
   const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -3057,6 +2922,7 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
               <div className="" style={{ marginBottom: "10px" }}>
                 <div className="radio-container" style={{ marginLeft: "25px"}}>
                   <div className="radio-items" id="signMode">
+                <label htmlFor="electronicModeRadio">
                     <input
                       type="radio"
                       id="electronicModeRadio"
@@ -3065,8 +2931,10 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                       onChange={handleModeChange}
                     />
                     <span className="label">Electronic Sign</span>
+                    </label>
                   </div>
                   <div className="radio-items" id="signMode">
+                  <label htmlFor="aadhaarModeRadio">
                     <input
                       type="radio"
                       id="aadhaarModeRadio"
@@ -3077,10 +2945,12 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                     <span id="aadhaarEsign" className="label">
                       Aadhaar eSign
                     </span>
+                    </label>
                   </div>
                 </div>
                 <div className="radio-container" style={{ marginLeft: "25px"}}>
                   <div className="radio-items" id="signMode">
+                  <label htmlFor="selfDscTokenModeRadio">
                     <input
                       type="radio"
                       id="selfDscTokenModeRadio"
@@ -3092,6 +2962,7 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                     <span className="label" id="selftokentext">
                       DSC Token Sign
                     </span>
+                    </label>
                     <span id="clientdownloadspan" style={{ marginLeft: "20px" }}>
                       <a
                         href={

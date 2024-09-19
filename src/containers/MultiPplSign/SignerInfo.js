@@ -120,8 +120,6 @@ openEmailModal: false,
   //   this.handleChange.bind(this);
   //   const { signerInfo } = this.state;
   //   const { signerName } = signerInfo[i];
-  //   console.log(signerInfo);
-  //   console.log(signerName);
 
   //   // Close dropdown for all signers except the one being focused
   //   const updatedShowAddressBook = {};
@@ -178,11 +176,9 @@ openEmailModal: false,
               />
               {el.signerName && el.signerName.length >= 3 && this.state.showAddressBook[i] && (
                 <div className="custom-dropdown" id="addressBookDropdown" style={{ maxHeight: '200px', overflowY: 'auto', overflowX: 'auto' }}>
-                  {console.log(this.state.filteredData)}
                   {this.state.filteredData.map(contact => (
                     <div key={contact.contactId} className="dropdown-item" id="dropdownItemDiv" onClick={() => { this.handleSelectContact(contact, i); this.setState({ showAddressBook: false }); }} style={{ backgroundColor: contact.contactType === "g" ? "#efdeda" : "#d6f0e9" }}>
                       <div>{contact.contactName}</div>
-                      {console.log(contact.contactType)}
                       {contact.contactType == "i" ? <div style={{ fontSize: '9px' }}>Email: {contact.emailId}, Mobile: {contact.mobileNo}</div> : <div style={{ fontSize: '8px' }} >(Group)</div>}
                     </div>
                   ))}
@@ -322,7 +318,6 @@ openEmailModal: false,
 
 
   handleSelectContact = (contact, index) => {
-    console.log(contact);
     if (contact.contactType === "g") {
       let obj = {
         authToken: sessionStorage.getItem('authToken'),
@@ -355,16 +350,12 @@ openEmailModal: false,
   setCustomDocName = (e) => {
     let regName = new RegExp(/^[a-zA-Z0-9\-.@'#_/ ]*$/);
     const { name, value } = e.target;
-    ////console.log("helllo");
     if (name === "custDocName") {
-      ////console.log("helllo"+name);
       let encodedName = encodeURI(e.target.value);
-      ////console.log("helllo" + encodedName.length);
       if (encodedName.length > 29) {
         alert("Document title should be of within 30 characters");
       } else {
         if (regName.test(e.target.value)) {
-          ////console.log("helllo" + e.target.value);
 
           this.setState({ custDocName: e.target.value });
         } else {
@@ -407,7 +398,6 @@ openEmailModal: false,
     //   }
     // }
     // //<----------------Fetch API to add the users to the address book----------------->
-    // console.log(this.state.addressBookData);
 
     // const individualData = { contactId: "", contactName: usrDetaiils.signerName, contactType: "i", emailId: usrDetaiils.signerEmail, mobileNo: usrDetaiils.signerMobile };
 
@@ -427,7 +417,6 @@ openEmailModal: false,
     //     ],
     //   }));
     // }
-    // console.log(this.state.addressBookData);
 
     let name = usrDetaiils.signerName.trim();
     let mobile = usrDetaiils.signerMobile.trim();
@@ -477,7 +466,6 @@ openEmailModal: false,
               }
             }
             //<----------------Fetch API to add the users to the address book----------------->
-            console.log(this.state.addressBookData);
         
             const individualData = { contactId: "", contactName: usrDetaiils.signerName, contactType: "i", emailId: usrDetaiils.signerEmail, mobileNo: usrDetaiils.signerMobile };
         
@@ -497,7 +485,6 @@ openEmailModal: false,
                 ],
               }));
             }
-            console.log(this.state.addressBookData);
 
             let body = {
               authToken: sessionStorage.getItem("authToken"),
@@ -612,10 +599,7 @@ openEmailModal: false,
     }, {});
     var mobileList = signerInfoList.signerMobile; // taking signerMobileNumber array
     var emailList = signerInfoList.signerEmail; // taking signerEmailId array
-    var nameList = signerInfoList.signerName;
     var duplicateMobileNumeber = this.checkSignerInfoListIsUnique(mobileList);
-    var duplicateName = this.checkSignerInfoListIsUnique(nameList);
-    if (duplicateName == false) {
       if (duplicateMobileNumeber == false) {
         var duplicateEmailId = this.checkSignerInfoListIsUnique(emailList);
         if (duplicateEmailId == false) {
@@ -821,21 +805,6 @@ openEmailModal: false,
           ],
         });
       }
-    } else {
-        this.setState({ loaded: true });
-        confirmAlert({
-          message: "Multiple signers cannot have same name",
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => {
-                this.setState({ loaded: true });
-              },
-            },
-          ],
-        });
-    }
   }
 
   onChecked = () => {
@@ -898,11 +867,8 @@ openEmailModal: false,
       })
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
-          // console.log(responseJson.statusDetails)
           var resData = responseJson.valdtnResp;
-          // console.log(resData);
           this.setState({ emailValidation: resData, loaded: true });
-          // console.log(sessionStorage.getItem("minToEmail"));        } else {
         } else {
           if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
@@ -1083,7 +1049,6 @@ openEmailModal: false,
           docId: "",
           userIP: sessionStorage.getItem("userIP"),
         };
-        console.log(emailDetails);
         this.setState({ emailDetails: emailDetails});
         this.setState({ openEmailModal: false });
       }
@@ -1113,7 +1078,6 @@ if(this.state.declineSigning===false){
           label: "Proceed",
           className: "confirmBtn",
           onClick: () => {
-            console.log("Checked")
             this.setState({ declineSigning: true });
           },
         },
@@ -1177,7 +1141,6 @@ if(this.state.declineSigning===false){
   }
 
   fetchAddressBookDetails(obj) {
-    // console.log({obj});
     fetch(URL.fetchAddressBook, {
       method: "POST",
       headers: {
@@ -1187,7 +1150,6 @@ if(this.state.declineSigning===false){
     }).then((response) => {
       return response.json();
     }).then((responseJson) => {
-      console.log({ responseJson });
       if (responseJson.status == "SUCCESS") {
         this.setState({
           addressBookData: responseJson.searchInfo,
@@ -1313,11 +1275,11 @@ if(this.state.declineSigning===false){
         />
         <form onSubmit={this.handleSubmit}>
           <input id="checkbox" type="checkbox" onChange={this.onChecked} />
-          <label id="checked">Enable Sign Order</label>
+          <label id="checked" htmlFor="checkbox">Enable Sign Order</label>
           <input id="checkboxdeclineSigning" type="checkbox" onChange={this.onCheckedDeclineSigning} />
-          <label id="checkeddeclineSigning">Decline signing</label>
+          <label id="checkeddeclineSigning" htmlFor="checkboxdeclineSigning">Decline signing</label>
           <input id="checkboxEmailNotify" type="checkbox" onChange={this.onCheckedEmailNotify} />
-          <label id="checkedEmailNotify">Email Notify</label>
+          <label id="checkedEmailNotify" htmlFor="checkboxEmailNotify">Email Notify</label>
           <label id="enddate">Sign by: &nbsp;</label>
           <input
             id="enddatefield"

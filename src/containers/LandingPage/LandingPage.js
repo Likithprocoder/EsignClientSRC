@@ -247,12 +247,13 @@ export default class LandingPage extends Component {
               />
             </button>
             <div className="collapse navbar-collapse" id="navbarResponsive">
-              <ul className="navbar-nav text-uppercase ml-auto">
-                <li className="nav-item">
+              <ul className="navbar-nav text-uppercase ml-auto" id="unOlist">
+                <li className="nav-item" id="servicesLink">
                   <a
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#services"
+                    // style={{ marginRight: "2px" }}
                   >
                     Services
                   </a>
@@ -262,6 +263,7 @@ export default class LandingPage extends Component {
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#about"
+                    // style={{ marginRight: "2px" }}
                   >
                     About
                   </a>
@@ -271,6 +273,7 @@ export default class LandingPage extends Component {
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#subscriptions"
+                    // style={{ marginRight: "2px" }}
                   >
                     Subscriptions
                   </a>
@@ -288,6 +291,7 @@ export default class LandingPage extends Component {
                   <Button
                     color="primary"
                     className="px-4"
+                    id="login"
                     onClick={this.loginPage}
                   >
                     Login
@@ -297,6 +301,7 @@ export default class LandingPage extends Component {
                   <Button
                     color="primary"
                     className="px-4"
+                    id="register"
                     onClick={this.registerPage}
                   >
                     Register Now
@@ -574,7 +579,7 @@ export default class LandingPage extends Component {
               <h2 className="section-heading text-uppercase">SubscriptionS</h2>
             </div>
             <div>
-              <Row className="align-items-center">
+              <Row className="align-items-center" style={{ justifyContent: "center"}}>
                 <br></br>
                 {this.createUI()}
               </Row>

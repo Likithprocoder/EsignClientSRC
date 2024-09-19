@@ -1121,128 +1121,134 @@ const Preview = (props) => {
     
       // Array to store the final result    
       let docuPageTestElement = document.getElementById("docuPageTest" + currentPage);
-    
-          if (docuPageTestElement) {
-            clearInterval(intervalId);//It stops the function checkForElement from executing further
+      console.log(docuPageTestElement);
+      console.log(docuPageTestElement?.clientWidth);
+      console.log(docuPageTestElement?.clientHeight);
+      if (docuPageTestElement) {
+        clearInterval(intervalId);//It stops the function checkForElement from executing further
 
-            //Setting the width to static so that it will work even when assigned from old UI
-            //Since we have a scroll in new UI and not in old UI 
-            if (sessionStorage.getItem("TotalPages") == 1) {
-              document.getElementById("parent-div").style.height = "auto"; //So that for single page document scroll wont come
-            } else if (sessionStorage.getItem("TotalPages") != 1) {
-              document.getElementById("parent-div").style.width = "476.67px";
-            }
-    
-            // Call this function with the unequal pages array
-            if (!props?.location?.state?.details?.equalPageDimensions) {
-              setLoaded(false);
-              if (currentPage == 1 && equalPages[0] == 1) {
-              } else {
-                jumpToPage(equalPages[0] - 1)
-                await new Promise(resolve => setTimeout(resolve, 1000));
-              }
-    
-              //One record from equal pages to create All pages object
-              const pageElementEqual = document.getElementById(`docuPageTest${equalPages[0]}`);
-              if (pageElementEqual) {
-                setLoaded(false);
-                const pageNumberValue = pageElementEqual.getAttribute('aria-label');
-                const newDimensions = {
-                  pageNumber: pageNumberValue,
-                  clientWidth: pageElementEqual.clientWidth,
-                  clientHeight: pageElementEqual.clientHeight
-                };
-                // Assign values to clientDimensions array
-                capturedDimensions.push(newDimensions);
-                // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
-              }
-    
-              for (let i = 0; i < unequalPages.length; i++) {
-                setLoaded(false);
-                if (currentPage == 1 && unequalPages[i] == 1) {
-                } else {
-                  setLoaded(false);
-                  jumpToPage(unequalPages[i] - 1);
-                  setLoaded(false);
-                  await new Promise(resolve => setTimeout(resolve, 500));
-                  jumpToPage(unequalPages[i] - 2);
-                  setLoaded(false);
-                  await new Promise(resolve => setTimeout(resolve, 500));
-                  jumpToPage(unequalPages[i] - 1);
-                  setLoaded(false);
-                  await new Promise(resolve => setTimeout(resolve, 1000));
-                  setLoaded(false);
-                }
-                const pageElement = document.getElementById(`docuPageTest${unequalPages[i]}`);
-                if (pageElement) {
-                  setLoaded(false);
-                  const pageNumberValue = pageElement.getAttribute('aria-label'); 
-                    const newDimensions = {
-                    pageNumber: pageNumberValue,
-                    clientWidth: pageElement.clientWidth,
-                    clientHeight: pageElement.clientHeight
-                  };
-                  // Assign values to clientDimensions array
-                  capturedDimensions.push(newDimensions);
-                  // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
-                }
-              }
-              jumpToPage(0);
+        //Setting the width to static so that it will work even when assigned from old UI
+        //Since we have a scroll in new UI and not in old UI 
+        if (sessionStorage.getItem("TotalPages") == 1) {
+          document.getElementById("parent-div").style.height = "auto"; //So that for single page document scroll wont come
+        } else if (sessionStorage.getItem("TotalPages") != 1) {
+          document.getElementById("parent-div").style.width = "476.67px";
+        }
 
-            // Check if the dimensions of any unequal page match with those of any equal page
-            const matchFound = unequalPages.some(unequalPageNumber => {
-              const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
-              const unequalPageHeight = unequalPage.clientHeight;
-
-              return equalPages.some(eqPage => {
-                  const equalPage = capturedDimensions.find(page => page.pageNumber === `Page ${eqPage}`);
-                  return equalPage && equalPage.clientHeight === unequalPageHeight;
-              });
-          });
-
-          if (matchFound) {
-            // Recapture the dimensions of unequal pages
-            await recaptureDimensions();
+      // Call this function with the unequal pages array enters on in case of muti page document
+      if (!props?.location?.state?.details?.equalPageDimensions && unequalPages.length > 0) {
+          setLoaded(false);
+          if (currentPage == 1 && equalPages[0] == 1) {
           } else {
-            setLoaded(false);
-            // Iterate over the total number of pages in the document
-            for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
-              const pageNumber = `Page ${i}`;
-              
-              // Check if the page already exists in capturedDimensions
-              const pageExists = capturedDimensions.some(obj => obj.pageNumber === pageNumber);
-
-              // If the page doesn't already exist, add the first page dimensions
-              if (!pageExists) {
-                  finalDimensions.push({
-                      pageNumber,
-                      clientWidth: capturedDimensions[0].clientWidth,
-                      clientHeight: capturedDimensions[0].clientHeight
-                  });
-              } else {
-                  // If the page exists, add the dimensions from capturedDimensions
-                  finalDimensions.push(capturedDimensions.find(obj => obj.pageNumber === pageNumber));
-              }
-            }
-            setFinalClientDimensions([...finalDimensions]);
+            jumpToPage(equalPages[0] - 1)
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
-          } else {
-            // Iterate over the total number of pages in the document
-            for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
-              const pageNumber = `Page ${i}`;
 
-                  const newDimensions = {
-                  pageNumber: pageNumber,
-                  clientWidth: docuPageTestElement.clientWidth,
-                  clientHeight: docuPageTestElement.clientHeight
-                };
-                // Assign values to clientDimensions array
-                finalDimensions.push(newDimensions);
+          //One record from equal pages to create All pages object
+          const pageElementEqual = document.getElementById(`docuPageTest${equalPages[0]}`);
+          console.log(pageElementEqual)
+          if (pageElementEqual) {
+            setLoaded(false);
+            const pageNumberValue = pageElementEqual.getAttribute('aria-label');
+            const newDimensions = {
+              pageNumber: pageNumberValue,
+              clientWidth: pageElementEqual.clientWidth,
+              clientHeight: pageElementEqual.clientHeight
+            };
+            // Assign values to clientDimensions array
+            capturedDimensions.push(newDimensions);
+            // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
+          }
+          console.log(capturedDimensions);
+
+          for (let i = 0; i < unequalPages.length; i++) {
+            setLoaded(false);
+            if (currentPage == 1 && unequalPages[i] == 1) {
+            } else {
+              setLoaded(false);
+              jumpToPage(unequalPages[i] - 1);
+              setLoaded(false);
+              await new Promise(resolve => setTimeout(resolve, 500));
+              jumpToPage(unequalPages[i] - 2);
+              setLoaded(false);
+              await new Promise(resolve => setTimeout(resolve, 500));
+              jumpToPage(unequalPages[i] - 1);
+              setLoaded(false);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              setLoaded(false);
             }
-            setFinalClientDimensions([...finalDimensions]);
-            // setLoaded(true);
+            const pageElement = document.getElementById(`docuPageTest${unequalPages[i]}`);
+            if (pageElement) {
+              setLoaded(false);
+              const pageNumberValue = pageElement.getAttribute('aria-label'); 
+                const newDimensions = {
+                pageNumber: pageNumberValue,
+                clientWidth: pageElement.clientWidth,
+                clientHeight: pageElement.clientHeight
+              };
+              // Assign values to clientDimensions array
+              capturedDimensions.push(newDimensions);
+              // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
+            }
+          }
+          jumpToPage(0);
+          console.log(capturedDimensions);
+        // Check if the dimensions of any unequal page match with those of any equal page
+        const matchFound = unequalPages.some(unequalPageNumber => {
+          const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
+          const unequalPageHeight = unequalPage.clientHeight;
+
+          return equalPages.some(eqPage => {
+              const equalPage = capturedDimensions.find(page => page.pageNumber === `Page ${eqPage}`);
+              return equalPage && equalPage.clientHeight === unequalPageHeight;
+          });
+      });
+
+      if (matchFound) {
+        // Recapture the dimensions of unequal pages
+        await recaptureDimensions();
+      } else {
+        setLoaded(false);
+        // Iterate over the total number of pages in the document
+        for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
+          const pageNumber = `Page ${i}`;
+          
+          // Check if the page already exists in capturedDimensions
+          const pageExists = capturedDimensions.some(obj => obj.pageNumber === pageNumber);
+
+          // If the page doesn't already exist, add the first page dimensions
+          if (!pageExists) {
+              finalDimensions.push({
+                  pageNumber,
+                  clientWidth: capturedDimensions[0].clientWidth,
+                  clientHeight: capturedDimensions[0].clientHeight
+              });
+          } else {
+              // If the page exists, add the dimensions from capturedDimensions
+              finalDimensions.push(capturedDimensions.find(obj => obj.pageNumber === pageNumber));
           }
         }
+        setFinalClientDimensions([...finalDimensions]);
+      }
+      } else {
+        // Iterate over the total number of pages in the document
+        for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
+          const pageNumber = `Page ${i}`;
+
+              const newDimensions = {
+              pageNumber: pageNumber,
+              clientWidth: docuPageTestElement.clientWidth,
+              clientHeight: docuPageTestElement.clientHeight
+            };
+            console.log(newDimensions);
+            // Assign values to clientDimensions array
+            finalDimensions.push(newDimensions);
+        }
+        console.log(finalDimensions);
+        setFinalClientDimensions([...finalDimensions]);
+        // setLoaded(true);
+      }
+      }
 
       if (finalDimensions != []) {
           if (finalDimensions.length == sessionStorage.getItem("TotalPages")) {
@@ -1430,6 +1436,23 @@ const Preview = (props) => {
     let data = props?.location?.state?.details;
     if (dragArray) {
       dragArray.map((value, index) => {
+        // Extract RGB values from the generated random color
+        const [r, g, b] = value.color.match(/\d+/g).map(Number);
+
+        // Calculate the opposite (complementary) color
+        let oppositeR = 255 - r;
+        let oppositeG = 255 - g;
+        let oppositeB = 255 - b;
+
+        // Ensure the opposite color is not white
+        if (oppositeR === 255 && oppositeG === 255 && oppositeB === 255) {
+          // Slightly adjust the opposite color to avoid pure white
+          oppositeR -= 10; // Reduce red value
+        }
+
+        // Generate the rgba string for the opposite color
+        const oppositeColor = `rgba(${oppositeR},${oppositeG},${oppositeB},${0.5})`;
+
         var count1 = value.count;
         var dragId = value.dragId;
         var current_page = value.pageNo;
@@ -1471,6 +1494,10 @@ const Preview = (props) => {
           myDiv.style.height = value.resizeDragHeight;
           myDiv.style.width = value.resizeDragWidth;
           myDiv.style.backgroundColor = value.color;
+          myDiv.style.textShadow = "0px 0px 2px rgba(0, 0, 0, 0.7)";
+          // myDiv.style.border = `0 0 15px ${oppositeColor}, 0 0 30px ${oppositeColor}`;
+          myDiv.style.color = "black";
+          // myDiv.style.boxShadow = `0 0 2px 2px ${oppositeColor}`;
         }
       });
     }
@@ -3238,11 +3265,13 @@ const Preview = (props) => {
         .then((response) => {
           setLoaded(true);
           if (response.status === 400) {
-            props.history.push("/esign_error");
+            // props.history.push("/esign_error");
+            return response.json();
           } else if (response.status === 200) {
             return response.json();
           } else {
-            props.history.push("/");
+            // props.history.push("/");
+            return response.json();
           }
         })
         .then((responseJson) => {
@@ -3320,7 +3349,11 @@ const Preview = (props) => {
               });
             }
           } else {
-            if (responseJson.statusDetails.includes("OTP Validation Failed")) {
+            if (responseJson.statusDetails === "Session Expired!!") {
+              sessionStorage.clear();
+              setLoaded(true);
+              props.history.push("/login");
+            } else if (responseJson.statusDetails.includes("OTP Validation Failed")) {
               alert(responseJson.statusDetails);
               onCloseFirstModal();
             } else if (responseJson.statusDetails.includes("Technical issue")) {
@@ -3612,10 +3645,10 @@ const Preview = (props) => {
       let msg;
       if (dragArray.length == 1) {
         msg =
-          "Do you want to remove " + dragArray.length + " seal permanently?";
+          "Do you want to remove " + dragArray.length + " seal?";
       } else {
         msg =
-          "Do you want to remove " + dragArray.length + " seals permanently?";
+          "Do you want to remove " + dragArray.length + " seals?";
       }
 
       confirmAlert({
@@ -3638,8 +3671,7 @@ const Preview = (props) => {
                     : "Removed a seal permanently"
                 );
                 setDragArray([]);
-                setSelectedOption(null);
-                // setShowSignaturePage(false);
+                // setSelectedOption(null);
               }
             },
           },
@@ -3937,7 +3969,8 @@ const Preview = (props) => {
     if (result == true) {
       onCloseFirstModal();
       confirmAlert({
-        message: "Please verify and place the signing position on the document",
+        // message: "Please verify and place the signing position on the document",
+        message: "Please move the seal(s) from the default position to the desired location on the document before proceeding with signing",
         buttons: [
           {
             label: "OK",
@@ -4043,19 +4076,54 @@ const Preview = (props) => {
         body: JSON.stringify(body),
       })
         .then((response) => {
-          if (response.status === 400) {
-            props.history.push("/esign_error");
-          } else if (response.status === 200) {
+          console.log(response);
+          // if (response.status === 400) {
+          //   props.history.push("/esign_error");
+          // } else if (response.status === 200) {
             return response.json();
-          } else {
-            props.history.push("/");
-          }
+          // } else {
+            // props.history.push("/");
+            // return response.json();
+          // }
         })
         .then((responseJson) => {
-          setLoaded(true);
-          setTandC(responseJson.TandC);
-          setOpenFirstModal(true);
+          console.log(responseJson)
+          if (responseJson.status=== "SUCCESS") {
+            setLoaded(true);
+            setTandC(responseJson.TandC);
+            setOpenFirstModal(true);
+          } else {
+            if (responseJson.statusDetails === "Invalid Authentication key or key Expired!!") {
+              sessionStorage.clear();
+              confirmAlert({
+                message: "Session Expired!!",
+                buttons: [
+                    {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => {setLoaded(true); 
+                          props.history.push("/login");
+                        },
+                    },
+                ],
+              });
+            } else {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      setLoaded(true);
+                    },
+                  },
+                ],
+              });
+            }
+          }
         })
+      
         .catch((e) => {
           alert(e);
         });
@@ -4218,8 +4286,10 @@ const Preview = (props) => {
       console.log(result);
       if (result == true) {
         confirmAlert({
+          // message:
+          //   "Please verify and place the signing position on the document",
           message:
-            "Please verify and place the signing position on the document",
+            "Please move the seal(s) from the default position to the desired location on the document before proceeding with signing",
           buttons: [
             {
               label: "OK",
@@ -5223,6 +5293,10 @@ const Preview = (props) => {
               </Button>
             </div>
 
+            {/* <div className="counter" style={{ color: "black" }}>
+              Seals Added: <span className="animated" style={{ color: "blue" }}>{dragArray.length}</span>
+            </div> */}
+
             <div id="docdiv0">
               <div
                 id="documntsender0"
@@ -5269,6 +5343,7 @@ const Preview = (props) => {
                 </span>
                 <InfoOutlined onClick={toggleModal1} title="more info" style={{ fontSize: "large", cursor: "pointer" }} />
               </div>
+              {/* <div className="side-by-side-container"> */}
               <div className="">
                 <div className="radio-container" style={{ margin: "0px 0px 0px 25px" }}>
                   <div className="item-text" style={{ display: "contents" }}>
@@ -5298,10 +5373,7 @@ const Preview = (props) => {
                     >All pages</Badge>
                   </div>
                 </div>
-                <div
-                  className="radio-container"
-                  style={{ margin: "10px 30px 10px 25px" }}
-                >
+                <div className="radio-container" style={{ margin: "10px 30px 10px 25px" }}>
                   <div className="item-text" style={{ display: 'contents' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginRight: '28px' }}>
                       <Badge
@@ -5348,6 +5420,10 @@ const Preview = (props) => {
                   </div>
                 </div>
               </div>
+              {/* <div className="sealCounter" style={{ color: "white", fontSize: "25px", backgroundColor: "blue" }}>
+                {dragArray.length}
+              </div> */}
+              {/* </div> */}
             </div>
 
             <div className="items-content-1">
@@ -5357,52 +5433,60 @@ const Preview = (props) => {
               <div className="">
                 <div className="radio-container" style={{ marginLeft: "25px"}}>
                   <div className="radio-items" id="signMode">
-                    <input
-                      type="radio"
-                      id="electronicModeRadio"
-                      value="2"
-                      checked={selectedMode === "2"}
-                      onChange={handleModeChange}
-                    />
-                    <span className="label">Electronic Sign</span>
+                    <label htmlFor="electronicModeRadio">
+                      <input
+                        type="radio"
+                        id="electronicModeRadio"
+                        value="2"
+                        checked={selectedMode === "2"}
+                        onChange={handleModeChange}
+                      />
+                      <span className="label">Electronic Sign</span>
+                    </label>
                   </div>
                   <div className="radio-items" id="signMode">
-                    <input
-                      type="radio"
-                      id="aadhaarModeRadio"
-                      value="1"
-                      checked={selectedMode === "1"}
-                      onChange={handleModeChange}
-                    />
-                    <span id="aadhaarEsign" className="label">
-                      Aadhaar eSign
-                    </span>
+                    <label htmlFor="aadhaarModeRadio">
+                      <input
+                        type="radio"
+                        id="aadhaarModeRadio"
+                        value="1"
+                        checked={selectedMode === "1"}
+                        onChange={handleModeChange}
+                      />
+                      <span id="aadhaarEsign" className="label">
+                        Aadhaar eSign
+                      </span>
+                    </label>
                   </div>
                 </div>
                 <div className="radio-container" style={{ marginLeft: "25px"}}>
                   <div className="radio-items" id="signMode">
-                    <input
-                      type="radio"
-                      id="otpSignModeRadio"
-                      value="4"
-                      checked={selectedMode === "4"}
-                      onChange={handleModeChange}
-                    />
-                    <span className="label" id="otpsigningtext">
-                      OTP Sign
-                    </span>
+                    <label htmlFor="otpSignModeRadio">
+                      <input
+                        type="radio"
+                        id="otpSignModeRadio"
+                        value="4"
+                        checked={selectedMode === "4"}
+                        onChange={handleModeChange}
+                      />
+                      <span className="label" id="otpsigningtext">
+                        OTP Sign
+                      </span>
+                    </label>
                   </div>
                   <div className="radio-items" id="signMode">
-                    <input
-                      type="radio"
-                      id="selfDscTokenModeRadio"
-                      value="3"
-                      checked={selectedMode === "3"}
-                      onChange={handleModeChange}
-                    />
-                    <span className="label" id="selftokentext">
-                      DSC Token Sign
-                    </span>
+                    <label htmlFor="selfDscTokenModeRadio">
+                      <input
+                        type="radio"
+                        id="selfDscTokenModeRadio"
+                        value="3"
+                        checked={selectedMode === "3"}
+                        onChange={handleModeChange}
+                      />
+                      <span className="label" id="selftokentext">
+                        DSC Token Sign
+                      </span>
+                    </label>
                     <span id="clientdownloadspan">
                       <a
                         href={
@@ -5822,7 +5906,9 @@ const Preview = (props) => {
               </div>
               <div className="para-text">
                 <div className="para-content" id="paraContentId">
-                  <span id="TCParagraph">{TandC}</span>
+                  <span id="TCParagraph">
+                  {TandC}
+                  </span>
                 </div>
               </div>
               <div className="agree-div">

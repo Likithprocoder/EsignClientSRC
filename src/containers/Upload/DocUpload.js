@@ -193,6 +193,20 @@ export default class DocUpload extends React.Component {
                 alert("Error reading PDF file. Please upload file and try again.");
             }
         } else {
+           if (responseJson.statusDetails === "Session Expired!!") {
+            sessionStorage.clear();
+            this.setState({ loaded: true });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                  {
+                      label: "OK",
+                      className: "confirmBtn",
+                      onClick: () => {this.props.history.push("/login")},
+                  },
+              ],
+            });
+          } else {
             this.setState({ loaded: true });
             confirmAlert({
                 message: responseJson.statusDetails,
@@ -204,6 +218,7 @@ export default class DocUpload extends React.Component {
                     },
                 ],
             });
+          }
         }
     })
     .catch(e => {

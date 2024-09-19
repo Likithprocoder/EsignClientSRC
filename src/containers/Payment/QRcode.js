@@ -20,7 +20,7 @@ class QRcode extends Component {
     if (
       this.props.location.frompath === "/subscriptions" ||
       this.props.location.frompath === "/rateCard" ||
-      this.props.location.frompath === "/vouchers/vouchersubscription"
+      this.props.location.frompath === "/vouchers/vouchersubscription" 
     ) {
       this.setState({
         paymentType: this.props.location.state.details.paymentType,
@@ -42,10 +42,10 @@ class QRcode extends Component {
     if (sessionStorage.getItem("uatsetupenabled") === "Y") {
       document.getElementById("invoicepayBtn").style.display = "";
     }
-    if (
-      this.props.location.frompath === "/vouchers/vouchersubscription") {
-      document.getElementById("voucherNote").style.display = "";
-    }
+    if(
+      this.props.location.frompath === "/vouchers/vouchersubscription" ){
+       document.getElementById("voucherNote").style.display = "" ;
+      }
   }
 
 
@@ -54,12 +54,11 @@ class QRcode extends Component {
       amount: sessionStorage.getItem("amount"),
       username: sessionStorage.getItem("username"),
       mysignTxnId: sessionStorage.getItem("mysignTxnId"),
-      userIP: sessionStorage.getItem("userIP")
     };
 
 
     this.setState({ loaded: false });
-    // For the eStamping payments we are calling the DBS UAT Simulator
+   // For the eStamping payments we are calling the DBS UAT Simulator
     //   let body = {
     // amount: sessionStorage.getItem("amount"),
     // txnid: sessionStorage.getItem("mysignTxnId"),
@@ -68,7 +67,7 @@ class QRcode extends Component {
     //    fetch(URL.dbsUAT, {
 
     fetch(URL.paymenturl, {
-
+   
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +79,7 @@ class QRcode extends Component {
       })
       .then((responseJson) => {
         if (responseJson.status == "Success") {
-
+         
           this.setState({
             loaded: true,
           });
@@ -136,7 +135,7 @@ class QRcode extends Component {
     // }
 
 
-
+    
   };
   render() {
     return (
@@ -161,8 +160,8 @@ class QRcode extends Component {
           loadedClassName="loadedContent"
         />
         <Row>
-          <div id="voucherNote" style={{ display: "none", width: "90%", marginBottom: "2%" }} >Note: Please be advised that after making the voucher payment, the generation of voucher codes necessitates a certain amount of time. Kindly check for the generated voucher codes at a later juncture. Your patience is highly appreciated.</div>
-
+        <div id="voucherNote" style={{display:"none",width:"90%",marginBottom:"2%"}} >Note: Please be advised that after making the voucher payment, the generation of voucher codes necessitates a certain amount of time. Kindly check for the generated voucher codes at a later juncture. Your patience is highly appreciated.</div>
+   
           <Card id="qrContainer">
             <CardHeader>
               <b>UPI Payment Details</b>

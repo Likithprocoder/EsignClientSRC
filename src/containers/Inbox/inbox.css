@@ -422,3 +422,30 @@ hr {
 /* #submitBtn button {
   padding: 10px 20px;
 } */
+
+.col {
+  flex: 1; /* Ensure the column can grow */
+  max-width: 100%; /* Ensure the column can take full width */
+}
+
+.styles_overlay__CLSq- {
+  z-index: 0;
+}
+
+.Component-horizontalScrollContainer-12 {
+  z-index: 0;
+}
+
+.blink_me {
+  animation: blinker 1s linear infinite;
+  color: #f86c6b;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
+
+/* #signIcon {
+  display: flex;
+  justify-content: center !important;
+} */

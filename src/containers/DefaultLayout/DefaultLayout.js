@@ -111,6 +111,11 @@ class DefaultLayout extends Component {
     this.props.history.push("/profileDetails");
   }
 
+  APIIntegrationsPage(e) {
+    e.preventDefault();
+    this.props.history.push("/apiIntegrationsPage");
+  }
+
   render() {
     return (
       <div className="app">
@@ -121,6 +126,7 @@ class DefaultLayout extends Component {
               onPaymentPage={(e) => this.paymentPage(e)}
               onDelete={(e) => this.deleteUserAccount(e)}
               onProfilePage={(e) => this.profilePage(e)}
+              onAPIIntegrationsPage={(e) => this.APIIntegrationsPage(e)}
             />
           </Suspense>
         </AppHeader>

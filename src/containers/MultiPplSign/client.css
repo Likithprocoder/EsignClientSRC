@@ -578,5 +578,13 @@
   background-color: darken(#20a8d8, 20%); /* Adjust color as needed */
 }
 
+.radio-container label {
+  cursor: pointer;
+}
+
+.radio-container input[type="radio"] {
+  cursor: pointer;
+}
+
 
   

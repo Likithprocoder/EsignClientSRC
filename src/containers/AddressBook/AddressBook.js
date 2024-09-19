@@ -8,10 +8,17 @@ import "./AddressBook.css";
 import { URL } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
 import { UserAddOutlined, UsergroupAddOutlined, EditOutlined } from '@ant-design/icons';
+
+
 import {
     InputGroup,
     Row,
 } from "reactstrap";
+
+
+
+
+
 
 var Loader = require("react-loader");
 class AddressBook extends Component {
@@ -377,6 +384,7 @@ class AddressBook extends Component {
         let email = document.getElementById("contactEmail").value.trim();
         //validation
         const mobileRegex = /^[6-9]\d{9}$/;
+        const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[a-zA-Z]{2,6}$/;
 
         if (name === "" || name.length == 0) {
             alert("Please enter contact name")
@@ -387,8 +395,8 @@ class AddressBook extends Component {
             alert("Please enter a valid mobile number")
             return false;
         }
-        else if (email === "" || email.length < 5) {
-            alert("Please enter email id")
+        else if (email === "" || email.length < 5 || !emailRegex.test(email)) {
+            alert("Please enter valid email id")
             return false;
         }
 
@@ -681,10 +689,10 @@ class AddressBook extends Component {
                     maskClosable={false}
 
                     footer={[
-                        <Button className="btn btn-danger rounded-pill" key="back" onClick={this.onCloseContactModal}>
+                        <Button className="btn btn-danger rounded-pill" key="back" onClick={this.onCloseContactModal} style={{ height: "fit-content"}}>
                             Close
                         </Button>,
-                        <Button className="btn btn-success rounded-pill" key="submit" style={{ backgroundColor: "#1dd1a1" }} onClick={(e) => { this.addOrEditContact(e) }}>
+                        <Button className="btn btn-success rounded-pill" key="submit" style={{ backgroundColor: "#1dd1a1", height: "fit-content" }} onClick={(e) => { this.addOrEditContact(e) }}>
                             <span>Submit &#8594; </span>
                         </Button>,
 

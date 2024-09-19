@@ -45,7 +45,7 @@ export default class Inbox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loaded: true,
+      loaded: false,
       inboxDataList: [],
       rowData: "",
       fileName: "",
@@ -96,7 +96,7 @@ export default class Inbox extends React.Component {
 
   componentDidMount() {
     this.getInbocDocDetails();
-    this.getEmailValidation();
+    // this.getEmailValidation();
     this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
     // console.log(typeof sessionStorage.getItem("maxFilesize"));
   }
@@ -227,11 +227,10 @@ export default class Inbox extends React.Component {
           }
 
           this.setState({
-            loaded: true,
             inboxDataList: inboxDetails,
+            loaded: true,
           });
-          this.setState({ loaded: true });
-
+          this.getEmailValidation();
 
         }else {
           this.setState({ loaded: true });
@@ -379,7 +378,6 @@ export default class Inbox extends React.Component {
       }
 
       // Output page dimensions
-      console.log("Page dimensions:", pageDimensions);
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
@@ -392,7 +390,6 @@ export default class Inbox extends React.Component {
           }
         }
       }
-      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -449,7 +446,6 @@ export default class Inbox extends React.Component {
   //-----------------Sign Draft File from inbox---
   //downloading PDF file
   async createFile(doc) {
-    // console.log(doc);
     let rowData = doc;
     let response = await fetch(
       URL.viewStoredFile +
@@ -460,7 +456,6 @@ export default class Inbox extends React.Component {
     );
     let data = await response.blob();
     let testResponse = await this.test(data, doc.DOC_NAME, doc.DOC_ID);
-      // console.log(data);
     //this.imageToPDF(data)
   }
 
@@ -472,7 +467,6 @@ export default class Inbox extends React.Component {
     // var file1 = new File([data], fileName.split("@")[1], metadata);
     // file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
     var file1 = new File([data], fileName.trim(), metadata); //------------file name construction-----------
-    // console.log(file1);
     file1.preview = window.URL.createObjectURL(new File([data], fileName.trim(), metadata));
 
     let numPages=null;
@@ -502,7 +496,6 @@ export default class Inbox extends React.Component {
       this.setState({ pageDimensions: pageDimensions});
 
       // Output page dimensions
-      console.log("Page dimensions:", pageDimensions);
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
@@ -514,7 +507,6 @@ export default class Inbox extends React.Component {
           }
         }
       }
-      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -529,7 +521,6 @@ export default class Inbox extends React.Component {
     //   const regex = /\/Type\s*\/Page[^s]/g;
     //   const matches = pdfString.match(regex);
     //   numPages = matches ? matches.length : 0;
-    //   // console.log("Number of pages:", numPages);
     // } catch (error) {
     //   console.error("Error:", error);
     // }
@@ -541,7 +532,6 @@ export default class Inbox extends React.Component {
   //   var reader = new FileReader();
   //   reader.onloadend = function (e) {
   //     var data = reader.result;
-  //     // console.log("data" + data);
   //     if (files.name.includes(".jpg") || files.name.includes(".png")) {
   //       //  this.imageToPDF(files);
   //     } else {
@@ -578,7 +568,6 @@ export default class Inbox extends React.Component {
   // }
 
   onDrop(files, docId, numPages) {
-    // console.log(files);
     var file1 = files;
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -636,7 +625,6 @@ export default class Inbox extends React.Component {
 
   //--Check the file size and opening the modal to collect email details
   emailNotification = (e) => {
-    console.log(e);
     this.setState({ documentId: e.DOC_ID });
 
     var stroagelimtvalue = "KB";
@@ -716,11 +704,8 @@ export default class Inbox extends React.Component {
       })
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
-          // console.log(responseJson.statusDetails)
           var resData = responseJson.valdtnResp;
-          // console.log(resData);
           this.setState({ emailValidation: resData, loaded: true });
-          // console.log(sessionStorage.getItem("minToEmail"));
         } else {
           if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
@@ -746,7 +731,6 @@ export default class Inbox extends React.Component {
         this.setState({ loaded: true });
         alert(e);
       });
-    // console.log(sessionStorage);
   };
 
   //--API for Sending the Email request with attachment-----------
@@ -969,8 +953,6 @@ export default class Inbox extends React.Component {
       alert("Please enter the Email ID");
       return;
     }
-    // console.log(combinedEmailList);
-    // console.log(combinedEmailList.length);
   };
 
   //-----------------View File--------------------
@@ -983,7 +965,6 @@ export default class Inbox extends React.Component {
       btoa(e.DOC_ID);
       this.setState({ fileUrl: pdfurl });
       this.setState({ fileName: e.DOC_NAME });
-      // console.log(pdfurl);
       this.setState({ shown: true})
   };
 
@@ -1842,7 +1823,7 @@ customPlugin() {
           scale={1.0}
           loadedClassName="loadedContent"
         />
-        <MaterialTable
+        {this.state.loaded && <MaterialTable
           columns={columns}
           icons={tableIcons}
           data={inboxData}
@@ -2016,7 +1997,6 @@ customPlugin() {
                 ) {
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
-                  console.log("Only Declined")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2075,7 +2055,6 @@ customPlugin() {
                   !(rowData.hasOwnProperty("PENDING_LIST") ||
                   rowData.hasOwnProperty("DECLINED_LIST")))
                 ) {
-                  console.log("Only Signed")
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
                   return (
@@ -2138,7 +2117,6 @@ customPlugin() {
                 ) {
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
-                  console.log("ALL Three")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2206,7 +2184,6 @@ customPlugin() {
                  
                 ) {
                  
-                  console.log("only pending and declined");
                   // var unSignedList = unSigned.split(",");
                   // unSignedCount = unSignedList.length;
                   return (
@@ -2271,7 +2248,6 @@ customPlugin() {
                   !(rowData.hasOwnProperty("DECLINED_LIST")))
                 
                 ) {
-                  console.log("only pending and Signed");
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -2331,7 +2307,6 @@ customPlugin() {
                   rowData.IS_OWNER == 0 &&
                   (rowData.hasOwnProperty("SIGNED_LIST")&&rowData.hasOwnProperty("DECLINED_LIST")) && !(rowData.hasOwnProperty("PENDING_LIST"))
                 ) {
-        console.log("only signed and declined")
                   return (
                     <div>
                       <div class="MultiSignBtn">
@@ -3116,7 +3091,7 @@ customPlugin() {
               },
             },
           ]}
-        ></MaterialTable>
+        ></MaterialTable>}
         {shown && ReactDOM.createPortal(this.modalBody(), document.body)}
         <Row>
           <Col xs="12" sm="6" md="5">

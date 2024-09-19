@@ -89,11 +89,33 @@ class Register extends Component {
   componentDidMount() {
     var url = window.location.href;
     var TandConditionPage = url.split("/register");
+    let pathURL = this.props.location.search;
     this.setState({
       TandConditionPage: TandConditionPage[0],
       PrivacyPolicyPage: TandConditionPage[0],
     });
     this.getCaptchaCode();
+
+    //to fetch the tokenValue which is provided by the aws marketplace which contains the plan details
+    if (pathURL.includes("?")) {
+      let awsRedirection = pathURL.split("?")[1];
+      let tokenValue = awsRedirection.split("=")[1];
+      console.log("tokenValue",tokenValue);
+      this.resolveCustomer(tokenValue);
+    }
+ 
+
+    const token = document.cookie
+  .split('; ')
+  .find(row => row.startsWith('x-amzn-marketplace-token'))
+  ?.split('=')[1];
+console.log("token",token)
+
+fetch(window.location.href)
+  .then(response => {
+    console.log("location.hrefToken:",response.headers.get('x-amzn-marketplace-token'));
+  });
+
   }
 
   setInput = (e) => {
@@ -613,7 +635,7 @@ class Register extends Component {
                     });
 
 
-
+                    
                   } else {
                     this.setState({ loaded: true });
                     confirmAlert({
@@ -835,16 +857,52 @@ class Register extends Component {
       });
   };
 
+
+  resolveCustomer = (token) => {
+    this.setState({ loaded: false });
+    fetch(URL.resolveCustomer + "?registrationToken=" + token, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.status === "SUCCESS") {
+          this.setState({ loaded: true });
+     alert(responseJson.statusDetails)
+        } else {
+            this.setState({ loaded: true });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {},
+                },
+              ],
+            });
+        }
+      })
+      .catch((e) => {
+        this.setState({ loaded: true });
+        alert(e);
+      });
+  };
+
   // resend otp counter
   startResendOtpTimer = () => {
     this.setState({ timeleft: 30 });
     let timerElement = document.getElementById("timer");
     let resendOtpBtn = document.getElementById("resendOTP");
-
+  
     if (timerElement && resendOtpBtn) {
       resendOtpBtn.style.display = "none";
       timerElement.style.display = "";
-
+  
       let timeleftSec = this.state.timeleft;
 
       // Clear any existing timer event
@@ -858,12 +916,12 @@ class Register extends Component {
         } else {
           timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
         }
-
+  
         timeleftSec -= 1;
       }, 1000);
     }
   };
-
+  
   stopResendOtpTimer = () => {
     if (timerEvent) {
       clearInterval(timerEvent);
@@ -931,7 +989,6 @@ class Register extends Component {
 
   // api to get the list  of subgroup under the corp account.
   getSubgrpForThatcorp = (event) => {
-    // console.log(event.target.value)
     if (event.target.value !== '') {
       let corpId = event.target.value;
       document.getElementById("checkBoxDiffMode").hidden = false;
@@ -1005,7 +1062,6 @@ class Register extends Component {
         });
     }
     else {
-
       this.setState({
         listOfSubGrp: [],
         curntSubGrpList: [],
@@ -1021,7 +1077,6 @@ class Register extends Component {
   // to collect the corp details
   addCorpDetails = (event) => {
     event.preventDefault();
-    // console.log(document.getElementById("EnteredVoucherCode").value.trim())
     let corpSubGrpSelected = [];
     if (document.getElementById("corpUsrID").value === '' || document.getElementById("corpEntyDrpdown").value === '') {
       if (document.getElementById("corpUsrID").value === '') {
@@ -1078,6 +1133,8 @@ class Register extends Component {
       if (document.getElementById("typeOfReqVoucher").checked) {
         if (/^[a-zA-Z0-9]{10}$/.test(this.state.VoucherCode)) {
           canProceed = true
+
+
         } else {
           canProceed = false
           confirmAlert({
