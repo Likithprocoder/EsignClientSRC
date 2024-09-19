@@ -65,6 +65,7 @@ export default class Wallet extends React.Component {
     var body = {
       loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
+      userIP: sessionStorage.getItem("userIP")
     };
     this.setState({ loaded: false });
     fetch(URL.getWalletInfo, {

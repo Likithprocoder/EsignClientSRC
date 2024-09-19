@@ -200,7 +200,7 @@ const ExitFromCorporate = (props) => {
                     </div>
                     {
                         corporateList.map((corporate, index) => (
-                            <div className='corpGrpOperation' hidden={corporate.code === "G001"} key={`corpName${index}`}>
+                            <div className='corpGrpOperation' hidden={corporate.code === "G0001"} key={`corpName${index}`}>
                                 {/* <div style={{ marginRight: "1%", marginBottom: "1%", paddingTop: "1px" }} className={`checkBox${index}`}> */}
                                 {/* <input onClick={(e) => {
                                         if (e.target.checked) {
@@ -213,7 +213,7 @@ const ExitFromCorporate = (props) => {
                                     }} id={corporate.name} type="checkbox" /> */}
                                 {/* </div> */}
                                 <div className='corporateGrpName' key={`grpName${index}`}>
-                                    <span>{Number(index)}. {corporate.name}</span>
+                                    <span>{Number(index)+1}. {corporate.name}</span>
                                 </div>
                                 <div style={{ width: "50%" }}>
                                     <button onClick={e => exitFromParticulrCorpGrp(index, corporate.name)} className='btn btn-success'>Exit the group</button>

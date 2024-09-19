@@ -81,10 +81,10 @@ class QRDetails extends Component {
         loginname: sessionStorage.getItem("username"),
         amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
+        additional_data: { "userIp": sessionStorage.getItem("userIP") }
       };
     }
 
-    console.log(body);
     this.setState({ loaded: false });
     fetch(URL.getQR, {
       method: "POST",
@@ -315,7 +315,7 @@ class QRDetails extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -342,7 +342,7 @@ class QRDetails extends Component {
     const QrURL = this.state.qrUrl;
     const loaded = this.state.loaded;
     const statusMs = this.state.stateMs;
-    
+
     return (
       <div>
         <Loader
@@ -385,22 +385,22 @@ class QRDetails extends Component {
             <tr style={{ height: "25px" }}>
               <td>Net Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.netAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.netAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>GST Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.gstAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.gstAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Other Charges</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.addCharge}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.addCharge}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Total Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.totalAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.totalAmount}</td>
             </tr>
 
             <tr style={{ height: "25px" }}>
@@ -423,7 +423,7 @@ class QRDetails extends Component {
         >
           {/* For Mobile Payments{" "} */}
           <a href={QrURL} class="upi-pay">
-            <Button id="invoicepayBtn" color="primary" onClick={() => {}}>
+            <Button id="invoicepayBtn" color="primary" onClick={() => { }}>
               Pay Using UPI App
             </Button>
           </a>{" "}

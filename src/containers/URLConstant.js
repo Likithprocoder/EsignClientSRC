@@ -150,6 +150,9 @@ let URL = {
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
   deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
+  downloadInvoice:HOST+"downloadInvoice",
+  bulkRegistrationInfo: HOST + "bulkRegistrationInfo",
+
 };
 
 module.exports = { URL };

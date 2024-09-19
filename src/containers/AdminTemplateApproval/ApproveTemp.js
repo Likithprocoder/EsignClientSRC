@@ -295,7 +295,7 @@ function ApproveTemp(props) {
             },
           ], closeOnClickOutside: false
         });
-        props.location.push('/login');
+        props.history.push('/login');
       });
   }, []);
 

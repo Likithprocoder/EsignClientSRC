@@ -83,6 +83,7 @@ const AddressBook = React.lazy(() => import("./containers/AddressBook/AddressBoo
 const AddressBookGroups = React.lazy(() => import("./containers/AddressBook/GroupManagement"));
 const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUsers"));
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
+const BulkRegistationSummary= React.lazy(() => import("./containers/BulkRegistration/BulkRegistationSummary"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 
 
@@ -286,6 +287,11 @@ const routes = [
     path: "/exitFromCorporate",
     name: "Exit or unlink from the corporate entity",
     component: extFrmCorp
+  },
+  {
+    path: "/bulkRegistrationSummary",
+    name: "Bulk Registration Summary",
+    component: BulkRegistationSummary
   }
 
 ];

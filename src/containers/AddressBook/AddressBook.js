@@ -8,17 +8,10 @@ import "./AddressBook.css";
 import { URL } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
 import { UserAddOutlined, UsergroupAddOutlined, EditOutlined } from '@ant-design/icons';
-
-
 import {
     InputGroup,
     Row,
 } from "reactstrap";
-
-
-
-
-
 
 var Loader = require("react-loader");
 class AddressBook extends Component {
