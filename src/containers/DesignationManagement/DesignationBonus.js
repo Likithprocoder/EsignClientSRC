@@ -296,11 +296,13 @@ class DesignationBonus extends Component {
             this.setState({ designation: filteredValue, submitButton: false });
         }
         else if (e.target.id == 'description') {
-            let filtereddescription = value.replace(/[^a-zA-Z0-9 ]/g, '');
+            let filtereddescription = value.trim().replace(/[^a-zA-Z0-9 ]/g, '');
             this.setState({ description: filtereddescription, submitButton: false });
         }
+    
         else {
-            this.setState({ units: value, submitButton: false });
+            let filteredunit = value.replace(/[^0-9]/g, '').slice(0, 5); ;
+            this.setState({ units: filteredunit, submitButton: false });
         }
 
 
@@ -603,7 +605,7 @@ class DesignationBonus extends Component {
                                         <label className="inputGrpLabel">Bonus Credits:&nbsp;</label>
                                         <Input
                                             className="inputGrpInput"
-                                            type="number"
+                                            type="text"
                                             placeholder="Enter Bonus Credits"
                                             id="units"
                                             value={this.state.units}
