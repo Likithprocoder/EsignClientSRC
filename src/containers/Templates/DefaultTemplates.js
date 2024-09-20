@@ -61,7 +61,7 @@ class DefaultTemplates extends Component {
                   this.props.history.push("/login");
                 },
               },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
           });
         }
         else {
@@ -75,7 +75,7 @@ class DefaultTemplates extends Component {
 
                 },
               },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
           });
           this.setState({ loaded: true });
         }
@@ -124,9 +124,13 @@ class DefaultTemplates extends Component {
       .then((response) => response.json())
       .then((data) => {
         // if status is success set the data..
-
         if (data.status === "SUCCESS") {
           if (data.statusDetails === "Templates are unavailable within this group!") {
+            this.setState({
+              status: "",
+              statusdetails: "",
+              templateListArray: [],
+            });
             confirmAlert({
               message: data.statusDetails,
               buttons: [
@@ -135,12 +139,7 @@ class DefaultTemplates extends Component {
                   className: "confirmBtn",
                   onClick: () => { },
                 },
-              ],closeOnClickOutside: false
-            });
-            this.setState({
-              status: "",
-              statusdetails: "",
-              templateListArray: [],
+              ], closeOnClickOutside: false
             });
           }
           else {
@@ -163,7 +162,7 @@ class DefaultTemplates extends Component {
                   this.props.history.push("/login");
                 },
               },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
           });
           this.props.history.push("/login");
         }
@@ -185,7 +184,7 @@ class DefaultTemplates extends Component {
   };
 
   render() {
-    const { GroupNameAndCode, expanded, templateListArray, selectedOption } =
+    const { GroupNameAndCode, expanded, templateListArray } =
       this.state;
 
     return (
