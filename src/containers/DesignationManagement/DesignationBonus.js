@@ -75,10 +75,10 @@ class DesignationBonus extends Component {
                                     </a>
                                 )
                             }
-                            &nbsp; / &nbsp; <Tooltip title="Edit details" color={'rgba(0, 0, 0, 0.54)'}>
+                            &nbsp; / &nbsp; <Tooltip title="Edit details"   color={'rgba(0, 0, 0, 0.54)'}>
                                 <EditOutlined onClick={() => this.handle(record)} />
                             </Tooltip> &nbsp; / &nbsp;
-                            <Tooltip title="Remove Designation" color={'rgba(0, 0, 0, 0.54)'} >
+                            <Tooltip title="Remove Designation" placement="topLeft" color={'rgba(0, 0, 0, 0.54)'} >
 
                                 <a
                                     className='fa fa-trash'

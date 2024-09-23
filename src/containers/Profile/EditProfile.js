@@ -187,53 +187,7 @@ class EditProfile extends Component {
       userIP: sessionStorage.getItem("userIP"),
     };
     if (this.state.optnType === "USREDM"  || this.state.optnType === "USREDE" ||this.state.optnType === "USREDU") {
-    //   if (
-    //     this.state.mobileNumOtp.length !== 0 &&
-    //     this.state.mobileNumOtp.length == 6 &&
-    //     this.state.mobileNumOtp.trim() !== ""
-    //   ) {
-    //     json.mobileNumOtp = btoa(this.state.mobileNumOtp);
-    //     json.mobRefNo = btoa(this.state.mobRefNo);
-    //     json.optnType = this.state.optnType;
-    //     this.editProfileCall(json);
-    //   } else {
-    //     confirmAlert({
-    //       message: "Enter a Valid Mobile OTP",
-    //       buttons: [
-    //         {
-    //           label: "OK",
-    //           className: "confirmBtn",
-    //           onClick: () => {},
-    //         },
-    //       ],
-    //     });
-    //   }
-    // } 
-    // else if (this.state.optnType === "USREDE") {
-    //   if (
-    //     this.state.emailOtp.length !== 0 &&
-    //     this.state.emailOtp.length == 6 &&
-    //     this.state.emailOtp.trim() !== ""
-    //   ) {
-    //     json.emailRefNo = btoa(this.state.emailRefNo);
-    //     json.emailOtp = btoa(this.state.emailOtp);
-    //     json.optnType = btoa(this.state.optnType);
-
-    //     this.editProfileCall(json);
-    //   } else {
-    //     confirmAlert({
-    //       message: "Enter a Valid Email OTP",
-    //       buttons: [
-    //         {
-    //           label: "OK",
-    //           className: "confirmBtn",
-    //           onClick: () => {},
-    //         },
-    //       ],
-    //     });
-    //   }
-    // } 
-    // else if (this.state.optnType === "USREDU") {
+   
       if (
         this.state.mobileNumOtp.length !== 0 &&
         this.state.mobileNumOtp.length == 6 &&
@@ -244,11 +198,11 @@ class EditProfile extends Component {
           this.state.emailOtp.length == 6 &&
           this.state.emailOtp.trim() !== ""
         ) {
-          json.emailOtp = btoa(this.state.emailOtp);
-          json.mobileNumOtp = btoa(this.state.mobileNumOtp);
-          json.optnType = btoa(this.state.optnType);
-          json.emailRefNo = btoa(this.state.emailRefNo);
-          json.mobRefNo = btoa(this.state.mobRefNo);
+          json.emailOtp = this.state.emailOtp;
+          json.mobileNumOtp = this.state.mobileNumOtp;
+          json.optnType = this.state.optnType;
+          json.emailRefNo = this.state.emailRefNo;
+          json.mobRefNo = this.state.mobRefNo;
 
           this.editProfileCall(json);
         } else {
