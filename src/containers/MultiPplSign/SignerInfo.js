@@ -1123,15 +1123,23 @@ if(this.state.declineSigning===false){
     let endDateValue = "";
     // to display the default enddate in the browser
     //date format yyyy-mm-dd
-    if (e.getDate() < 10 && e.getMonth() < 10) {
-      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-0${e.getDate()}`;
-    } else if (e.getDate() < 10 && e.getMonth() > 9) {
-      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-0${e.getDate()}`;
-    } else if (e.getDate() > 9 && e.getMonth() < 10) {
-      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-${e.getDate()}`;
-    } else {
-      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
-    }
+    // if (e.getDate() < 10 && (e.getMonth() + 1) < 10) {
+    //   endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-0${e.getDate()}`;
+    // } else if (e.getDate() < 10 && (e.getMonth() + 1) > 9) {
+    //   endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-0${e.getDate()}`;
+    // } else if (e.getDate() > 9 && (e.getMonth() + 1) < 10) {
+    //   endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-${e.getDate()}`;
+    // } else {
+    //   endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
+    // }
+
+    // date format yyyy-mm-dd
+    const year = e.getFullYear();
+    const month = String(e.getMonth() + 1).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
+    const day = String(e.getDate()).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
+    endDateValue = `${year}-${month}-${day}`;
+    console.log(endDateValue);
+
     this.setState({
       startDate: `${d.getFullYear()}-${
         d.getMonth() + 1
@@ -1249,7 +1257,63 @@ if(this.state.declineSigning===false){
     }));
   }
 
+handleDateInput(e) {
+  const dateValue = e.target.value;
+  const today = new Date();
+  const minDate = new Date(today); // Today
+  const maxDate = new Date("2037-12-31");
+  minDate.setDate(today.getDate() - 15); // Subtract 15 days from today
 
+  // Regex to match the date format YYYY-MM-DD
+  const datePattern = /^\d{0,4}-\d{0,2}-\d{0,2}$/;
+
+  // Check if the typed value matches the date pattern
+  if (!datePattern.test(dateValue)) {
+    e.target.value = dateValue.slice(0, -1); // Remove the last character if invalid
+    return;
+  }
+
+  // Split the date into parts
+  const [year, month, day] = dateValue.split('-');
+
+  // If the year has more than 4 digits, trim it to 4
+  if (year && year.length > 4) {
+    e.target.value = `${year.slice(0, 4)}-${month || '01'}-${day || '01'}`;
+    return;
+  }
+
+  // Validate the month (must be between 01 and 12)
+  if (month.length === 2 && (parseInt(month) < 1 || parseInt(month) > 12)) {
+    e.target.value = this.state.endDate; // Reset to the previous valid date
+    // alert("Please enter a valid month (01 to 12).");
+    return;
+  }
+
+  // Allow day input up to two digits
+  if (day && day.length > 2) {
+    e.target.value = `${year}-${month || '01'}-${day.slice(0, 2)}`;
+    return;
+  }
+
+  // Validate the date only if the input is complete
+  if (year.length === 4 && month.length === 2 && day.length === 2) {
+    const selectedDate = new Date(dateValue);
+
+    // Check if the selected date is before minDate (15 days ago)
+    if (selectedDate < minDate) {
+      e.target.value = this.state.endDate; // Reset to the previous valid date
+      // alert(`Please select a date that is today or within the last 15 days.`);
+      return;
+    }
+
+    // Check if the date exceeds the max date
+    if (selectedDate > maxDate) {
+      e.target.value = this.state.endDate; // Reset to the previous valid date
+      // alert(`Please select a date on or before ${maxDate.toISOString().split('T')[0]}.`);
+      return;
+    }
+  }
+}
 
   render() {
     return (
@@ -1287,8 +1351,10 @@ if(this.state.declineSigning===false){
             type="date"
             value={this.state.endDate}
             min={this.state.min}
+            max="2037-12-31"
             name="endDate"
             onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
           />
           <label id="enddate">Document Name: &nbsp;</label>
           <label id="docName">
