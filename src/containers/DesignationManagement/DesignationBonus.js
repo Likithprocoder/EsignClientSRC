@@ -75,7 +75,7 @@ class DesignationBonus extends Component {
                                     </a>
                                 )
                             }
-                            &nbsp; / &nbsp; <Tooltip title="Edit details"   color={'rgba(0, 0, 0, 0.54)'}>
+                            &nbsp; / &nbsp; <Tooltip title="Edit details" color={'rgba(0, 0, 0, 0.54)'}>
                                 <EditOutlined onClick={() => this.handle(record)} />
                             </Tooltip> &nbsp; / &nbsp;
                             <Tooltip title="Remove Designation" placement="topLeft" color={'rgba(0, 0, 0, 0.54)'} >
@@ -296,12 +296,12 @@ class DesignationBonus extends Component {
             this.setState({ designation: filteredValue, submitButton: false });
         }
         else if (e.target.id == 'description') {
-            let filtereddescription = value.trim().replace(/[^a-zA-Z0-9 ]/g, '');
+            let filtereddescription = value.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, ' ');
             this.setState({ description: filtereddescription, submitButton: false });
         }
-    
+
         else {
-            let filteredunit = value.replace(/[^0-9]/g, '').slice(0, 5); ;
+            let filteredunit = value.replace(/[^0-9]/g, '').slice(0, 5);;
             this.setState({ units: filteredunit, submitButton: false });
         }
 
@@ -314,7 +314,7 @@ class DesignationBonus extends Component {
     addOrEditDesignationMapping = (e) => {
         e.preventDefault();
 
-        console.log(this.state.designation, this.state.description, this.state.units);
+        // console.log(this.state.designation, this.state.description, this.state.units);
 
         if (this.state.designation === "") {
             confirmAlert({
@@ -330,7 +330,7 @@ class DesignationBonus extends Component {
             return;
         }
 
-        if (this.state.description === "") {
+        if (this.state.description.trim() === "") {
             confirmAlert({
                 message: "Please enter the Designation Description.",
                 buttons: [
@@ -370,9 +370,10 @@ class DesignationBonus extends Component {
             return;
         }
 
+
         let jsonArray = [{
             "designation": this.state.designation,
-            "designation_description": this.state.description,
+            "designation_description": this.state.description.trim(),
             "bonusCredits": this.state.units
 
         }]
@@ -388,7 +389,7 @@ class DesignationBonus extends Component {
                 authToken: sessionStorage.getItem("authToken"),
                 slNo: this.state.bonusId,
                 designation: this.state.designation,
-                designation_descp: this.state.description,
+                designation_descp: this.state.description.trim(),
                 bonusCredits: this.state.units
             };
 
