@@ -126,6 +126,81 @@ function TempDraftData(props) {
   ];
 
   useEffect(() => {
+    // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+    // If corporate is disabled then redirect to the old page.
+    const corpDataInputs = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify({
+        authToken: sessionStorage.getItem("authToken"),
+        corpId: sessionStorage.getItem("corpId")
+      })
+    };
+
+    fetch(URL.getCorpDetails, corpDataInputs)
+      .then(response => (response.json()))
+      .then(data => {
+        if (data.status === "SUCCESS") {
+          if (data.details[0]["status"] === 0) {
+            confirmAlert({
+              message: "Your corporate is currently disabled. Please contact your administrator!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    props.history.push("/accountInfo");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+        }
+        else if (data.statusDetails === "Session Expired") {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  props.history.push("/login");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+        else {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  props.history.push("/accountInfo");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        confirmAlert({
+          message: `Something went wrong. please try again!`,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+            },
+          ], closeOnClickOutside: false
+        });
+        props.location.push('/login');
+      });
+
     const options = {
       method: "POST",
       headers: {
@@ -188,7 +263,7 @@ function TempDraftData(props) {
         if (data.status === "success") {
           setTimeout(() => { }, 1500);
           let state = {
-            userDetails: data.tempDetail, 
+            userDetails: data.tempDetail,
             templateCode: data.tempCode,
             templateName: data?.templateName,
             templateAttachments: data.templateAttachments,

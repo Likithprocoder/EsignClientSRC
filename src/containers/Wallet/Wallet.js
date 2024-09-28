@@ -70,6 +70,7 @@ export default class Wallet extends React.Component {
     var body = {
       loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
+      userIP: sessionStorage.getItem("userIP")
     };
     this.setState({ loaded: false });
     fetch(URL.getWalletInfo, {
@@ -614,11 +615,11 @@ export default class Wallet extends React.Component {
                 <table>
                   <tbody>
                     <tr style={{ height: "30px" }}>
-                      <td style={{ width: "30%", height: "25px" }}>
+                      <td style={{ width: "50%", height: "25px" }}>
                         Full Name
                       </td>
                       <td style={{ width: "5%" }}>:</td>
-                      <td style={{ width: "65%" }} id="name"></td>
+                      <td style={{ width: "45%" }} id="name"></td>
                     </tr>
                     <tr style={{ height: "30px" }}>
                       <td>Aadhaar sign units</td>

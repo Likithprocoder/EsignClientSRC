@@ -179,6 +179,7 @@ const Preview = (props) => {
     var body = {
       loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
+      userIP: sessionStorage.getItem("userIP")
     };
 
     fetch(URL.getWalletInfo, {

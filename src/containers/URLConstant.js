@@ -12,7 +12,7 @@ var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
 const footerContent =
-  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.27";
+  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
@@ -116,7 +116,7 @@ let URL = {
   getAllTemplateGrps: HOST + "getTemplateGrps",
   getUserDetails: HOST + "getUserDetails",
   viewAddedTemplateUsers: HOST + "viewTemplateUsers",
-  addTemplateUsers: HOST + "addTemplateUsers",
+  addCorporateUsers: HOST + "addCorporateUsers",
   removeTemplateUsers: HOST + "removeTemplateUsers",
   getCorpDetails: HOST + "getCorpDetails",
   modifygrpAdmin: HOST + "modifygrpAdmin",

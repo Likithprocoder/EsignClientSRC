@@ -81,6 +81,7 @@ class QRDetails extends Component {
         loginname: sessionStorage.getItem("username"),
         amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
+        additional_data: { "userIp": sessionStorage.getItem("userIP") }
       };
     }
 

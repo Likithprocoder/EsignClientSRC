@@ -81,78 +81,94 @@ function AddEndUsrToTempGrp(props) {
             });
         }
         else {
-            let mobileNumberRegex = new RegExp(/^[6-9]{1}[0-9]{9}$/);
-            let allowMobileNumber = mobileNumberRegex.test(document.getElementById("EDUSRMobNumOrEmlID").value);
-            let emailIdRegex = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-            let allowEmailId = emailIdRegex.test(document.getElementById("EDUSRMobNumOrEmlID").value);
-            if (allowMobileNumber || allowEmailId) {
-                const url = URL.getUserDetails;
-                const options = {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        authToken: sessionStorage.getItem("authToken"),
-                        searchValue: document.getElementById("EDUSRMobNumOrEmlID").value
-                    }),
-                };
-                fetch(url, options)
-                    .then((response) => response.json())
-                    .then((responsedata) => {
-                        if (responsedata.status === "SUCCESS") {
-                            setEndUsrDetail(responsedata);
-                            setHideAddEachUser(false);
-                        }
-                        else if (responsedata.statusDetails === "Session Expired!!") {
-                            confirmAlert({
-                                message: responsedata.statusDetails,
-                                buttons: [
-                                    {
-                                        label: "OK",
-                                        className: "confirmBtn",
-                                        onClick: () => {
-                                            props.history.push("/login");
-                                        },
-                                    },
-                                ],
-                            });
-                        } else {
-                            confirmAlert({
-                                message: responsedata.statusDetails,
-                                buttons: [
-                                    {
-                                        label: "OK",
-                                        className: "confirmBtn",
-                                    },
-                                ],
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        confirmAlert({
-                            message: `SomeThing Went Wrong PLease Try Again`,
-                            buttons: [
-                                {
-                                    label: "OK",
-                                    className: "confirmBtn",
-                                },
-                            ],
-                        });
-                    });
-            } else {
+            event.preventDefault();
+            // for the platform admin to search only any one user.
+            if (sessionStorage.getItem("roleID") === "1" && endUserDetail.length === 1) {
                 confirmAlert({
-                    message: "Entered Value is Invalid!",
+                    message: "You can add only one user to the group!",
                     buttons: [
                         {
                             label: "OK",
-                            className: "confirmBtn",
-                            onClick: () => { return },
+                            className: "confirmBtn"
                         },
                     ],
                 });
+            } else {
+
+                let mobileNumberRegex = new RegExp(/^[6-9]{1}[0-9]{9}$/);
+                let allowMobileNumber = mobileNumberRegex.test(document.getElementById("EDUSRMobNumOrEmlID").value);
+                let emailIdRegex = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+                let allowEmailId = emailIdRegex.test(document.getElementById("EDUSRMobNumOrEmlID").value);
+                if (allowMobileNumber || allowEmailId) {
+                    const url = URL.getUserDetails;
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            authToken: sessionStorage.getItem("authToken"),
+                            searchValue: document.getElementById("EDUSRMobNumOrEmlID").value
+                        }),
+                    };
+                    fetch(url, options)
+                        .then((response) => response.json())
+                        .then((responsedata) => {
+                            if (responsedata.status === "SUCCESS") {
+                                setEndUsrDetail(responsedata);
+                                setHideAddEachUser(false);
+                            }
+                            else if (responsedata.statusDetails === "Session Expired!!") {
+                                confirmAlert({
+                                    message: responsedata.statusDetails,
+                                    buttons: [
+                                        {
+                                            label: "OK",
+                                            className: "confirmBtn",
+                                            onClick: () => {
+                                                props.history.push("/login");
+                                            },
+                                        },
+                                    ],
+                                });
+                            } else {
+                                confirmAlert({
+                                    message: responsedata.statusDetails,
+                                    buttons: [
+                                        {
+                                            label: "OK",
+                                            className: "confirmBtn",
+                                        },
+                                    ],
+                                });
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            confirmAlert({
+                                message: `SomeThing Went Wrong PLease Try Again`,
+                                buttons: [
+                                    {
+                                        label: "OK",
+                                        className: "confirmBtn",
+                                    },
+                                ],
+                            });
+                        });
+                } else {
+                    confirmAlert({
+                        message: "Entered Value is Invalid!",
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => { return },
+                            },
+                        ],
+                    });
+                }
             }
+
         }
 
     }
@@ -257,7 +273,7 @@ function AddEndUsrToTempGrp(props) {
                                     userDetails: endUserDetail
                                 })
                             }
-                            fetch(URL.addTemplateUsers, options)
+                            fetch(URL.addCorporateUsers, options)
                                 .then((response) => response.json()
                                     .then((data) => {
                                         if (data.status === "Success") {

@@ -213,7 +213,7 @@ const ExitFromCorporate = (props) => {
                                     }} id={corporate.name} type="checkbox" /> */}
                                 {/* </div> */}
                                 <div className='corporateGrpName' key={`grpName${index}`}>
-                                    <span>{Number(index)}. {corporate.name}</span>
+                                    <span>{Number(index)+1}. {corporate.name}</span>
                                 </div>
                                 <div style={{ width: "50%" }}>
                                     <button onClick={e => exitFromParticulrCorpGrp(index, corporate.name)} className='btn btn-success'>Exit the group</button>
