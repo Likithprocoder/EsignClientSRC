@@ -29,7 +29,7 @@ class EmployeeList extends Component {
                 {
                     title: 'Units Subscribed',
                     dataIndex: 'unitsSubscribed',
-                    width: '10%',
+                    // width: '10%',
                     sorter: (a, b) => a.unitsSubscribed - b.unitsSubscribed,
                 },
 
@@ -50,7 +50,6 @@ class EmployeeList extends Component {
                     width: '15%',
                     render: (text, record) => (
                         <div>
-                            {console.log(record)}
                             {
                                 record.empStatus == 1 ? (
                                     <a
@@ -100,7 +99,8 @@ class EmployeeList extends Component {
             designation: "",
             readOnly: false,
             editMode: 0,
-            inputColor: "lightgrey"
+            inputColor: "lightgrey",
+            isEmpDisable: false
         };
         this.inputRef = React.createRef();
     }
@@ -157,9 +157,7 @@ class EmployeeList extends Component {
                 console.log(data);
                 if (data.status === "SUCCESS") {
                     if (data.statusDetails == "Employee removed successfully") {
-                        this.setState({
-                            contactModal: false,
-                        });
+                        this.setState({ contactModal: false });
                     }
                     confirmAlert({
                         message: data.statusDetails,
@@ -240,6 +238,12 @@ class EmployeeList extends Component {
                         designation: data.corpEmployee.designation
                     });
 
+                    if (record.empStatus === "0") {
+                        this.setState({ isEmpDisable: true });
+                    } else {
+                        this.setState({ isEmpDisable: false});
+                    }
+
                 } else if (data.statusDetails === "Session Expired") {
                     confirmAlert({
                         message: data.statusDetails,
@@ -303,9 +307,7 @@ class EmployeeList extends Component {
   {
       label: "Cancel",
       className: "confirmBtn",
-      onClick: () => {  this.setState({
-          contactModal: true,
-      }); },
+      onClick: () => {},
   },
   ],
         });
@@ -336,130 +338,11 @@ class EmployeeList extends Component {
     {
         label: "Cancel",
         className: "confirmBtn",
-        onClick: () => {  this.setState({
-            contactModal: true,
-        }); },
+        onClick: () => {},
     },
     ],
           });
     }   
-
-    // addOrEditContact = (e) => {
-    //     e.preventDefault();
-    //     let name = document.getElementById("contactName").value.trim();
-    //     let mobile = document.getElementById("contactMobile").value.trim();
-    //     let email = document.getElementById("contactEmail").value.trim();
-    //     let designation = document.getElementById("contactDesig").value.trim();
-
-    //     //validation
-    //     const mobileRegex = /^[6-9]\d{9}$/;
-    //     const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[a-zA-Z]{2,6}$/;
-
-    //     if (name === "" || name.length == 0) {
-    //         alert("Please enter contact name")
-    //         return false;
-    //     } else if (mobile.length != 10 || !mobileRegex.test(mobile)) {
-    //         alert("Please enter a valid mobile number")
-    //         return false;
-    //     } else if (email === "" || email.length < 5 || !emailRegex.test(email)) {
-    //         alert("Please enter valid email id")
-    //         return false;
-    //     } else if (designation === "" || designation.length == 0) {
-    //         alert("Please enter designation")
-    //         return false;
-    //     }
-
-    //     let disaplayMessage = "Employee details are modified, Do you want to save?";
-
-    //     confirmAlert({
-    //         message: disaplayMessage,
-    //         buttons: [
-    //             {
-    //                 label: "OK",
-    //                 className: "confirmBtn",
-    //                 onClick: () => {
-    //                     let body = {}
-    //                     let url = '';
-
-    //                     body = {
-    //                         authToken: sessionStorage.getItem("authToken"),
-    //                         empId: this.state.empId,
-    //                         updatedInfo: {
-    //                             "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
-    //                         }
-    //                     }
-    //                     console.log(body)
-    //                     url = URL.updateCorpEmpMapping;
-
-    //                     this.setState({ loaded: false })
-    //                     fetch(url, {
-    //                         method: "POST",
-    //                         headers: {
-    //                             "Content-Type": "application/json",
-    //                         },
-    //                         body: JSON.stringify(body),
-    //                     })
-    //                         .then((response) => {
-    //                             return response.json();
-
-    //                         })
-    //                         .then((responseJson) => {
-    //                             if (responseJson.status === "SUCCESS") {
-    //                                 this.setState({ loaded: true })
-    //                                 //   this.setState({ contactModal: false })
-    //                                 confirmAlert({
-    //                                     message: responseJson.statusDetails,
-    //                                     closeOnClickOutside: false,
-    //                                     buttons: [
-    //                                         {
-    //                                             label: "OK",
-    //                                             className: "confirmBtn",
-    //                                             onClick: () => {
-    //                                                 this.setState({ contactModal: false })
-    //                                                 //   window.location.reload()
-    //                                                 this.fetchEmployeeList();
-    //                                             }
-    //                                         },
-    //                                     ]
-    //                                 })
-    //                             }
-    //                             else {
-    //                                 this.setState({ loaded: true })
-    //                                 if (responseJson.statusDetails === "Session Expired!!") {
-    //                                     alert("Session Expired!!")
-    //                                     sessionStorage.clear();
-    //                                     this.setState({ loaded: true });
-    //                                     this.props.history.push("/login");
-    //                                 } else {
-    //                                     confirmAlert({
-    //                                         message: responseJson.statusDetails,
-    //                                         buttons: [
-    //                                             {
-    //                                                 label: "OK",
-    //                                                 className: "confirmBtn",
-    //                                                 onClick: () => { }
-    //                                             }]
-    //                                     })
-
-    //                                     this.setState({ loaded: true });
-    //                                 }
-    //                             }
-
-    //                         })
-    //                         .catch((e) => {
-    //                             this.setState({ loaded: true });
-    //                             alert(e);
-    //                         });
-    //                 },
-    //             },
-    //             {
-    //                 label: "Cancel",
-    //                 className: "confirmBtn",
-    //                 onClick: () => { },
-    //             },
-    //         ],
-    //     });
-    // }
 
     addOrEditContact = (e) => {
         e.preventDefault();
@@ -668,13 +551,13 @@ class EmployeeList extends Component {
                 />
 
 
-                <div style={{ display: "flex", width: "100%", marginBottom: "12px", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", marginBottom: "12px", alignItems: "center", justifyContent: "space-between", float: "right"}}>
                     {/* <div id='tempGroupListCss'>
 
                         <span>Allocate bonus credits based on each designation level.</span>
                       
                     </div> */}
-                    <div className='viewAndAddUserBtn' style={{ width: "22%", textAlign: "end" }}>
+                    <div className='viewAndAddUserBtn'>
                         <Tooltip title="Add employee" color={'rgba(0, 0, 0, 0.54)'} >
                             <button style={{ height: "fit-content" }} type='submit' onClick={(e) => this.openUploadPage(e)} className='btn btn-success'>Add employee</button>
                         </Tooltip>
@@ -709,10 +592,10 @@ class EmployeeList extends Component {
                     maskClosable={false}
                     style={{ zIndex: 999 }}
                     footer={[
-                        <Button className="btn btn-danger rounded-pill" id="deleteEmp" key="back" onClick={this.deleteEmpById} style={{ height: "fit-content", marginRight: "5px" }}>
+                        <Button className="btn btn-danger rounded-pill" id="deleteEmp" key="back" onClick={this.deleteEmpById} style={{ height: "fit-content", marginRight: "5px" }} disabled={this.state.isEmpDisable}>
                             Delete
                         </Button>,
-                        <Button className="btn btn-primary rounded-pill" id="editEmp" key="edit" style={{ backgroundColor: "#1dd1a1", height: "fit-content", color: "white" }} onClick={this.toggleReadOnly}>
+                        <Button className="btn btn-primary rounded-pill" id="editEmp" key="edit" style={{ backgroundColor: "#1dd1a1", height: "fit-content", color: "white" }} onClick={this.toggleReadOnly} disabled={this.state.isEmpDisable}>
                             <span>Edit</span>
                         </Button>,
                         <Button className="btn btn-danger rounded-pill" id="cancelEmp" key="back" onClick={this.onCloseContactModal} style={{ height: "fit-content", marginRight: "5px", display: "none" }}>

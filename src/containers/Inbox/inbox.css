@@ -43,6 +43,15 @@
 }
 
 @media screen and (min-width: 800px) {
+  #eAttachment {
+    /* margin-left: auto; */
+    min-width: 575px;
+  }
+
+  #attachmentIcon {
+    margin-left: auto;
+  }
+
   .searchBodyCss {
     width: 100%;
     display: flex;
@@ -214,7 +223,7 @@ hr {
   margin-top: 5px;
 }
 
-#unHide {
+/* #unHide {
   background: none !important;
   outline: none !important;
   border: none;
@@ -222,7 +231,7 @@ hr {
   text-decoration: underline;
   block-size: 25px;
   margin: auto;
-}
+} */
 
 
 #opensignersCommentsModalpara-text {
@@ -360,68 +369,9 @@ hr {
   width: 10px;
 }
 
-/* #emailModalContainer {
-  width: 80%; /* Adjust the width as needed */
-  /* max-width: 600px; Adjust the maximum width as needed */
-  /* margin: auto; Center the modal horizontally */
-/* } */
 
-/* @media screen and (max-width: 768px) {
-  #emailModalContainer {
-    width: 90%;
-  }
-} */
-
-/* @media screen and (max-width: 576px) {
-  #emailModalContainer {
-    width: 95%;
-  }
-  #modalHeading {
-    width: 50% !important;
-  }
-  #emailmodalpara-text {
-    margin-left: 100px !important;
-  }
-} */
-
-
-/* #emailModalContainer {
-  width: 80%;
-  max-width: 600px;
-  margin: auto;
-}
-
-@media (max-width: 768px) {
-  #emailModalContainer {
-    width: 100%;
-  }
-}
-
-@media (max-width: 576px) {
-  #emailModalContainer {
-    width: 100%;
-  }
-} */
-
-/* #emailmodalrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
-
-/* #eAttachment {
-  width: 100%;
-  max-width: 100%;
-} */
-
-/* #submitBtn {
-  text-align: center;
-  margin-top: 20px;
-} */
-
-/* #submitBtn button {
-  padding: 10px 20px;
-} */
+skdjbakjdsbakjds
+//check whther this is needed
 
 .col {
   flex: 1; /* Ensure the column can grow */
@@ -445,7 +395,3 @@ hr {
   50% { opacity: 0; }
 }
 
-/* #signIcon {
-  display: flex;
-  justify-content: center !important;
-} */

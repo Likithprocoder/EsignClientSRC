@@ -3093,7 +3093,6 @@ customPlugin() {
           ]}
         ></MaterialTable>}
         {shown && ReactDOM.createPortal(this.modalBody(), document.body)}
-        <Row>
           <Col xs="12" sm="6" md="5">
             <Modal
               style={{ marginTop: "10%" }}
@@ -3130,7 +3129,6 @@ customPlugin() {
                       >
                         Cc
                       </button>
-                      {/* <button id="unHide" onClick={this.unHideCcField} title="Add Bcc recipients">Bcc</button> */}
                     </InputGroup>
                     <InputGroup
                       className="mb-3"
@@ -3190,8 +3188,9 @@ customPlugin() {
                         autoComplete="off"
                       ></textarea>
                     </InputGroup>
-                    <InputGroup className="mb-3" style={{ marginLeft: "65px" }}>
-                      <InputGroupAddon addonType="prepend">
+                    {/* <InputGroup className="mb-3" style={{ marginLeft: "65px" }}> */}
+                    <InputGroup className="mb-3" >
+                      <InputGroupAddon addonType="prepend" id="attachmentIcon">
                         <InputGroupText
                           style={{ border: "none", backgroundColor: "unset" }}
                         >
@@ -3212,12 +3211,14 @@ customPlugin() {
                           readOnly={true}
                           value={this.state.attachment}
                           style={{
-                            width: "575px",
+                            // width: "575px",
+                            width: "100%",      // Set width to 100%
+                            // maxWidth: "600px",  // Add a max-width for larger screens
+                            // minWidth: "254px",  // Add a min-width for smaller screens
                             height: "35px",
                             backgroundColor: "#e8eaeb",
                             borderRadius: "unset",
                           }}
-                          // style={{ fontSize: "xxx-large", height: "35px"}}
                         />
                       </InputGroupAddon>
                     </InputGroup>
@@ -3326,7 +3327,6 @@ customPlugin() {
               </div>
             </Modal>
           </Col>
-        </Row>
       </div>
     );
   }

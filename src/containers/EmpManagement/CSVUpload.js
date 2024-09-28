@@ -119,7 +119,7 @@ export default class CSVUpload extends React.Component {
             });
             this.setState({ loaded: true });
           }
-          if (responseJson.statusDetails === "No records available in uploaded file" || responseJson.statusDetails === "Invalid data, contains more or less than 5 columns") {
+          if (responseJson.statusDetails === "No records available in uploaded file" || responseJson.statusDetails === "The uploaded file is empty. Please upload a valid file with data." || responseJson.statusDetails === "File name contains invalid characters. Only alphanumeric characters, dots, hyphens, underscores, and parentheses are allowed." || responseJson.statusDetails === "Invalid file format. Please upload a CSV file." || responseJson.statusDetails === "Invalid data, contains more or less than 5 columns" || responseJson.statusDetails === "Invalid data, incorrect column name, expected [Emp Id, First Name, Mobile No, Email Id, Designation]") {
           } else {
             if ( responseJson.failureCount == 0 ) {
               var msg = "";

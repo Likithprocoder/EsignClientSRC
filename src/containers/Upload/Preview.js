@@ -1099,6 +1099,8 @@ const Preview = (props) => {
     //Preparing equal and unequal pages incase of multiple page document
     const unequalPages = [];
     const equalPages = [];
+
+    //Enters into this block only if the document has more than 1 page
     if (pageDimensions.length > 1) {
       pageDimensions.forEach(page => {
         const roundedWidth = Math.round(page.width);
@@ -1121,12 +1123,9 @@ const Preview = (props) => {
     
       // Array to store the final result    
       let docuPageTestElement = document.getElementById("docuPageTest" + currentPage);
-      console.log(docuPageTestElement);
-      console.log(docuPageTestElement?.clientWidth);
-      console.log(docuPageTestElement?.clientHeight);
       if (docuPageTestElement) {
         clearInterval(intervalId);//It stops the function checkForElement from executing further
-
+        
         //Setting the width to static so that it will work even when assigned from old UI
         //Since we have a scroll in new UI and not in old UI 
         if (sessionStorage.getItem("TotalPages") == 1) {
@@ -1135,7 +1134,7 @@ const Preview = (props) => {
           document.getElementById("parent-div").style.width = "476.67px";
         }
 
-      // Call this function with the unequal pages array enters on in case of muti page document
+      // Call this function with the unequal pages array ..enters on in case of muti page document
       if (!props?.location?.state?.details?.equalPageDimensions && unequalPages.length > 0) {
           setLoaded(false);
           if (currentPage == 1 && equalPages[0] == 1) {
@@ -1143,10 +1142,9 @@ const Preview = (props) => {
             jumpToPage(equalPages[0] - 1)
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
-
+    
           //One record from equal pages to create All pages object
           const pageElementEqual = document.getElementById(`docuPageTest${equalPages[0]}`);
-          console.log(pageElementEqual)
           if (pageElementEqual) {
             setLoaded(false);
             const pageNumberValue = pageElementEqual.getAttribute('aria-label');
@@ -1159,8 +1157,7 @@ const Preview = (props) => {
             capturedDimensions.push(newDimensions);
             // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
           }
-          console.log(capturedDimensions);
-
+    
           for (let i = 0; i < unequalPages.length; i++) {
             setLoaded(false);
             if (currentPage == 1 && unequalPages[i] == 1) {
@@ -1181,7 +1178,7 @@ const Preview = (props) => {
             if (pageElement) {
               setLoaded(false);
               const pageNumberValue = pageElement.getAttribute('aria-label'); 
-                const newDimensions = {
+              	const newDimensions = {
                 pageNumber: pageNumberValue,
                 clientWidth: pageElement.clientWidth,
                 clientHeight: pageElement.clientHeight
@@ -1192,8 +1189,7 @@ const Preview = (props) => {
             }
           }
           jumpToPage(0);
-          console.log(capturedDimensions);
-        // Check if the dimensions of any unequal page match with those of any equal page
+		// Check if the dimensions of any unequal page match with those of any equal page
         const matchFound = unequalPages.some(unequalPageNumber => {
           const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
           const unequalPageHeight = unequalPage.clientHeight;
@@ -1212,7 +1208,7 @@ const Preview = (props) => {
         // Iterate over the total number of pages in the document
         for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
           const pageNumber = `Page ${i}`;
-          
+              
           // Check if the page already exists in capturedDimensions
           const pageExists = capturedDimensions.some(obj => obj.pageNumber === pageNumber);
 
@@ -1240,11 +1236,9 @@ const Preview = (props) => {
               clientWidth: docuPageTestElement.clientWidth,
               clientHeight: docuPageTestElement.clientHeight
             };
-            console.log(newDimensions);
             // Assign values to clientDimensions array
             finalDimensions.push(newDimensions);
         }
-        console.log(finalDimensions);
         setFinalClientDimensions([...finalDimensions]);
         // setLoaded(true);
       }
@@ -1264,9 +1258,9 @@ const Preview = (props) => {
         }
       }
 
-    const intervalId = setInterval(checkForElement, 100);
-    return () => clearInterval(intervalId);
-  }
+      const intervalId = setInterval(checkForElement, 100);
+      return () => clearInterval(intervalId);
+    }
 
   const recaptureDimensions = async () => {
     setLoaded(false);
@@ -4123,7 +4117,6 @@ const Preview = (props) => {
             }
           }
         })
-      
         .catch((e) => {
           alert(e);
         });
@@ -5906,9 +5899,7 @@ const Preview = (props) => {
               </div>
               <div className="para-text">
                 <div className="para-content" id="paraContentId">
-                  <span id="TCParagraph">
-                  {TandC}
-                  </span>
+                  <span id="TCParagraph">{TandC}</span>
                 </div>
               </div>
               <div className="agree-div">
