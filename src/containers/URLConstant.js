@@ -12,7 +12,7 @@ var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
 const footerContent =
-  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.27";
+  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.28";
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';

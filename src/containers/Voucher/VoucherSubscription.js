@@ -41,9 +41,9 @@ class VoucherSubscription extends Component {
       corpAcctDetail: [],
       curntSubGrpList: [],
       corpEntity: {},
-      curntCrpId:"",
-      corpUsage:1,
-      tempGroupsCheckBox:1,
+      curntCrpId: "",
+      corpUsage: 1,
+      tempGroupsCheckBox: 1,
       voucherUsageType: "Corporate Users Only" // Default value
 
     };
@@ -70,15 +70,15 @@ class VoucherSubscription extends Component {
         element.style.cursor = "no-drop";
       }
     }
-//checking if the user is normal enduser because  the template groups should be displayed only for the corporate admin.
+    //checking if the user is normal enduser because  the template groups should be displayed only for the corporate admin.
     const roleId = sessionStorage.getItem("roleId");
-    if ((roleId && roleId.trim() ==2 )) {
-   
-    }else{
+    if ((roleId && roleId.trim() == 2)) {
+
+    } else {
       this.getTemplateGrps();
     }
-  
-    
+
+
     var body = {
       username: "",
     };
@@ -164,7 +164,7 @@ class VoucherSubscription extends Component {
     //   this.setState({ tempGroupsCheckBox:0})
     //   document.getElementById("tempGrpsList").style.display = "none";
     //   document.getElementById("tempGrpLabel").style.display = "none";
- 
+
     // }else{
     //   this.setState({ tempGroupsCheckBox:1})
     //   document.getElementById("tempGrpsList").style.display = "";
@@ -176,7 +176,20 @@ class VoucherSubscription extends Component {
       this.setState({ tempGroupsCheckBox: e.target.checked ? 1 : 0 });
       if (e.target.checked == 0) {
         document.getElementById("tempGrpsList").style.display = "none";
-      } else{
+
+        //unchecking all the template grp checkboxes 
+        for (let key in this.state.curntSubGrpList) {
+          const subGrpId = this.state.curntSubGrpList[key][Object.keys(this.state.curntSubGrpList[key])[0]];
+          const checkboxElement = document.getElementById(subGrpId);
+          if (checkboxElement) {
+            if (checkboxElement.checked) {
+              checkboxElement.checked = false;
+            }
+          }
+        }
+
+
+      } else {
         document.getElementById("tempGrpsList").style.display = "";
       }
     }
@@ -199,9 +212,9 @@ class VoucherSubscription extends Component {
 
 
   custUnitstoQrCode = (e, i) => {
-    
 
- 
+
+
     const { name, value } = i.target;
     let responsedata = [...this.state.responsedata];
     if (name === "planID") {
@@ -231,7 +244,7 @@ class VoucherSubscription extends Component {
         this.setState({ descrip: el.descrip });
       }
     });
-   
+
   };
 
   createUI() {
@@ -298,8 +311,8 @@ class VoucherSubscription extends Component {
   }
 
   getQRDetails = (definedVoucherCode) => {
-    
-    
+
+
 
     if (this.state.voucherQuantity > 100000) {
 
@@ -313,61 +326,61 @@ class VoucherSubscription extends Component {
         vouchrCodeNote: "The request has been successfully initiated. Please be advised that the generation of voucher codes necessitates a certain amount of time. Kindly check for the generated voucher codes at a later juncture. Your patience is highly appreciated."
       };
       // if the voucher is defined by the user then the voucher code will be added to the additional data
-      if (definedVoucherCode && definedVoucherCode.trim() !== ""){
+      if (definedVoucherCode && definedVoucherCode.trim() !== "") {
         additional_data.voucherCode = definedVoucherCode;
-      } 
+      }
       //If the Corp admin is purhasing voucher the below parameters will be added to the additional data
-      
-  //     if (this.state.listOfSubGrp.length !== 0) {
-  //       additional_data.corpId = this.state.curntCrpId;
-  //       if(!this.state.voucherUsageType=="Any User"){
-  //       // if(this.state.tempGroupsCheckBox==1){
-  // console.log(this.state.tempGroupsCheckBox)
-  //       let corpSubGrpSelected = [];
-  //       // Adding the list of selected template groups to the additional data
-  //       for (let key in this.state.curntSubGrpList) {
-  //         if (document.getElementById(this.state.curntSubGrpList[key][Object.keys(this.state.curntSubGrpList[key])[0]]).checked) {
-  //           corpSubGrpSelected.push(Object.keys(this.state.curntSubGrpList[key])[0]);
-  //         }
-  //       }
-       
-  //       let templtGrps = { "templtGrps": corpSubGrpSelected };
-  //       // if(templtGrps.length!==0){
-  //         additional_data = { ...additional_data, ...templtGrps};
-  //       // }
-  //     // }
-  //   }
 
-       //If the Corp admin is purhasing voucher the below parameters will be added to the additional data
-  if (this.state.listOfSubGrp.length !== 0) {
-    additional_data.corpId = this.state.curntCrpId;
-    additional_data.corpUsage = this.state.corpUsage;
-    if (this.state.voucherUsageType !== "Any User") {
-      console.log(this.state.tempGroupsCheckBox);
-      let corpSubGrpSelected = [];
-      // Adding the list of selected template groups to the additional data
-      for (let key in this.state.curntSubGrpList) {
-        const subGrpId = this.state.curntSubGrpList[key][Object.keys(this.state.curntSubGrpList[key])[0]];
-        const checkboxElement = document.getElementById(subGrpId);
-        if (checkboxElement) {
-          if (checkboxElement.checked) {
-            corpSubGrpSelected.push(Object.keys(this.state.curntSubGrpList[key])[0]);
-          } 
+      //     if (this.state.listOfSubGrp.length !== 0) {
+      //       additional_data.corpId = this.state.curntCrpId;
+      //       if(!this.state.voucherUsageType=="Any User"){
+      //       // if(this.state.tempGroupsCheckBox==1){
+      // console.log(this.state.tempGroupsCheckBox)
+      //       let corpSubGrpSelected = [];
+      //       // Adding the list of selected template groups to the additional data
+      //       for (let key in this.state.curntSubGrpList) {
+      //         if (document.getElementById(this.state.curntSubGrpList[key][Object.keys(this.state.curntSubGrpList[key])[0]]).checked) {
+      //           corpSubGrpSelected.push(Object.keys(this.state.curntSubGrpList[key])[0]);
+      //         }
+      //       }
+
+      //       let templtGrps = { "templtGrps": corpSubGrpSelected };
+      //       // if(templtGrps.length!==0){
+      //         additional_data = { ...additional_data, ...templtGrps};
+      //       // }
+      //     // }
+      //   }
+
+      //If the Corp admin is purhasing voucher the below parameters will be added to the additional data
+      if (this.state.listOfSubGrp.length !== 0) {
+        additional_data.corpId = this.state.curntCrpId;
+        additional_data.corpUsage = this.state.corpUsage;
+        if (this.state.voucherUsageType !== "Any User") {
+          console.log(this.state.tempGroupsCheckBox);
+          let corpSubGrpSelected = [];
+          // Adding the list of selected template groups to the additional data
+          for (let key in this.state.curntSubGrpList) {
+            const subGrpId = this.state.curntSubGrpList[key][Object.keys(this.state.curntSubGrpList[key])[0]];
+            const checkboxElement = document.getElementById(subGrpId);
+            if (checkboxElement) {
+              if (checkboxElement.checked) {
+                corpSubGrpSelected.push(Object.keys(this.state.curntSubGrpList[key])[0]);
+              }
+            }
+          }
+          if (corpSubGrpSelected.length > 0) {
+            let templtGrps = { "templtGrps": corpSubGrpSelected };
+            additional_data = { ...additional_data, ...templtGrps };
+          }
         }
-      }
-      if (corpSubGrpSelected.length > 0) {
-      let templtGrps = { "templtGrps": corpSubGrpSelected };
-      additional_data = { ...additional_data, ...templtGrps };
-      }
-    }
 
-  }
+      }
       let data = {
         paymentType: "VOUC",
         amount: this.state.amount * this.state.voucherQuantity,
         additional_data: additional_data,
       };
-// console.log(data);
+      // console.log(data);
       this.props.history.push({
         pathname: "/qrcode",
         frompath: "/vouchers/vouchersubscription",
@@ -376,7 +389,7 @@ class VoucherSubscription extends Component {
         },
       });
 
-     
+
     }
   };
 
@@ -391,7 +404,7 @@ class VoucherSubscription extends Component {
       //if userdefined code is enabled - validations
       if (this.state.isUserCodeEnabled) {
         let definedVoucherCode = document.getElementById("userCode").value.trim();
-     
+
         // let definedVoucherCode = this.state.definedVoucherCode
         if (definedVoucherCode == "") {
           alert("Enter custom code for vouchers")
@@ -401,7 +414,7 @@ class VoucherSubscription extends Component {
           if (definedVoucherCode.length != 10) {
             alert("Enter 10 digit code")
           }
-        
+
           else {
             //duplication check
             var body = {
@@ -558,82 +571,82 @@ class VoucherSubscription extends Component {
 
   }
 
-getTemplateGrps =()=>{
-  var json = {
-    authToken: sessionStorage.getItem("authToken"),
-  };
-  fetch(URL.getTemplateGrps, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(json),
-  })
-    .then((response) => {
-      return response.json();
+  getTemplateGrps = () => {
+    var json = {
+      authToken: sessionStorage.getItem("authToken"),
+    };
+    fetch(URL.getTemplateGrps, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(json),
     })
-    .then((responseJson) => {
-      this.setState({ loaded: true });
-      if (responseJson.status === "SUCCESS") {
-        if (responseJson.details.length === 0) {
-          this.setState({
-            listOfSubGrp: [],
-            curntSubGrpList: [],
-            corpEntity: {},
-            // curntCrpId: corpId
-            curntCrpId:""
-          })
-          alert(`No groups are available under the corporate account "${document.getElementById("corpEntyDrpdown").value}"`);
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        this.setState({ loaded: true });
+        if (responseJson.status === "SUCCESS") {
+          if (responseJson.details.length === 0) {
+            this.setState({
+              listOfSubGrp: [],
+              curntSubGrpList: [],
+              corpEntity: {},
+              // curntCrpId: corpId
+              curntCrpId: ""
+            })
+            alert(`No groups are available under the corporate account "${document.getElementById("corpEntyDrpdown").value}"`);
+          }
+          else {
+
+
+            let convertedJsArry = this.convertJsonFormat(responseJson.details, false);
+            this.setState({
+              listOfSubGrp: convertedJsArry,
+              curntSubGrpList: convertedJsArry,
+              // curntCrpId: corpId
+              curntCrpId: responseJson.corpId,
+
+
+            })
+          }
+        }
+        else if (responseJson.statusDetails === "Session Expired") {
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { },
+              },
+            ],
+          });
+          this.props.history.push("/");
         }
         else {
-       
-     
-         let convertedJsArry = this.convertJsonFormat(responseJson.details, false);
-          this.setState({
-            listOfSubGrp: convertedJsArry,
-            curntSubGrpList: convertedJsArry,
-            // curntCrpId: corpId
-            curntCrpId:responseJson.corpId,
-            
-            
-          })
+          this.setState({ loaded: true });
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { },
+              },
+            ],
+          });
+          // alert(responseJson.statusDetails)
         }
-      }
-      else if (responseJson.statusDetails === "Session Expired") {
-        confirmAlert({
-          message: responseJson.statusDetails,
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => { },
-            },
-          ],
-        });
-        this.props.history.push("/");
-      }
-      else {
+      })
+      .catch((e) => {
         this.setState({ loaded: true });
-        confirmAlert({
-          message: responseJson.statusDetails,
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => { },
-            },
-          ],
-        });
-        // alert(responseJson.statusDetails)
-      }
-    })
-    .catch((e) => {
-      this.setState({ loaded: true });
-      console.log(e);
-    });
-}
+        console.log(e);
+      });
+  }
 
-// a function to convert a json structure as implemented format
+  // a function to convert a json structure as implemented format
   convertJsonFormat = (jsonArray, boolean) => {
     let corpEntLstArray = [];
     for (let key in jsonArray) {
@@ -665,11 +678,11 @@ getTemplateGrps =()=>{
       descrip,
       checkboxValue,
       tempGroupsCheckBox,
-      listOfSubGrp, 
+      listOfSubGrp,
       voucherUsageType
     } = this.state;
-      // Ensure listOfSubGrp has a default value if not provided
-     // const listOfSubGrp = this.props.listOfSubGrp || [];
+    // Ensure listOfSubGrp has a default value if not provided
+    // const listOfSubGrp = this.props.listOfSubGrp || [];
     if (this.state.loadSubscriptionComponent) {
       return (
         <div id="ModalView">
@@ -691,7 +704,7 @@ getTemplateGrps =()=>{
             <div className="ModalWidth">
               <div className="modal-head-1">
                 <span style={{ color: "#c79807" }}>Buy Voucher</span>
-              </div>            
+              </div>
               <div className="para-text" id="emailmodalpara-text">
                 <div className="para-content">
                   <Row id="redeemmodalrow">
@@ -806,172 +819,93 @@ getTemplateGrps =()=>{
                         <label>One voucher per user</label>
                       </InputGroup>
                     </div>
- {/* if the user is corporate admin then the template groups will be displayed*/}
- {/* { this.state.listOfSubGrp.length !== 0 && (
-                  <>
-                  
-                  <hr class="separator" />
-                   <div style={{ marginTop: "14px" }}>
-                        <b>Voucher Usage</b>
-                      </div>
-                {/*if the user is corporate admin then the voucher eligibility will be displayed*/}
-                {/* <InputGroup id="vrchrEligibilty" style={{ marginBottom: "6px" }}>
-                        <label style={{ display: "inline-flex", width: "52%" }}>
-                        Voucher Eligibility &nbsp;{" "}
-                        </label>
-                        <Input
-                          id="voucherUsageType"
-                          name="usageType"
-                          type="select"
-                          onChange={this.handleChange}
-                        >
-                          <option>Corporate Users Only</option>
-                          <option>Any user</option>
-                        </Input>
-                      </InputGroup>
-                                <InputGroup
-                                style={{ marginLeft: "20px" }}
-                              >
-                                <Input
-                                  type="checkbox"
-                                  id="tempGroups"
-                                  name="tempGroups"
-                                  checked={tempGroupsCheckBox == 1}
-                                  onChange={this.setInput}
-                                  required={true}
-                                  autoComplete="off"
-                                />
-                                <label id="tempGrpLabel" style={{marginBottom:"0px"}} >Select Template Group(s) to access the Voucher</label>
-                              </InputGroup>
-
-                              
-                              
 
 
-
-                      <InputGroup id="tempGrpsList" style={{ marginBottom: "6px" }}>
-                       <div key="corpGroups" className='Divo5Css'>
-                      <div className='inputname1' style={{ paddingTop: "5px" }}>
-                  {
-                    this.state.listOfSubGrp.length !== 0 ?
+                    {listOfSubGrp.length !== 0 && (
                       <>
-                        <div className="GrpList scrollbarxCustomFields" style={{ width: "150%", maxHeight: "200px", height: "fit-content", border: "3px solid #9dc1e3", fontSize: "13px", borderRadius: "5px", padding: "5px" }}>
-  {
-    this.state.listOfSubGrp.reduce((result, value, index, array) => {
-      if (index % 2 === 0) {
-        result.push(array.slice(index, index + 2));
-      }
-      return result;
-    }, []).map((pair, index) => (
-      <div style={{ display: "flex", width: "100%" }} key={index}>
-        {pair.map((posts, subIndex) => (
-          <div style={{ display: "flex", flexGrow: 1 }} key={subIndex}>
-            <div style={{ width: "10%", paddingTop: "4px", marginRight: "5px" }}>
-              <input id={posts[Object.keys(posts)[0]]} type="checkBox"></input>
-            </div>
-            <div style={{ width: "90%", paddingTop: "2px" }}>
-              <span>{posts[Object.keys(posts)[0]]}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    ))
-  }
-</div>
-                      </> :
-                      <> </>
-                  }
-                </div>
-                </div>
-                </InputGroup>
-                </>
-                )} */}
-
-{listOfSubGrp.length !== 0 && (
-          <>
-            <hr className="separator" />
-            <div style={{ marginTop: "14px" }}>
-              <b>Voucher Usage</b>
-            </div>
-            {/* If the user is corporate admin then the voucher eligibility will be displayed */}
-            <InputGroup id="vrchrEligibilty" style={{ marginBottom: "6px" }}>
-              <label style={{ display: "inline-flex", width: "52%" }}>
-                Voucher Eligibility &nbsp;{" "}
-              </label>
-              <Input
-                id="voucherUsageType"
-                name="voucherUsageType"
-                type="select"
-                onChange={this.handleChange}
-              >
-                <option>Corporate Users Only</option>
-                <option>Any user</option>
-              </Input>
-            </InputGroup>
-
-            {voucherUsageType !== "Any user" && (
-              <>
-                <InputGroup style={{ marginLeft: "20px" }}>
-                  <Input
-                    type="checkbox"
-                    id="tempGroups"
-                    name="tempGroups"
-                    checked={tempGroupsCheckBox === 1}
-                    onChange={this.setInput}
-                    required={true}
-                    autoComplete="off"
-                  />
-                  <label id="tempGrpLabel" style={{ marginBottom: "0px" }}>
-                    Select Template Group(s) to access the Voucher
-                  </label>
-                </InputGroup>
-
-                <InputGroup id="tempGrpsList" style={{ marginBottom: "6px" }}>
-                  <div key="corpGroups" className="Divo5Css">
-                    <div className="inputname1" style={{ paddingTop: "5px" }}>
-                      {listOfSubGrp.length !== 0 ? (
-                        <div
-                          className="GrpList scrollbarxCustomFields"
-                          style={{
-                            width: "150%",
-                            maxHeight: "200px",
-                            height: "fit-content",
-                            border: "3px solid #9dc1e3",
-                            fontSize: "13px",
-                            borderRadius: "5px",
-                            padding: "5px"
-                          }}
-                        >
-                          {listOfSubGrp.reduce((result, value, index, array) => {
-                            if (index % 2 === 0) {
-                              result.push(array.slice(index, index + 2));
-                            }
-                            return result;
-                          }, []).map((pair, index) => (
-                            <div style={{ display: "flex", width: "100%" }} key={index}>
-                              {pair.map((posts, subIndex) => (
-                                <div style={{ display: "flex", flexGrow: 1 }} key={subIndex}>
-                                  <div style={{ width: "10%", paddingTop: "4px", marginRight: "5px" }}>
-                                    <input id={posts[Object.keys(posts)[0]]} type="checkBox"></input>
-                                  </div>
-                                  <div style={{ width: "90%", paddingTop: "2px" }}>
-                                    <span>{posts[Object.keys(posts)[0]]}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ))}
+                        <hr className="separator" />
+                        <div style={{ marginTop: "14px" }}>
+                          <b>Voucher Usage</b>
                         </div>
-                      ) : (
-                        <> </>
-                      )}
-                    </div>
-                  </div>
-                </InputGroup>
-              </>
-            )}
-          </>
-        )}
+                        {/* If the user is corporate admin then the voucher eligibility will be displayed */}
+                        <InputGroup id="vrchrEligibilty" style={{ marginBottom: "6px" }}>
+                          <label style={{ display: "inline-flex", width: "52%" }}>
+                            Voucher Eligibility &nbsp;{" "}
+                          </label>
+                          <Input
+                            id="voucherUsageType"
+                            name="voucherUsageType"
+                            type="select"
+                            onChange={this.handleChange}
+                          >
+                            <option>Corporate Users Only</option>
+                            <option>Any user</option>
+                          </Input>
+                        </InputGroup>
+
+                        {voucherUsageType !== "Any user" && (
+                          <>
+                            <InputGroup style={{ marginLeft: "20px" }}>
+                              <Input
+                                type="checkbox"
+                                id="tempGroups"
+                                name="tempGroups"
+                                checked={tempGroupsCheckBox === 1}
+                                onChange={this.setInput}
+                                required={true}
+                                autoComplete="off"
+                              />
+                              <label id="tempGrpLabel" style={{ marginBottom: "0px" }}>
+                                Select Template Group(s) to access the Voucher
+                              </label>
+                            </InputGroup>
+
+                            <InputGroup id="tempGrpsList" style={{ marginBottom: "6px" }}>
+                              <div key="corpGroups" className="Divo5Css">
+                                <div className="inputname1" style={{ paddingTop: "5px" }}>
+                                  {listOfSubGrp.length !== 0 ? (
+                                    <div
+                                      className="GrpList scrollbarxCustomFields"
+                                      style={{
+                                        width: "140%",
+                                        maxHeight: "200px",
+                                        height: "fit-content",
+                                        border: "3px solid #9dc1e3",
+                                        fontSize: "13px",
+                                        borderRadius: "5px",
+                                        padding: "5px"
+                                      }}
+                                    >
+                                      {listOfSubGrp.reduce((result, value, index, array) => {
+                                        if (index % 2 === 0) {
+                                          result.push(array.slice(index, index + 2));
+                                        }
+                                        return result;
+                                      }, []).map((pair, index) => (
+                                        <div style={{ display: "flex", width: "100%" }} key={index}>
+                                          {pair.map((posts, subIndex) => (
+                                            <div style={{ display: "flex", flexGrow: 1, width: "50%", alignItems: "center" }} key={subIndex}>
+                                              <div style={{ width: "20px", paddingTop: "4px" }}>
+                                                <input id={posts[Object.keys(posts)[0]]} type="checkBox"></input>
+                                              </div>
+                                              <div style={{ width: "90%", paddingTop: "2px" }}>
+                                                <span>{posts[Object.keys(posts)[0]]}</span>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <> </>
+                                  )}
+                                </div>
+                              </div>
+                            </InputGroup>
+                          </>
+                        )}
+                      </>
+                    )}
 
                     <hr class="separator" />
                     <div
@@ -1056,7 +990,7 @@ getTemplateGrps =()=>{
               id="viewaftersigning"
               style={{ height: "100%" }}
             > */}
-              {/* <embed
+            {/* <embed
                 title="PDF preview"
                 type="application/pdf"
                 src={
@@ -1067,32 +1001,32 @@ getTemplateGrps =()=>{
                 width="100%"
                 height="100%"
               /> */}
-              {/* <br id="1" />
+            {/* <br id="1" />
               <br id="2" /> */}
-              <PDF1
-                /* title="PDF preview"
-                ref="iframe"
-                type="application/pdf" */
-                url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
-                }
-                /* width="100%"
-                height="100%"
-                hidden */
-              />
-              <div style={{marginTop: "20px"}}>
-            <input
-              type="checkbox"
-              name="acceptance"
-              id="consentSigningCheckbox"
-              onChange={this.onConsentChecked}
-            ></input>
-            <label id="consentSigningLable" style={{ fontSize: "16px" }}>
-              &nbsp; I agree with all the terms and conditions of DocuExec
-            </label>
-          </div>
+            <PDF1
+              /* title="PDF preview"
+              ref="iframe"
+              type="application/pdf" */
+              url={
+                URL.viewConsentFile +
+                "?at=" +
+                btoa(sessionStorage.getItem("authToken"))
+              }
+            /* width="100%"
+            height="100%"
+            hidden */
+            />
+            <div style={{ marginTop: "20px" }}>
+              <input
+                type="checkbox"
+                name="acceptance"
+                id="consentSigningCheckbox"
+                onChange={this.onConsentChecked}
+              ></input>
+              <label id="consentSigningLable" style={{ fontSize: "16px" }}>
+                &nbsp; I agree with all the terms and conditions of DocuExec
+              </label>
+            </div>
             {/* </div> */}
           </div>
           {/* <br></br> */}

@@ -152,24 +152,38 @@ export default class MultiPplSignMobilePage extends React.Component {
   }
 
   // resend otp counter
-  resendOtpTimer = () => {
+  startResendOtpTimer = () => {
     this.setState({ timeleft: 30 });
-    document.getElementById("resendotpbtn").style.display = "none";
+    let resendOtpBtn = document.getElementById("resendotpbtn");
+    let timerElement = document.getElementById("timer");
+  
+    if (timerElement && resendOtpBtn) {
+      resendOtpBtn.style.display = "none";
+      timerElement.style.display = "";
+  
+      let timeleftSec = this.state.timeleft;
+      // Clear any existing timer event
+      this.stopResendOtpTimer();
+      timerEvent = setInterval(() => {
+        if (timeleftSec < 0) {
+          clearInterval(timerEvent);
+          resendOtpBtn.style.display = "";
+          timerElement.style.display = "none";
+        } else {
+          timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
+        }
+  
+        timeleftSec -= 1;
+      }, 1000);
+    }
+  };
 
-    document.getElementById("timer").style.display = "";
-
-    var timeleft = this.state.timeleft;
-    timerEvent = setInterval(function () {
-      if (timeleft < 0) {
-        clearInterval(timerEvent);
-        document.getElementById("resendotpbtn").style.display = "";
-        document.getElementById("timer").style.display = "none";
-      } else {
-        document.getElementById("timer").innerHTML =
-          "Resend OTP in " + timeleft + " Secs";
-      }
-      timeleft -= 1;
-    }, 1000);
+  // resend otp counter for ending the timer
+  stopResendOtpTimer = () => {
+    if (timerEvent) {
+      clearInterval(timerEvent);
+      timerEvent = null; // Set timerEvent to null after clearing it
+    }
   };
   validateOtp = () => {
     // console.log(this.state.mobileotpvalue);

@@ -74,11 +74,28 @@ class Register extends Component {
       checkBoxGrp: false,
       checkBoxVoucher: false,
       corpUserId: "",
-      selectedCorpEnty: ""
+      selectedCorpEnty: "",
+      awsTransactionID: "",
+      errorJson: {},
     };
   }
 
   componentWillMount() {
+    const awsTransactionID = this.getCookieValue('AWSTransactionID');
+    // console.log('AWSTransactionID:', awsTransactionID);
+    this.setState({ awsTransactionID: awsTransactionID});
+
+    // Retrieve the 'errorDetails' cookie
+    if (awsTransactionID == null) {
+      const errorDetails = this.getCookieErrorValue('errorDetails');
+      if (errorDetails) {
+        // Parse the decoded string as JSON
+        const errorJson = JSON.parse(errorDetails);
+        console.log('Error Details:', errorJson);
+        this.setState({ errorJson: errorJson });
+      }
+    }
+
     if (this.props.location.frompath === "/download/tokenSignDownload") {
       this.setState({
         email: this.props.location.state.details.mailId,
@@ -87,6 +104,13 @@ class Register extends Component {
   }
 
   componentDidMount() {
+    // console.log(this.state.awsTransactionID);
+    if (this.state.awsTransactionID != null) {
+      // Now delete the cookie
+      this.deleteCookie('AWSTransactionID');
+    } else if (this.state.errorJson != null) {
+      this.deleteCookie('errorDetails');
+    }
     var url = window.location.href;
     var TandConditionPage = url.split("/register");
     let pathURL = this.props.location.search;
@@ -116,6 +140,36 @@ fetch(window.location.href)
     console.log("location.hrefToken:",response.headers.get('x-amzn-marketplace-token'));
   });
 
+  }
+
+  getCookieValue = (name) => {
+    console.log(document.cookie);
+    const cookies = document.cookie.split('; '); 
+    console.log(cookies); 
+    // Split cookies by '; ' to get individual cookie key-value pairs
+    for (let cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=');  // Split each cookie by '=' to separate the name and value
+      if (cookieName === name) {
+        return cookieValue;  // Return the value if the name matches
+      }
+    }
+    return null;  // Return null if the cookie is not found
+  };
+
+  // Get the cookie value by name
+  getCookieErrorValue = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      // Replace '+' with spaces and then decode the URI component
+      return decodeURIComponent(parts.pop().split(';').shift().replace(/\+/g, ' '));
+    }
+    return null;
+  }
+
+  // Function to delete the cookie by setting its expiry date to a past time
+  deleteCookie = (name) => {
+    document.cookie = name + '=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
   }
 
   setInput = (e) => {
@@ -266,6 +320,10 @@ fetch(window.location.href)
                               mobile: btoa(this.state.moble),
                               userIP: sessionStorage.getItem("userIP"),
                             };
+
+                            if (this.state.awsTransactionID !== null) {
+                              json.AWSTransactionID = this.state.awsTransactionID;
+                            }
 
                             if (document.getElementById("corpLinkInput").checked) {
                               json.corpEntity = this.state.corpEntity;
@@ -834,9 +892,13 @@ fetch(window.location.href)
           var resDataImg = responseJson.captchaImg;
           // console.log(resDataImg);
           //Set the Base64 string return from getCaptchaCode api to state.
-          document
-            .getElementById("imgElem")
-            .setAttribute("src", "data:image/jpg;base64," + resDataImg);
+          // document
+          //   .getElementById("imgElem")
+          //   .setAttribute("src", "data:image/jpg;base64," + resDataImg);
+          const imgElem = document.getElementById("imgElem");
+          if (imgElem) {
+            imgElem.setAttribute("src", "data:image/jpg;base64," + resDataImg);
+          }
         } else {
           this.setState({ loaded: true });
           confirmAlert({
@@ -1369,11 +1431,11 @@ fetch(window.location.href)
           <Row className="justify-content-center">
             <Col md="11" lg="22" xl="7">
               <Card id="cardBody" className="mx-5">
-                <CardBody className="p-3">
+                <CardBody className="p-3" style={{backgroundColor:Object.keys(this.state.errorJson).length === 0 ? "#fff" : "antiquewhite"}}>
                   {(this.state.backToRegister) && (<Button id="backToReg" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.goBackToRegister}>
                     <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
                   </Button>)}
-                  <Form>
+                  {(Object.keys(this.state.errorJson).length === 0) ? <Form>
                     <h2 class="text-center mb-3">Register </h2>
 
                     <div id="mobileandEmail">
@@ -1834,7 +1896,18 @@ fetch(window.location.href)
                         </a>
                       </p>
                     </div>
-                  </Form>
+                  </Form> : <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
+                      <i
+                        className="fa fa-exclamation-triangle"
+                        aria-hidden="true"
+                        style={{
+                          color: "#f86c6b",
+                          fontSize: "1.5em", // Adjust size based on the p tag font size
+                          marginRight: "12px" // Adds spacing between icon and text
+                        }}
+                      ></i>
+                      <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p>
+                    </div>}
                 </CardBody>
               </Card>
             </Col>{" "}
