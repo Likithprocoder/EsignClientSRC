@@ -52,11 +52,29 @@ class Login extends Component {
       backToLogin: false,
      
       userIPCount:0,
+      errorJson: {},
     };
     this.login = this.login.bind(this);
     this.keypressed = this.keypressed.bind(this);
     this.keypressedMoveToOTPFiled = this.keypressedMoveToOTPFiled.bind(this);
     this.keypressedResetCall = this.keypressedResetCall.bind(this);
+  }
+
+  componentWillMount() {
+    // const awsTransactionID = this.getCookieValue('AWSTransactionID');
+    // console.log('AWSTransactionID:', awsTransactionID);
+    // this.setState({ awsTransactionID: awsTransactionID});
+
+    // Retrieve the 'errorDetails' cookie
+    // if (awsTransactionID == null) {
+      const errorDetails = this.getCookieErrorValue('errorDetails');
+      if (errorDetails) {
+        // Parse the decoded string as JSON
+        const errorJson = JSON.parse(errorDetails);
+        console.log('Error Details:', errorJson);
+        this.setState({ errorJson: errorJson });
+      }
+    // }
   }
 
   setInput = (e) => {
@@ -104,6 +122,9 @@ class Login extends Component {
   };
 
   componentDidMount() {
+    if (Object.keys(this.state.errorJson).length !== 0) {
+      this.deleteCookie('errorDetails');
+    }
     $(document).keypress(function (event) {
       if (event.which == "13") {
         event.preventDefault();
@@ -117,6 +138,21 @@ class Login extends Component {
     this.fetchIP();
   }
 
+  // Get the cookie value by name
+  getCookieErrorValue = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      // Replace '+' with spaces and then decode the URI component
+      return decodeURIComponent(parts.pop().split(';').shift().replace(/\+/g, ' '));
+    }
+    return null;
+  }
+
+  // Function to delete the cookie by setting its expiry date to a past time
+  deleteCookie = (name) => {
+    document.cookie = name + '=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; Secure';
+  }
 
   fetchIP = () => {
     $.getJSON("https://api.ipify.org?format=json", (data) => {
@@ -544,7 +580,7 @@ class Login extends Component {
             <img style={{ height: "100%" }} src={mySignLogo}></img>
           </div>
           <br></br>
-          <Row className="justify-content-center">
+          {(Object.keys(this.state.errorJson).length === 0) ? <Row className="justify-content-center">
             <Col md="8">
               <CardGroup>
                 <Card className="p-4">
@@ -929,7 +965,17 @@ class Login extends Component {
                 higher)
               </p> */}
             </Col>
-          </Row>
+          </Row> : <Row className="justify-content-center"><Col md="11" lg="22" xl="7"><Card id="cardBody" className="mx-5"><CardBody className="p-3" style={{  backgroundColor: "antiquewhite"}}> <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
+          <i
+                        className="fa fa-exclamation-triangle"
+                        aria-hidden="true"
+                        style={{
+                          color: "#f86c6b",
+                          fontSize: "1.5em", // Adjust size based on the p tag font size
+                          marginRight: "12px" // Adds spacing between icon and text
+                        }}
+                      ></i>
+                      <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p></div></CardBody></Card></Col></Row>}
         </Container>
 
         <div className="fixed-bottom">

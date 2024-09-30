@@ -656,16 +656,29 @@ class EditProfile extends Component {
                       ],
                     });
                   } else {
-                    confirmAlert({
-                      message: responseJson.statusDetails,
-                      buttons: [
-                        {
-                          label: "OK",
-                          className: "confirmBtn",
-                          onClick: () => {},
-                        },
-                      ],
-                    });
+                    if (responseJson.statusDetails === "The given mobile number is already registered. Try to reset your password with Forgot password option") {
+                      confirmAlert({
+                        message: "The mobile number you entered is already associated with another account. Please provide a different number",
+                        buttons: [
+                          {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {},
+                          },
+                        ],
+                      });
+                    } else {
+                      confirmAlert({
+                        message: responseJson.statusDetails,
+                        buttons: [
+                          {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {},
+                          },
+                        ],
+                      });
+                    }
                   }
                 }
               })
