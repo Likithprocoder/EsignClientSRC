@@ -69,6 +69,7 @@ export default class CSVUpload extends React.Component {
             responseData: responseJson.userInfo,
           });
           document.getElementById("UploadCSV-button").style.display = "none";
+          document.getElementById("templateDownloadLink").style.display = "none";
 
           document.getElementById("invalidFileValidation").style.display = "";
 
@@ -89,7 +90,7 @@ export default class CSVUpload extends React.Component {
               },
             ],
             data: Data,
-
+            order: [], // This disables sorting
             columns: [
               { data: "empId" },
               { data: "name" },
@@ -162,7 +163,7 @@ export default class CSVUpload extends React.Component {
                     },
                   ],
                   data: Data,
-  
+                  order: [], // This disables sorting
                   columns: [
                     { data: "empId" },
                     { data: "name" },
@@ -212,13 +213,49 @@ export default class CSVUpload extends React.Component {
   }
 
   onDrop(files) {
+    console.log(files);
+  
     if (files.length > 0) {
-      if (files[0].name.length < 128) {
-        var fileName = files[0].name;
-        var name1 = fileName.split(".csv");
-        if (name1.length > 2) {
+      const fileName = files[0].name;
+  
+      // Check if it's a CSV file
+      if (fileName.toLowerCase().endsWith('.csv')) {
+        // Check file name length
+        if (fileName.length < 128) {
+          // Check if the name before ".csv" is at least 3 characters
+          const nameWithoutExtension = fileName.slice(0, -4); // Removes '.csv'
+          if (nameWithoutExtension.length < 3) {
+            confirmAlert({
+              message: "Invalid file name. Please provide a file name with at least 3 characters.",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {},
+                },
+              ],
+            });
+            return null;
+          }
+  
+          // Calculate file size in KB
+          const fileSize = files[0].size;
+          const fileSizeInKB = fileSize / 1024;
+  
+          // Set file details in state
+          this.setState({
+            files: files,
+            isdisable: false,
+            uploadedFileName: fileName,
+            uploadedFileSize: fileSizeInKB.toFixed(2) + " KB",
+          });
+  
+          // Change button style
+          document.getElementById("UploadCSV-button").style.backgroundColor = "#1DD1A1";
+          document.getElementById("UploadCSV-button").style.cursor = "pointer";
+        } else {
           confirmAlert({
-            message: "Invalid File name ",
+            message: "File name too long. Please provide a file name with less than 128 characters.",
             buttons: [
               {
                 label: "OK",
@@ -227,25 +264,10 @@ export default class CSVUpload extends React.Component {
               },
             ],
           });
-          return null;
         }
-
-        var file = files[0];
-        var filesize = files[0].size;
-        var filesizeinKB = filesize / 1024;
-        this.setState({
-          files: files,
-          isdisable: false,
-          uploadedFileName: fileName,
-          uploadedFileSize: filesizeinKB.toFixed(2) + " KB",
-        });
-        document.getElementById("UploadCSV-button").style.backgroundColor =
-          "#1DD1A1";
-
-        document.getElementById("UploadCSV-button").style.cursor = "pointer";
       } else {
         confirmAlert({
-          message: "Please select CSV File only...",
+          message: "Please select a valid CSV file.",
           buttons: [
             {
               label: "OK",
@@ -255,8 +277,20 @@ export default class CSVUpload extends React.Component {
           ],
         });
       }
+    } else {
+      confirmAlert({
+        message: "No file selected.",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {},
+          },
+        ],
+      });
     }
   }
+  
 
   isCSVSelected() {
     if (this.state.isdisable) {
@@ -341,6 +375,17 @@ export default class CSVUpload extends React.Component {
               <span>Proceed &#8594;</span>
             </button>
           </div>
+        </div>
+        <div id="templateDownloadLink" style={{ marginTop: "10px" }}>
+          Download sample <b>Employee Details</b> file &#8594;
+            <a
+              href="/files/EmployeeData.csv"
+              Download="EmployeeData.csv"
+              type="csv"
+            >
+              &nbsp; click here
+            </a>
+              
         </div>
         <div id="downloadCvsLink" style={{ textAlign: "center" }}>
           <h5 id="msgForUpload" style={{ color: this.state.color }}></h5>
