@@ -1,0 +1,142 @@
+/* FeedbackForm.css */
+
+@media screen and (max-width: 800px) {
+  .userIndentity {
+    display: inline;
+  }
+  .UserData{
+    display: flex;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  .userIndentity {
+    display: flex;
+  }
+  .UserData{
+    display: flex;
+    width: 30%;
+  }
+}
+
+form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+label {
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+textarea {
+  margin-bottom: 15px;
+}
+
+input[type="radio"] {
+  margin-right: 8px;
+}
+
+
+.scrollbarx {
+  overflow: overlay;
+  max-height: 450px;
+  box-shadow: 1px 1px 50px white;
+}
+
+.scrollbarx::-webkit-scrollbar-thumb {
+  background-color: darkgray;
+  border-radius: 10px;
+}
+
+.scrollbarx::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.overall-problems {
+  margin-top: 20px;
+}
+
+.overall-problems-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.ant-table-measure-row {
+  height: 0 !important;
+  visibility: hidden !important;
+  display: none !important;
+}
+
+.activeRow {
+  background-color: #d6f0e9;
+}
+
+
+
+.ant-table-wrapper .ant-table-cell,
+.ant-table-wrapper .ant-table-thead>tr>th,
+.ant-table-wrapper .ant-table-tbody>tr>th,
+.ant-table-wrapper .ant-table-tbody>tr>td,
+.ant-table-wrapper tfoot>tr>th,
+.ant-table-wrapper tfoot>tr>td {
+  padding: 5px !important;
+}
+
+.react-confirm-alert-overlay {
+  z-index: 10000;
+
+}
+
+
+
+
+
+
+

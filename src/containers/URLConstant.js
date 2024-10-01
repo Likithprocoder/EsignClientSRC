@@ -152,11 +152,16 @@ let URL = {
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
   deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
-   createCorporateEntity: HOST+"createCorporateEntity",
+  createCorporateEntity: HOST+"createCorporateEntity",
   generateapikey: HOST+"generateapikey",
   getApikeys: HOST+"getApikeys",
   updateapikey: HOST+"updateapikey",
   enableDisableCorpEntity: HOST+"enableDisableCorpEntity",
+  downloadInvoice:HOST+"downloadInvoice",
+  getFeedbackQuestions: HOST + "getFeedbackQuestions",
+  insertUsersFeedback: HOST + "insertUsersFeedback",
+  getUsersFeedback: HOST + "getUsersFeedback"
+
 };
 
 module.exports = { URL };

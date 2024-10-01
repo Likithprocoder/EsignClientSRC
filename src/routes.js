@@ -87,6 +87,9 @@ const PendingActionInbox = React.lazy(() => import("./containers/PendingActions/
 const ApiKeyList = React.lazy(() => import("./containers/Profile/ApiKeyList"));
 const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegrations"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
+const UserFeedback = React.lazy(() => import("./containers/Feebback/UserFeedback"));
+const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUserFeedbackList"));
+const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
 
 
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
@@ -304,6 +307,21 @@ const routes = [
     path: "/apiIntegrationsPage",
     name: "API Integrations",
     component: APIIntegrations
+  },
+    {
+    path: "/userFeedback",
+    name: "User feedback",
+    component: UserFeedback
+  },
+  {
+    path: "/feedbackFromEndUsers",
+    name: "List of users feedback",
+    component: ViewUserFeedback
+  },
+  {
+    path: "/viewUserFeedback",
+    name: "End user feedback",
+    component: userFeedackView
   }
 
 ];
