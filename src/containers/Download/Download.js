@@ -339,6 +339,7 @@ export default class Download extends React.Component {
 
   //------------------complete signing and link to Inbox-----------------
   completeSigning = () => {
+    sessionStorage.removeItem("docid");
     this.setState({ loaded: false });
     let getDocDetailsData = {
       docId: this.state.docId,
@@ -351,6 +352,7 @@ export default class Download extends React.Component {
 
   //-------------------cancel signing, and document will be available in Inbox---------------------------
   cancelSigning = () => {
+    sessionStorage.removeItem("docid");
     this.setState({ loaded: false });
     let getDocDetailsData = {
       docId: this.state.docId,

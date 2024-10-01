@@ -1295,6 +1295,9 @@ const MultiPplSignPreview = (props) => {
 
   // On click of Add seals this function will be called
   const signaturePageSelected = (optnValue) => {
+    if (sessionStorage.getItem("TotalPages") === "1" && optnValue === "A") {
+      optnValue = "C";
+    }
     // console.log(optnValue);
     if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       setTooltipOpen(true);
