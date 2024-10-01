@@ -445,7 +445,7 @@ export default class MultiPplSignMobilePage extends React.Component {
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
           //call resend otp counter
-          this.resendOtpTimer();
+          this.startResendOtpTimer();
 
           // console.log("success");
           document.getElementById("refIDGroup").readOnly = true;
