@@ -1134,18 +1134,13 @@ export default class ProfileDetails extends React.Component {
                     </tr>
                   </tbody>
                 </table>
-                <div hidden={sessionStorage.getItem("roleID") !== "2"} id="disLinkToBecomCorpMem" style={{ display: 'flex', paddingTop: "6px", marginBottom:"7px" }}>
-                  <a href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a>
-                  {/* <div style={{ paddingTop: "6px" }}>
-                    To become member of the corporate entity.
-                  </div>
-                  <div>
-                    <button className="btn btn-link" onClick={e => this.openModalForCorpAccount(e)}>Click here</button>
-                  </div> */}
-                </div>
-                <a hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
+                <a hidden={sessionStorage.getItem("roleID") !== "2"} href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a> <br />
+                <a style={{ marginBottom: "7px" }} hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
                   this.props.history.push("/exitFromCorporate");
-                }}>Exit from corporate entity?</a>
+                }}>Exit from corporate entity?</a> <br />
+                <a hidden={!(sessionStorage.getItem("roleID") === "2")} href="" onClick={() => {
+                  this.props.history.push("/userFeedback");
+                }}>Got any feedback thought on your mind?</a>
               </CardBody>
             </Card>
             <Row id="buttons" className="mb-3">

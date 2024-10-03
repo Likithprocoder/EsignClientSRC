@@ -100,7 +100,7 @@ function ViewUserFeedbackList(props) {
     const viewIndividualUsersFeedback = (record) => {
         props.history.push({
             pathname: "/viewUserFeedback",
-            frompath: "/feedbackFromEndUsers",
+            frompath: "/docuExecFeedback",
             state: {
                 userData: record
             }

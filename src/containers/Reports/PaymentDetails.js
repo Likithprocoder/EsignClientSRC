@@ -94,14 +94,14 @@ export default class PaymentDetails extends React.Component {
           <td>{data.description}</td>
           <td>{data.txnId}</td>
           <td>{data.units}</td>
-          <td><button onClick={e => this.downloadInvoiceReport(e, data.txnId)} className="btn btn-link">Download</button></td>
+          <td><button style={{padding:"0px", fontSize:"10px"}} hidden={data.hasOwnProperty('InvoiceDownload')} onClick={e => this.downloadInvoiceReport(e, data.txnId)} className="btn btn-link">Download</button></td>
         </tr>
       );
     });
   }
 
   // Fetch call to download invoice report
-  downloadInvoiceReport = (event, tansactionID) => {      
+  downloadInvoiceReport = (event, tansactionID) => {
     this.setState({ loaded: false });
     let downloadInvoice =
       "?at=" + sessionStorage.getItem("authToken") +
@@ -179,7 +179,7 @@ export default class PaymentDetails extends React.Component {
           ], closeOnClickOutside: false
         });
       });
-      this.setState({ loaded: true });
+    this.setState({ loaded: true });
   };
 
   render() {

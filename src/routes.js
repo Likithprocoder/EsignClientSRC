@@ -90,8 +90,6 @@ const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegra
 const UserFeedback = React.lazy(() => import("./containers/Feebback/UserFeedback"));
 const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUserFeedbackList"));
 const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
-
-
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
 const routes = [
@@ -310,19 +308,18 @@ const routes = [
   },
     {
     path: "/userFeedback",
-    name: "User feedback",
+    name: "DocuExec Feedback",
     component: UserFeedback
   },
   {
-    path: "/feedbackFromEndUsers",
-    name: "List of users feedback",
+    path: "/docuExecFeedback",
+    name: "List of Users Feedback",
     component: ViewUserFeedback
   },
   {
     path: "/viewUserFeedback",
-    name: "End user feedback",
+    name: "User Feedback",
     component: userFeedackView
   }
-
 ];
 export default routes;

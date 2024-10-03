@@ -160,8 +160,9 @@ let URL = {
   downloadInvoice:HOST+"downloadInvoice",
   getFeedbackQuestions: HOST + "getFeedbackQuestions",
   insertUsersFeedback: HOST + "insertUsersFeedback",
-  getUsersFeedback: HOST + "getUsersFeedback"
-
+  getUsersFeedback: HOST + "getUsersFeedback",
+  getOAuthEndPointURL: HOST + "getOAuthEndPointURL",
+  fetchAccessToken:HOST+"fetchAccessToken"
 };
 
 module.exports = { URL };

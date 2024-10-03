@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { URL } from "../URLConstant";
 import './FeedbackForm.css'; // Import the CSS file
 import { confirmAlert } from "react-confirm-alert";
+import { Tooltip } from 'antd';
+
 var Loader = require("react-loader");
 
 function UserFeedbackView(props) {
@@ -131,9 +133,12 @@ function UserFeedbackView(props) {
                 key="loader"
             />
             <div className="userIndentity" style={{ marginBottom: "5px" }}>
-                <div className="UserData"  key="USERNAME"><strong>Name</strong>: <span style={{marginLeft:"5px"}} id="USERNAME"></span></div>
-                <div className="UserData"  key="USERMOBILE"><strong>Mobile Number</strong>: <span style={{marginLeft:"5px"}} id="USERMOBILE"></span></div>
-                <div className="UserData"  key="USERFEDBCKON"><strong>Feedback ON</strong>: <span style={{marginLeft:"5px"}} id="USERFEDBCKON"></span></div>
+                <div className="UserData" key="USERNAME"><strong>Name</strong>: <span style={{ marginLeft: "5px" }} id="USERNAME"></span></div>
+                <div className="UserData" key="USERMOBILE"><strong>Mobile Number</strong>: <span style={{ marginLeft: "5px" }} id="USERMOBILE"></span></div>
+                <div className="UserData" key="USERFEDBCKON"><strong>Feedback ON</strong>: <span style={{ marginLeft: "5px" }} id="USERFEDBCKON"></span></div>
+                <div className="UserData" key="BACKBUTTON" style={{justifyContent:"end", paddingRight:"5%"}}> <Tooltip title="Feedback users list." color={'rgba(0, 0, 0, 0.54)'} >
+                    <button style={{ height: "fit-content" }} type='submit' onClick={e => { props.history.push("/docuExecFeedback") }} className='btn btn-success'>Back</button>
+                </Tooltip></div>
             </div>
             <form className="scrollbarx" key="feedbackForm">
                 {

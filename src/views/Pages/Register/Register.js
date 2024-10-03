@@ -173,7 +173,7 @@ fetch(window.location.href)
   }
 
   setInput = (e) => {
-    let regName = new RegExp(/^[a-zA-Z0-9 ]*$/);
+    let regName = new RegExp(/^[a-zA-Z ]*$/);
     let loginName = new RegExp(/^[a-zA-Z0-9 ]*$/);
     let regPassword = new RegExp(/^[A-Za-z0-9!.@#\$%\^&_ ]*$/);
     let regEmail = new RegExp(/^[A-Za-z0-9\-.@'_ ]*$/);
