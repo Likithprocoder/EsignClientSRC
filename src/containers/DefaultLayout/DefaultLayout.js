@@ -43,20 +43,31 @@ class DefaultLayout extends Component {
   }
 
   loading() {
-    console.log(this.props);
-    if (sessionStorage.getItem("jsonWebToken") === null && this.props.location.frompath !== "deGuest" && this.props.location.frompath !== "jsguest" && (sessionStorage.getItem("externalSigner") !== null  && !sessionStorage.getItem("externalSigner"))) {
+    if (sessionStorage.getItem("jsonWebToken") === null && this.props.location.frompath !== "deGuest" && this.props.location.frompath !== "jsguest" && this.props.location.frompath !== "/preview") {
+
       this.props.history.push("/home");
       window.location.reload(false);
+
+
+
     } else {
       return <div className="animated fadeIn pt-1 text-center">Loading...</div>;
     }
   }
+  // loading() {
+  //   if (sessionStorage.getItem("authToken") === null) {
+  //     this.props.history.push("/home");
+  //     window.location.reload(false);
+  //   } else {
+  //     return <div className="animated fadeIn pt-1 text-center">Loading...</div>;
+  //   }
+  // }
 
   componentDidMount() {
     var roleID = sessionStorage.getItem("roleID");
     if (roleID === "1") {
       this.setState({ pushTo: "/" });
-    } else if (roleID === "2"||roleID === "6") {
+    } else if (roleID === "2" || roleID === "6") {
       this.setState({ pushTo: "/accountInfo" });
     }
     // else if (roleID === "3") {
