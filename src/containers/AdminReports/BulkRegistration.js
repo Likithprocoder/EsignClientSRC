@@ -45,14 +45,17 @@ export default class BulkRegistration extends React.Component {
     if(role_id==1 || role_id==5){
     this.setState({ loaded: false });
     let obj = {
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const formData = new FormData();
     formData.append("file", this.state.files[0]);
     formData.append("inputDetails", JSON.stringify(obj));
     fetch(URL.BulkRegistration, {
       method: "POST",
+      headers: {
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
       body: formData,
     })
       .then((response) => {

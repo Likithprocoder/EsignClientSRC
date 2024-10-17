@@ -28,7 +28,7 @@ class DefaultHeader extends Component {
           <i className="fa fa-lock"></i> Logout
         </DropdownItem>
       );
-    } else if (sessionStorage.getItem("roleID") == 7) {
+    } else if (sessionStorage.getItem("roleID") == 6) {
       return (
         <>
           <DropdownItem header tag="div" className="text-center">

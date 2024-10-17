@@ -46,13 +46,14 @@ export default class Download extends React.Component {
       actualFileName: "",
       height: null,
       width: null,
+      blobUrl: null,
     };
   }
 
   componentWillMount() {
     var url = window.location.href;
     var commonurl = url.split("/download");
-    console.log(this.props);
+    // console.log(this.props);
     this.setState({ commonurl: commonurl[0] });
     let qp = this.props.location.search;
     qp = qp.replace("?", "");
@@ -106,7 +107,9 @@ export default class Download extends React.Component {
       }
     }
 
+    let viewFileURL = "";
     if (sessionStorage.getItem("externalSigner") === "false") {
+      viewFileURL = URL.viewSignedFile;
       this.setState({ viewFileURl: URL.viewSignedFile });
       document.getElementById("discardOptionsdiv").style.display = "";
       this.setState({
@@ -119,9 +122,71 @@ export default class Download extends React.Component {
       // document.getElementById("completeSigningBtn").style.display = "";
       // document.getElementById("cancelSigningBtn").style.display = "";
     } else {
+      viewFileURL = URL.viewStoredFile;
       this.setState({ viewFileURl: URL.viewStoredFile });
     }
+
+    let docID = this.props.location.state.details.docId;
+
+    let viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
+
+    this.fetchDocument(viewURL, headers);
   }
+
+  fetchDocument = async (viewFileURL, headers) => {
+    this.setState({ loaded: false });
+    const url = viewFileURL; // Encode docId if necessary
+
+    try {
+
+      // Fetch the document from the server
+      const response = await fetch(url, { headers });
+
+      // Log response details
+      // console.log('Response:', response);
+      // console.log('Response Headers:', response.headers.get('Content-Type'));
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+      throw new Error('Expected a PDF document but received: ' + contentType);
+      }
+
+      // Convert the response into a Blob
+      const blob = await response.blob();
+      // console.log(blob);
+      // console.log(blob.size);
+
+      // // Create a Blob URL
+      // const blobUrl = URL.createObjectURL(blob);
+      // console.log(blobUrl);
+
+      if (blob.size > 0) {
+        // console.log("BLOBURL");
+        const blobUrl = window.URL.createObjectURL(blob);
+        // console.log('Blob URL:', blobUrl);
+        this.setState({ blobUrl });
+        this.setState({ loaded: true });
+      } else {
+        console.error('Blob is empty or size is too small:', blob);
+        this.setState({ error: 'Document is empty', loading: false });
+      }
+
+      // // Set the Blob URL to state and stop loading
+      // this.setState({ blobUrl });
+
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+      console.error('Error fetching document:', error);
+    }
+  };
 
   download(e) {
     e.preventDefault();
@@ -345,7 +410,6 @@ export default class Download extends React.Component {
       docId: this.state.docId,
       signedStatus: 1,
       linkToInbox: "Y",
-      authToken: sessionStorage.getItem("authToken"),
     };
     this.getstoredFilefrmTempDetails(getDocDetailsData);
   };
@@ -358,7 +422,6 @@ export default class Download extends React.Component {
       docId: this.state.docId,
       signedStatus: 0,
       linkToInbox: "Y",
-      authToken: sessionStorage.getItem("authToken"),
     };
 
     confirmAlert({
@@ -403,7 +466,6 @@ export default class Download extends React.Component {
       txnrefNo: this.state.txnrefNo,
       signedStatus: 0,
       linkToInbox: "N",
-      authToken: sessionStorage.getItem("authToken"),
     };
 
     confirmAlert({
@@ -446,9 +508,9 @@ export default class Download extends React.Component {
   async getstoredFilefrmTempDetails(getDocDetailsData) {
     // console.log({getDocDetailsData});
     let data = getDocDetailsData;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let dataToGetSignCoordinateDetails = {
       docId: this.state.docId,
-      authToken: sessionStorage.getItem("authToken"),
   };
 
   try {
@@ -456,6 +518,7 @@ export default class Download extends React.Component {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(data),
     });
@@ -502,12 +565,14 @@ export default class Download extends React.Component {
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
   async getSignCoordinateDetails(data) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // console.log(data);
     //getting access for external signer
     const response = await fetch(URL.getSignCoordinateDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer  ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -546,8 +611,6 @@ export default class Download extends React.Component {
   // async createFile(txnrefNo, signedStatus) {
   //   let response = await fetch(
   //     URL.downloadfromtemp +
-  //       "?at=" +
-  //       btoa(sessionStorage.getItem("authToken")) +
   //       "&txnrefNo=" +
   //       btoa(txnrefNo) +
   //       "&signedStatus=" +
@@ -625,8 +688,8 @@ export default class Download extends React.Component {
         signPage: this.state.signPage,
         pageList: this.state.pageList
       }
-      console.log({signCoordinates});
-      console.log(this.state.signCoordinates);
+      // console.log({signCoordinates});
+      // console.log(this.state.signCoordinates);
   
       let data1 = {
         // files: file1,
@@ -668,6 +731,11 @@ export default class Download extends React.Component {
     }
   }
   render() {
+    const {blobUrl} = this.state;
+    // Define the headers to include in the fetch request
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
     return (
       <div className="login-main-container">
         <ToastContainer></ToastContainer>
@@ -702,15 +770,17 @@ export default class Download extends React.Component {
             </nav> */}
         </div>
         {/*  <Loader loaded={this.state.loaded} lines={13} radius={20} corners={1} rotate={0} direction={1} color="#000" speed={1} trail={60} shadow={false} hwaccel={false} className="spinner loader" zIndex={2e9} top="50%" left="50%" scale={1.00} loadedClassName="loadedContent" /> */}
-        <PDF1
+        {/* <PDF1
           url={
             this.state.viewFileURl +
-            "?at=" +
-            btoa(sessionStorage.getItem("authToken")) +
-            "&docID=" +
+            "?docID=" +
             btoa(this.state.docId)
           }
-        />
+          httpHeaders={headers}
+        /> */}
+        {blobUrl && <PDF1
+          url={blobUrl}
+        />}
         <button
           id="downloadEsign-btn"
           className="upload-button download"

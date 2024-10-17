@@ -89,8 +89,8 @@ class GroupManagement extends Component {
         if (this.props.location.state.editMode === 1) {
             // let grpId = this.props.location.state.groupId
             this.setState({ groupName: this.props.location.state.groupName, groupId: this.props.location.state.groupId })
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             let body = {
-                authToken: sessionStorage.getItem("authToken"),
                 operationtype: 'GRP',
                 groupId: this.props.location.state.groupId,
 
@@ -101,6 +101,7 @@ class GroupManagement extends Component {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify(body),
             })
@@ -149,7 +150,7 @@ class GroupManagement extends Component {
         }
 
         if (this.props.location.state.editMode === 2) {
-            console.log(this.props.location.state)
+            // console.log(this.props.location.state)
             // this.setState({ groupName: this.props.location.state.groupName, info: this.props.location.state.userInfo, editMode: this.props.location.state.actualEditMode, initialInfo: this.props.location.state.initialInfo, groupId: this.props.location.state.groupId })
             // document.getElementById('editSave').click()
 
@@ -318,7 +319,6 @@ class GroupManagement extends Component {
                 message = '"' + grpName + '" group will be created and added as a contact. Do you want to proceed?'
                 url = URL.insertToAddressBook
                 body = {
-                    authToken: sessionStorage.getItem("authToken"),
                     groupName: grpName,
                     userInfo: JsonarrayOfContactId
 
@@ -329,7 +329,6 @@ class GroupManagement extends Component {
                 url = URL.modifyAddressBook
 
                 body = {
-                    authToken: sessionStorage.getItem("authToken"),
                     groupId: this.state.groupId,
                     updatedInfo: {
 
@@ -348,11 +347,13 @@ class GroupManagement extends Component {
                         label: "OK",
                         className: "confirmBtn",
                         onClick: () => {
+                            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                             this.setState({ loaded: false })
                             fetch(url, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
+                                    'Authorization': `Bearer ${jsonWebToken}`
                                 },
                                 body: JSON.stringify(body),
                             })
@@ -374,9 +375,9 @@ class GroupManagement extends Component {
                                                     onClick: () => {
                                                         this.setState({ loaded: true })
                                                         if (this.state.editMode === 0 || this.state.info.length == 0) { this.backToAddressBook(e); }
-                                                        // else{
-                                                        //     window.location.reload()
-                                                        // }
+                                                        else {
+                                                            window.location.reload()
+                                                        }
                                                     }
                                                 },
                                             ]
@@ -394,7 +395,7 @@ class GroupManagement extends Component {
                                             this.setState({ loaded: true });
                                             this.props.history.push("/login");
                                         }
-                                      
+
                                         else {
                                             confirmAlert({
                                                 message: responseJson.statusDetails,
@@ -492,9 +493,8 @@ class GroupManagement extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
-
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             groupId: this.state.groupId,
                         }
                         this.setState({ loaded: false })
@@ -502,6 +502,7 @@ class GroupManagement extends Component {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })
@@ -592,12 +593,12 @@ class GroupManagement extends Component {
             // console.log(row.contactId);
             deleteArray.push(row)
         });
-        console.log(deleteArray)
+        // console.log(deleteArray)
 
         const newData = this.state.info.filter(item => !deleteArray.includes(item));
         // console.log(newData)
         this.setState({ info: newData }, () => { document.getElementById('editSave').click() });
-
+        // window.reload()
         // confirmAlert({
         //     message: deleteArray.length + " contacts from the Group: " + this.state.groupName + " will be deleted, Do you want to proceed?",
         //     buttons: [

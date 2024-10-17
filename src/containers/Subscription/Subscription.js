@@ -100,14 +100,15 @@ if (sessionStorage.getItem("consenteSign") === "true") {
 
   checkinQueuePlan(planId, amount) {
     let body = {
-      authToken: sessionStorage.getItem("authToken"),
       loginname: sessionStorage.getItem("username"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.checkinQueuePlan, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -207,16 +208,17 @@ if (sessionStorage.getItem("consenteSign") === "true") {
     let response_data = {};
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
     };
     this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.consenteSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -281,18 +283,19 @@ if (sessionStorage.getItem("consenteSign") === "true") {
   
     if (this.state.couponValue) {
     if (/^[a-zA-Z0-9]{10}$/.test(this.state.couponValue)) {
-      console.log(this.state.couponValue);
+      // console.log(this.state.couponValue);
 
     let data = {
       voucherCode: this.state.couponValue,
-      authToken: sessionStorage.getItem("authToken"),
     }
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
     // this.setState({ loaded: false });
     fetch(URL.subscribeVoucher, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -300,7 +303,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
         return response.json();
       })
       .then((responseJson) => {
-        console.log(responseJson);
+        // console.log(responseJson);
         if (responseJson.status == "SUCCESS") {
           confirmAlert({
             message: responseJson.statusDetails,
@@ -351,6 +354,11 @@ if (sessionStorage.getItem("consenteSign") === "true") {
     });
   }
   } 
+
+  // // Define the headers to include in the fetch request
+  // headers = {
+  //   Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+  // };
 
   render() {
      if (this.state.loadSubscriptionComponent) {
@@ -427,6 +435,10 @@ if (sessionStorage.getItem("consenteSign") === "true") {
       </div>
     );
      } else {
+      // Define the headers to include in the fetch request
+      let headers = {
+        Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+      };
       return (
         <div>
           <Loader
@@ -473,10 +485,12 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                 ref="iframe"
                 type="application/pdf" */
                 url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
+                  URL.viewConsentFile
+                  //  +
+                  // "?at=" +
+                  // btoa(sessionStorage.getItem("authToken"))
                 }
+                httpHeaders={headers}
                 /* width="100%"
                 height="100%"
                 hidden */

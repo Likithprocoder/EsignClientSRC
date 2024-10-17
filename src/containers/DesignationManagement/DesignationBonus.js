@@ -120,17 +120,14 @@ class DesignationBonus extends Component {
     }
 
     componentDidMount() {
-        var body = {
-            authToken: sessionStorage.getItem("authToken"),
-
-        };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false });
         fetch(URL.fetchDesignationBonus, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify(body),
         })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -196,15 +193,16 @@ class DesignationBonus extends Component {
                     className: "confirmBtn",
                     onClick: () => {
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             slNo: record.slNo,
                             updatedStatus: updatedStatus
                         }
-                        this.setState({ loaded: false })
+                        this.setState({ loaded: false });
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         fetch(URL.upddateDesignationStatus, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })
@@ -381,12 +379,12 @@ class DesignationBonus extends Component {
         var body = {};
         let endpoint = "";
         let sucessMessage = "";
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         if (this.state.editMode == 1) {
             endpoint = URL.UpdateDesignationBonus
             message = "Would you like to update the details for the Designation: " + this.state.designation + " ?"
             sucessMessage = "Record updated successfully"
             body = {
-                authToken: sessionStorage.getItem("authToken"),
                 slNo: this.state.bonusId,
                 designation: this.state.designation,
                 designation_descp: this.state.description.trim(),
@@ -401,7 +399,6 @@ class DesignationBonus extends Component {
             message = "Would you like to add the Designation: " + this.state.designation + "?"
             sucessMessage = "Record inserted successfully"
             body = {
-                authToken: sessionStorage.getItem("authToken"),
                 designationBasedBonus: jsonArray
             };
 
@@ -425,6 +422,7 @@ class DesignationBonus extends Component {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })

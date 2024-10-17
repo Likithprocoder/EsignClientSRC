@@ -894,7 +894,7 @@ const MultiPplSignPreview = (props) => {
           dragArr.dragId !== batchValue[0].dragId
       );
     }
-    console.log({batchArray});
+    // console.log({batchArray});
 
     let newLeft = Number(mainXCord.slice(0, -2));
     let newTop = Number(mainYCord.slice(0, -2));
@@ -921,8 +921,8 @@ const MultiPplSignPreview = (props) => {
         batchArray[i].top = mainYCord;
       }
     }
-    console.log({dragIdsToBeAdded});
-    console.log({dragIdsToBeRemoved});
+    // console.log({dragIdsToBeAdded});
+    // console.log({dragIdsToBeRemoved});
 
     // Update the customPositionedDragIds state
     setCustomPositionedDragIds(prevCustomPositionedDragIds => [
@@ -974,8 +974,8 @@ const MultiPplSignPreview = (props) => {
         batchArray[i].resizeDragWidth = mainResizedWidth;
       }
     }
-    console.log({dragIdsToBeAdded});
-    console.log({dragIdsToBeRemoved});
+    // console.log({dragIdsToBeAdded});
+    // console.log({dragIdsToBeRemoved});
 
     //Update the customResizedDragIds state
     setCustomResizedDragIds(prevCustomResizedDragIds => [
@@ -1164,7 +1164,7 @@ const MultiPplSignPreview = (props) => {
         // Remove duplicates and sort the array
         stringInputs = [...new Set(stringInputs)].sort((a, b) => a - b);
     
-        console.log(stringInputs);
+        // console.log(stringInputs);
     
         if (stringInputs && stringInputs[0] !== 0 && stringInputs[0] !== currentPage) {
           jumpToPage(stringInputs[0] - 1);
@@ -1283,7 +1283,7 @@ const MultiPplSignPreview = (props) => {
     } else {
       handleBadgeClick(option);
       if (document.getElementById("addCustomBtn").style.display === "") {
-        console.log("OPENED");
+        // console.log("OPENED");
         document.getElementById("removeAll").style.marginTop = "-5px";
       }
       document.getElementById("range-fieldIdAdd").className = "range-field";
@@ -1444,16 +1444,17 @@ const MultiPplSignPreview = (props) => {
     if (selectedPagevalue) {
       setSelectedOption(selectedPagevalue);
       let body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         signPage: selectedPagevalue,
         signMode: selectedModeValue,
       };
       setLoaded(false);
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       fetch(URL.getRequiredUnits, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -2065,7 +2066,7 @@ const MultiPplSignPreview = (props) => {
   };
 
   const nextPreview = () => {
-    console.log(dragArray);
+    // console.log(dragArray);
     setSelectedOptionArray([]);
 
     let result = false;
@@ -2101,14 +2102,14 @@ const MultiPplSignPreview = (props) => {
       let lastDate = props.location.state.details.endDate;
       let noOfSigns = props.location.state.details.noSigns;
 
-      console.log(signerInfoo);
+      // console.log(signerInfoo);
       let InputsVal = {
         emailDetails: props.location.state.details.emailDetails,
         declineSigning:props.location.state.details.declineSigning,
         loginname: sessionStorage.getItem("username"),
         signPurpose: "", //length-50 (future use)
         docType: "PDF",
-        authToken: sessionStorage.getItem("authToken"),
+        //authToken: sessionStorage.getItem("authToken"),
         externalJar: true,
         userIP: "10.10.10.111",
         enableSignOrder: props.location.state.details.enableSignOrder,
@@ -2171,7 +2172,7 @@ const MultiPplSignPreview = (props) => {
   };
 
   const handleModeChange = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     if (selectedOption) {
     setSelectedMode(e.target.value);
     setLoaded(true);
@@ -2384,9 +2385,10 @@ const MultiPplSignPreview = (props) => {
                 // console.log(file);
                 data.append("file", file);
                 data.append("inputDetails", JSON.stringify(value));
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 fetch(URL.mpsCreateJobsV2, {
                   method: "POST",
-                  headers: { enctype: "multipart/form-data" },
+                  headers: { enctype: "multipart/form-data", 'Authorization': `Bearer ${jsonWebToken}` },
                   body: data,
                 })
                   .then((r) => r.json(value))
@@ -2969,9 +2971,7 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                     <span id="clientdownloadspan" style={{ marginLeft: "20px" }}>
                       <a
                         href={
-                          URL.downloadClientProgram +
-                          "?at=" +
-                          btoa(sessionStorage.getItem("authToken"))
+                          URL.downloadClientProgram 
                         }
                         id="clientdownload"
                         style={{ display: "none" }}

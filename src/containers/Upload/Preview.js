@@ -51,6 +51,7 @@ const defaultDragWidthMob = "72px";//67
 const defaultDragHeightMob = "37px";//35
 
 const Preview = (props) => {
+  // alert("PREVIEW PAGE");
   const frompath = props?.location?.frompath;
 
   //-------Declaring a new state variable dragArray, count, currentPage, containmentPage----
@@ -167,15 +168,16 @@ const Preview = (props) => {
   };
 
   const getWalletDetailsonLoad = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
     };
 
     fetch(URL.getWalletInfo, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -362,7 +364,7 @@ const Preview = (props) => {
   },[clientCallRespData]);
 
   useEffect(() => {
-    console.log("SelectedMode: "+selectedMode);
+    // console.log("SelectedMode: "+selectedMode);
   }, [selectedMode]);
 
   const getColor = () =>
@@ -668,7 +670,7 @@ const Preview = (props) => {
           return self.indexOf(item) == pos;
         });
         pageListA.shift();
-        console.log("pageListA", pageListA);
+        // console.log("pageListA", pageListA);
         setRangeArray([...rangeArray, ...pageListA]);
         setAllRangeArrayValues([...allRangeArrayValues, ...pageListA]);  
 
@@ -956,11 +958,11 @@ const Preview = (props) => {
         }
       }
 
-      console.log("Flat array:", flatArray);
+      // console.log("Flat array:", flatArray);
 
       setCount(count + flatArray.length);
       setDragArray(flatArray);
-      console.log({flatArray});
+      // console.log({flatArray});
       let tempFlatArray = [...flatArray];
       tempFlatArray = tempFlatArray.filter(
         (obj, index, self) =>
@@ -970,7 +972,7 @@ const Preview = (props) => {
               (obj.selectedABatch || obj.selectedPBatch)
           ) === index
       );
-      console.log({tempFlatArray});
+      // console.log({tempFlatArray});
   
       for (let i = 0; i < tempFlatArray.length; i++) {
         if (
@@ -985,8 +987,8 @@ const Preview = (props) => {
           tempCustomPageBatch = tempCustomPageBatch + 1;
         }
       }
-      console.log("setAllPageBatch", tempAllPageBatch);
-      console.log("setCustomPageBatch", tempCustomPageBatch);
+      // console.log("setAllPageBatch", tempAllPageBatch);
+      // console.log("setCustomPageBatch", tempCustomPageBatch);
       setAllPageBatch(tempAllPageBatch);
       setCustomPageBatch(tempCustomPageBatch);
     }
@@ -1011,6 +1013,7 @@ const Preview = (props) => {
               <p>Do you want to apply the seals and their positions as they were placed in the previous signed document?</p>
               {/* <small><strong>Note:</strong> Seal positions may be adjusted if the current document dimensions differs from the previous one</small> */}
               <small><strong>Note:</strong> Seal positions may be adjusted if they extend beyond the page due to differences in the current document's dimensions compared to the previous one</small>
+              {/* <small><strong>Note:</strong> Seal positions may be adjusted if there is differences in the current document's dimensions compared to the previous one</small> */}
             </div>
           ),
           buttons: [
@@ -1028,7 +1031,7 @@ const Preview = (props) => {
                   const r_pageListArray = storedData.pageListArr;
                   const totalPages = parseInt(sessionStorage.getItem("TotalPages"), 10);
 
-                  console.log(r_finalClientDimensions);
+                  // console.log(r_finalClientDimensions);
                   // Filter dragArray to only include objects with pageNo less than or equal to newPageCount
                   filteredFlatArray = r_dragArray.filter(item => item.pageNo <= totalPages);
                   
@@ -1051,10 +1054,11 @@ const Preview = (props) => {
                         count: newCount, // Update count
                     };
                   });
-                  console.log({flatArray});
-                  console.log({finalDimensions1});
-                  console.log({filterFinalClientDimensions});
-                  console.log({filteredPageListArr});
+                  toast.info("Seals added to previous sign positions");
+                  // console.log({flatArray});
+                  // console.log({finalDimensions1});
+                  // console.log({filterFinalClientDimensions});
+                  // console.log({filteredPageListArr});
 
                   // Update the coordinates in filteredFlatArray
                   // const updatedFlatArray = filteredFlatArray.map((seal) => {
@@ -1096,7 +1100,7 @@ const Preview = (props) => {
                   setRangeArray([...rangeArray, ...r_pageListArray]);
                   setAllRangeArrayValues([...r_pageListArray]);
 
-                  console.log({flatArray});
+                  // console.log({flatArray});
                   let tempFlatArray = [...flatArray];
                   tempFlatArray = tempFlatArray.filter(
                     (obj, index, self) =>
@@ -1106,7 +1110,7 @@ const Preview = (props) => {
                           (obj.selectedABatch || obj.selectedPBatch)
                       ) === index
                   );
-                  console.log({tempFlatArray});
+                  // console.log({tempFlatArray});
               
                   for (let i = 0; i < tempFlatArray.length; i++) {
                     if (
@@ -1121,8 +1125,8 @@ const Preview = (props) => {
                       tempCustomPageBatch = tempCustomPageBatch + 1;
                     }
                   }
-                  console.log("setAllPageBatch", tempAllPageBatch);
-                  console.log("setCustomPageBatch", tempCustomPageBatch);
+                  // console.log("setAllPageBatch", tempAllPageBatch);
+                  // console.log("setCustomPageBatch", tempCustomPageBatch);
                   setAllPageBatch(tempAllPageBatch);
                   setCustomPageBatch(tempCustomPageBatch);
               }
@@ -1155,6 +1159,8 @@ const Preview = (props) => {
   // useEffect(() => {},[sealsRestored]);
 
   useLayoutEffect(() => {
+    // console.log(props);
+    // alert("PREVIEW");
     setLoaded(false);
     let data = props?.location?.state?.details;
     if (data?.files?.preview) {
@@ -1222,7 +1228,7 @@ const Preview = (props) => {
       setOwnerloginName(props?.location?.state?.details?.ownerloginName);
       setCustomDocName(props?.location?.state?.details?.customDocName || sessionStorage.getItem("customDocName"));
       // console.log(data.docId);
-	  setDocId(data.docId);
+	    setDocId(data.docId);
       sessionStorage.setItem("externalSigner", false);
       if (
         frompath === "inbox" &&
@@ -1244,6 +1250,7 @@ const Preview = (props) => {
         sessionStorage.setItem("externalSigner", true);
       }
     } else {
+      // alert("Hiii");
       props.history.push("/");
     }
   }, []);
@@ -1421,7 +1428,7 @@ const Preview = (props) => {
 
       const intervalId = setInterval(checkForElement, 100);
       return () => clearInterval(intervalId);
-    }
+  }
 
   const recaptureDimensions = async () => {
     setLoaded(false);
@@ -1444,11 +1451,11 @@ const Preview = (props) => {
     }
     setFinalClientDimensions([...recapturedDimensions]);
     // setLoaded(true);
-};
+  };
 
   useEffect(() => {
     if (file?.preview && !fileUrl) {
-      console.log("AADHAAR");
+      // console.log("AADHAAR");
       // console.log(file.preview);
       setFileUrl(file.preview);
       pdfViewer();
@@ -1460,15 +1467,17 @@ const Preview = (props) => {
 
   const createFile = async (txnrefNo, signedStatus) => {
     setLoaded(false);
+    // Construct the URL with query parameters
+    let url = `${URL.downloadfromtemp}?txnrefNo=${btoa(txnrefNo)}&signedStatus=${signedStatus}`;
+
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     try {
-      let response = await fetch(
-        URL.downloadfromtemp +
-          "?at=" +
-          btoa(sessionStorage.getItem("authToken")) +
-          "&txnrefNo=" +
-          btoa(txnrefNo) +
-          "&signedStatus=" +
-          signedStatus
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      let response = await fetch(url, {
+            headers: {
+              'Authorization': `Bearer ${jsonWebToken}`
+            }
+          }
       );
       let data = await response.blob();
       await test(data); // Call the test function here
@@ -2323,7 +2332,7 @@ const Preview = (props) => {
   //On accepting the T&C this will get called
   const submit = () => {
 
-    console.log(selectedMode);
+    // console.log(selectedMode);
     //since signcoordinates are available in session
     let data1 = {};
     if (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true") {
@@ -2371,7 +2380,7 @@ const Preview = (props) => {
         .map((dragItem) => dragItem.pageNo);
     }
 
-    console.log({selectedOptionArray});
+    // console.log({selectedOptionArray});
 
     //------Creating an Array of pageNo's where selectedOptions are F/L/C
     for (let i = 0; i < dragArray.length; i++) {
@@ -2412,7 +2421,7 @@ const Preview = (props) => {
       //Removing the duplicates from the array
       return self.indexOf(item) == pos;
     });
-    console.log({pageListArr});
+    // console.log({pageListArr});
 
     //-----Preparing the defaultPositionedDragArray2 based on the outcome of pageListArr for default positioned dragabble's
     defaultPositionedDragArray2 = dragArray.filter(
@@ -2439,7 +2448,7 @@ const Preview = (props) => {
       "docuPageTest" + currentPage
     );
     let data2 = props?.location?.state?.details;
-    console.log({finalClientDimensions});
+    // console.log({finalClientDimensions});
     if (data2?.equalPageDimensions || equalPageDimensions) {
       for (let i = 0; i < finalClientDimensions.length; i++) {
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
@@ -3024,7 +3033,7 @@ const Preview = (props) => {
       if (selectedMode === "1" || data1.signMode === "1") {
         externalJar = "true";
         sessionStorage.setItem("docid", docid);
-        console.log("ExternalValue2: " + externalJar);
+        // console.log("ExternalValue2: " + externalJar);
       }
 
       setLoaded(false);
@@ -3353,7 +3362,8 @@ const Preview = (props) => {
         }
       }
 
-      console.log("docid: "+docid);
+      // console.log("authToken: "+authToken);
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       let obj = {
         //****starts here
         //added the keys for template based generated PDF.
@@ -3362,7 +3372,7 @@ const Preview = (props) => {
         subGroup: subGroup,
         isPrivate: isPrivate,
         signerComments: signerComments,
-        authToken: authToken,
+        // authToken: authToken,
         docType: "PDF",
         docId: docid,
         sc: "Y",
@@ -3392,7 +3402,20 @@ const Preview = (props) => {
           docdata: "",
         },
       };
-      console.log({ obj });
+      // if (authToken !== null) {
+      //   obj.authToken = authToken; // Add authToken as a key-value pair
+      // }
+      // console.log({ obj });
+
+    const headers = {
+      enctype: "multipart/form-data",
+    };
+
+    if (authToken !== null) {
+      obj.authToken = authToken;
+    } else {
+      headers["Authorization"] = `Bearer ${jsonWebToken}`;
+    }
 
       if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
         data.append("file", null);
@@ -3405,9 +3428,7 @@ const Preview = (props) => {
       // setLoaded(true);
       fetch(URL.getSignedDocV2, {
         method: "POST",
-        headers: {
-          enctype: "multipart/form-data",
-        },
+        headers: headers,
         body: data,
       })
         .then((response) => {
@@ -3418,7 +3439,7 @@ const Preview = (props) => {
           } else if (response.status === 200) {
             return response.json();
           } else {
-            // props.history.push("/");
+            props.history.push("/");
             return response.json();
           }
         })
@@ -3431,12 +3452,12 @@ const Preview = (props) => {
               "download_data",
               JSON.stringify(response_data)
             );
-            console.log({allRangeArrayValues});
-            console.log({rangeArray});
+            // console.log({allRangeArrayValues});
+            // console.log({rangeArray});
             if (!(data?.hasOwnProperty("externalSigner") && data?.externalSigner)) {
               sessionStorage.setItem("restoreCoordinates", true);
-              console.log({finalClientDimensions});
-              console.log({dragArray});
+              // console.log({finalClientDimensions});
+              // console.log({dragArray});
 
               // Prepare the object to store in sessionStorage
               const sessionData = {
@@ -3446,7 +3467,7 @@ const Preview = (props) => {
                 selectedOptionArray,
                 pageListArr,
               };
-              console.log({sessionData});
+              // console.log({sessionData});
 
               // Store the object in sessionStorage
               sessionStorage.setItem("restoreDetails", JSON.stringify(sessionData));
@@ -3587,10 +3608,13 @@ const Preview = (props) => {
       alias: responsedata.alias,
       configPath: responsedata.configPath,
     };
+    // console.log(data);
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -3649,6 +3673,7 @@ const Preview = (props) => {
   const calltoclient = () => {
     setTxnID(responsedata.txnid);
     let port = responsedata.port;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // let port=8082
     let url = "http://127.0.0.1:" + port + "/TOKENSIGN/getDSCTokenSign";
     let data = {
@@ -3672,6 +3697,7 @@ const Preview = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -3738,14 +3764,16 @@ const Preview = (props) => {
       status: clientCallRespData.status,
       signerName: clientCallRespData.signerName,
       txnid: TxnID,
-      authToken: clientCallRespData.authToken,
       externalSigner: sessionStorage.getItem("externalSigner"),
       loginMode: loginMode,
     };
+    // console.log(obj);
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.selfTokenSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -3896,8 +3924,8 @@ const Preview = (props) => {
     if (sessionStorage.getItem("TotalPages") === "1" && optnValue === "A") {
       optnValue = "C";
     }
-    console.log(count);
-    console.log({dragArray});
+    // console.log(count);
+    // console.log({dragArray});
     if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       setTooltipOpen(true);
     }
@@ -4093,6 +4121,7 @@ const Preview = (props) => {
 
   const subscribedPlanDetails = () => {
     let sendername = "";
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (sessionStorage.getItem("externalSigner") == "true") {
       sendername = ownerloginName;
     } else {
@@ -4101,14 +4130,24 @@ const Preview = (props) => {
 
     var body = {
       loginname: sendername,
-      authToken: sessionStorage.getItem("authToken"),
     };
-    fetch(URL.subscribedPlanDetails, {
+    let url = "";
+    const headers = {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
+    };
+    const authToken = sessionStorage.getItem("authToken");
+
+    if (authToken !== null) {
+      body.authToken = authToken;
+      url = URL.subscribedPlanDetails;
+    } else {
+      url = URL.subscribedPlanDetailsV2;
+      headers["Authorization"] = `Bearer ${jsonWebToken}`;
+    }
+    fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
+      headers: headers,
       body: JSON.stringify(body),
     })
       .then((response) => {
@@ -4220,7 +4259,6 @@ const Preview = (props) => {
 
   const validationCheck = () => {
     setLoaded(false);
-    let authToken = sessionStorage.getItem("authToken");
     var consentCode = "nsdlTnC";
     if (selectedMode === "2" || selectedMode === "3" || selectedMode === "4") {
       consentCode = "consentDSC";
@@ -4228,7 +4266,6 @@ const Preview = (props) => {
       consentCode = "nsdlTnC";
     }
     var body = {
-      authToken: authToken,
       consentTnC: consentCode,
     };
     if (isInsufficientUnits) {
@@ -4244,11 +4281,24 @@ const Preview = (props) => {
       });
       setLoaded(true);
     } else {
-      fetch(URL.getTermsAndConditions, {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      let url = "";
+      const headers = {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store"
+      };
+      const authToken = sessionStorage.getItem("authToken");
+
+      if (authToken !== null) {
+        body.authToken = authToken;
+        url = URL.getTermsAndConditions;
+      } else {
+        url = URL.getTermsAndConditionsV2;
+        headers["Authorization"] = `Bearer ${jsonWebToken}`;
+      }
+      fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: headers,
         body: JSON.stringify(body),
       })
         .then((response) => {
@@ -4258,7 +4308,7 @@ const Preview = (props) => {
           // } else if (response.status === 200) {
             return response.json();
           // } else {
-            // props.history.push("/");
+            props.history.push("/");
             // return response.json();
           // }
         })
@@ -4367,18 +4417,17 @@ const Preview = (props) => {
     }
   };
 
-  const downloadClientprogram = () => {
-    window.location.href =
-      URL.downloadClientProgram +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken"));
-  };
+  // const downloadClientprogram = () => {
+  //   window.location.href =
+  //     URL.downloadClientProgram
+  //     //  +
+  //     // "?at=" +
+  //     // btoa(sessionStorage.getItem("authToken"));
+  // };
 
   //if the jSign DSC clientprogram is not running then we will unclock the locked document for 3rd party signing
   const unlockdocument = () => {
-    let authToken = sessionStorage.getItem("authToken");
     var body = {
-      authToken: authToken,
       signMode: selectedMode,
       username: username,
       email: signeremail,
@@ -4386,10 +4435,12 @@ const Preview = (props) => {
       email: signeremail,
       docrefNo: docrefNo,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.unlockdscdocument, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -4413,10 +4464,8 @@ const Preview = (props) => {
 
   //For DSC signing if the 3rd party signer is not a jsign user then request for accesscode will be sent
   const generateaccesscode = () => {
-    let authToken = sessionStorage.getItem("authToken");
     let signMode;
     var body = {
-      authToken: authToken,
       signMode: selectedMode,
       username: username,
       email: signeremail,
@@ -4424,10 +4473,12 @@ const Preview = (props) => {
       email: signeremail,
       mobileNo: signerMobileNumber,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.generatedscaccesscode, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -4458,7 +4509,7 @@ const Preview = (props) => {
     if (dragArray.length != 0) {
       let result = false;
       result = stampingPosition();
-      console.log(result);
+      // console.log(result);
       if (result == true) {
         confirmAlert({
           // message:
@@ -4479,9 +4530,7 @@ const Preview = (props) => {
         if (planActive == true) {
           document.getElementById("generateOtpBtn").disabled = true;
           let data = new FormData();
-          console.log("docId: "+docId);
           let obj = {
-            authToken: sessionStorage.getItem("authToken"),
             selectedMode: selectedMode,
             loginname: sessionStorage.getItem("username"),
             userIP: sessionStorage.getItem("userIP"),
@@ -4491,10 +4540,12 @@ const Preview = (props) => {
           };
           data.append("file", file);
           data.append("inputDetails", JSON.stringify(obj));
+          let jsonWebToken = sessionStorage.getItem("jsonWebToken");
           fetch(URL.generateOTP, {
             method: "POST",
             headers: {
               enctype: "multipart/form-data",
+              'Authorization': `Bearer ${jsonWebToken}`
             },
             body: data,
           })
@@ -4528,7 +4579,7 @@ const Preview = (props) => {
                 // setTxnId(responseJson.txnid);
                 startResendOtpTimer();
               } else {
-                console.log("INCLUDES");
+                // console.log("INCLUDES");
                 if (
                   responseJson.statusDetails.includes("OTP Generation Failed")
                 ) {
@@ -4665,16 +4716,17 @@ const Preview = (props) => {
     if (selectedPagevalue) {
       setSelectedOption(selectedPagevalue);
       let body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         signPage: selectedPagevalue,
         signMode: selectedModeValue,
       };
       setLoaded(false);
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       fetch(URL.getRequiredUnits, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -4758,16 +4810,17 @@ const Preview = (props) => {
   //On click of resend otp button
   const resendEsignOtp = (e) => {
     let obj = {
-      authToken: sessionStorage.getItem("authToken"),
       selectedMode: selectedMode,
       loginname: sessionStorage.getItem("username"),
       docID: docId,
     };
     setLoaded(false);
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.resendEsignOtp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -5015,6 +5068,8 @@ const Preview = (props) => {
   };
 
   const pdfViewer = () => {
+    // {console.log("PREVIEW PDF VIEWER")}
+    // alert("PREVIEW PDF VIEWER");
     // const showThumbnail = !(detectMob);
     // const data = props.location.state.details;
     const showThumbnail = !/iPhone|iPad|iPod|Android/i.test(
@@ -5085,6 +5140,7 @@ const Preview = (props) => {
         }
       }
     } else {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       const body = {
         authToken: AuthToken,
         isPrivate: isPrivate,
@@ -5097,6 +5153,7 @@ const Preview = (props) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -5325,6 +5382,7 @@ const Preview = (props) => {
 
   return (
     <div id="mainDiv" style={{ overflow: overflow }}>
+      {/* {console.log("PREVIEW RETURN")} */}
       <Loader
         loaded={loaded}
         lines={13}
@@ -5678,9 +5736,7 @@ const Preview = (props) => {
                     <span id="clientdownloadspan">
                       <a
                         href={
-                          URL.downloadClientProgram +
-                          "?at=" +
-                          btoa(sessionStorage.getItem("authToken"))
+                          URL.downloadClientProgram
                         }
                         id="clientdownload"
                         style={{ display: "none" }}

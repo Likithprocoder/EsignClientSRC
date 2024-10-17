@@ -286,13 +286,15 @@ function TempFieldPreview(props) {
         data.append("jsonData", JSON.stringify(finalData));
         data.append("file", editedHTML)
 
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                enctype: "multipart/form-data"
+                enctype: "multipart/form-data",
+                Authorization: `Bearer ${jsonWebToken}`
             },
             body: data
-        };
+        }
         fetch(URL.addHtmlTempAndFormDetail, options)
             .then((response) => response.json()
                 .then((data) => {

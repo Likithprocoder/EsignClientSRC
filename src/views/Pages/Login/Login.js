@@ -189,7 +189,7 @@ class Login extends Component {
     if (this.state.username.length !== 0) {
       if (this.state.password.length !== 0) {
         if(sessionStorage.getItem("userIP")!= null || sessionStorage.getItem("userIP")!= undefined){
-         console.log("userIp:"+sessionStorage.getItem("userIP"))
+        //  console.log("userIp:"+sessionStorage.getItem("userIP"))
         this.setState({ loaded: false });
         var body = {
           username: btoa(this.state.username),
@@ -213,7 +213,8 @@ class Login extends Component {
               let isAuthenticated = true;
               sessionStorage.setItem("isAuthenticated", isAuthenticated);
               this.setState({ loaded: true });
-              sessionStorage.setItem("authToken", responseJson.authToken);
+              //sessionStorage.setItem("authToken", responseJson.authToken);
+              sessionStorage.setItem("jsonWebToken", responseJson.jsonWebToken);
               sessionStorage.setItem("username", responseJson.name);
               sessionStorage.setItem("firstName", responseJson.firstName);
               // sessionStorage.setItem("verifyMobile", responseJson.verifyMobile)
@@ -221,6 +222,7 @@ class Login extends Component {
               var menus = JSON.stringify(responseJson.menu);
               sessionStorage.setItem("items", menus);
               sessionStorage.setItem("actionExists", true);
+              sessionStorage.setItem("corpId", responseJson.corporateID);
               this.props.history.push("/");
             } else {
               this.setState({ loaded: true });

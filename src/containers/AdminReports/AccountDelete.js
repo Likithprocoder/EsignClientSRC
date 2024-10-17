@@ -82,13 +82,14 @@ if (!$("#agreed").not(':checked').length){
  this.setState({ loaded: false });
     var body = {
       loginname: btoa(sessionStorage.getItem("username")),
-      authToken: sessionStorage.getItem("authToken"),
       optnType: "UADEL",
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getOtp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -196,12 +197,13 @@ if (!$("#agreed").not(':checked').length){
       mobRefNo: btoa(this.state.mobotpref),
       loginname: sessionStorage.getItem("username"),
       userIP: sessionStorage.getItem("userIP"),
-      authToken: sessionStorage.getItem("authToken"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.DeleteUser, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })

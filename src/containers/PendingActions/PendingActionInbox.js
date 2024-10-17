@@ -31,8 +31,6 @@ export default class PendingActionInbox extends React.Component {
       senderName: "",
       requestedTime: "",
       openEmailModal: false,
-
-      authToken: "",
       canvas_width: "",
       canvas_height: "",
       data1: {},
@@ -68,8 +66,8 @@ export default class PendingActionInbox extends React.Component {
 
   //------------------Inbox Table API--------------
   getInbocDocDetails = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
       docStatus: "pending"
     };
     this.setState({ loaded: false });
@@ -77,6 +75,7 @@ export default class PendingActionInbox extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -92,7 +91,6 @@ export default class PendingActionInbox extends React.Component {
           for (var i = 0; i < inboxDetails.length; i++) {
             var rowData = inboxDetails[i];
             if (
-
               rowData.DOC_STATUS === -2
             ) {
               isSignEnable = true;
@@ -136,12 +134,13 @@ export default class PendingActionInbox extends React.Component {
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
   getSignCoordinateDetails(data) {
-    // console.log(data);
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     //getting access for external signer
     fetch(URL.getSignCoordinateDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -188,16 +187,14 @@ export default class PendingActionInbox extends React.Component {
 
   //------------------Signing from inbox call(self signing pending list)------------------
   CheckSigningMode = (rowData) => {
-    console.log({rowData});
     let data = {
       docId: rowData.DOC_ID,
-      authToken: sessionStorage.getItem("authToken"),
       txnrefNo: rowData.token,
     }
     this.setState({ loaded: true });
     this.props.history.push({
       pathname: "/download/tokenSignDownload",
-      frompath: "/pendingActionsInbox",
+      frompath: "/pendingSignsInbox",
       state: {
         details: data,
       },
@@ -208,9 +205,7 @@ export default class PendingActionInbox extends React.Component {
   viewStoredFile = (e) => {
     let pdfurl =
       URL.viewStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
+      "?docID=" +
       btoa(e.DOC_ID);
       this.setState({ fileUrl: pdfurl });
       this.setState({ fileName: e.DOC_NAME });

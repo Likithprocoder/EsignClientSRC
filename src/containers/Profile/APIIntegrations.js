@@ -44,7 +44,6 @@ export default class APIIntegrations extends React.Component {
       showApiKeyList: true, // Flag to control rendering of ApiKeyList
       apiKeyLimit: false,
     };
-    this.setApiKeyLimit = this.setApiKeyLimit.bind(this);
      // Bind your methods in the constructor
      this.restrictNameInput = this.restrictNameInput.bind(this);
      this.generateAPIKeys = this.generateAPIKeys.bind(this);
@@ -93,7 +92,7 @@ export default class APIIntegrations extends React.Component {
     };
 
     toggleModal = () => {
-      console.log(this.state.apiKeyLimit);
+      // console.log(this.state.apiKeyLimit);
       if (this.state.apiKeyLimit) {
         confirmAlert({
           message: "Generation of API Key limit reached. Please delete an existing key to generate a new one.",
@@ -133,11 +132,10 @@ export default class APIIntegrations extends React.Component {
 
     //Generate API Key call
     generateAPIKeys = (e) => {
-      console.log(this.state.apiKeyLimit);
         let validationSuccess = this.validateInputs();
         if (validationSuccess) {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         var json = {
-            authToken: sessionStorage.getItem("authToken"),
             appName: this.state.appName,
             description: this.state.description,
         };
@@ -145,6 +143,7 @@ export default class APIIntegrations extends React.Component {
             method: "POST",
             headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify(json)
         })
@@ -268,7 +267,7 @@ export default class APIIntegrations extends React.Component {
                 {/* <b>API Keys</b> */}
               {/* </CardHeader> */}
               {/* <CardBody className="p-4"> */}
-                <div id="apiKeyGeneration" hidden={sessionStorage.getItem("roleID") !== "7"}>
+                <div id="apiKeyGeneration" hidden={sessionStorage.getItem("roleID") !== "6"}>
                   {/* <div style={{ marginBottom: "10px", marginLeft: "-12px" }}> */}
                   <div style={{borderLeft: "5px solid grey", padding: "10px", background: "rgb(232, 234, 245)"}}>
                   <i class="fa fa-info-circle" aria-hidden="true" style={{ color: "grey"}}></i> To securely connect to DocuExec API(s), your application should use an API key with the necessary permissions to access the services.
@@ -280,7 +279,7 @@ export default class APIIntegrations extends React.Component {
         </Col>
         </Row>
 
-        {this.state.showApiKeyList && ((sessionStorage.getItem("roleID") === "7") && (<ApiKeyList roleId={sessionStorage.getItem("roleID")} setApiKeyLimit={this.setApiKeyLimit} />))}
+        {this.state.showApiKeyList && ((sessionStorage.getItem("roleID") === "6") && (<ApiKeyList roleId={sessionStorage.getItem("roleID")} setApiKeyLimit={this.setApiKeyLimit} />))}
 
         <Modal open={this.state.modalOpen} onClose={this.toggleModal} center={true} closeOnOverlayClick={false} id="apiKeyModal" >
           {/* <div style={{ width: "24% !important"}}> */}
@@ -296,6 +295,7 @@ export default class APIIntegrations extends React.Component {
                   onChange={this.handleInputChange}
                   onKeyPress={this.restrictNameInput}
                   autoComplete="off"
+                  maxLength={56}
                   placeholder="Enter app name"
                 />
               </div>

@@ -110,16 +110,14 @@ class EmployeeList extends Component {
     }
 
     fetchEmployeeList = () => {
-        var body = {
-            authToken: sessionStorage.getItem("authToken"),
-        };
         this.setState({ loaded: false });
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         fetch(URL.getCorpEmpMappingList, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify(body),
         })
             .then((response) => response.json())
             .then((responseJson) => {
@@ -154,7 +152,7 @@ class EmployeeList extends Component {
         fetch(URL.updateCorpEmpMapping, options)
             .then(response => (response.json()))
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 if (data.status === "SUCCESS") {
                     if (data.statusDetails == "Employee removed successfully") {
                         this.setState({ contactModal: false });
@@ -213,13 +211,14 @@ class EmployeeList extends Component {
     }
 
     handle = (record) => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 empId: record.id.empId
             })
         }
@@ -290,18 +289,19 @@ class EmployeeList extends Component {
                   label: "OK",
                   className: "confirmBtn",
                   onClick: () => {
-        const options = {
-              method: "POST",
-              headers: {
-                  "Content-type": "application/json"
-              },
-              body: JSON.stringify({
-                  authToken: sessionStorage.getItem("authToken"),
-                  empId: this.state.empId,
-                  updatedStatus: "2"
-              })
-          }
-          this.updateCorpEmployee(options);
+                    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json",
+                            'Authorization': `Bearer ${jsonWebToken}`
+                        },
+                        body: JSON.stringify({
+                            empId: this.state.empId,
+                            updatedStatus: "2"
+                        })
+                    }
+                    this.updateCorpEmployee(options);
       },
   },
   {
@@ -321,18 +321,19 @@ class EmployeeList extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
-          const options = {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
-                    empId: empId,
-                    updatedStatus: status
-                })
-            }
-            this.updateCorpEmployee(options);
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                        const options = {
+                                method: "POST",
+                                headers: {
+                                    "Content-type": "application/json",
+                                    'Authorization': `Bearer ${jsonWebToken}`
+                                },
+                                body: JSON.stringify({
+                                    empId: empId,
+                                    updatedStatus: status
+                                })
+                            }
+                            this.updateCorpEmployee(options);
         },
     },
     {
@@ -369,7 +370,7 @@ class EmployeeList extends Component {
             return false;
         }
         
-        console.log(this.state.empMoreDetail);
+        // console.log(this.state.empMoreDetail);
     
         if (
             name === this.state.empMoreDetail.name &&
@@ -399,14 +400,13 @@ class EmployeeList extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             empId: this.state.empId,
                             updatedInfo: {
                                 "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
                             }
                         };
-                        console.log(body);
                         const url = URL.updateCorpEmpMapping;
     
                         this.setState({ loaded: false });
@@ -414,6 +414,7 @@ class EmployeeList extends Component {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })

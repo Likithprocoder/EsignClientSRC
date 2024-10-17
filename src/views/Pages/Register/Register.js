@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
+  Dropdown, DropdownToggle,
   Row,
 } from "reactstrap";
 import Notifications, { notify } from "react-notify-toast";
@@ -124,7 +125,7 @@ class Register extends Component {
     if (pathURL.includes("?")) {
       let awsRedirection = pathURL.split("?")[1];
       let tokenValue = awsRedirection.split("=")[1];
-      console.log("tokenValue",tokenValue);
+      // console.log("tokenValue",tokenValue);
       this.resolveCustomer(tokenValue);
     }
  
@@ -133,7 +134,7 @@ class Register extends Component {
   .split('; ')
   .find(row => row.startsWith('x-amzn-marketplace-token'))
   ?.split('=')[1];
-console.log("token",token)
+// console.log("token",token)
 
 fetch(window.location.href)
   .then(response => {
@@ -143,9 +144,9 @@ fetch(window.location.href)
   }
 
   getCookieValue = (name) => {
-    console.log(document.cookie);
+    // console.log(document.cookie);
     const cookies = document.cookie.split('; '); 
-    console.log(cookies); 
+    // console.log(cookies); 
     // Split cookies by '; ' to get individual cookie key-value pairs
     for (let cookie of cookies) {
       const [cookieName, cookieValue] = cookie.split('=');  // Split each cookie by '=' to separate the name and value
@@ -173,7 +174,7 @@ fetch(window.location.href)
   }
 
   setInput = (e) => {
-    let regName = new RegExp(/^[a-zA-Z ]*$/);
+    let regName = new RegExp(/^[a-zA-Z0-9 ]*$/);
     let loginName = new RegExp(/^[a-zA-Z0-9 ]*$/);
     let regPassword = new RegExp(/^[A-Za-z0-9!.@#\$%\^&_ ]*$/);
     let regEmail = new RegExp(/^[A-Za-z0-9\-.@'_ ]*$/);
@@ -1444,6 +1445,12 @@ fetch(window.location.href)
                           <InputGroupText>
                             <i className="icon-screen-smartphone"></i>
                           </InputGroupText>
+                          {/* Fixed Dropdown for Country Code */}
+                            <Dropdown isOpen={false}>
+                              <DropdownToggle caret disabled style={{ zIndex:"0"}}>
+                                +91
+                              </DropdownToggle>
+                            </Dropdown>
                         </InputGroupAddon>
                         <Input
                           id="mobile"

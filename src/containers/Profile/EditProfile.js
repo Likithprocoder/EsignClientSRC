@@ -46,15 +46,16 @@ class EditProfile extends Component {
   }
 
   componentWillMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
     fetch(URL.getProfileDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -168,7 +169,6 @@ class EditProfile extends Component {
     // let json1 = {
     //   loginname: this.state.loginname,
     //   username: this.state.username,
-    //   authToken: sessionStorage.getItem("authToken"),
     //   mobile: this.state.mobile,
     //   email: this.state.email.toLowerCase(),
     //   // password: btoa(this.state.password),
@@ -178,7 +178,6 @@ class EditProfile extends Component {
     let json = {
       loginname: this.state.loginname,
       username: this.state.username,
-      authToken: sessionStorage.getItem("authToken"),
       // mobile: btoa(this.state.mobile),
       // email: btoa(this.state.email.toLowerCase()),
       mobile: this.state.mobile,
@@ -238,6 +237,7 @@ class EditProfile extends Component {
   };
   editProfileCall = (data) => {
     let json = data;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let myColor = {
       color: yellow,
     };
@@ -245,6 +245,7 @@ class EditProfile extends Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(json),
     })
@@ -362,7 +363,6 @@ class EditProfile extends Component {
     //   optnType: "USREDE",
     //   // emailId: this.state.email,
     //   // loginname: this.state.loginname,
-    //   authToken: sessionStorage.getItem("authToken"),
     // };
     this.setState({ optnType: "USREDE" });
   };
@@ -373,13 +373,13 @@ class EditProfile extends Component {
   //--------------Update Fetch API----------
   userUpdateAPI = () => {
     let editJsondata;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // email update json
     if (this.state.optnType == "USREDE") {
       editJsondata = {
         optnType: "USREDE",
         emailId: this.state.email.toLowerCase(),
         loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
       this.setState({ editJsondata: editJsondata });
     } else if (this.state.optnType == "USREDM") {
@@ -401,7 +401,6 @@ class EditProfile extends Component {
         optnType: "USREDM",
         mobileNum: this.state.mobile,
         loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
     } else if (this.state.optnType === "USREDU") {
       editJsondata = {
@@ -409,7 +408,6 @@ class EditProfile extends Component {
         emailId: this.state.email.toLowerCase(),
         mobileNum: this.state.mobile,
         loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
     }
     // console.log(this.state.prevusername, this.state.username);
@@ -479,6 +477,7 @@ class EditProfile extends Component {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(data),
             })

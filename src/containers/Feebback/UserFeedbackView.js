@@ -3,7 +3,6 @@ import { URL } from "../URLConstant";
 import './FeedbackForm.css'; // Import the CSS file
 import { confirmAlert } from "react-confirm-alert";
 import { Tooltip } from 'antd';
-
 var Loader = require("react-loader");
 
 function UserFeedbackView(props) {
@@ -18,15 +17,14 @@ function UserFeedbackView(props) {
 
     useEffect(() => {
         setUserData(props.history.location.state.userData);
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // fetch call to get the feedback questions.
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            }),
         };
         fetch(URL.getFeedbackQuestions, options)
             .then((response) => response.json())
@@ -136,7 +134,7 @@ function UserFeedbackView(props) {
                 <div className="UserData" key="USERNAME"><strong>Name</strong>: <span style={{ marginLeft: "5px" }} id="USERNAME"></span></div>
                 <div className="UserData" key="USERMOBILE"><strong>Mobile Number</strong>: <span style={{ marginLeft: "5px" }} id="USERMOBILE"></span></div>
                 <div className="UserData" key="USERFEDBCKON"><strong>Feedback ON</strong>: <span style={{ marginLeft: "5px" }} id="USERFEDBCKON"></span></div>
-                <div className="UserData" key="BACKBUTTON" style={{justifyContent:"end", paddingRight:"5%"}}> <Tooltip title="Feedback users list." color={'rgba(0, 0, 0, 0.54)'} >
+                <div className="UserData" key="BACKBUTTON" style={{ justifyContent: "end", paddingRight: "5%" }}> <Tooltip title="Feedback users list." color={'rgba(0, 0, 0, 0.54)'} >
                     <button style={{ height: "fit-content" }} type='submit' onClick={e => { props.history.push("/docuExecFeedback") }} className='btn btn-success'>Back</button>
                 </Tooltip></div>
             </div>

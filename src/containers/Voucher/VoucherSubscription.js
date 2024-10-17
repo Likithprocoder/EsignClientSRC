@@ -356,7 +356,7 @@ class VoucherSubscription extends Component {
         additional_data.corpId = this.state.curntCrpId;
         additional_data.corpUsage = this.state.corpUsage;
         if (this.state.voucherUsageType !== "Any User") {
-          console.log(this.state.tempGroupsCheckBox);
+          // console.log(this.state.tempGroupsCheckBox);
           let corpSubGrpSelected = [];
           // Adding the list of selected template groups to the additional data
           for (let key in this.state.curntSubGrpList) {
@@ -418,14 +418,15 @@ class VoucherSubscription extends Component {
           else {
             //duplication check
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               voucherCode: definedVoucherCode
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             this.setState({ loaded: false });
             fetch(URL.checkVoucherCodeAvailability, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -482,16 +483,17 @@ class VoucherSubscription extends Component {
     let response_data = {};
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.consenteSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -572,15 +574,14 @@ class VoucherSubscription extends Component {
   }
 
   getTemplateGrps = () => {
-    var json = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getTemplateGrps, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(json),
+      body: JSON.stringify({}),
     })
       .then((response) => {
         return response.json();
@@ -669,6 +670,10 @@ class VoucherSubscription extends Component {
   }
 
   render() {
+    // Define the headers to include in the fetch request
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
     const {
       openRedeemModal,
       amount,
@@ -1008,10 +1013,12 @@ class VoucherSubscription extends Component {
               ref="iframe"
               type="application/pdf" */
               url={
-                URL.viewConsentFile +
-                "?at=" +
-                btoa(sessionStorage.getItem("authToken"))
+                URL.viewConsentFile
+                //  +
+                // "?at=" +
+                // btoa(sessionStorage.getItem("authToken"))
               }
+              httpHeaders={headers}
             /* width="100%"
             height="100%"
             hidden */

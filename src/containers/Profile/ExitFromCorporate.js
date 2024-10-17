@@ -9,14 +9,14 @@ const ExitFromCorporate = (props) => {
 
     // contains the server fetch calls...
     useEffect(() => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            }),
+            body: JSON.stringify({}),
         };
 
         fetch(URL.getTemplateGrps, options)
@@ -84,13 +84,14 @@ const ExitFromCorporate = (props) => {
                         //     };
                         // };
                         // fetch call to unlink user from the selected corporate groups.
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         const options = {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 selectedCorpGrps: selectedCorpGrps,
                                 roleId: sessionStorage.getItem("roleID")
                             }),
@@ -143,13 +144,14 @@ const ExitFromCorporate = (props) => {
                     label: "Yes",
                     className: "confirmBtn",
                     onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         const options = {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 roleId: sessionStorage.getItem("roleID"),
                                 deleteFromCorp: "1" // (Flag is fixed to 1. 1-means exit from corporate entity and 0-means not to exit from corporate group.) 
                             }),

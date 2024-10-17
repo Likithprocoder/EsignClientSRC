@@ -23,13 +23,14 @@ export default class UpdateServices extends Component {
     componentDidMount() {
         var body = {
             "username": sessionStorage.getItem("username"),
-            "authToken": sessionStorage.getItem("authToken")
         }
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false })
         fetch(URL.getServices, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify(body)
         }).then((response) => {
@@ -110,16 +111,17 @@ export default class UpdateServices extends Component {
             }
             var body = {
                 "username": btoa(sessionStorage.getItem("username")),
-                "authToken": sessionStorage.getItem("authToken"),
                 "list": list
             }
             this.setState({ loaded: false })
             var r = window.confirm(msg)
             if (r === true) {
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 fetch(URL.updateServices, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jsonWebToken}`
                     },
                     body: JSON.stringify(body)
                 }).then((response) => {

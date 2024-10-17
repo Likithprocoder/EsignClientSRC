@@ -201,14 +201,15 @@ export default class Inbox extends React.Component {
   //------------------Getting the signer details from API----------------------
   signFromInboxForThirdPart(accesskey) {
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
       accessKey: accesskey,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
     fetch(URL.mpsGetGuestAccessV2, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -245,7 +246,7 @@ export default class Inbox extends React.Component {
 
           // sessionStorage.setItem("senderName", responseJson.senderName);
           // sessionStorage.setItem("requestedTime", responseJson.requestedTime);
-          // sessionStorage.setItem("authToken", responseJson.authToken);
+
 
           // sessionStorage.setItem("firstName", responseJson.loginname);
           // sessionStorage.setItem("email", responseJson.email);
@@ -284,16 +285,15 @@ export default class Inbox extends React.Component {
 
   //------------------Inbox Table API--------------
   getInbocDocDetails = () => {
-    var body = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.getInboxDocDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({})
     })
       .then((response) => {
         return response.json();
@@ -358,10 +358,12 @@ export default class Inbox extends React.Component {
   getSignCoordinateDetails(data) {
     // console.log(data);
     //getting access for external signer
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getSignCoordinateDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -411,7 +413,6 @@ export default class Inbox extends React.Component {
     // console.log(rowData.DOC_ID);
     let dataToGetSignCoordinateDetails = {
       docId: rowData.DOC_ID,
-      authToken: sessionStorage.getItem("authToken"),
     }
     if (rowData.hasOwnProperty("ACCESS_KEY")) {
       this.signFromInboxForThirdPart(rowData.ACCESS_KEY);
@@ -424,12 +425,18 @@ export default class Inbox extends React.Component {
 
 
   async createFileforSigningasSender(filename, docID) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
-      URL.downloadStoredFile +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&docID=" +
-        btoa(docID)
+      URL.downloadStoredFileV2 +
+        // "?at=" +
+        // btoa(sessionStorage.getItem("authToken")) +
+        "?docID=" +
+        btoa(docID),
+        {
+          headers: {
+              'Authorization': `Bearer ${jsonWebToken}`
+          }
+        }
     );
     // console.log(response);
     let data = await response.blob();
@@ -540,12 +547,18 @@ export default class Inbox extends React.Component {
   //downloading PDF file
   async createFile(doc) {
     let rowData = doc;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
       URL.viewStoredFile +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&docID=" +
-        btoa(doc.DOC_ID)
+      // "?at=" +
+      // btoa(sessionStorage.getItem("authToken")) +
+      "?docID=" +
+      btoa(doc.DOC_ID),
+      {
+          headers: {
+              'Authorization': `Bearer ${jsonWebToken}`
+          }
+      }
     );
     let data = await response.blob();
     let testResponse = await this.test(data, doc.DOC_NAME, doc.DOC_ID);
@@ -785,11 +798,12 @@ export default class Inbox extends React.Component {
 
   //--API Call For getting the Template Validations from server-----------
   getEmailValidation = () => {
-    var authToken = "?authToken=" + sessionStorage.getItem("authToken");
-    fetch(URL.getEmailTemplateValidation + authToken, {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    fetch(URL.getEmailTemplateValidation, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
     })
       .then((response) => {
@@ -979,16 +993,17 @@ export default class Inbox extends React.Component {
         var obj = {
           toEmails: emailArrayTo,
           ccEmails: emailArrayCc,
-          authToken: sessionStorage.getItem("authToken"),
           eSub: this.state.subject,
           eBody: this.state.ebody,
           docId: this.state.documentId,
           userIP: sessionStorage.getItem("userIP"),
         };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         fetch(URL.sendEmail, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${jsonWebToken}`
           },
           body: JSON.stringify(obj),
         })
@@ -1048,18 +1063,32 @@ export default class Inbox extends React.Component {
     }
   };
 
-  //-----------------View File--------------------
-  viewStoredFile = (e) => {
-    let pdfurl =
-      URL.viewStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(e.DOC_ID);
-      this.setState({ fileUrl: pdfurl });
-      this.setState({ fileName: e.DOC_NAME });
-      this.setState({ shown: true})
-  };
+//-----------------View File--------------------
+viewStoredFile = async (e) => {
+  let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+  try {
+    let response = await fetch(
+      URL.viewStoredFile + "?docID=" + btoa(e.DOC_ID),
+      {
+        headers: {
+          'Authorization': 'Bearer ' + jsonWebToken
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+
+    let blob = await response.blob();
+    let blobUrl = window.URL.createObjectURL(blob);
+
+    this.setState({ fileUrl: blobUrl, fileName: e.DOC_NAME, shown: true });
+  } catch (error) {
+    console.error("Error fetching file:", error);
+  }
+};
+
 
   // For hiding sidebar toggler when viewing document using modal
   hideSidebarToggler() {
@@ -1217,15 +1246,16 @@ customPlugin() {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               userId: data.USER_ID,
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.cancelSigningJob, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1304,15 +1334,16 @@ customPlugin() {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               userId: data.USER_ID,
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.sendReminder, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1405,17 +1436,18 @@ customPlugin() {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               selfsign: data.SELF_SIGN,
               userIP: sessionStorage.getItem("userIP"),
               username: sessionStorage.getItem("username"),
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.deleteStoredFile, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1459,17 +1491,44 @@ customPlugin() {
       ],
     });
   };
-  //------------File Download----------------------
-  fileDownload(data) {
-    var data = data;
-    var DocId = data.DOC_ID;
-    window.location.href =
-      URL.downloadStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(DocId);
-  }
+
+  fileDownload = async (data) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    let DocId = data.DOC_ID;
+    let url = URL.downloadStoredFileV2 + "?docID=" + btoa(DocId);
+  
+    try {
+      let response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+  
+      let blob = await response.blob();
+      let blobUrl = window.URL.createObjectURL(blob);
+  
+      // Create a temporary anchor element to download the file
+      let a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = data.DOC_NAME;
+      document.body.appendChild(a);
+      a.click();
+  
+      // Clean up and revoke the object URL
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      // Optionally, handle error accordingly
+    }
+  };
+  
+  
   //-----------Step Progress Bar SignersInfo-------
   signersInfo(signerList, isSignedList) {
     var signerArray = signerList.split(",");
@@ -1581,13 +1640,14 @@ customPlugin() {
 
   commentDetails(e) {
     var obj = {
-      authToken: sessionStorage.getItem("authToken"),
       docId: e.DOC_ID,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getSignerComments, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -1621,14 +1681,15 @@ customPlugin() {
   }
 
   uploadDocument(event, data) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
       docID: btoa(data.DOC_ID)
     };
     fetch(URL.getOAuthEndPointURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body)
 
@@ -1940,9 +2001,6 @@ customPlugin() {
       },
     ];
     const inboxData = this.state.inboxDataList;
-
-  
-
     return (
       <div>
         <Loader

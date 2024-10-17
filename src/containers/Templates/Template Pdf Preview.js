@@ -42,7 +42,7 @@ class DisplayPdf1 extends Component {
       temptDrftRefFromServer: "",
       pageDimensions: "",
       equalPageDimensions: true,
-      flag: "",
+	    flag: "",
       encodeBatchNdSequence: "",
       fromPath: ""
     };
@@ -79,9 +79,8 @@ class DisplayPdf1 extends Component {
     let additionalData = {};
     let reptData = { "reptDataToSveDraft": this.props.location.state.reptDataToSveDraft, "repeatAbleBlock": this.props.location.state.repeatAbleBlck };
     additionalData["repeatAbleBolckData"] = JSON.stringify(reptData);
-
+	let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     bodyData = {
-      authToken: sessionStorage.getItem("authToken"),
       templateCode: tempCode,
       templateData: templateData,
       templateAttachments: this.props.location.state.templateAttachments,
@@ -95,7 +94,8 @@ class DisplayPdf1 extends Component {
     const options = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(bodyData)
     };
@@ -251,10 +251,10 @@ class DisplayPdf1 extends Component {
     // Ensure files1 is an array with a File object
     // const filesArray = [this.state.files1];
   
-    console.log(height);
-    console.log(width);
-    console.log(this.state.height);
-    console.log(this.state.width);
+    // console.log(height);
+    // console.log(width);
+    // console.log(this.state.height);
+    // console.log(this.state.width);
     let data = {
       files: this.state.files1,
       height: height,

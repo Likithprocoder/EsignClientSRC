@@ -34,15 +34,17 @@ function ReqUsrForCorp(props) {
     // fetch API to get the list of requested members who has raised to 
     //become the member of corp entity and for group access
     useEffect(() => {
+    	let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    	
         // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
         // If corporate is disabled then redirect to the old page.
         const corpDataInputs = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 corpId: sessionStorage.getItem("corpId")
             })
         };
@@ -112,11 +114,9 @@ function ReqUsrForCorp(props) {
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            })
         }
 
         fetch(URL.getCorpMemberRequests, options)
@@ -409,13 +409,14 @@ function ReqUsrForCorp(props) {
         }];
 
         // API call to add the users to there respective grps..
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 userDetails: userDetails,
                 userIP: sessionStorage.getItem("userIP"),
             })

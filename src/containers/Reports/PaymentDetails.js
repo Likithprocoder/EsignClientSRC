@@ -32,13 +32,14 @@ export default class PaymentDetails extends React.Component {
   componentDidMount() {
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
-    fetch(URL.getPaymentHistory, {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+     fetch(URL.getPaymentHistory, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -68,7 +69,7 @@ export default class PaymentDetails extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => {},
                 },
               ],
             });
@@ -94,18 +95,18 @@ export default class PaymentDetails extends React.Component {
           <td>{data.description}</td>
           <td>{data.txnId}</td>
           <td>{data.units}</td>
-          <td><button style={{padding:"0px", fontSize:"10px"}} hidden={data.hasOwnProperty('InvoiceDownload')} onClick={e => this.downloadInvoiceReport(e, data.txnId)} className="btn btn-link">Download</button></td>
+          <td><button style={{padding:"0px", fontSize:"14px"}} hidden={data.hasOwnProperty('InvoiceDownload')} onClick={e => this.downloadInvoiceReport(e, data.txnId)} className="btn btn-link">Download</button></td>
         </tr>
       );
     });
   }
 
   // Fetch call to download invoice report
-  downloadInvoiceReport = (event, tansactionID) => {
+  downloadInvoiceReport = (event, tansactionID) => {      
     this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let downloadInvoice =
-      "?at=" + sessionStorage.getItem("authToken") +
-      "&loginname=" +
+      "?loginname=" +
       btoa(sessionStorage.getItem("username")) +
       "&transitionID=" +
       btoa(tansactionID);
@@ -113,6 +114,7 @@ export default class PaymentDetails extends React.Component {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
     }).then((response) => {
       if (response.status === 204) {
@@ -179,7 +181,7 @@ export default class PaymentDetails extends React.Component {
           ], closeOnClickOutside: false
         });
       });
-    this.setState({ loaded: true });
+      this.setState({ loaded: true });
   };
 
   render() {

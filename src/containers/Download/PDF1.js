@@ -1,20 +1,21 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
 import { toolbarPlugin } from '@react-pdf-viewer/toolbar';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/toolbar/lib/styles/index.css';
 
+var Loader = require("react-loader");
+
 const PDF1 = (props) => {
-  console.log("finish prop in PDF1:", props.finish);
+  // console.log(props);
+  // const [loaded, setLoaded] = useState(true);
   const toolbarPluginInstance = toolbarPlugin();
   const { renderDefaultToolbar, Toolbar } = toolbarPluginInstance;
 
   // Define the toolbar transform logic
   let transform = (slot) => {
-    console.log("Transform function is called");
     if (props.finish === true) {
-      console.log("props.finish is true");
       // Download option is visible when finish is true
       return {
         ...slot,
@@ -38,7 +39,6 @@ const PDF1 = (props) => {
         SwitchScrollModeMenuItem: () => <></>,
       };
     } else {
-      console.log("props.finish is false");
       // Download option is hidden when finish is false
       return {
         ...slot,
@@ -67,6 +67,26 @@ const PDF1 = (props) => {
   };
 
   return (
+    <div>
+    {/* <Loader
+          loaded={loaded}
+          lines={13}
+          radius={20}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#000"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner loader"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        /> */}
     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.10.377/build/pdf.worker.min.js">
       <div
         className="rpv-core__viewer"
@@ -101,6 +121,7 @@ const PDF1 = (props) => {
         </div>
       </div>
     </Worker>
+    </div>
   );
 };
 

@@ -197,13 +197,14 @@ function RejectedTemplate(props) {
 
         // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
         // If corporate is disabled then redirect to the old page.
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const corpDataInputs = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-Type": "application/json",
+        		'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 corpId: sessionStorage.getItem("corpId")
             })
         }
@@ -274,10 +275,8 @@ function RejectedTemplate(props) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            }),
         };
 
         fetch(URL.getTemplateToBeApproved, options).then((response) =>
@@ -327,14 +326,15 @@ function RejectedTemplate(props) {
                     className: "confirmBtn",
                     onClick: () => {
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             templateCode: templateCode,
                             userIP: sessionStorage.getItem("userIP")
                         };
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         fetch(URL.deleteRejectedTemp, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })
@@ -381,13 +381,14 @@ function RejectedTemplate(props) {
 
     // to continue the edit portion in template upload page..
     const EditTheUploadDocu = (event, templateCode) => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const EditData = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 templateCode: templateCode
             }),
         };

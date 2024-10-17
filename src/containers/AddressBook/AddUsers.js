@@ -154,7 +154,7 @@ export default class ApplicationInbox extends React.Component {
 
 
 
-        console.log(this.props.location.state)
+        // console.log(this.props.location.state)
         //set grpName and info
         // this.setState({ groupName: this.props.location.state.groupName })
 
@@ -163,18 +163,19 @@ export default class ApplicationInbox extends React.Component {
         // }
         // else{
 
-        console.log(this.props.location.state.userInfo)
+        // console.log(this.props.location.state.userInfo)
         this.setState({ columns: columns, groupName: this.props.location.state.groupName, UpdatedInfo: this.props.location.state.userInfo, editMode: this.props.location.state.editMode, initialInfo: this.props.location.state.userInfo, groupId: this.props.location.state.groupId })
         // }
 
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false })
         fetch(URL.fetchAddressBook, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 operationtype: "INDL",
                 groupId: this.props.location.state.groupId
             }),
@@ -308,7 +309,7 @@ export default class ApplicationInbox extends React.Component {
         const updatedInfoCopy = [...this.state.UpdatedInfo];
 
         this.state.selectedRows.forEach(row => {
-            console.log(row.contactId);
+            // console.log(row.contactId);
             updatedInfoCopy.push(row)
         });
 

@@ -50,12 +50,12 @@ class QRDetails extends Component {
 
     let jsonObject = {};
     if (additional_data) {
-      console.log('Content of additional_data:', additional_data);
+      // console.log('Content of additional_data:', additional_data);
 
       try {
         jsonObject = JSON.parse(additional_data);
         delete jsonObject.vouchrCodeNote;
-        console.log('Parsed JSON object:', jsonObject);
+        // console.log('Parsed JSON object:', jsonObject);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
@@ -69,7 +69,6 @@ class QRDetails extends Component {
     let body = {};
     if (sessionStorage.getItem("paymentType") === "VOUC") {
       body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
@@ -77,7 +76,6 @@ class QRDetails extends Component {
       };
     } else {
       body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
@@ -85,12 +83,13 @@ class QRDetails extends Component {
       };
     }
 
-    console.log(body);
     this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getQR, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -150,16 +149,17 @@ class QRDetails extends Component {
   //fro auto payment check
   autoPaymentCheck = () => {
     const body = {
-      authToken: sessionStorage.getItem("authToken"),
       loginname: sessionStorage.getItem("username"),
       mysignTxnId: this.state.uuid,
       bankTxnId: this.state.txnId,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (this.state.statusCheckCount <= 30) {
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -244,16 +244,17 @@ class QRDetails extends Component {
   checkPaymentStatus = () => {
     if (this.state.txnId.length !== 0 && this.state.txnId.trim() !== "") {
       let body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         mysignTxnId: "",
         bankTxnId: this.state.txnId,
       };
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       this.setState({ loaded: false });
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         cache: "no-store",
         body: JSON.stringify(body),

@@ -94,7 +94,7 @@ function AddEndUsrToTempGrp(props) {
                     ],
                 });
             } else {
-
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 let mobileNumberRegex = new RegExp(/^[6-9]{1}[0-9]{9}$/);
                 let allowMobileNumber = mobileNumberRegex.test(document.getElementById("EDUSRMobNumOrEmlID").value);
                 let emailIdRegex = new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
@@ -105,9 +105,9 @@ function AddEndUsrToTempGrp(props) {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            'Authorization': `Bearer ${jsonWebToken}`
                         },
                         body: JSON.stringify({
-                            authToken: sessionStorage.getItem("authToken"),
                             searchValue: document.getElementById("EDUSRMobNumOrEmlID").value
                         }),
                     };
@@ -262,13 +262,14 @@ function AddEndUsrToTempGrp(props) {
                         className: "confirmBtn",
                         onClick: () => {
                             setAllowLoader(false);
+                            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                             const options = {
                                 method: "POST",
                                 headers: {
-                                    "Content-Type": "appiaction/json"
+                                    "Content-Type": "application/json",
+                                    'Authorization': `Bearer ${jsonWebToken}`
                                 },
                                 body: JSON.stringify({
-                                    authToken: sessionStorage.getItem("authToken"),
                                     code: props.location.state.templateCode,
                                     userDetails: endUserDetail
                                 })

@@ -20,15 +20,13 @@ function UserFeedback(props) {
     };
 
     useEffect(() => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
-
-            }),
         };
         fetch(URL.getFeedbackQuestions, options)
             .then((response) => response.json())
@@ -106,15 +104,15 @@ function UserFeedback(props) {
                 };
             }
             userData.push({ "data": overallProblems, "type": "others", QNumber: "others" });
-
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             // finally data addition call.
             const options = {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
                     userFeedBack: userData
                 }),
             };

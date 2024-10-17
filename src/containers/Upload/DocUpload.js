@@ -80,72 +80,6 @@ export default class DocUpload extends React.Component {
     }
   }
 
-  // next() {
-  //   let data = {
-  //     files: this.state.files[0],
-  //     height: this.state.height,
-  //     width: this.state.width,
-  //     pageDimensions: this.state.pageDimensions,
-  //     equalPageDimensions: this.state.equalPageDimensions,
-  //   };
-    
-  //   var body = {
-  //     loginname: sessionStorage.getItem("username"),
-  //     authToken: sessionStorage.getItem("authToken"),
-  //     userIP: sessionStorage.getItem("userIP"),
-  //     docType: "PDF",
-  //   };
-
-  //   this.setState({ loaded: false });
-  //   let data1 = new FormData();
-  //   data1.append("file", this.state.files[0]);
-  //   data1.append("inputDetails", JSON.stringify(body));
-
-  //   fetch(URL.uploadDocument, {
-  //     method: "POST",
-  //     headers: { enctype: "multipart/form-data" },
-  //     body: data1,
-  //   })
-  //   .then(response => response.json())
-  //   .then(responseJson => {
-  //     if (responseJson.status === "SUCCESS") {
-  //       console.log(responseJson.docID);
-  //       data.docId = responseJson.docID;
-  //       this.setState({ loaded: true });
-  //     } else {
-  //       this.setState({ loaded: true });
-  //       confirmAlert({
-  //         message: responseJson.statusDetails,
-  //         buttons: [
-  //           {
-  //             label: "OK",
-  //             className: "confirmBtn",
-  //             onClick: () => {},
-  //           },
-  //         ],
-  //       });
-  //     }
-  //   })
-  //   .catch(e => {
-  //     this.setState({ loaded: true });
-  //     alert(e);
-  //   });
-
-  //   console.log({data});
-
-  //   if (data.height != null && data.width != null) {
-  //     this.props.history.push({
-  //       pathname: "/preview",
-  //       frompath: "dropdoc",
-  //       state: {
-  //         details: data,
-  //       },
-  //     });
-  //   } else {
-  //     alert("Error reading PDF file. Please upload file and try again.");
-  //   }
-  // }
-
   next() {
     let data = {
         files: this.state.files[0],
@@ -155,28 +89,28 @@ export default class DocUpload extends React.Component {
         equalPageDimensions: this.state.equalPageDimensions,
     };
 
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
         loginname: sessionStorage.getItem("username"),
-        authToken: sessionStorage.getItem("authToken"),
         userIP: sessionStorage.getItem("userIP"),
         docType: "PDF",
     };
 
     this.setState({ loaded: false });
     let data1 = new FormData();
-    console.log(this.state.files);
     data1.append("file", this.state.files[0]);
     data1.append("inputDetails", JSON.stringify(body));
 
     fetch(URL.uploadDocument, {
         method: "POST",
-        headers: { enctype: "multipart/form-data" },
+        headers: { enctype: "multipart/form-data",
+          'Authorization': `Bearer ${jsonWebToken}`
+         },
         body: data1,
     })
     .then(response => response.json())
     .then(responseJson => {
         if (responseJson.status === "SUCCESS") {
-            console.log(responseJson.docID);
             data.docId = responseJson.docID;
             this.setState({ loaded: true });
 
@@ -231,7 +165,6 @@ export default class DocUpload extends React.Component {
     if (files.length > 0) {
       this.setState({ loaded: true });
       var fileToLoad = files[0];
-      // console.log(fileToLoad);
       var fileName = files[0].name;
       var name = fileName.split(".", 1);
       var srcData;
@@ -239,7 +172,6 @@ export default class DocUpload extends React.Component {
       fileReader.readAsDataURL(fileToLoad);
       fileReader.onload = function (fileLoadedEvent) {
         srcData = fileLoadedEvent.target.result; // <--- data: base64
-        // console.log(srcData);
         let imgHeigth;
         let imgWidth;
         var pdfWidth = 793;
@@ -296,10 +228,8 @@ export default class DocUpload extends React.Component {
   onDrop(files) {
     this.setState({ loaded: false });
     // if(sessionStorage.getItem('verifyMobile') === "Y"){
-    console.log(files);
     if (files.length > 0) {
       var file = files[0];
-      console.log(file);
       var filesize = files[0]?.size;
       var filesizeinKB = filesize / 1024;
       if ((filesizeinKB / 1024) < 25) {       
@@ -337,7 +267,6 @@ export default class DocUpload extends React.Component {
           //   var typedarray = new Uint8Array(this.result);
           reader.onloadend = async function (e) {
             var typedarray = reader.result;
-            // console.log({typedarray});
 
             if (
               files[0].name.includes(".jpg") ||
@@ -473,10 +402,8 @@ export default class DocUpload extends React.Component {
   //Password handled
   // onDrop(files) {
   //   this.setState({ loaded: false });
-  //   console.log(files);
   //   if (files.length > 0) {
   //     var file = files[0];
-  //     console.log(file);
   //     var filesize = files[0]?.size;
   //     var filesizeinKB = filesize / 1024;
   //     if (filesizeinKB / 1024 < 25) {
@@ -700,9 +627,9 @@ export default class DocUpload extends React.Component {
 
   consenteSign = () => {
     let response_data = {};
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
@@ -712,6 +639,7 @@ export default class DocUpload extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -768,7 +696,6 @@ export default class DocUpload extends React.Component {
       pageDimensions: this.state.pageDimensions,
       equalPageDimensions: this.state.equalPageDimensions,
     };
-    // console.log(data);
     if (data.height != null && data.width != null) {
       this.props.history.push({
         pathname: "/signerInfo",
@@ -799,16 +726,16 @@ export default class DocUpload extends React.Component {
   };
 
   subscribedPlanDetails = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
-      // "activeStatus":1,
     };
     fetch(URL.subscribedPlanDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -841,6 +768,10 @@ export default class DocUpload extends React.Component {
   };
 
   render() {
+    // Define the headers to include in the fetch request
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
     if (this.state.loadUploadComponent) {
       return (
         <div
@@ -962,10 +893,12 @@ export default class DocUpload extends React.Component {
           <div id="pdfContainerdiv" style={{ height: "80vh" }}>
               <PDF1
                 url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
+                  URL.viewConsentFile
+                  //  +
+                  // "?at=" +
+                  // btoa(sessionStorage.getItem("authToken"))
                 }
+                httpHeaders={headers}
               />
               <div style={{marginTop: "20px"}}>
             <input

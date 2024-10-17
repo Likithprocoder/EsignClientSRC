@@ -40,15 +40,14 @@ function ViewUserFeedbackList(props) {
     ]
 
     useEffect(() => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // finally data addition call.
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            }),
         };
         fetch(URL.getUsersFeedback, options)
             .then((response) => response.json())

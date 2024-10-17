@@ -6,7 +6,10 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import MaterialTable, { MTableToolbar } from "material-table";
 import tableIcons from "../Inbox/MaterialTableIcons";
+import Modal from "react-responsive-modal";
+import { Button, Input, Space, Table, Tooltip } from 'antd';
 //import { indexOf } from "core-js/core/array";
+import "./exitCorpGroup.css";
 var Loader = require("react-loader");
 var jsPDF = require("jspdf");
 
@@ -21,16 +24,16 @@ export default class ApiKeyList extends React.Component {
       listOfApiKeys: [],
       rowData: "",
       fileName: "",
-      authToken: "",
       enableStatus: false,
+      isReasonModalVisible: false,
     };
     this.getApiKeyListForPlatformAdmin = this.getApiKeyListForPlatformAdmin.bind(this);
     this.updateApiKeyStatus = this.updateApiKeyStatus.bind(this);
   }
 
   componentDidMount() {
-    console.log(this.props);
-    if (sessionStorage.getItem("roleID") === "1" || sessionStorage.getItem("roleID") === "7") {
+    // console.log(this.props);
+    if (sessionStorage.getItem("roleID") === "1" || sessionStorage.getItem("roleID") === "6") {
         this.getApiKeyListForPlatformAdmin();
     } else {
         this.props.history.push("/");
@@ -39,16 +42,14 @@ export default class ApiKeyList extends React.Component {
 
   //------------------fetching api key list for admin api--------------
   getApiKeyListForPlatformAdmin = () => {
-    var inputs = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.getApikeys, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(inputs),
     })
       .then((response) => {
         return response.json();
@@ -57,7 +58,7 @@ export default class ApiKeyList extends React.Component {
         if (responseJson.status === "SUCCESS") {
           var listOfApiKeys = responseJson.data;
           listOfApiKeys =  listOfApiKeys.filter((item) => item.status !== 2)
-          if (this.props.roleId === "7") {
+          if (this.props.roleId === "6") {
             if (listOfApiKeys.length === 5) {
               this.props.setApiKeyLimit(true); // Call the callback function
             } else {
@@ -113,7 +114,7 @@ export default class ApiKeyList extends React.Component {
 
           this.setState({
             loaded: true,
-            listOfApiKeys: (sessionStorage.getItem("roleID") === "7" ? listOfApiKeys : transformedData),
+            listOfApiKeys: (sessionStorage.getItem("roleID") === "6" ? listOfApiKeys : transformedData),
           });
         }
         else {
@@ -153,15 +154,15 @@ export default class ApiKeyList extends React.Component {
 
   //enabling ,disabling api key status
   updateApiKeyStatus = (status, apiKeyId) => {
-    console.log(status);
-    console.log(apiKeyId);
+    // console.log("status: "+status);
+    // console.log("apiKeyId: "+apiKeyId);
     var message;
     if (status === 1) {
-      message = "Do you want to enable the api key?";
+      message = "Do you want to enable the API key?";
     } else if (status === 0) {
-      message = "Do you want to disable the api key?";
+      message = "Do you want to disable the API key?";
     } else {
-      message = "Do you want to delete the api key?";
+      message = "Do you want to delete the API key?";
     }
     confirmAlert({
       message: message,
@@ -170,27 +171,46 @@ export default class ApiKeyList extends React.Component {
           label: "OK",
           className: "confirmBtn",
           onClick: () => {
-            let inputs  = {};
-            if (this.props.roleId === "7") {
+            if (status === 0 && sessionStorage.getItem("roleID") === "1") {
+              this.setState({ isReasonModalVisible: true });
+            } else {
+              this.updateKeyStatus(status, apiKeyId);
+            }
+          },
+        },
+        {
+          label: "Cancel",
+          className: "confirmBtn",
+          onClick: () => {},
+        },
+      ],
+    });
+  }
+
+  updateKeyStatus = (status, apiKeyId) => {
+    // console.log(status);
+    // console.log(apiKeyId);
+    let inputs  = {};
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+            if (this.props.roleId === "6") {
               inputs = {
-                authToken: sessionStorage.getItem("authToken"),
                 apiID: apiKeyId,
                 updatedStatus: status,
               }
             } else {
               inputs = {
-                authToken: sessionStorage.getItem("authToken"),
-                corpId: this.props.corpID,
+                corpId: this.props.corpId,
                 updatedStatus: status,
                 reason: this.state.disableReason,
               }
+              // console.log(inputs);
             }
-            console.log("inputs", inputs);
             this.setState({ loaded: false });
             fetch(URL.updateapikey, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(inputs),
             })
@@ -201,7 +221,7 @@ export default class ApiKeyList extends React.Component {
                 if (responseJson.status === "SUCCESS") {
                   if (responseJson.statusDetails === "Api key removed successfully") {
                     confirmAlert({
-                      message: "Api key deleted successfully",
+                      message: "API key deleted successfully",
                       buttons: [
                         {
                           label: "OK",
@@ -212,6 +232,32 @@ export default class ApiKeyList extends React.Component {
                         },
                       ],
                     });
+                  } else if (responseJson.statusDetails === "Api key diabled successfully") {
+                    confirmAlert({
+                      message: "API key disabled successfully",
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            window.location.reload(true);
+                          },
+                        },
+                      ],
+                    });
+                  } else if (responseJson.statusDetails === "Api key enabled successfully") {
+                      confirmAlert({
+                        message: "API key enabled successfully",
+                        buttons: [
+                          {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {
+                              window.location.reload(true);
+                            },
+                          },
+                        ],
+                      });
                   } else {
                     confirmAlert({
                       message: responseJson.statusDetails,
@@ -258,22 +304,42 @@ export default class ApiKeyList extends React.Component {
                 this.setState({ loaded: true });
                 alert(e);
               });
-          },
-        },
-        {
-          label: "Cancel",
-          className: "confirmBtn",
-          onClick: () => { },
-        },
-      ],
-    });
   }
 
+  closeTheReasonModal = () => {
+    this.setState({ isReasonModalVisible: false });
+    this.setState({ disableReason: "" });
+  }
+
+  // Custom styles for the modal
+  customModalStyles = {
+    modal: {
+      width: '600px', // Set the desired width here
+      maxWidth: '100%',
+      // zIndex: '10 !important'
+    }
+  };
+
+  handleReasonSubmit = () => {
+    this.setState({ isReasonModalVisible: false });
+    this.updateKeyStatus(0, "");
+    this.setState({ enableStatus: false });
+  };
+
+  setInput = (e) => {
+    const value = e.target.value;
+    // Regular expression to allow only alphanumeric characters and spaces
+    const alphanumericValue = value.replace(/[^a-zA-Z0-9 ]/g, "");
+    this.setState({ disableReason: alphanumericValue });
+  }
+  
+
   render() {
-    const { listOfApiKeys } = this.state;
+    const { listOfApiKeys, isReasonModalVisible, disableReason } = this.state;
     const {roleId} = this.props;
+    const { TextArea } = Input;
     const columns = [
-    //   ...(roleId !== "7" ? [{
+    //   ...(roleId !== "6" ? [{
     //     title: "",
     //     field: "",
     //     cellStyle: {
@@ -326,7 +392,7 @@ export default class ApiKeyList extends React.Component {
     //   render: (rowData) =>
     //     rowData.corporateEntity ? rowData.corporateEntity : <>-</>, // Return hyphen for null or empty corporateEntity
     // },
-    ...(roleId !== "7" ? [{
+    ...(roleId !== "6" ? [{
         title: "User Name",
         field: "userName",
         type: "string",
@@ -347,7 +413,7 @@ export default class ApiKeyList extends React.Component {
         },
         // render: (rowData) => (rowData.appName ? rowData.appName : <>-</>), // Return hyphen for null or empty appName
       },
-      ...(roleId === "7" ? [{
+      ...(roleId === "6" ? [{
         title: "API Key",
         field: "apiKeyId",
         cellStyle: {
@@ -396,7 +462,7 @@ export default class ApiKeyList extends React.Component {
     //       return statusInfo;
     //     },
     //   },
-    ...(roleId === "7" ? [{
+    ...(roleId === "6" ? [{
         title: "Actions",
         cellStyle: {
           paddingLeft: "0px",
@@ -480,7 +546,7 @@ export default class ApiKeyList extends React.Component {
           scale={1.0}
           loadedClassName="loadedContent"
         />
-        {sessionStorage.getItem("roleID") !== "7" && <div id='tempGroupListCss' style={{ marginBottom: "10px", width: "100%"}}>
+        {sessionStorage.getItem("roleID") !== "6" && <div id='tempGroupListCss' style={{ marginBottom: "10px", width: "100%"}}>
             {
                 <span>Corporate Entity: <span style={{color: "blue"}}>{this.props.entityName}</span> {this.state.enableStatus ? <span style={{ float: "right"}}><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}>Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
             }
@@ -538,6 +604,24 @@ export default class ApiKeyList extends React.Component {
             ),
           }}
         ></MaterialTable>
+      <Modal  open={isReasonModalVisible} onClose={this.closeTheReasonModal} center={true} closeOnOverlayClick={false} id="disableReason" styles={this.customModalStyles}>
+      <div className="modal-header">
+        <h5 className="modal-title">Disable Reason</h5>
+      </div>
+      <div className="modal-body">
+        <TextArea
+          value={disableReason}
+          onChange={this.setInput}
+          placeholder="Enter the reason for disabling"
+          rows={4}
+          cols={70}
+        />
+      </div>
+      <div className="modal-footer">
+        <Button className="btn btn-danger" onClick={this.closeTheReasonModal}>Cancel</Button>
+        <Button className='btn btn-success' onClick={this.handleReasonSubmit}>Submit</Button>
+      </div>
+    </Modal>
       </div>
     );
   }

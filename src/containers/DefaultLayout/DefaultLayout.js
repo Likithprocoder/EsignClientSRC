@@ -35,7 +35,7 @@ const DefaultHeader = React.lazy(() => import("./DefaultHeader"));
 
 class DefaultLayout extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       pushTo: "",
       openFirstModal: false,
@@ -43,7 +43,8 @@ class DefaultLayout extends Component {
   }
 
   loading() {
-    if (sessionStorage.getItem("authToken") === null) {
+    console.log(this.props);
+    if (sessionStorage.getItem("jsonWebToken") === null && this.props.location.frompath !== "deGuest" && this.props.location.frompath !== "jsguest" && (sessionStorage.getItem("externalSigner") !== null  && !sessionStorage.getItem("externalSigner"))) {
       this.props.history.push("/home");
       window.location.reload(false);
     } else {
@@ -68,12 +69,13 @@ class DefaultLayout extends Component {
     var body = {
       username: sessionStorage.getItem("username"),
       userIP: sessionStorage.getItem("userIP"),
-      authToken: sessionStorage.getItem("authToken"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.logOut, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })

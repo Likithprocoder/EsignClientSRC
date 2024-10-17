@@ -123,7 +123,7 @@ function ViewTempGroupUsers(props) {
 
     // to () called to enable or disable the adminUser form the corp group..
     const enableOrDisableTheUser = (event, rowData) => {
-
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         confirmAlert({
             message: `User ${rowData.fullName} will be ${rowData.status === 1 ? "Disabled" : "Enabled"}!`,
             buttons: [
@@ -134,10 +134,10 @@ function ViewTempGroupUsers(props) {
                         const options = {
                             method: "POST",
                             headers: {
-                                "Content-Type": "appiaction/json"
+                                "Content-Type": "appiaction/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 code: props.location.state.templateCode,
                                 userDetails: [
                                     {
@@ -256,13 +256,14 @@ function ViewTempGroupUsers(props) {
 
     const viewEndUsers = () => {
         const url = URL.viewAddedTemplateUsers;
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 code: props.location.state.templateCode
             }),
         };
@@ -326,13 +327,14 @@ function ViewTempGroupUsers(props) {
                     className: "confirmBtn",
                     onClick: () => {
                         setAllowLoader(false);
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         const options = {
                             method: "POST",
                             headers: {
-                                "Content-Type": "appiaction/json"
+                                "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 code: props.location.state.templateCode,
                                 userDetails: userDetails
                             })

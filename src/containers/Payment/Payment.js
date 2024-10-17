@@ -98,16 +98,17 @@ export default class Payment extends React.Component {
     let response_data = {};
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.consenteSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -229,6 +230,10 @@ export default class Payment extends React.Component {
            </div>
          );
        } else {
+          // Define the headers to include in the fetch request
+          let headers = {
+            Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+          };
           return (
            <div>
               <Loader
@@ -274,10 +279,13 @@ export default class Payment extends React.Component {
                 ref="iframe"
                 type="application/pdf" */
                 url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
+                  URL.viewConsentFile
+                  //  +
+                  // "?at=" +
+                  // btoa(sessionStorage.getItem("authToken"))
                 }
+
+                httpHeaders={headers}
                 /* width="100%"
                 height="100%"
                 hidden */
