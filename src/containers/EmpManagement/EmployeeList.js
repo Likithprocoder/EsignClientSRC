@@ -44,6 +44,16 @@ class EmployeeList extends Component {
                     ),
                 },
                 {
+                    title: 'Registration',
+                    dataIndex: 'registration',
+                    key: 'regis',
+                    render: (text, record) => (
+                        <span>
+                            {record.registered === 1 ? 'Completed' : record.registered === 0 ? 'Pending' : 'Deleted'}
+                        </span>
+                    ),
+                },
+                {
                     title: 'Action',
                     dataIndex: '',
                     key: 'x',
@@ -80,7 +90,7 @@ class EmployeeList extends Component {
 
                         <Tooltip title="Edit details" color={'rgba(0, 0, 0, 0.54)'}>
                             {/* <EditOutlined onClick={() => this.handle(record)} /> */}
-                            <MenuOutlined   onClick={() => this.handle(record)} />
+                            <MenuOutlined onClick={() => this.handle(record)} />
                         </Tooltip>
                     ),
                 },
@@ -100,7 +110,8 @@ class EmployeeList extends Component {
             readOnly: false,
             editMode: 0,
             inputColor: "lightgrey",
-            isEmpDisable: false
+            isEmpDisable: false,
+            corporateID: ""
         };
         this.inputRef = React.createRef();
     }
@@ -122,7 +133,7 @@ class EmployeeList extends Component {
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson.status === "SUCCESS") {
-                    this.setState({ loaded: true, info: responseJson.corpEmpSummary.filter(emp => emp.empStatus !== "2") });
+                    this.setState({ loaded: true, info: responseJson.corpEmpSummary.filter(emp => emp.empStatus !== "2"), corporateID: responseJson.corporateID });
                 } else {
                     this.setState({ loaded: true });
                     if (responseJson.statusDetails === "Session Expired!!") {
@@ -219,7 +230,8 @@ class EmployeeList extends Component {
                 'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                empId: record.id.empId
+                empId: record.id.empId,
+                corpID:this.state.corporateID
             })
         }
 
@@ -283,33 +295,34 @@ class EmployeeList extends Component {
 
     deleteEmpById = () => {
         confirmAlert({
-          message: `Are you sure you want to delete the selected employee with EMP ID: ${this.state.empId}?`,
-          buttons: [
-              {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-                    const options = {
-                        method: "POST",
-                        headers: {
-                            "Content-type": "application/json",
-                            'Authorization': `Bearer ${jsonWebToken}`
-                        },
-                        body: JSON.stringify({
-                            empId: this.state.empId,
-                            updatedStatus: "2"
-                        })
-                    }
-                    this.updateCorpEmployee(options);
-      },
-  },
-  {
-      label: "Cancel",
-      className: "confirmBtn",
-      onClick: () => {},
-  },
-  ],
+            message: `Are you sure you want to delete the selected employee with EMP ID: ${this.state.empId}?`,
+            buttons: [
+                {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                        const options = {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
+                            },
+                            body: JSON.stringify({
+                                empId: this.state.empId,
+                                updatedStatus: "2",
+                                corpID: this.state.corporateID
+                            })
+                        }
+                        this.updateCorpEmployee(options);
+                    },
+                },
+                {
+                    label: "Cancel",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                },
+            ],
         });
     }
 
@@ -323,27 +336,28 @@ class EmployeeList extends Component {
                     onClick: () => {
                         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         const options = {
-                                method: "POST",
-                                headers: {
-                                    "Content-type": "application/json",
-                                    'Authorization': `Bearer ${jsonWebToken}`
-                                },
-                                body: JSON.stringify({
-                                    empId: empId,
-                                    updatedStatus: status
-                                })
-                            }
-                            this.updateCorpEmployee(options);
-        },
-    },
-    {
-        label: "Cancel",
-        className: "confirmBtn",
-        onClick: () => {},
-    },
-    ],
-          });
-    }   
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
+                            },
+                            body: JSON.stringify({
+                                empId: empId,
+                                updatedStatus: status,
+                                corpID:this.state.corporateID
+                            })
+                        }
+                        this.updateCorpEmployee(options);
+                    },
+                },
+                {
+                    label: "Cancel",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                },
+            ],
+        });
+    }
 
     addOrEditContact = (e) => {
         e.preventDefault();
@@ -405,10 +419,11 @@ class EmployeeList extends Component {
                             empId: this.state.empId,
                             updatedInfo: {
                                 "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
-                            }
+                            },
+                            corpID:this.state.corporateID
                         };
                         const url = URL.updateCorpEmpMapping;
-    
+
                         this.setState({ loaded: false });
                         fetch(url, {
                             method: "POST",
@@ -454,7 +469,7 @@ class EmployeeList extends Component {
                                                 },
                                             ],
                                         });
-    
+
                                         this.setState({ loaded: true });
                                     }
                                 }
@@ -473,7 +488,7 @@ class EmployeeList extends Component {
             ],
         });
     };
-    
+
 
     onCloseContactModal = (e) => {
         e.preventDefault()

@@ -182,6 +182,7 @@ function UserFeedbackView(props) {
                 <div className="overall-problems">
                     <h3>Overall Problems You Faced</h3>
                     <textarea
+                        disabled={true}
                         placeholder="Describe any overall issues or problems you have faced"
                         rows="5"
                         className="overall-problems-textarea"
