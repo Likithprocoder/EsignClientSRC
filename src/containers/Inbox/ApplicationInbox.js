@@ -407,7 +407,7 @@ export default class ApplicationInbox extends React.Component {
       btoa(docID),
       {
         headers: {
-          'Authorization':  `Bearer ${jsonWebToken}`
+          'Authorization': `Bearer ${jsonWebToken}`
         }
       }
     );
@@ -463,7 +463,7 @@ export default class ApplicationInbox extends React.Component {
       btoa(doc.DOC_ID),
       {
         headers: {
-            'Authorization': `Bearer ${jsonWebToken}`
+          'Authorization': `Bearer ${jsonWebToken}`
         }
       }
     );
@@ -889,30 +889,30 @@ export default class ApplicationInbox extends React.Component {
     let pdfurl = URL.viewStoredFile + "?docID=" + docId;
 
     try {
-        let response = await fetch(pdfurl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${jsonWebToken}`
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok " + response.statusText);
+      let response = await fetch(pdfurl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
         }
+      });
 
-        let blob = await response.blob();
-        let blobUrl = window.URL.createObjectURL(blob);
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
 
-        var win = window.open();
-        win.document.write("<title>" + e.DOC_NAME + "</title>");
-        win.document.write(
-            '<embed title="PDF preview" type="application/pdf" src="' +
-            blobUrl +
-            '" width="100%" height="100%" />'
-        );
+      let blob = await response.blob();
+      let blobUrl = window.URL.createObjectURL(blob);
+
+      var win = window.open();
+      win.document.write("<title>" + e.DOC_NAME + "</title>");
+      win.document.write(
+        '<embed title="PDF preview" type="application/pdf" src="' +
+        blobUrl +
+        '" width="100%" height="100%" />'
+      );
     } catch (error) {
-        console.error("Failed to fetch file:", error);
-        // Optionally, handle error accordingly
+      console.error("Failed to fetch file:", error);
+      // Optionally, handle error accordingly
     }
   };
 
@@ -979,63 +979,76 @@ export default class ApplicationInbox extends React.Component {
   }
 
   downLoadCsvFile = (event) => {
-    let group = this.state.FirstGroupAndCode.code;
-    let subGroup = this.state.FirstGroupAndCode.name;
-    let startDate = document.getElementById("fromDateContainer").value;
-    let endDate = document.getElementById("toDateContainer").value;
-    let templateCode = this.state.templateCode;
-    let templateName = this.state.templateName;
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    let detailsForCsvDownload =
-      "?startDate=" +
-      btoa(startDate) +
-      "&endDate=" +
-      btoa(endDate) +
-      "&group=" +
-      btoa(group) +
-      "&subGroup=" +
-      "" +
-      "&templateCode=" +
-      btoa(templateCode) +
-      "&templateName=" +
-      btoa(templateName);
-    fetch(URL.getTempDetForMultiCsv + detailsForCsvDownload, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
-    })
-      .then((response) => {
-        if (response.status === 404) {
-          confirmAlert({
-            message: "No Documents are present!",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  window.location.reload(false);
-                },
-              },
-            ],
-          });
-        } else {
-          return response.blob();
-        }
-      })
-      .then((blob) => {
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = href;
-        link.setAttribute("download", `${this.state.templateName}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((e) => {
-        this.setState({ loaded: true });
+    // check if the date is selected.   
+    if (document.getElementById("toDateContainer").value === "" || document.getElementById("fromDateContainer").value === "") {
+      confirmAlert({
+        message: "Select the date range before downloading!",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
       });
+    } else {
+      let group = this.state.FirstGroupAndCode.code;
+      let subGroup = this.state.FirstGroupAndCode.name;
+      let startDate = document.getElementById("fromDateContainer").value;
+      let endDate = document.getElementById("toDateContainer").value;
+      let templateCode = this.state.templateCode;
+      let templateName = this.state.templateName;
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      let detailsForCsvDownload =
+        "?startDate=" +
+        btoa(startDate) +
+        "&endDate=" +
+        btoa(endDate) +
+        "&group=" +
+        btoa(group) +
+        "&subGroup=" +
+        "" +
+        "&templateCode=" +
+        btoa(templateCode) +
+        "&templateName=" +
+        btoa(templateName);
+      fetch(URL.getTempDetForMultiCsv + detailsForCsvDownload, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+      })
+        .then((response) => {
+          if (response.status === 404) {
+            confirmAlert({
+              message: "No Documents are present!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    window.location.reload(false);
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          } else {
+            return response.blob();
+          }
+        })
+        .then((blob) => {
+          const href = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = href;
+          link.setAttribute("download", `${this.state.templateName}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch((e) => {
+          this.setState({ loaded: true });
+        });
+    }
   };
 
   //-----------------Cancel Job--------------------
@@ -1332,7 +1345,7 @@ export default class ApplicationInbox extends React.Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let DocId = data.DOC_ID;
     let url = URL.downloadStoredFile + "?docID=" + btoa(DocId);
-  
+
     try {
       let response = await fetch(url, {
         method: 'GET',
@@ -1340,21 +1353,21 @@ export default class ApplicationInbox extends React.Component {
           'Authorization': `Bearer ${jsonWebToken}`
         }
       });
-  
+
       if (!response.ok) {
         throw new Error("Network response was not ok " + response.statusText);
       }
-  
+
       let blob = await response.blob();
       let blobUrl = window.URL.createObjectURL(blob); // Use window.URL.createObjectURL
-  
+
       // Create a temporary anchor element to download the file
       let a = document.createElement('a');
       a.href = blobUrl;
       a.download = data.DOC_NAME; // Assuming DOC_NAME contains the file name
       document.body.appendChild(a);
       a.click();
-  
+
       // Clean up and revoke the object URL
       window.URL.revokeObjectURL(blobUrl); // Use window.URL.revokeObjectURL
       document.body.removeChild(a);
@@ -1694,12 +1707,24 @@ export default class ApplicationInbox extends React.Component {
 
 
   searchKeyBasedFiltering = (event) => {
-    let startDate = document.getElementById("fromDateContainer").value;
-    let endDate = document.getElementById("toDateContainer").value;
-    let groupCode = this.state.FirstGroupAndCode.code;
-    let templateCode = this.state.templateCode;
-    let searchValue = document.getElementById("searchValue").value;
-    this.getInbocDocDetails(groupCode, "", startDate, endDate, templateCode, searchValue);
+    if (document.getElementById("toDateContainer").value === "" || document.getElementById("fromDateContainer").value === "") {
+      confirmAlert({
+        message: "Select the date range before proceeding!",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    } else {
+      let startDate = document.getElementById("fromDateContainer").value;
+      let endDate = document.getElementById("toDateContainer").value;
+      let groupCode = this.state.FirstGroupAndCode.code;
+      let templateCode = this.state.templateCode;
+      let searchValue = document.getElementById("searchValue").value;
+      this.getInbocDocDetails(groupCode, "", startDate, endDate, templateCode, searchValue);
+    }
   }
 
   // getCustomFields API to fetch the customfield Inputs..
