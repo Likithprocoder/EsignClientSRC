@@ -3403,7 +3403,8 @@ const Preview = (props) => {
           docdata: "",
         },
         consentData: TandC,
-        consentType: consentType
+        consentType: selectedMode === "1" ? "aadharConsent" : "eSigning",
+        userIP: sessionStorage.getItem("userIP")
       };
       // if (authToken !== null) {
       //   obj.authToken = authToken; // Add authToken as a key-value pair

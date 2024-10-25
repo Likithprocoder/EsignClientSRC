@@ -32,11 +32,11 @@ export default class AccountDelete extends React.Component {
       mobotpref: "",
       timeleft: 30,
       noOfDays: "",
-    
+
       daysLeft: "",
       startDate: "",
       endDate: "",
-      noSigns:"",
+      noSigns: "",
       signedcount: "",
       storagelimit: "",
       usedstoragelimit: "",
@@ -46,21 +46,21 @@ export default class AccountDelete extends React.Component {
   }
 
   componentDidMount() {
-   // console.log(sessionStorage);
+    // console.log(sessionStorage);
 
-     this.setState({
-       noOfDays: sessionStorage.getItem("noOfDays"),
-       daysLeft:sessionStorage.getItem("daysleft"),
-       startDate: sessionStorage.getItem("startDate"),
-       endDate: sessionStorage.getItem("endDate"),
-       noSigns: sessionStorage.getItem("noSigns"),
-       signedcount:sessionStorage.getItem("signedcount"),
-       storagelimit:sessionStorage.getItem("storagelimit"),
-       usedstoragelimit: sessionStorage.getItem("usedstoragelimit"),
-       noOfDaysLeft:sessionStorage.getItem("noOfDaysLeft"),
-     });
     this.setState({
-      
+      noOfDays: sessionStorage.getItem("noOfDays"),
+      daysLeft: sessionStorage.getItem("daysleft"),
+      startDate: sessionStorage.getItem("startDate"),
+      endDate: sessionStorage.getItem("endDate"),
+      noSigns: sessionStorage.getItem("noSigns"),
+      signedcount: sessionStorage.getItem("signedcount"),
+      storagelimit: sessionStorage.getItem("storagelimit"),
+      usedstoragelimit: sessionStorage.getItem("usedstoragelimit"),
+      noOfDaysLeft: sessionStorage.getItem("noOfDaysLeft"),
+    });
+    this.setState({
+
     });
   }
   setInput = (e) => {
@@ -78,94 +78,95 @@ export default class AccountDelete extends React.Component {
   };
   getOtp = (event) => {
 
-if (!$("#agreed").not(':checked').length){
+    if (!$("#agreed").not(':checked').length) {
 
- this.setState({ loaded: false });
-    var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
-      optnType: "UADEL",
-    };
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    fetch(URL.getOtp, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        return response.json();
+      this.setState({ loaded: false });
+      var body = {
+        loginname: btoa(sessionStorage.getItem("username")),
+        optnType: "UADEL",
+      };
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      fetch(URL.getOtp, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+        body: JSON.stringify(body),
       })
-      .then((responseJson) => {
-        this.setState({ loaded: true });
+        .then((response) => {
+          return response.json();
+        })
+        .then((responseJson) => {
+          this.setState({ loaded: true });
 
-        if (responseJson.status === "SUCCESS") {
-          this.setState({
-            loaded: true,
-            mobotpref: responseJson.mobRefNo,
-            mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
-          });
-          confirmAlert({
-            message: "OTP Sent to registered mobile number.",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  document.getElementById("deleteDiv").style.display = "none";
-                  document.getElementById("getOTPForm").style.display = "";
-                  this.startResendOtpTimer();
-                  //this.otpModal();                },
-              },
-            ],
-          });
-        } else if (
-          responseJson.status === "FAILURE" &&
-          responseJson.statusDetails ===
+          if (responseJson.status === "SUCCESS") {
+            this.setState({
+              loaded: true,
+              mobotpref: responseJson.mobRefNo,
+              mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
+            });
+            confirmAlert({
+              message: "OTP Sent to registered mobile number.",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    document.getElementById("deleteDiv").style.display = "none";
+                    document.getElementById("getOTPForm").style.display = "";
+                    this.startResendOtpTimer();
+                    //this.otpModal();                },
+                  }
+                }
+              ]
+            });
+          } else if (
+            responseJson.status === "FAILURE" &&
+            responseJson.statusDetails ===
             "Invalid Authentication key or key Expired!!"
-        ) {
-          confirmAlert({
-            message: "Session Expired!!",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  this.props.history.push("/login");
-                  window.location.reload(false);
-                  window.location.reload(false);
+          ) {
+            confirmAlert({
+              message: "Session Expired!!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    this.props.history.push("/login");
+                    window.location.reload(false);
+                    window.location.reload(false);
+                  },
                 },
-              },
-            ],
-          });
-        } else {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-        }
-      })
-      .catch((e) => {
-        this.setState({ loaded: true });
-        alert(e);
-      });
-    }else{
+              ],
+            });
+          } else {
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { },
+                },
+              ],
+            });
+          }
+        })
+        .catch((e) => {
+          this.setState({ loaded: true });
+          alert(e);
+        });
+    } else {
       confirmAlert({
         message: "Kindly confirm to delete your account.",
         buttons: [
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -179,7 +180,7 @@ if (!$("#agreed").not(':checked').length){
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -272,35 +273,35 @@ if (!$("#agreed").not(':checked').length){
       });
   };
 
- checkInnerText = () => {
-    this.setState({ consentText: document.getElementById("accDleteInfo").innerText });
+  checkInnerText = () => {
+    this.setState({ consentData: document.getElementById("accDleteInfo").innerText });
   }
-        // resend otp counter
-        startResendOtpTimer = () => {
-          this.setState({ timeleft: 30 });
-          let timerElement = document.getElementById("timer");
-          let resendOtpBtn = document.getElementById("resendOtpbtn");
-        
-          if (timerElement && resendOtpBtn) {
-            resendOtpBtn.style.display = "none";
-            timerElement.style.display = "";
-        
-            let timeleftSec = this.state.timeleft;
-            // Clear any existing timer event
-            this.stopResendOtpTimer();
-            timerEvent = setInterval(() => {
-              if (timeleftSec < 0) {
-                clearInterval(timerEvent);
-                resendOtpBtn.style.display = "";
-                timerElement.style.display = "none";
-              } else {
-                timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
-              }
-        
-              timeleftSec -= 1;
-            }, 1000);
-          }
-        };
+  // resend otp counter
+  startResendOtpTimer = () => {
+    this.setState({ timeleft: 30 });
+    let timerElement = document.getElementById("timer");
+    let resendOtpBtn = document.getElementById("resendOtpbtn");
+
+    if (timerElement && resendOtpBtn) {
+      resendOtpBtn.style.display = "none";
+      timerElement.style.display = "";
+
+      let timeleftSec = this.state.timeleft;
+      // Clear any existing timer event
+      this.stopResendOtpTimer();
+      timerEvent = setInterval(() => {
+        if (timeleftSec < 0) {
+          clearInterval(timerEvent);
+          resendOtpBtn.style.display = "";
+          timerElement.style.display = "none";
+        } else {
+          timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
+        }
+
+        timeleftSec -= 1;
+      }, 1000);
+    }
+  };
 
   // resend otp counter for ending the timer
   stopResendOtpTimer = () => {
@@ -362,7 +363,7 @@ if (!$("#agreed").not(':checked').length){
           }}
         >
           <table
-           id="deleteTable"
+            id="deleteTable"
             style={{
               fontSize: "16px",
               borderCollapse: "collapse",
