@@ -286,7 +286,7 @@ function ApproveTemp(props) {
                 className: "confirmBtn",
                 onClick: () => {
                   props.history.push("/login");
-                },
+                }
               },
             ], closeOnClickOutside: false
           });
@@ -297,7 +297,10 @@ function ApproveTemp(props) {
               {
                 label: "OK",
                 className: "confirmBtn",
-              },
+                onClick: () => {
+                  props.history.push("/");
+                }
+              }
             ], closeOnClickOutside: false
           });
         }

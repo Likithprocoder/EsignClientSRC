@@ -82,88 +82,11 @@ export default class ApplicationInbox extends React.Component {
   }
 
   componentDidMount() {
-
-    // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
-    // If corporate is disabled then redirect to the old page.
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
-      body: JSON.stringify({
-        corpId: sessionStorage.getItem("corpId")
-      })
-    }
-
-    fetch(URL.getCorpDetails, options)
-      .then(response => (response.json()))
-      .then(data => {
-        if (data.status === "SUCCESS") {
-          if (data.details[0]["status"] === 0) {
-            confirmAlert({
-              message: "Your corporate is currently disabled. Please contact your administrator!",
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    this.props.history.push("/");
-                  },
-                },
-              ], closeOnClickOutside: false
-            });
-          };
-        }
-        else if (data.statusDetails === "Session Expired") {
-          confirmAlert({
-            message: data.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/login");
-                },
-              },
-            ], closeOnClickOutside: false
-          });
-        }
-        else {
-          confirmAlert({
-            message: data.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/");
-                },
-              },
-            ], closeOnClickOutside: false
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        confirmAlert({
-          message: `Something went wrong. please try again!`,
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-            },
-          ], closeOnClickOutside: false
-        });
-        this.props.location.push('/login');
-      });
-
-
     // this.getInbocDocDetails();
     this.getEmailValidation();
     this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
-    fetch(URL.getAllTemplateGrps, {
+    fetch(URL.getTemplateGrps, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -275,16 +198,23 @@ export default class ApplicationInbox extends React.Component {
                 label: "OK",
                 className: "confirmBtn",
                 onClick: () => {
-                  this.props.history.push("/");
+                  this.props.history.push("/login");
                 },
               },
             ],
           });
-        }
-        else {
-
-          this.props.history.push({
-            pathname: "/login",
+        } else {
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/");
+                }
+              },
+            ], closeOnClickOutside: false
           });
           this.setState({ loaded: true });
         }

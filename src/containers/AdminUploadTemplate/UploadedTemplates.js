@@ -194,82 +194,7 @@ function RejectedTemplate(props) {
     }, [allowForTemp])
 
     useEffect(() => {
-
-        // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
-        // If corporate is disabled then redirect to the old page.
-        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        const corpDataInputs = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-        		'Authorization': `Bearer ${jsonWebToken}`
-            },
-            body: JSON.stringify({
-                corpId: sessionStorage.getItem("corpId")
-            })
-        }
-
-        fetch(URL.getCorpDetails, corpDataInputs)
-            .then(response => (response.json()))
-            .then(data => {
-                if (data.status === "SUCCESS") {
-                    if (data.details[0]["status"] === 0) {
-                        confirmAlert({
-                            message: "Your corporate is currently disabled. Please contact your administrator!",
-                            buttons: [
-                                {
-                                    label: "OK",
-                                    className: "confirmBtn",
-                                    onClick: () => {
-                                        props.history.push("/");
-                                    },
-                                },
-                            ], closeOnClickOutside: false
-                        });
-                    };
-                }
-                else if (data.statusDetails === "Session Expired") {
-                    confirmAlert({
-                        message: data.statusDetails,
-                        buttons: [
-                            {
-                                label: "OK",
-                                className: "confirmBtn",
-                                onClick: () => {
-                                    props.history.push("/");
-                                },
-                            },
-                        ], closeOnClickOutside: false
-                    });
-                }
-                else {
-                    confirmAlert({
-                        message: "Failed to load the uploaded templates. Please try after some time!",
-                        buttons: [
-                            {
-                                label: "OK",
-                                className: "confirmBtn",
-                                onClick: () => {
-                                    props.history.push("/");
-                                },
-                            },
-                        ], closeOnClickOutside: false
-                    });
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                confirmAlert({
-                    message: `Something went wrong. please try again!`,
-                    buttons: [
-                        {
-                            label: "OK",
-                            className: "confirmBtn",
-                        },
-                    ], closeOnClickOutside: false
-                });
-                props.location.push('/login');
-            });
+    	let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
         const options = {
             method: "POST",
@@ -304,6 +229,9 @@ function RejectedTemplate(props) {
                             {
                                 label: "OK",
                                 className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/");
+                                  }
                             },
                         ], closeOnClickOutside: false
                     });

@@ -264,7 +264,7 @@ export default class Wallet extends React.Component {
 
           sessionStorage.setItem("usedstoragelimit", resp.usedstoragelimit);
           sessionStorage.setItem("noOfDaysLeft", resp.noOfDaysLeft);
-
+          sessionStorage.setItem("planID", resp.planId);
       
 
           let defaultlimit = resp.storagelimit.split(" ")[0];

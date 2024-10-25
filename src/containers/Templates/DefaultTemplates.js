@@ -34,84 +34,6 @@ class DefaultTemplates extends Component {
 
   componentDidMount() {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    // Check if the roleID is present 
-    if (sessionStorage.getItem("corpId") !== "undefined") {
-      // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
-      // If corporate is disabled then redirect to the old page.
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          'Authorization': `Bearer ${jsonWebToken}`
-        },
-        body: JSON.stringify({
-          corpId: sessionStorage.getItem("corpId")
-        })
-      }
-
-      fetch(URL.getCorpDetails, options)
-        .then(response => (response.json()))
-        .then(data => {
-          if (data.status === "SUCCESS") {
-            if (data.details[0]["status"] === 0) {
-              confirmAlert({
-                message: "Your corporate is currently disabled! Please contact your administrator!",
-                buttons: [
-                  {
-                    label: "OK",
-                    className: "confirmBtn",
-                    onClick: () => {
-                      this.props.history.push("/accountInfo");
-                    },
-                  },
-                ], closeOnClickOutside: false
-              });
-            };
-          }
-          else if (data.statusDetails === "Session Expired") {
-            confirmAlert({
-              message: data.statusDetails,
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    this.props.history.push("/login");
-                  },
-                },
-              ], closeOnClickOutside: false
-            });
-          }
-          else {
-            confirmAlert({
-              message: data.statusDetails,
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    this.props.history.push("/accountInfo");
-                  },
-                },
-              ], closeOnClickOutside: false
-            });
-          }
-        })
-        .catch(error => {
-          console.log(error);
-          confirmAlert({
-            message: `Something went wrong. please try again!`,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-              },
-            ], closeOnClickOutside: false
-          });
-          this.props.location.push('/login');
-        });
-    }
-
     this.setState({ loaded: false });
     fetch(URL.getTemplateGrps, {
       method: "POST",
@@ -144,14 +66,14 @@ class DefaultTemplates extends Component {
         }
         else {
           confirmAlert({
-            message: "SomeThing Went Wrong PLease Try Again",
+            message: responseJson.statusDetails,
             buttons: [
               {
                 label: "OK",
                 className: "confirmBtn",
                 onClick: () => {
-
-                },
+                  this.props.history.push("/accountInfo");
+              }
               },
             ], closeOnClickOutside: false
           });

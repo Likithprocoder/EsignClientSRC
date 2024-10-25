@@ -119,7 +119,6 @@ let URL = {
   deleteRejectedTemp: HOST + "V2/deleteRejectedTemp",
   tempdataForEdit: HOST + "V2/tempdataForEditAndApprove",
   getTemplateGrps: HOST + "V2/getTemplateGrps",
-  getAllTemplateGrps: HOST + "V2/getTemplateGrps",
   getUserDetails: HOST + "V2/getUserDetails",
   viewAddedTemplateUsers: HOST + "V2/viewTemplateUsers",
   addCorporateUsers: HOST + "V2/addCorporateUsers",

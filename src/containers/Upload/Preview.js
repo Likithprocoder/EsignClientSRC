@@ -154,6 +154,7 @@ const Preview = (props) => {
   const [setModeValue, setSetModeValue] = useState(false);
   const [showRestoreBtn, setShowRestoreBtn] = useState(false);
   const [sealsRestored, setSealsRestored] = useState(false);
+  const [consentType, setConsentType] = useState("");
 
   //-------Page change event...geting TotalPages, currentPage-----
   const handlePageChange = (event) => {
@@ -3401,6 +3402,8 @@ const Preview = (props) => {
         documentdtls: {
           docdata: "",
         },
+        consentData: TandC,
+        consentType: consentType
       };
       // if (authToken !== null) {
       //   obj.authToken = authToken; // Add authToken as a key-value pair

@@ -40,7 +40,8 @@ export default class AccountDelete extends React.Component {
       signedcount: "",
       storagelimit: "",
       usedstoragelimit: "",
-      noOfDaysLeft:"",
+      noOfDaysLeft: "",
+      consentData: ""
     };
   }
 
@@ -115,9 +116,7 @@ if (!$("#agreed").not(':checked').length){
                   document.getElementById("deleteDiv").style.display = "none";
                   document.getElementById("getOTPForm").style.display = "";
                   this.startResendOtpTimer();
-
-                  //this.otpModal();
-                },
+                  //this.otpModal();                },
               },
             ],
           });
@@ -197,6 +196,8 @@ if (!$("#agreed").not(':checked').length){
       mobRefNo: btoa(this.state.mobotpref),
       loginname: sessionStorage.getItem("username"),
       userIP: sessionStorage.getItem("userIP"),
+      consentType: "deleteAccount",
+      consentData: this.state.consentData
     };
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.DeleteUser, {
@@ -271,6 +272,9 @@ if (!$("#agreed").not(':checked').length){
       });
   };
 
+ checkInnerText = () => {
+    this.setState({ consentText: document.getElementById("accDleteInfo").innerText });
+  }
         // resend otp counter
         startResendOtpTimer = () => {
           this.setState({ timeleft: 30 });
@@ -393,13 +397,13 @@ if (!$("#agreed").not(':checked').length){
                   </span>
                 </th>
               </tr>
-              <tr>
+              <tr hidden={(sessionStorage.getItem("units") === "0.00 units" && sessionStorage.getItem("planID") === "P000")}>
                 &nbsp; Note
                 <ul>
-                  <li>
+                  <li hidden={sessionStorage.getItem("units") === "0.00 units"}>
                     Aadhaar sign units : {sessionStorage.getItem("units")}
                   </li>
-                  <li>
+                  <li hidden={sessionStorage.getItem("planID") === "P000"}>
                     Subscription Details
                     <ul>
                       <li>Electronic sign validity : {this.state.endDate}</li>
@@ -409,35 +413,37 @@ if (!$("#agreed").not(':checked').length){
                       </li> */}
                     </ul>
                   </li>
-                  <li>
-                    Available aadhar sign units and subscription package will be
-                    deleted.
-                  </li>
-                  <li>
-                    All documents from the DocuExec account will be deleted
-                    permanently.
-                  </li>
                   {/* <li>
                     All the transaction history related to payment and signing
                     will be deleted.
                   </li> */}
-                </ul>{" "}
-                <input
-                  type="checkbox"
-                  id="agreed"
-                  name="agreed"
-                  value="agreed"
-                  style={{
-                    marginLeft: "20px",
-                    marginRight: "2px",
-                    verticalAlign: "middle",
-                  }}
-                />
-                <span style={{ fontSize: "18px" }}>
-                  {" "}
-                  I Read and agree to remove my account permanently.
-                </span>
+                </ul>
+
               </tr>
+              <div style={{ display: "flex" }}>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="agreed"
+                    name="agreed"
+                    value="agreed"
+                    onClick={this.checkInnerText}
+                    style={{
+                      marginLeft: "5px",
+                      marginRight: "2px",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                </div>
+                <div style={{ paddingLeft: "4px", textAlign: "justify", paddingRight: "6px" }}>
+                  <span id="accDleteInfo" style={{ textAlign: "center", fontSize: "18px" }}>
+                    If any Aadhaar sign units and subscription package are available,
+                    those associated resources will be deleted. All documents from the
+                    DocuExec account will be permanently deleted. I have read and agree to
+                    the permanent removal of my account.
+                  </span>
+                </div>
+              </div>
               <tr>
                 <div
                   style={{
@@ -501,7 +507,7 @@ if (!$("#agreed").not(':checked').length){
                   {/* <InputGroup> */}
                   <label
                     id="fullname"
-                   
+
                     style={{
                       marginLeft: "70%",
                       width: "100%",
@@ -543,7 +549,7 @@ if (!$("#agreed").not(':checked').length){
                   {/* <InputGroup> */}
                   <label
                     id="otp"
-               
+
                     style={{
                       marginLeft: "70%",
                       width: "100%",

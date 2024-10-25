@@ -135,7 +135,7 @@ function HtmlInput1(props) {
             body: JSON.stringify({})
         }
 
-        fetch(URL.getAllTemplateGrps, options)
+        fetch(URL.getTemplateGrps, options)
             .then(response => (response.json()))
             .then(data => {
                 if (data.status === "SUCCESS") {
