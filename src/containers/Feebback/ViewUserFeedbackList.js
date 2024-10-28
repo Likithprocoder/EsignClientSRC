@@ -25,7 +25,7 @@ function ViewUserFeedbackList(props) {
         {
             title: 'Feedback On',
             dataIndex: 'feedbackGivenData',
-            sorter: (a, b) => a.feedbackGivenData - b.feedbackGivenData
+            sorter: (a, b) => new Date(a.feedbackGivenData) - new Date(b.feedbackGivenData)
         },
         {
             title: 'Action',

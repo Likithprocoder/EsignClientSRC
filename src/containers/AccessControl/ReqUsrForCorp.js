@@ -3,7 +3,6 @@ import tableIcons from "../Inbox/MaterialTableIcons";
 import { confirmAlert } from "react-confirm-alert";
 import { URL } from "../URLConstant";
 import MaterialTable, { MTableToolbar } from "material-table";
-import { log2 } from 'pdfjs-dist';
 import Modal from "react-responsive-modal";
 import "./addOrViewTempGrpUers.css";
 
@@ -34,8 +33,8 @@ function ReqUsrForCorp(props) {
     // fetch API to get the list of requested members who has raised to 
     //become the member of corp entity and for group access
     useEffect(() => {
-    	let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    	
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+
         // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
         // If corporate is disabled then redirect to the old page.
         const corpDataInputs = {
@@ -291,75 +290,82 @@ function ReqUsrForCorp(props) {
     // to close the modal..
     const closeTheModal = (event, boolean) => {
         setAllowModal(false);
+        setAllowTocheck(true);
     }
 
     //to view the list of requested grps and other details.
     const openModalForReqGrp = () => {
-        if (eachRequstesList.length !== 0) {
-            return (
-                <>
-                    <div
-                        style={{ display: "flex", marginBottom: "5px" }}
-                        className="rejectedByCss"
-                    >
-                        <div style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}>
-                            <div style={{ width: "85%" }}>Name </div> <div>:</div>
-                        </div>
-                        <div style={{ fontSize: "13px", width: "50%" }}>
-                            <span>{userEmpyDetail.UserName}</span>
-                        </div>
+        // if eachRequstesList is empty, Allow the checkbox.
+        return (
+            <React.Fragment key="childKey">
+                <div
+                    style={{ display: "flex", marginBottom: "5px" }}
+                    className="rejectedByCss"
+                >
+                    <div style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}>
+                        <div style={{ width: "85%" }}>Name </div> <div>:</div>
                     </div>
-                    <div
-                        style={{ display: "flex", marginBottom: "5px" }}
-                        className="rejectedByCss"
-                    >
-                        <div
-                            style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}
-                        >
-                            <div style={{ width: "85%" }}>Requested On </div><div>:</div>
-                        </div>
-                        <div style={{ fontSize: "13px", width: "50%" }}>
-                            <span>{userEmpyDetail.RequestedOn}</span>
-                        </div>
-                    </div>  <div
-                        style={{ display: "flex", marginBottom: "5px" }}
-                        className="rejectedByCss"
-                    >
-                        <div
-                            style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}
-                        >
-                            <div style={{ width: "85%" }}>Corp Employee ID </div><div>:</div>
-                        </div>
-                        <div style={{ fontSize: "13px", width: "50%" }}>
-                            <span>{userEmpyDetail.UserCorpId}</span>
-                        </div>
+                    <div style={{ fontSize: "13px", width: "50%" }}>
+                        <span>{userEmpyDetail.UserName}</span>
                     </div>
-                    <div className='inputname1' style={{ paddingTop: "5px", width: "100%" }}>
-                        {
-                            <>
-                                <div className="GrpList  ScrollBarForApprove" style={{ width: "100%", height: "fit-content", border: "3px solid #9dc1e3", fontSize: "13px", borderRadius: "5px", padding: "5px" }}>
-                                    {
-                                        eachRequstesList.map((posts, index) => (
-                                            <>
+                </div>
+                <div
+                    style={{ display: "flex", marginBottom: "5px" }}
+                    className="rejectedByCss"
+                >
+                    <div
+                        style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}
+                    >
+                        <div style={{ width: "85%" }}>Requested On </div><div>:</div>
+                    </div>
+                    <div style={{ fontSize: "13px", width: "50%" }}>
+                        <span>{userEmpyDetail.RequestedOn}</span>
+                    </div>
+                </div>  <div
+                    style={{ display: "flex", marginBottom: "5px" }}
+                    className="rejectedByCss"
+                >
+                    <div
+                        style={{ fontStyle: "inherit", fontSize: "13px", width: "50%", display: "flex" }}
+                    >
+                        <div style={{ width: "85%" }}>Corp Employee ID </div><div>:</div>
+                    </div>
+                    <div style={{ fontSize: "13px", width: "50%" }}>
+                        <span>{userEmpyDetail.UserCorpId}</span>
+                    </div>
+                </div>
+                <div className='inputname1' style={{ paddingTop: "5px", width: "100%" }}>
+                    {
+                        <>
+                            <div className="GrpList  ScrollBarForApprove" style={{ width: "100%", height: "fit-content", border: "3px solid #9dc1e3", fontSize: "13px", borderRadius: "5px", padding: "5px" }}>
+                                {
+                                    eachRequstesList.length != 0 ?
+                                        eachRequstesList.map((posts, index) =>
+                                            <React.Fragment key={index}>
                                                 <div style={{ display: "flex", width: "100%", paddingBottom: "5px" }} key={index}>
                                                     <div style={{ width: "60%", paddingTop: "2px" }}><span>{allgrpNameAndCodeList[posts]}</span></div>
                                                     <div style={{ width: "20%", paddingRight: "10px", display: "flex" }}> <div style={{ paddingTop: "3px" }}><input onChange={e => accpRecjValue(e, `${posts}Accept`, posts)} type='radio' name={`acceptAndReject${posts}`} id={`${posts}Accept`} /></div><div style={{ paddingRight: "3px", color: "green" }}>Accept</div></div>
                                                     <div style={{ width: "20%", display: "flex" }}><div style={{ paddingTop: "3px" }} ><input onChange={e => accpRecjValue(e, `${posts}Reject`, posts)} type='radio' name={`acceptAndReject${posts}`} id={`${posts}Reject`} /></div> <div style={{ paddingRight: "3px", color: "red" }}>Reject</div></div>
                                                 </div>
-                                            </>
-                                        ))
-                                    }
-                                </div>
-                            </>
-                        }
-                    </div>
-                    <div id='corpMemCss' hidden={allowTocheck}>
-                        <div style={{ marginRight: '3px' }}><input type='checkBox' name='shall_Be_Corp_Member' id='shallBeCorpMember' /></div>
-                        <div>should be corporate member?</div>
-                    </div>
-                </>
-            )
-        }
+                                            </React.Fragment>
+                                        )
+                                        :
+                                        (
+                                            <span>
+                                                Since no templates are requested, selecting 'Submit' will make the user a corporate member.
+                                            </span>
+                                        )
+                                }
+                            </div>
+                        </>
+                    }
+                </div>
+                <div id='corpMemCss' hidden={allowTocheck}>
+                    <div style={{ marginRight: '3px' }}><input type='checkBox' name='shall_Be_Corp_Member' id='shallBeCorpMember' /></div>
+                    <div>should be corporate member?</div>
+                </div>
+            </React.Fragment >
+        )
     }
 
     // final submittion call for approve or rejection of groups..
@@ -400,6 +406,12 @@ function ReqUsrForCorp(props) {
         else {
             isCorpMember = "1";
         }
+
+        // if eachRequstesList is empty and system user has sudmitted then the requested user is turned as corporate member.
+        if (eachRequstesList.length === 0) {
+            isCorpMember = "1";
+        }
+
         let userDetails = [{
             loginName: userEmpyDetail.loginName,
             addedGroups: acceptedGrp,
@@ -553,7 +565,33 @@ function ReqUsrForCorp(props) {
                     ),
                 }}
             ></MaterialTable>
-            <Modal className='inputTakingModel' onClose={closeTheModal} open={allowModal} center={true} closeOnOverlayClick={false}>
+            {
+                allowModal && (
+                    <div className="custom-modal">
+                        <div className="CustomModal-content">
+                            <span className="close" onClick={closeTheModal}>&times;</span>
+                            <div>
+                                <div className='headingOfModalXcss'>
+                                    <span style={{ fontSize: "20px" }}>Requested Groups</span>
+                                </div>
+                                <form>
+                                    {
+                                        openModalForReqGrp()
+                                    }
+                                </form>
+                                <div className='Divo6Css'>
+                                    <div className='proceedCancelCss'>
+                                        <button className='cancelbtn' type='button' onClick={closeTheModal}>Cancel</button>
+                                        <button className='proceedbtnX' type='button' onClick={e => accptReqGrp(e)}>Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* <Modal className='inputTakingModel' onClose={closeTheModal} open={allowModal} center={true} closeOnOverlayClick={false}>
                 <div className='WholeContent' style={{ width: "350px" }}>
                     <div className='headingOfModalXcss'>
                         <span style={{ fontSize: "20px" }}>Requested Groups</span>
@@ -570,7 +608,7 @@ function ReqUsrForCorp(props) {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </Modal> */}
         </>
     )
 
