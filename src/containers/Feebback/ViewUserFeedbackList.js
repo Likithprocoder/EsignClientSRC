@@ -40,14 +40,30 @@ function ViewUserFeedbackList(props) {
     ]
 
     useEffect(() => {
+        const today = new Date();
+        const todayFormattedDate = today.toISOString().split('T')[0];
+        // Calculate the date three months back
+        const threeMonthsBack = new Date(today.setMonth(today.getMonth() - 3));
+        // Format the date to a readable string
+        const formattedDate = threeMonthsBack.toISOString().split('T')[0];
+
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // finally data addition call.
+        console.log(formattedDate);
+        console.log(todayFormattedDate);
+
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                'Authorization': `Bearer ${jsonWebToken}`
+                'Authorization': `Bearer ${jsonWebToken}`,
+
             },
+            body: JSON.stringify({
+                startDate: formattedDate,
+                endDate: todayFormattedDate,
+                pageNumber: 0
+            }),
         };
         fetch(URL.getUsersFeedback, options)
             .then((response) => response.json())
@@ -106,6 +122,9 @@ function ViewUserFeedbackList(props) {
         })
     };
 
+    const get3monthspreviosData = () => {
+
+    }
     return (
         <div>
             <Loader
