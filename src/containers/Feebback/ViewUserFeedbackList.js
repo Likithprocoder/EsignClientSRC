@@ -12,6 +12,11 @@ function ViewUserFeedbackList(props) {
 
     const [feedbackList, setFeedbackList] = useState([]);
 
+    const [numberOfpages, setNumberOfPages] = useState(0);
+
+    const [pageNumber, setPageNumber] = useState(0); // Current page number
+
+    const [recordPerPage, setRecordPerPage] = useState(10);
     let columns = [
         {
             title: 'Mobile Number',
@@ -38,20 +43,15 @@ function ViewUserFeedbackList(props) {
             )
         },
     ]
-
-    useEffect(() => {
+    const fetchMthod = (pageNumber) => {
         const today = new Date();
         const todayFormattedDate = today.toISOString().split('T')[0];
         // Calculate the date three months back
         const threeMonthsBack = new Date(today.setMonth(today.getMonth() - 3));
         // Format the date to a readable string
         const formattedDate = threeMonthsBack.toISOString().split('T')[0];
-
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // finally data addition call.
-        console.log(formattedDate);
-        console.log(todayFormattedDate);
-
         const options = {
             method: "POST",
             headers: {
@@ -62,14 +62,28 @@ function ViewUserFeedbackList(props) {
             body: JSON.stringify({
                 startDate: formattedDate,
                 endDate: todayFormattedDate,
-                pageNumber: 0
+                pageNumber: pageNumber
             }),
         };
         fetch(URL.getUsersFeedback, options)
             .then((response) => response.json())
             .then((responsedata) => {
                 if (responsedata.status === "SUCCESS") {
-                    setFeedbackList(responsedata.feedbackData);
+                    setFeedbackList((prevItems) => {
+                        // Create a new copy of the array
+                        let updatedItems = [...prevItems];
+                        let indexData = (updatedItems.length);
+                        // Update the item at the given index
+                        for (let index = 0; index < responsedata.feedbackData.length; index++) {
+                            const element = responsedata.feedbackData[index];
+                            console.log(element);
+                            updatedItems[indexData] = element;
+                            indexData++;
+                        }
+                        // Return the updated array to setItems
+                        return updatedItems;
+                    });
+                    setNumberOfPages(responsedata.numberOfPages);
                 } else if (responsedata.statusDetails === "Session Expired") {
                     confirmAlert({
                         message: responsedata.statusDetails,
@@ -110,7 +124,11 @@ function ViewUserFeedbackList(props) {
                 });
                 setAllowLoader(true);
             });
-    }, []);
+    }
+    // Fetch data when the component mounts and when pageNumber changes
+    useEffect(() => {
+        fetchMthod(pageNumber);
+    }, [pageNumber]);
 
     const viewIndividualUsersFeedback = (record) => {
         props.history.push({
@@ -122,9 +140,17 @@ function ViewUserFeedbackList(props) {
         })
     };
 
-    const get3monthspreviosData = () => {
+    // Handle table change event
+    const handleTableChange = (pagination) => {
+        const { current, pageSize } = pagination;
+        setRecordPerPage(pageSize);
+        let numberOfPresntPage = feedbackList.length / 10;
+        // Check if the user is on the last page
+        if (current === numberOfPresntPage && current <= numberOfpages) {
+            setPageNumber(pageNumber + 1); // Update page number to fetch next set of data
+        }
+    };
 
-    }
     return (
         <div>
             <Loader
@@ -146,14 +172,19 @@ function ViewUserFeedbackList(props) {
                 scale={1.0}
                 loadedClassName="loadedContent"
             />
+            {
+                console.log(feedbackList)
+
+            }
             <Table
                 columns={columns}
                 dataSource={feedbackList}
                 pagination={{
-                    pageSize: 10,
+                    pageSize: recordPerPage,
                     showQuickJumper: true,
                     showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
                 }}
+                onChange={handleTableChange}
                 scroll={{ x: '100%' }}
                 rowClassName={(record) => 'activeRow'}
             />
