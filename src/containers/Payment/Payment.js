@@ -14,6 +14,8 @@ export default class Payment extends React.Component {
       loadeSignTopUpComponent: false,
       loaded: true,
       isdisable: true,
+      blobUrl: null,
+      isFinish: false,
     };
   }
 
@@ -58,6 +60,11 @@ export default class Payment extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFinish !== this.state.isFinish) {
+    }
+  }
+
   componentDidMount() {
     if (this.state.loadeSignTopUpComponent) {
     } else {
@@ -67,6 +74,20 @@ export default class Payment extends React.Component {
         element.style.cursor = "no-drop";
       }
     }
+
+    let viewFileURL = "";
+    viewFileURL = URL.viewConsentFile;
+    this.setState({ viewFileURl: URL.viewConsentFile });
+    
+    let viewURL = "";
+
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
+
+    viewURL = `${viewFileURL}`;
+
+    this.fetchDocument(viewURL, headers);
   }
   onBalanceUnit = (e) => {
     let value = e.target.value;
@@ -158,7 +179,41 @@ export default class Payment extends React.Component {
       });
   };
 
+  fetchDocument = async (viewFileURL, headers) => {
+    this.setState({ loaded: false });
+    const url = viewFileURL; // Encode docId if necessary
+
+    try {
+
+      // Fetch the document from the server
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+      throw new Error('Expected a PDF document but received: ' + contentType);
+      }
+
+      // Convert the response into a Blob
+      const blob = await response.blob();
+
+      if (blob.size > 0) {
+        const blobUrl = window.URL.createObjectURL(blob);
+        this.setState({ blobUrl });
+        this.setState({ loaded: true });
+      } else {
+        this.setState({ error: 'Document is empty', loading: false });
+      }
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+    }
+  };
+
   render() {
+    const { isFinish, fileName, blobUrl } = this.state;
        if (this.state.loadeSignTopUpComponent) {
          return (
            <div>
@@ -230,10 +285,6 @@ export default class Payment extends React.Component {
            </div>
          );
        } else {
-          // Define the headers to include in the fetch request
-          let headers = {
-            Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
-          };
           return (
            <div>
               <Loader
@@ -274,22 +325,19 @@ export default class Payment extends React.Component {
               /> */}
               {/* <br id="1" />
               <br id="2" /> */}
-              <PDF1
-                /* title="PDF preview"
-                ref="iframe"
-                type="application/pdf" */
+              {/* <PDF1
                 url={
                   URL.viewConsentFile
-                  //  +
-                  // "?at=" +
-                  // btoa(sessionStorage.getItem("authToken"))
                 }
 
                 httpHeaders={headers}
-                /* width="100%"
-                height="100%"
-                hidden */
-              />
+              /> */}
+              {blobUrl && <PDF1
+                key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+                url={blobUrl}
+                filename={fileName}
+                finish={isFinish}  // Pass finish state to control Download button
+              />}
               <div style={{marginTop: "20px"}}>
             <input
               type="checkbox"
@@ -301,6 +349,17 @@ export default class Payment extends React.Component {
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
           </div>
+          <div className="next-nav">
+               <button
+                 className="upload-button"
+                 id="submitConsentbutton"
+                 disabled={this.state.isConsentdisable}
+                 onClick={this.consenteSign.bind(this)}
+                 style={{ margin: "auto" }}
+               >
+                 <span>Submit &#8594;</span>
+               </button>
+             </div>
             {/* </div> */}
           </div> 
              {/* <br></br> */}
@@ -316,20 +375,9 @@ export default class Payment extends React.Component {
                </label>
              </div> */}
 
-             <div className="next-nav">
-               <button
-                 className="upload-button"
-                 id="submitConsentbutton"
-                 disabled={this.state.isConsentdisable}
-                 onClick={this.consenteSign.bind(this)}
-                 style={{ margin: "auto" }}
-               >
-                 <span>Submit &#8594;</span>
-               </button>
-             </div>
            </div>
           );
        
   }
-}
+  }
 }

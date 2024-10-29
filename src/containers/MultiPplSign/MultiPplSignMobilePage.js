@@ -404,7 +404,7 @@ export default class MultiPplSignMobilePage extends React.Component {
     };
     this.setState({ loaded: true });
     // console.log(this.props.history);
-    alert("MPSMP");
+    //alert("MPSMP");
     this.props.history.push({
       pathname: "/preview",
       frompath: "deGuest",

@@ -305,7 +305,6 @@ export default class ApplicationInbox extends React.Component {
     if (searchValue != "") {
       // alert("search value is present")
       body = {
-        authToken: sessionStorage.getItem("authToken"),
         groupCode: groupCode,
         subGroup: subGroup,
         startDate: startDate,
@@ -1344,8 +1343,8 @@ export default class ApplicationInbox extends React.Component {
   fileDownload = async (data) => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let DocId = data.DOC_ID;
-    let url = URL.downloadStoredFile + "?docID=" + btoa(DocId);
-
+    let url = URL.downloadStoredFileV2 + "?docID=" + btoa(DocId);
+  
     try {
       let response = await fetch(url, {
         method: 'GET',

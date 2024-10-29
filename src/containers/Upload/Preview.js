@@ -5735,15 +5735,39 @@ const Preview = (props) => {
                     </label>
                     <span id="clientdownloadspan">
                       <a
-                        href={
-                          URL.downloadClientProgram
-                        }
+                        // href="#"
+                        onClick={async () => {
+                          let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                          try {
+                            const response = await fetch(URL.downloadClientProgram, {
+                              method: "GET",
+                              headers: {
+                                'Authorization': `Bearer ${jsonWebToken}`
+                              },
+                            });
+
+                            if (!response.ok) {
+                              throw new Error("Network response was not ok");
+                            }
+
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.setAttribute("download", "DSCClientProgram.zip");
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          } catch (error) {
+                            console.error("Error downloading file:", error);
+                          }
+                        }}
                         id="clientdownload"
-                        style={{ display: "none" }}
+                        style={{ display: "none", cursor: "pointer" }}
                       >
                         Download DSC Client
                       </a>
-                    </span>
+                      </span>
                   </div>
                 </div>
               </div>

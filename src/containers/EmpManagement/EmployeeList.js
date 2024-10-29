@@ -446,6 +446,14 @@ class EmployeeList extends Component {
                                                 className: "confirmBtn",
                                                 onClick: () => {
                                                     this.setState({ contactModal: false });
+
+                                                    this.setState({ editMode: 0 });
+                                                    this.setState({ readOnly: false });
+                                                    this.setState({ inputColor: "lightgrey" });
+                                                    document.getElementById("submitEmp").style.display = "none";
+                                                    document.getElementById("cancelEmp").style.display = "none";
+                                                    document.getElementById("editEmp").style.display = "";
+                                                    document.getElementById("deleteEmp").style.display = "";
                                                     this.fetchEmployeeList();
                                                 },
                                             },

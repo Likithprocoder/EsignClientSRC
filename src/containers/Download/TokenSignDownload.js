@@ -131,7 +131,6 @@ export default class TokenSignDownload extends React.Component {
       // Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
     };
 
-    // console.log(sessionStorage.getItem("authToken"));
     if (sessionStorage.getItem("authToken") != null) {
       viewURL = `${URL.viewStoredFile}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
     } else {
@@ -144,8 +143,6 @@ export default class TokenSignDownload extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.isFinish !== this.state.isFinish) {
-      // Render or perform actions when isFinish changes
-      // console.log('isFinish state has changed');
     }
   }
 
@@ -708,17 +705,8 @@ export default class TokenSignDownload extends React.Component {
     });
   }
 
-  // componentWillUnmount() {
-  //   const { blobUrl } = this.state;
-  //   // Clean up the blob URL when the component unmounts
-  //   if (blobUrl) {
-  //     URL.revokeObjectURL(blobUrl);
-  //   }
-  // }
-
   render() {
     const { isFinish, fileName, blobUrl } = this.state;
-    // console.log(blobUrl);
 
     return (
       <div>

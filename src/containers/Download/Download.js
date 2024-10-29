@@ -36,7 +36,7 @@ export default class Download extends React.Component {
       repassword: "",
       moble: "",
       alertMsg: "",
-      loaded: true,
+      loaded: false,
       msg: "The eSigned document can be downloaded from this page, or from the Inbox later.",
       docId: "",
       viewFileURl: "",
@@ -126,7 +126,9 @@ export default class Download extends React.Component {
       this.setState({ viewFileURl: URL.viewStoredFile });
     }
 
-    let docID = this.props.location.state.details.docId;
+    // let docID = this.props.location.state.details.docId;
+    let docID = sessionStorage.getItem("docid");
+    // console.log("docID: "+docID);
 
     let viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
 
@@ -738,7 +740,37 @@ export default class Download extends React.Component {
     };
     return (
       <div className="login-main-container">
-        <ToastContainer></ToastContainer>
+        <Loader
+          loaded={this.state.loaded}
+          lines={13}
+          radius={20}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#000"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner loader"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        />
+        <ToastContainer
+          position="top-right"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        ></ToastContainer>
 
         <div class="" id="discardOptionsdiv" style={{ display: "none" }}>
           {/* <nav class="" id="performActionnavid" aria-label="breadcrumb">

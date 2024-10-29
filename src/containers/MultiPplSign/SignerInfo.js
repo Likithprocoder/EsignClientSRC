@@ -1358,6 +1358,8 @@ handleDateInput(e) {
             name="endDate"
             onChange={this.finalDate.bind(this)}
             onInput={this.handleDateInput.bind(this)}
+            required={true}
+            onKeyDown={(e) => e.preventDefault()} // Prevents manual typing
           />
           <label id="enddate">Document Name: &nbsp;</label>
           <label id="docName">

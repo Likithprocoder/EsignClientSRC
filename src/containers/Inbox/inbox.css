@@ -377,13 +377,13 @@ hr {
   max-width: 100%; /* Ensure the column can take full width */
 }
 
-.styles_overlay__CLSq- {
+/* .styles_overlay__CLSq- {
   z-index: 0;
 }
 
 .Component-horizontalScrollContainer-12 {
   z-index: 0;
-}
+} */
 
 .blink_me {
   animation: blinker 1s linear infinite;

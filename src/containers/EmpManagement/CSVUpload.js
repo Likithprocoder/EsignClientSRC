@@ -45,6 +45,7 @@ export default class CSVUpload extends React.Component {
     this.setState({ loaded: false });
     let obj = {
       userIP: sessionStorage.getItem("userIP"),
+      corpId: sessionStorage.getItem("corpId"),
     };
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const formData = new FormData();

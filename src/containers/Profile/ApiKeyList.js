@@ -26,6 +26,8 @@ export default class ApiKeyList extends React.Component {
       fileName: "",
       enableStatus: false,
       isReasonModalVisible: false,
+      isDisabled: 0,
+      disableReason: "",
     };
     this.getApiKeyListForPlatformAdmin = this.getApiKeyListForPlatformAdmin.bind(this);
     this.updateApiKeyStatus = this.updateApiKeyStatus.bind(this);
@@ -59,6 +61,7 @@ export default class ApiKeyList extends React.Component {
           var listOfApiKeys = responseJson.data;
           listOfApiKeys =  listOfApiKeys.filter((item) => item.status !== 2)
           if (this.props.roleId === "6") {
+            this.setState({ isDisabled: responseJson.data[0].isDisabled })
             if (listOfApiKeys.length === 5) {
               this.props.setApiKeyLimit(true); // Call the callback function
             } else {
@@ -84,6 +87,7 @@ export default class ApiKeyList extends React.Component {
               const hasStatusOne = transformedData.some(item => item.status === 1);
               if (hasStatusOne) {
                 this.setState({ enableStatus: true });
+                this.setState({ isDisabled: responseJson.data[0][this.props.entityName][0].isDisabled });
               }
 
             } else {
@@ -103,14 +107,6 @@ export default class ApiKeyList extends React.Component {
             // Sort by createdOn date in descending order
             listOfApiKeys.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
         }
-
-        // console.log({transformedData});
-        // // Filter the data based on entityName from props
-        // const filteredData = this.props.entityName
-        // ? transformedData.filter((item) => item.corporateEntity === this.state.entityName)
-        // : transformedData;
-
-        // console.log({filteredData});
 
           this.setState({
             loaded: true,
@@ -227,7 +223,9 @@ export default class ApiKeyList extends React.Component {
                           label: "OK",
                           className: "confirmBtn",
                           onClick: () => {
-                            window.location.reload(true);
+                            // window.location.reload(true);
+                            this.getApiKeyListForPlatformAdmin();
+                            this.setState({ loaded: true });
                           },
                         },
                       ],
@@ -240,7 +238,24 @@ export default class ApiKeyList extends React.Component {
                           label: "OK",
                           className: "confirmBtn",
                           onClick: () => {
-                            window.location.reload(true);
+                            // window.location.reload(true);
+                            this.getApiKeyListForPlatformAdmin();
+                            this.setState({ loaded: true });
+                          },
+                        },
+                      ],
+                    });
+                  } else if (responseJson.statusDetails === "Api keys diabled successfully") {
+                    confirmAlert({
+                      message: "API keys disabled successfully",
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            // window.location.reload(true);
+                            this.getApiKeyListForPlatformAdmin();
+                            this.setState({ loaded: true });
                           },
                         },
                       ],
@@ -253,11 +268,28 @@ export default class ApiKeyList extends React.Component {
                             label: "OK",
                             className: "confirmBtn",
                             onClick: () => {
-                              window.location.reload(true);
+                              // window.location.reload(true);
+                              this.getApiKeyListForPlatformAdmin();
+                              this.setState({ loaded: true });
                             },
                           },
                         ],
                       });
+                  } else if (responseJson.statusDetails === "Api keys enabled successfully") {
+                    confirmAlert({
+                      message: "API keys enabled successfully",
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            // window.location.reload(true);
+                            this.getApiKeyListForPlatformAdmin();
+                            this.setState({ loaded: true });
+                          },
+                        },
+                      ],
+                    });
                   } else {
                     confirmAlert({
                       message: responseJson.statusDetails,
@@ -266,7 +298,8 @@ export default class ApiKeyList extends React.Component {
                           label: "OK",
                           className: "confirmBtn",
                           onClick: () => {
-                            window.location.reload(true);
+                            // window.location.reload(true);
+                            this.setState({ loaded: true });
                           },
                         },
                       ],
@@ -311,6 +344,11 @@ export default class ApiKeyList extends React.Component {
     this.setState({ disableReason: "" });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isDisabled !== this.state.isDisabled) {
+    }
+  }
+
   // Custom styles for the modal
   customModalStyles = {
     modal: {
@@ -324,6 +362,7 @@ export default class ApiKeyList extends React.Component {
     this.setState({ isReasonModalVisible: false });
     this.updateKeyStatus(0, "");
     this.setState({ enableStatus: false });
+    this.setState({ disableReason: "" });
   };
 
   setInput = (e) => {
@@ -339,16 +378,6 @@ export default class ApiKeyList extends React.Component {
     const {roleId} = this.props;
     const { TextArea } = Input;
     const columns = [
-    //   ...(roleId !== "6" ? [{
-    //     title: "",
-    //     field: "",
-    //     cellStyle: {
-    //       width: "5px",
-    //       padding: "0px",
-    //       paddingRight: "0%",
-    //       paddingLeft: "5px",
-    //       textAlign: "center",
-    //     }}] : []),
         {
             title: "",
             field: "status",
@@ -381,17 +410,6 @@ export default class ApiKeyList extends React.Component {
                 return statusInfo;
             },
           },
-    //   {
-    //     title: "Corporate Entity",
-    //     field: "corporateEntity",
-    //     cellStyle: {
-    //       width: "2%",
-    //       paddingLeft: "2px",
-    //       fontSize: "15px",
-    //     },
-    //   render: (rowData) =>
-    //     rowData.corporateEntity ? rowData.corporateEntity : <>-</>, // Return hyphen for null or empty corporateEntity
-    // },
     ...(roleId !== "6" ? [{
         title: "User Name",
         field: "userName",
@@ -433,35 +451,6 @@ export default class ApiKeyList extends React.Component {
         },
         // render: (rowData) => (rowData.createdOn ? rowData.createdOn : <>-</>), // Return hyphen for null or empty createdOn
       },
-    //   {
-    //     title: "Updated On",
-    //     field: "updatedOn",
-    //     type: "datetime",
-    //     cellStyle: {
-    //       paddingLeft: "0px",
-    //       width: "21%",
-    //     },
-    //   },
-    //   {
-    //     title: "Status",
-    //     field: "status",
-    //     cellStyle: {
-    //       paddingLeft: "0px",
-    //       width: "3%",
-    //     },
-    //     render: (rowData) => {
-    //         console.log(rowData);
-    //       var statusInfo;
-    //       if (rowData.status === 1) {
-    //         statusInfo = "Active";
-    //       } else if (rowData.status === 0) {
-    //         statusInfo = "Inactive";
-    //       } else {
-    //         statusInfo = "Removed";
-    //       }
-    //       return statusInfo;
-    //     },
-    //   },
     ...(roleId === "6" ? [{
         title: "Actions",
         cellStyle: {
@@ -469,58 +458,60 @@ export default class ApiKeyList extends React.Component {
           width: "5%",
         },
         render: (rowData) => {
-          if (rowData.status === 1) {
-            return (
-              <div>
-                <a
-                  type="button"
-                  style={{ color: "blue" }}
-                  onClick={(e) =>
-                    this.updateApiKeyStatus(
-                      0,
-                      rowData.apiKeyId
-                    )
-                  }
-                >
-                  Disable
-                </a>
-                /
-                <a type="button" style={{ color: "red" }} onClick={(e) =>
-                    this.updateApiKeyStatus(
-                        2,
-                        rowData.apiKeyId
-                    )
-                  }>Delete</a>
-              </div>
-            );
-          } else if (rowData.status === 0) {
-            return (
-              <div>
-                <a
-                  type="button"
-                  style={{ color: "blue" }}
-                  onClick={(e) =>
-                    this.updateApiKeyStatus(
-                        1,
-                        rowData.apiKeyId
-                    )
-                  }
-                >
-                  Enable
-                </a>
-                /
-                <a type="button" style={{ color: "red" }} onClick={(e) =>
-                    this.updateApiKeyStatus(
-                        2,
-                        rowData.apiKeyId
-                    )
-                  }>Delete</a>
-              </div>
-            );
-          } 
-        //   else {
-        //     return <>-</>;
-        //   }
+
+          // Check if isDisabled is 1 to conditionally disable the actions
+      const isDisabled = this.state.isDisabled === 1;
+      console.log(isDisabled);
+
+      if (rowData.status === 1) {
+        return (
+          <div>
+            <a
+              type="button"
+              style={{ color: isDisabled ? "gray" : "blue", cursor: isDisabled ? "not-allowed" : "pointer" }}
+              onClick={(e) =>
+                !isDisabled && this.updateApiKeyStatus(0, rowData.apiKeyId)
+              }
+            >
+              Disable
+            </a>
+            /
+            <a
+              type="button"
+              style={{ color: isDisabled ? "gray" : "red", cursor: isDisabled ? "not-allowed" : "pointer" }}
+              onClick={(e) =>
+                !isDisabled && this.updateApiKeyStatus(2, rowData.apiKeyId)
+              }
+            >
+              Delete
+            </a>
+          </div>
+        );
+      } else if (rowData.status === 0) {
+        return (
+          <div>
+            <a
+              type="button"
+              style={{ color: isDisabled ? "gray" : "blue", cursor: isDisabled ? "not-allowed" : "pointer" }}
+              onClick={(e) =>
+                !isDisabled && this.updateApiKeyStatus(1, rowData.apiKeyId)
+              }
+            >
+              Enable
+            </a>
+            /
+            <a
+              type="button"
+              style={{ color: isDisabled ? "gray" : "red", cursor: isDisabled ? "not-allowed" : "pointer" }}
+              onClick={(e) =>
+                !isDisabled && this.updateApiKeyStatus(2, rowData.apiKeyId)
+              }
+            >
+              Delete
+            </a>
+          </div>
+        );
+      }
         },
       }] : []),
     ];
@@ -548,7 +539,8 @@ export default class ApiKeyList extends React.Component {
         />
         {sessionStorage.getItem("roleID") !== "6" && <div id='tempGroupListCss' style={{ marginBottom: "10px", width: "100%"}}>
             {
-                <span>Corporate Entity: <span style={{color: "blue"}}>{this.props.entityName}</span> {this.state.enableStatus ? <span style={{ float: "right"}}><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}>Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
+                <span>Corporate Entity: <span style={{color: "blue"}}>{this.props.entityName}</span> 
+                {this.state.enableStatus && !this.state.isDisabled ? <span style={{ float: "right"}}><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}>Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
             }
         </div>}
         <MaterialTable
@@ -586,6 +578,9 @@ export default class ApiKeyList extends React.Component {
               marginBottom: "20px",
               border: "outset",
             },
+            rowStyle: (rowData) => ({
+              backgroundColor: rowData.isDisabled === 1 ? '#b6b0b0' : '#ffffff', // Light red for disabled rows
+            }),
             pageSize: 10,
             pageSizeOptions: [10, 15, 20],
           }}

@@ -201,16 +201,16 @@ export default class PendingActionInbox extends React.Component {
     });
   };
 
-  //-----------------View File--------------------
-  viewStoredFile = (e) => {
-    let pdfurl =
-      URL.viewStoredFile +
-      "?docID=" +
-      btoa(e.DOC_ID);
-      this.setState({ fileUrl: pdfurl });
-      this.setState({ fileName: e.DOC_NAME });
-      this.setState({ shown: true})
-  };
+  // //-----------------View File--------------------
+  // viewStoredFile = (e) => {
+  //   let pdfurl =
+  //     URL.viewStoredFileV2 +
+  //     "?docID=" +
+  //     btoa(e.DOC_ID);
+  //     this.setState({ fileUrl: pdfurl });
+  //     this.setState({ fileName: e.DOC_NAME });
+  //     this.setState({ shown: true})
+  // };
 
   onRenderAnnotations(e) {
         // Find all Link annotation
@@ -263,13 +263,6 @@ export default class PendingActionInbox extends React.Component {
                 style={{ fontSize: "20px", padding: "0px" }}
               ></i>
             );
-          } else {
-            return (
-              <i
-                className="fa fa-check"
-                style={{ color: "green", fontSize: "25px", padding: "0px" }}
-              ></i>
-            );
           }
         },
       },
@@ -286,7 +279,8 @@ export default class PendingActionInbox extends React.Component {
         render: (rowData) => {
           return (
             <i
-              onClick={(row) => this.viewStoredFile(rowData)}
+              // onClick={(row) => this.viewStoredFile(rowData)}
+              style={{cursor: "context-menu"}}
               id="pdfIcon"
               title="PDF preview"
               className="fa fa-file-pdf-o fa-lg"
@@ -309,7 +303,8 @@ export default class PendingActionInbox extends React.Component {
           return (
             <span
               title="PDF preview"
-              onClick={(row) => this.viewStoredFile(rowData)}
+              style={{cursor: "context-menu"}}
+              // onClick={(row) => this.viewStoredFile(rowData)}
               id="doc_name_td"
             >
               {rowData.DOC_NAME}
@@ -358,10 +353,8 @@ export default class PendingActionInbox extends React.Component {
           paddingLeft: "0px",
         },
         render: (rowData) => {
-          if (rowData.DOC_STATUS == -2 && rowData.SELF_SIGN == 1) {
+          if (rowData.DOC_STATUS == -2) {
             return <span style={{ color: "#da8302" }}>Sign pending</span>;
-          } else if (rowData.SELF_SIGN == 1) {
-            return <span style={{ color: "green" }}>Self signed</span>;
           }
         },
       },

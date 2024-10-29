@@ -58,10 +58,10 @@ let URL = {
   downloadStoredFileV2: HOST + "inbox/V2/downloadFile",//////
   deleteStoredFile: HOST + "inbox/V2/deleteFile",
   cancelSigningJob: HOST + "inbox/V2/cancelJob",
-  selfTokenSign: HOST + "selfTokenSignV2",//////
+  selfTokenSign: HOST + "V2/selfTokenSign",//////
   viewStoredFile: HOST + "inbox/viewFile",//////
   viewStoredFileV2: HOST + "inbox/V2/viewFile",//////
-  downloadClientProgram: HOST + "downloadClientProgramV2",//
+  downloadClientProgram: HOST + "V2/downloadClientProgram",//
   generateOTP: HOST + "V2/generateOTP",
   resendEsignOtp: HOST + "V2/resendEsignOtp",
   generatedscaccesscode: HOST + "generatedscaccesscodeV2",//
@@ -81,7 +81,7 @@ let URL = {
   downloadfromtemp: HOST + "V2/downloadfromtemp",
   digiLocker: HOST + "digilocker/makedigilockercall",//
   KYCDetails: HOST + "V2/getUserAadharDetails",
-  BulkRegistration: HOST + "bulkRegistration",///////
+  BulkRegistration: HOST + "V2/bulkRegistration",///////
   generateOtpforMobAccess: HOST + "generateOtpforMobAccess",/////
   withdrawMoney: HOST + "withdrawMoney",
   getBankDetails: HOST + "getBankDetails",
@@ -100,7 +100,6 @@ let URL = {
   getTemplateInputs: HOST + "V2/getTemplateInputs",
   addHtmlTempAndFormDetail: HOST + "V2/insertIntoTempmasterp",
   getTemplateToBeApproved: HOST + "V2/getTemToBeApproved",
-  getTempAndFieldDetail: HOST + "getTempAndFieldDetail",
   insertHtmlTempAndFormDetails: HOST + "V2/insertHtmlTempAndFormDetails",
   // getGroupFormTempGroup: HOST + "getGroupFormTempGroup",
   getTemplateApplnList: HOST + "V2/getTemplateApplnList",
@@ -115,7 +114,6 @@ let URL = {
   getTempDetForMultiCsv: HOST + "V2/getTempDetForMultiCsv",
   getTempsForThatGroupCode: HOST + "V2/getTempsForThatGroupCode",
   getValidationKeys: HOST + "V2/getValidationKeys",
-  getRejectedTempData: HOST + "getUploadedTempList",
   deleteRejectedTemp: HOST + "V2/deleteRejectedTemp",
   tempdataForEdit: HOST + "V2/tempdataForEditAndApprove",
   getTemplateGrps: HOST + "V2/getTemplateGrps",
@@ -127,7 +125,7 @@ let URL = {
   removeTemplateUsers: HOST + "V2/removeTemplateUsers",
   getCorpDetailsReg: HOST + "getCorpDetails",
   getCorpDetails: HOST + "V2/getCorpDetails",
-  modifygrpAdmin: HOST + "modifygrpAdmin",
+  modifygrpAdmin: HOST + "V2/modifygrpAdmin",
   createTemplateGrp: HOST + "V2/createTemplateGrp",
   getVoucherCodes: HOST + "V2/getVoucherCodes",
   getVoucherInfo: HOST + "V2/getVoucherInfo",

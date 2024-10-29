@@ -428,15 +428,13 @@ export default class Inbox extends React.Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
       URL.downloadStoredFileV2 +
-      // "?at=" +
-      // btoa(sessionStorage.getItem("authToken")) +
-      "?docID=" +
-      btoa(docID),
-      {
-        headers: {
-          'Authorization': `Bearer ${jsonWebToken}`
+        "?docID=" +
+        btoa(docID),
+        {
+          headers: {
+              'Authorization': `Bearer ${jsonWebToken}`
+          }
         }
-      }
     );
     // console.log(response);
     let data = await response.blob();
@@ -549,15 +547,13 @@ export default class Inbox extends React.Component {
     let rowData = doc;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
-      URL.viewStoredFile +
-      // "?at=" +
-      // btoa(sessionStorage.getItem("authToken")) +
+      URL.viewStoredFileV2 +
       "?docID=" +
       btoa(doc.DOC_ID),
       {
-        headers: {
-          'Authorization': `Bearer ${jsonWebToken}`
-        }
+          headers: {
+              'Authorization': `Bearer ${jsonWebToken}`
+          }
       }
     );
     let data = await response.blob();
@@ -1064,18 +1060,18 @@ export default class Inbox extends React.Component {
     }
   };
 
-  //-----------------View File--------------------
-  viewStoredFile = async (e) => {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    try {
-      let response = await fetch(
-        URL.viewStoredFile + "?docID=" + btoa(e.DOC_ID),
-        {
-          headers: {
-            'Authorization': 'Bearer ' + jsonWebToken
-          }
+//-----------------View File--------------------
+viewStoredFile = async (e) => {
+  let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+  try {
+    let response = await fetch(
+      URL.viewStoredFileV2 + "?docID=" + btoa(e.DOC_ID),
+      {
+        headers: {
+          'Authorization': 'Bearer ' + jsonWebToken
         }
-      );
+      }
+    );
 
       if (!response.ok) {
         throw new Error("Network response was not ok " + response.statusText);

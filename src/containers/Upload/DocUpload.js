@@ -35,6 +35,8 @@ export default class DocUpload extends React.Component {
       pageDimensions: "",
       equalPageDimensions: true, 
       docId: null,
+      blobUrl: null,
+      isFinish: false,
     };
   }
 
@@ -77,6 +79,25 @@ export default class DocUpload extends React.Component {
         element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
         element.style.cursor = "no-drop";
       }
+    }
+
+    let viewFileURL = "";
+    viewFileURL = URL.viewConsentFile;
+    this.setState({ viewFileURl: URL.viewConsentFile });
+    
+    let viewURL = "";
+
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
+
+    viewURL = `${viewFileURL}`;
+
+    this.fetchDocument(viewURL, headers);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFinish !== this.state.isFinish) {
     }
   }
 
@@ -767,11 +788,42 @@ export default class DocUpload extends React.Component {
       });
   };
 
+  fetchDocument = async (viewFileURL, headers) => {
+    this.setState({ loaded: false });
+    const url = viewFileURL; // Encode docId if necessary
+
+    try {
+
+      // Fetch the document from the server
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+      throw new Error('Expected a PDF document but received: ' + contentType);
+      }
+
+      // Convert the response into a Blob
+      const blob = await response.blob();
+
+      if (blob.size > 0) {
+        const blobUrl = window.URL.createObjectURL(blob);
+        this.setState({ blobUrl });
+        this.setState({ loaded: true });
+      } else {
+        this.setState({ error: 'Document is empty', loading: false });
+      }
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+    }
+  };
+
   render() {
-    // Define the headers to include in the fetch request
-    let headers = {
-      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
-    };
+    const { isFinish, fileName, blobUrl } = this.state;
+
     if (this.state.loadUploadComponent) {
       return (
         <div
@@ -891,15 +943,17 @@ export default class DocUpload extends React.Component {
             loadedClassName="loadedContent"
           />
           <div id="pdfContainerdiv" style={{ height: "80vh" }}>
-              <PDF1
+              {/* <PDF1
                 url={
                   URL.viewConsentFile
-                  //  +
-                  // "?at=" +
-                  // btoa(sessionStorage.getItem("authToken"))
                 }
-                httpHeaders={headers}
-              />
+              /> */}
+              {blobUrl && <PDF1
+                key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+                url={blobUrl}
+                filename={fileName}
+                finish={isFinish}  // Pass finish state to control Download button
+              />}
               <div style={{marginTop: "20px"}}>
             <input
               type="checkbox"
@@ -910,6 +964,17 @@ export default class DocUpload extends React.Component {
             <label id="consentSigningLable" style={{ fontSize: "16px" }}>
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
+          </div>
+          <div className="next-nav">
+            <button
+              className="upload-button"
+              id="submitConsentbutton"
+              disabled={this.state.isConsentdisable}
+              onClick={this.consenteSign.bind(this)}
+              style={{ margin: "auto" }}
+            >
+              <span>Submit &#8594;</span>
+            </button>
           </div>
             {/* </div> */}
           </div>
@@ -925,18 +990,6 @@ export default class DocUpload extends React.Component {
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
           </div> */}
-
-          <div className="next-nav">
-            <button
-              className="upload-button"
-              id="submitConsentbutton"
-              disabled={this.state.isConsentdisable}
-              onClick={this.consenteSign.bind(this)}
-              style={{ margin: "auto" }}
-            >
-              <span>Submit &#8594;</span>
-            </button>
-          </div>
         </div>
       );
     }

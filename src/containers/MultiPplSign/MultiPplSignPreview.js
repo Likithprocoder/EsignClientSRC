@@ -2109,7 +2109,6 @@ const MultiPplSignPreview = (props) => {
         loginname: sessionStorage.getItem("username"),
         signPurpose: "", //length-50 (future use)
         docType: "PDF",
-        //authToken: sessionStorage.getItem("authToken"),
         externalJar: true,
         userIP: "10.10.10.111",
         enableSignOrder: props.location.state.details.enableSignOrder,
@@ -2970,9 +2969,33 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                     </label>
                     <span id="clientdownloadspan" style={{ marginLeft: "20px" }}>
                       <a
-                        href={
-                          URL.downloadClientProgram 
-                        }
+                        // href="#"
+                        onClick={async () => {
+                          let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                          try {
+                            const response = await fetch(URL.downloadClientProgram, {
+                              method: "GET",
+                              headers: {
+                                'Authorization': `Bearer ${jsonWebToken}`
+                              },
+                            });
+
+                            if (!response.ok) {
+                              throw new Error("Network response was not ok");
+                            }
+
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.setAttribute("download", "DSCClientProgram.zip");
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          } catch (error) {
+                            console.error("Error downloading file:", error);
+                          }
+                        }}
                         id="clientdownload"
                         style={{ display: "none" }}
                       >
