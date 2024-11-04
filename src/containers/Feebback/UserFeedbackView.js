@@ -71,7 +71,7 @@ function UserFeedbackView(props) {
                 });
                 setAllowLoader(true);
             });
-    }, []);
+    }, [props.history]);
 
 
     useEffect(() => {

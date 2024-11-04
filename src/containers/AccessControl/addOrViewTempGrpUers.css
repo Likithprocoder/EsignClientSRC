@@ -456,4 +456,166 @@
 
   #disableReason {
     align-items: center;
-  }
+}
+
+/*
+  Platform admin topup css
+  */
+@media screen and (max-width: 800px) {
+    .Headinng {
+        display: inline;
+    }
+
+    .userData {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .userDataLabel {
+        width: 25%
+    }
+
+    .touUpContainer {
+        display: inline;
+    }
+
+    .subscription {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .topUpRequiredInputs {
+        width: 100%;
+    }
+
+    .topUpOptions {
+        display: "";
+    }
+
+    .customTopUp {
+        display: inline;
+    }
+
+    .customEnterInput {
+        width: 100%;
+    }
+
+
+    .topUpDataLabel {
+        display: inline;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 3%;
+    }
+
+    .topUpDataInputPAR {
+        width: 100%;
+        padding-top: 2%;
+    }
+
+    .topUpDataInputCHLD {
+        width: 90%;
+        font-size: 14px;
+        border: 1px solid black;
+    }
+
+    .customTopUpInput {
+        width: 90%;
+        font-size: 14px;
+        border: 1px solid black;
+        margin-left: 8px;
+    }
+
+    .userDataContainer {
+        width: 100%;
+    }
+
+    .amuntForEnteredUnits {
+        width: 100%;
+        text-align: start;
+        padding-top: 2%;
+        padding-left: 3%;
+    }
+
+}
+
+@media screen and (min-width: 800px) {
+    .Headinng {
+        display: flex;
+    }
+
+    .userData {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .userDataLabel {
+        width: 18%
+    }
+
+    .touUpContainer {
+        display: flex;
+    }
+
+    .subscription {
+        width: 50%;
+        padding-right: 5%;
+        border-right: 2px solid lightgray;
+    }
+
+    .topUpRequiredInputs {
+        width: 50%;
+    }
+
+    .topUpOptions {
+        display: flex;
+    }
+
+    .customTopUp {
+        display: flex;
+    }
+
+    .customEnterInput {
+        width: 60%;
+    }
+
+    .amuntForEnteredUnits {
+        width: 40%;
+        text-align: start;
+        padding-top: 2%;
+        padding-left: 3%;
+    }
+
+    .topUpDataLabel {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 3%;
+    }
+
+    .topUpDataInputPAR {
+        width: 40%;
+        padding-top: 2%;
+    }
+
+    .topUpDataInputCHLD {
+        width: 60%;
+        font-size: 14px;
+        border: 1px solid black;
+        margin-left: 16px;
+    }
+
+
+    .customTopUpInput {
+        width: 90%;
+        font-size: 14px;
+        border: 1px solid black;
+        margin-left: 10%;
+    }
+
+    .userDataContainer {
+        width: 50%;
+    }
+
+
+}

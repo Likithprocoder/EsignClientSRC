@@ -140,33 +140,34 @@ let URL = {
   getCorpMemberRequests: HOST + "V2/getCorpMemberRequests",////////
   approveCorpMemberRequests: HOST + "V2/approveCorpMemberRequests",//////
   addCorpMember: HOST + "V2/addCorpMember",
-  checkVoucherCodeAvailability: HOST+"V2/checkUsrDefinedVchrCode",////////
-  declineSigning: HOST+ "V2/declineSigning",////
-  fetchAddressBook: HOST+ "V2/fetchAddressBook",
-  insertToAddressBook:HOST+"V2/insertToAddressBook",
-  removeFromAddressBook:HOST+"V2/removeFromAddressBook",
-  modifyAddressBook:HOST+"V2/modifyAddressBook",
-  uploadDocument:HOST+"V2/uploadDocument",
-  fetchDesignationBonus:HOST+"V2/getDesignationBonus",
-  insertDesignationBonus:HOST+"V2/createDesignationBonus",
-  UpdateDesignationBonus:HOST+"V2/updateDesignationBonus",
-  upddateDesignationStatus:HOST+"V2/updateDesignationBonus/status",
-  uploadEmployees: HOST+"V2/uploadEmployees",
-  getCorpEmpMappingList: HOST+"V2/getCorpEmpMappingList",
-  getCorpEmployee: HOST+"V2/getCorpEmployee",
-  updateCorpEmpMapping: HOST+"V2/updateCorpEmpMapping",
-  deleteUserFromCorpGroup:HOST+"V2/deleteUserFromCorpGroup",
-  createCorporateEntity: HOST+"V2/createCorporateEntity",
-  generateapikey: HOST+"V2/generateapikey",
-  getApikeys: HOST+"V2/getApikeys",
-  updateapikey: HOST+"V2/updateapikey",
-  enableDisableCorpEntity: HOST+"V2/enableDisableCorpEntity",
-  downloadInvoice:HOST+"V2/downloadInvoice",
+  checkVoucherCodeAvailability: HOST + "V2/checkUsrDefinedVchrCode",////////
+  declineSigning: HOST + "V2/declineSigning",////
+  fetchAddressBook: HOST + "V2/fetchAddressBook",
+  insertToAddressBook: HOST + "V2/insertToAddressBook",
+  removeFromAddressBook: HOST + "V2/removeFromAddressBook",
+  modifyAddressBook: HOST + "V2/modifyAddressBook",
+  uploadDocument: HOST + "V2/uploadDocument",
+  fetchDesignationBonus: HOST + "V2/getDesignationBonus",
+  insertDesignationBonus: HOST + "V2/createDesignationBonus",
+  UpdateDesignationBonus: HOST + "V2/updateDesignationBonus",
+  upddateDesignationStatus: HOST + "V2/updateDesignationBonus/status",
+  uploadEmployees: HOST + "V2/uploadEmployees",
+  getCorpEmpMappingList: HOST + "V2/getCorpEmpMappingList",
+  getCorpEmployee: HOST + "V2/getCorpEmployee",
+  updateCorpEmpMapping: HOST + "V2/updateCorpEmpMapping",
+  deleteUserFromCorpGroup: HOST + "V2/deleteUserFromCorpGroup",
+  createCorporateEntity: HOST + "V2/createCorporateEntity",
+  generateapikey: HOST + "V2/generateapikey",
+  getApikeys: HOST + "V2/getApikeys",
+  updateapikey: HOST + "V2/updateapikey",
+  enableDisableCorpEntity: HOST + "V2/enableDisableCorpEntity",
+  downloadInvoice: HOST + "V2/downloadInvoice",
   getFeedbackQuestions: HOST + "V2/getFeedbackQuestions",
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken:HOST+"fetchAccessToken"
+  fetchAccessToken: HOST + "fetchAccessToken",
+  internalTopUp: HOST + "internalTopUp"
 };
 
 module.exports = { URL };

@@ -3,7 +3,6 @@ import tableIcons from "../Inbox/MaterialTableIcons";
 import { confirmAlert } from "react-confirm-alert";
 import { URL } from "../URLConstant";
 import MaterialTable, { MTableToolbar } from "material-table";
-import Modal from "react-responsive-modal";
 import "./addOrViewTempGrpUers.css";
 
 var Loader = require("react-loader");
@@ -339,7 +338,7 @@ function ReqUsrForCorp(props) {
                         <>
                             <div className="GrpList  ScrollBarForApprove" style={{ width: "100%", height: "fit-content", border: "3px solid #9dc1e3", fontSize: "13px", borderRadius: "5px", padding: "5px" }}>
                                 {
-                                    eachRequstesList.length != 0 ?
+                                    eachRequstesList.length !== 0 ?
                                         eachRequstesList.map((posts, index) =>
                                             <React.Fragment key={index}>
                                                 <div style={{ display: "flex", width: "100%", paddingBottom: "5px" }} key={index}>

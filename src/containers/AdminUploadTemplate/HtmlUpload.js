@@ -83,10 +83,10 @@ function HtmlUpload1(props) {
               },
             ], closeOnClickOutside: false
           });
-          props.location.push('/login');
+          props.history.push('/login');
         });
     };
-  }, []);
+  }, [props.history]);
 
   if (props.location.hash !== "") {
     let hashData = (props.location.hash).split("&");

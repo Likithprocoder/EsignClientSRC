@@ -94,6 +94,9 @@ const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedb
 
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const corporateAdminTopUp= React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
+
+
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/docUpload", name: "Sign Document", component: DocUpload },
@@ -322,6 +325,15 @@ const routes = [
     path: "/viewUserFeedback",
     name: "User Feedback",
     component: userFeedackView
+  },
+  {
+    path: "/corporteAdminTopUp",
+    name: "Corporate Admin TopUp",
+    component: corporateAdminTopUp
   }
+
+  
 ];
+
+
 export default routes;

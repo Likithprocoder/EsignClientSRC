@@ -3,7 +3,6 @@ import { URL } from '../URLConstant';
 import './AdminApr.css';
 import { confirmAlert } from "react-confirm-alert";
 import Modal from "react-responsive-modal";
-import _ from 'lodash';
 var Loader = require("react-loader");
 
 function ViewTemplate(props) {
@@ -28,7 +27,6 @@ function ViewTemplate(props) {
   const [radioCheckValidation, setRadioCheckValidation] = useState({});
   const [searchAbleKey, setSearchAbleKey] = useState([]);
   const [allowSearchAbleKeyModal, setAllowSearchAbleKeyModal] = useState(false);
-  const [validateSearchAbleKey, setValidateSearchAbleKey] = useState(false);
   // to allow the custom field modal to render..
   const [openModalToCusField, setOpenModalToCusField] = useState(false);
   // to store the template name,to be used in template approve confirm modal.
@@ -250,9 +248,7 @@ function ViewTemplate(props) {
             }))
           }
           setSearchAbleKey(searchableKeyArr);
-          if (searchableKeyArr.length !== 0) {
-            setValidateSearchAbleKey(true);
-          }
+         
           setFile(modifiedHTML);
           setAllowHtmlFile(true);
         }
@@ -399,7 +395,6 @@ function ViewTemplate(props) {
   const approveSearchAbleKeys = () => {
     document.getElementById("SearchAbleKeyTickMark").style.color = "green";
     document.getElementById("SearchAbleKeyTickMark").className = "fa fa-check";
-    setValidateSearchAbleKey(false);
     setRejectedAllFields(
       {
         ...rejectedAllFields,
@@ -412,7 +407,6 @@ function ViewTemplate(props) {
   const disApproveSearchAbleKeys = () => {
     document.getElementById("SearchAbleKeyTickMark").style.color = "red";
     document.getElementById("SearchAbleKeyTickMark").className = "fa fa-times";
-    setValidateSearchAbleKey(false);
     setRejectedAllFields(
       {
         ...rejectedAllFields,
