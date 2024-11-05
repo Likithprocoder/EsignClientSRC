@@ -69,14 +69,16 @@ function ViewUserFeedbackList(props) {
             .then((response) => response.json())
             .then((responsedata) => {
                 if (responsedata.status === "SUCCESS") {
+                    console.log(responsedata);
+                    
                     setFeedbackList((prevItems) => {
                         // Create a new copy of the array
                         let updatedItems = [...prevItems];
                         let indexData = (updatedItems.length);
                         // Update the item at the given index
-                        for (let index = 0; index < responsedata.feedbackData.length; index++) {
-                            const element = responsedata.feedbackData[index];
-                            console.log(element);
+                        const feedbackList = [...responsedata.feedbackData].reverse();   
+                        for (let index = 0; index < feedbackList.length; index++) {
+                            const element = feedbackList[index];
                             updatedItems[indexData] = element;
                             indexData++;
                         }
