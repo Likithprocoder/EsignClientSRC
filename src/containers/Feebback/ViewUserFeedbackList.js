@@ -68,9 +68,7 @@ function ViewUserFeedbackList(props) {
         fetch(URL.getUsersFeedback, options)
             .then((response) => response.json())
             .then((responsedata) => {
-                if (responsedata.status === "SUCCESS") {
-                    console.log(responsedata);
-                    
+                if (responsedata.status === "SUCCESS") {                    
                     setFeedbackList((prevItems) => {
                         // Create a new copy of the array
                         let updatedItems = [...prevItems];
@@ -174,10 +172,6 @@ function ViewUserFeedbackList(props) {
                 scale={1.0}
                 loadedClassName="loadedContent"
             />
-            {
-                console.log(feedbackList)
-
-            }
             <Table
                 columns={columns}
                 dataSource={feedbackList}
