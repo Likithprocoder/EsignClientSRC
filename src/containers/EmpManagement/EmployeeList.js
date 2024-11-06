@@ -160,11 +160,13 @@ class EmployeeList extends Component {
     }
 
     updateCorpEmployee = (options) => {
+        this.setState({ loaded: false });
         fetch(URL.updateCorpEmpMapping, options)
             .then(response => (response.json()))
             .then(data => {
                 // console.log(data);
                 if (data.status === "SUCCESS") {
+                    this.setState({ loaded: true });
                     if (data.statusDetails == "Employee removed successfully") {
                         this.setState({ contactModal: false });
                     }
@@ -231,14 +233,15 @@ class EmployeeList extends Component {
             },
             body: JSON.stringify({
                 empId: record.id.empId,
-                corpID:this.state.corporateID
+                corpID: this.state.corporateID
             })
         }
-
+        this.setState({ loaded: false });
         fetch(URL.getCorpEmployee, options)
             .then(response => response.json())
             .then(data => {
                 if (data.status === "SUCCESS") {
+                    this.setState({ loaded: true });
                     this.setState({
                         empMoreDetail: data.corpEmployee,
                         contactModal: true,
@@ -252,10 +255,11 @@ class EmployeeList extends Component {
                     if (record.empStatus === "0") {
                         this.setState({ isEmpDisable: true });
                     } else {
-                        this.setState({ isEmpDisable: false});
+                        this.setState({ isEmpDisable: false });
                     }
 
                 } else if (data.statusDetails === "Session Expired") {
+                    this.setState({ loaded: true });
                     confirmAlert({
                         message: data.statusDetails,
                         buttons: [
@@ -344,7 +348,7 @@ class EmployeeList extends Component {
                             body: JSON.stringify({
                                 empId: empId,
                                 updatedStatus: status,
-                                corpID:this.state.corporateID
+                                corpID: this.state.corporateID
                             })
                         }
                         this.updateCorpEmployee(options);
@@ -365,11 +369,11 @@ class EmployeeList extends Component {
         let mobile = document.getElementById("contactMobile").value.trim();
         let email = document.getElementById("contactEmail").value.trim();
         let designation = document.getElementById("contactDesig").value.trim();
-    
+
         // validation
         const mobileRegex = /^[6-9]\d{9}$/;
         const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[a-zA-Z]{2,6}$/;
-    
+
         if (name === "" || name.length == 0) {
             alert("Please enter contact name");
             return false;
@@ -383,9 +387,9 @@ class EmployeeList extends Component {
             alert("Please enter designation");
             return false;
         }
-        
+
         // console.log(this.state.empMoreDetail);
-    
+
         if (
             name === this.state.empMoreDetail.name &&
             mobile === this.state.empMoreDetail.mobileNo &&
@@ -404,9 +408,9 @@ class EmployeeList extends Component {
             });
             return;
         }
-    
+
         let disaplayMessage = "Employee details are modified, Do you want to save?";
-    
+
         confirmAlert({
             message: disaplayMessage,
             buttons: [
@@ -420,7 +424,7 @@ class EmployeeList extends Component {
                             updatedInfo: {
                                 "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
                             },
-                            corpID:this.state.corporateID
+                            corpID: this.state.corporateID
                         };
                         const url = URL.updateCorpEmpMapping;
 
@@ -542,11 +546,11 @@ class EmployeeList extends Component {
     };
 
 
-    openUploadPage= (e) => {
+    openUploadPage = (e) => {
         e.preventDefault();
         this.props.history.push("/uploadEmpDetails")
     }
-    
+
     render() {
         const { columns } = this.state;
 
@@ -575,7 +579,7 @@ class EmployeeList extends Component {
                 />
 
 
-                <div style={{ display: "flex", marginBottom: "12px", alignItems: "center", justifyContent: "space-between", float: "right"}}>
+                <div style={{ display: "flex", marginBottom: "12px", alignItems: "center", justifyContent: "space-between", float: "right" }}>
                     {/* <div id='tempGroupListCss'>
 
                         <span>Allocate bonus credits based on each designation level.</span>
