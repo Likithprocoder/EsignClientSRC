@@ -167,7 +167,9 @@ let URL = {
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
   fetchAccessToken: HOST + "fetchAccessToken",
-  internalTopUp: HOST + "internalTopUp"
+  internalTopUp: HOST + "internalTopUp",
+  fetchAuditOperationType: HOST + "V2/fetchAuditOperationType",
+  fetchAuditLogs: HOST + "V2/fetchAuditLogs"
 };
 
 module.exports = { URL };

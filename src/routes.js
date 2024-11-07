@@ -95,6 +95,7 @@ const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedb
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
 const corporateAdminTopUp= React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
+const AuditLogRecords = React.lazy(() => import("./containers/AuditLog/ViewAuditLogList"));
 
 
 const routes = [
@@ -330,8 +331,12 @@ const routes = [
     path: "/corporteAdminTopUp",
     name: "Corporate Admin TopUp",
     component: corporateAdminTopUp
+  },
+  {
+    path: "/auditLogRecords",
+    name: "Audit Logs",
+    component: AuditLogRecords
   }
-
   
 ];
 

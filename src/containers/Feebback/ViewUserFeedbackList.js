@@ -146,7 +146,7 @@ function ViewUserFeedbackList(props) {
         setRecordPerPage(pageSize);
         let numberOfPresntPage = feedbackList.length / 10;
         // Check if the user is on the last page
-        if (current === numberOfPresntPage && current <= numberOfpages) {
+        if (current === numberOfPresntPage && pageNumber < numberOfpages) {
             setPageNumber(pageNumber + 1); // Update page number to fetch next set of data
         }
     };
