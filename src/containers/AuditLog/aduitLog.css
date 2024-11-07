@@ -1,0 +1,58 @@
+@media screen and (max-width: 800px) {
+    .AditLgFltr {
+        display: grid;
+    }
+
+    .OpratTyp {
+        margin-bottom: 10px;
+        width: 50%;
+    }
+
+    .DtePckr {
+        margin-bottom: 5px;
+    }
+
+}
+
+
+@media screen and (min-width: 800px) {
+    .AditLgFltr {
+        display: inline;
+    }
+
+    .OpratTyp {
+        margin-bottom: 10px;
+        margin-right: 10px;
+        width: 15%;
+    }
+
+    .DtePckr {
+        margin-bottom: 10px;
+        margin-right: 10px;
+    }
+}
+
+.activeRow {
+    background-color: #d6f0e9;
+
+}
+
+.ant-table-wrapper .ant-table-cell,
+.ant-table-wrapper .ant-table-thead>tr>th,
+.ant-table-wrapper .ant-table-tbody>tr>th,
+.ant-table-wrapper .ant-table-tbody>tr>td,
+.ant-table-wrapper tfoot>tr>th,
+.ant-table-wrapper tfoot>tr>td {
+    padding: 5px !important;
+}
+
+.ant-table-measure-row {
+    height: 0 !important;
+    visibility: hidden !important;
+    display: none !important;
+}
+
+.react-confirm-alert-overlay {
+    z-index: 10000;
+
+}
