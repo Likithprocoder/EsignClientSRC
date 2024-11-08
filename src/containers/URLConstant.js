@@ -169,7 +169,8 @@ let URL = {
   fetchAccessToken: HOST + "fetchAccessToken",
   internalTopUp: HOST + "internalTopUp",
   fetchAuditOperationType: HOST + "V2/fetchAuditOperationType",
-  fetchAuditLogs: HOST + "V2/fetchAuditLogs"
+  fetchAuditLogs: HOST + "V2/fetchAuditLogs",
+  fetchUserDetails: HOST + "V2/fetchUserDetails",
 };
 
 module.exports = { URL };

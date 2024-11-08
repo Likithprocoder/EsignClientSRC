@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Table, DatePicker, Select, Button } from 'antd';
+import { Table, DatePicker, Select} from 'antd';
 import Loader from "react-loader";
 import { URL } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
 import './aduitLog.css'; // Import the CSS file
 import moment from 'moment';
-
 
 function ViewAuditLogList(props) {
 
@@ -27,9 +26,17 @@ function ViewAuditLogList(props) {
 
     const [selectedDateRngeTwo, setSelectedDateRngeTwo] = useState([]);
 
+    const [selectedDateRangeActulValue, setSelectedDateRangeActulValue] = useState([]);
+
+    const [userData, setUserData] = useState({});
+
+    const [totalNumberOfRecords, setTotalNumberOfRecords] = useState("");
+
     const { RangePicker } = DatePicker;
 
     const { Option } = Select;
+
+    const [allowModel, setAllowModel] = useState(false);
 
     let columns = [
         {
@@ -38,7 +45,10 @@ function ViewAuditLogList(props) {
         },
         {
             title: 'Operation Status',
-            dataIndex: 2
+            dataIndex: 2,
+            render: (record) => (
+                <span >{record === "1" ? "SUCCESS" : "FAILURE"}</span>
+            )
         },
         {
             title: 'Entry Date',
@@ -47,19 +57,89 @@ function ViewAuditLogList(props) {
         {
             title: 'IP Address',
             dataIndex: 1
+        },
+        {
+            title: '',
+            render: (record) => (
+                <span style={{ padding: "0px" }} onClick={e => fetchUserDetails(record)} className='btn btn-link'>More Info..</span>
+            )
         }
     ]
+
+    // Fetch the user data..
+    const fetchUserDetails = (record) => {
+        setAllowLoader(false);
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+        // finally data addition call.
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
+            },
+            body: JSON.stringify({
+                userName: record[0]
+            })
+        };
+        fetch(URL.fetchUserDetails, options)
+            .then((response) => response.json())
+            .then((responsedata) => {
+                if (responsedata.status === "SUCCESS") {
+                    setUserData(responsedata);
+                    setAllowModel(true);
+                } else if (responsedata.statusDetails === "Session Expired") {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/login");
+                                },
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                } else {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn"
+                            },
+                        ], closeOnClickOutside: false,
+                    });
+                }
+            }).catch((error) => {
+                console.log(error);
+                confirmAlert({
+                    message: `SomeThing Went Wrong PLease Try Again`,
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {
+                                props.history.push("/");
+                            },
+                        },
+                    ], closeOnClickOutside: false,
+                });
+            });
+        setAllowLoader(true);
+    };
 
     useEffect(() => {
         setAllowLoader(false);
         // initial setting the current date and date of 3months ago from current date.
         setSelectedDateRnge(() => {
             let dateAray = [];
-            dateAray.push(moment().subtract(3, 'months').format("YYYY-MM-DD"));
+            dateAray.push(moment().startOf("month").format("YYYY-MM-DD"));
             dateAray.push(moment().format("YYYY-MM-DD"));
             setSelectedDateRngeTwo(dateAray);
             return dateAray;
         });
+        setSelectedDateRangeActulValue([moment().startOf("month"), moment()]);
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // finally data addition call.
         const options = {
@@ -79,7 +159,7 @@ function ViewAuditLogList(props) {
                         setOperationType(responsedata.operationTypes[0]);
                         setOperationTypeList(responsedata.operationTypes);
                         // GET call to retrieve the operation types.
-                        fetchAuditLogs(moment().subtract(3, 'months'), moment(), responsedata.operationTypes[0], 0);
+                        fetchAuditLogs(moment().startOf("month"), moment(), responsedata.operationTypes[0], 0);
                     } else {
                         confirmAlert({
                             message: 'Empty audit log records!',
@@ -149,9 +229,32 @@ function ViewAuditLogList(props) {
         // For the value of 'dates' is null, indicates user has removed the selected date, so reassigning to empty [].
         if (dates === null) {
             setSelectedDateRnge([]);
+            setSelectedDateRangeActulValue([]);
         } else {
-            setSelectedDateRnge(dateStrings);
-            setSelectedDateRngeTwo(dateStrings);
+            const start = moment(dateStrings[0]);
+            const end = moment(dateStrings[1]);
+            const threeMonthsAfterStart = start.clone().add(3, 'months');
+            if (!end.isSameOrBefore(threeMonthsAfterStart)) {
+                // if the selected date range is not between 3months, an alert is throwen.
+                confirmAlert({
+                    message: 'Please select the date range between 3 months maximum.',
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn"
+                        },
+                    ], closeOnClickOutside: false,
+                });
+                // On selection of dates exceeding 3months, empty of values, which is used to dislay to users.
+                setSelectedDateRangeActulValue([]);
+            } else {
+                setAuditRecords([]);
+                setPageNumber(0);
+                setSelectedDateRnge(dateStrings);
+                setSelectedDateRngeTwo(dateStrings);
+                setSelectedDateRangeActulValue(dates);
+                fetchAuditLogs(dates[0], dates[1], operationType, 0);
+            }
         }
     };
 
@@ -160,9 +263,7 @@ function ViewAuditLogList(props) {
         if (selectedDateRnge.length !== 0) {
             setAuditRecords([]);
             setPageNumber(0);
-            const operationType = event;
-            setOperationType(operationType);
-            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, 0);
+            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], event, 0);
         } else {
             confirmAlert({
                 message: 'Select the date range for audit log records before submitting.',
@@ -173,7 +274,9 @@ function ViewAuditLogList(props) {
                     },
                 ], closeOnClickOutside: false,
             });
+            setOperationType(event);
         }
+        setOperationType(event);
     };
 
     // Fetch call for audit logs.
@@ -208,10 +311,11 @@ function ViewAuditLogList(props) {
                             updatedItems[indexData] = element;
                             indexData++;
                         }
-                        // Return the updated array to setItems
+                        // Return the updated array to setItems                        
                         return updatedItems;
                     });
                     setNumberOfPages(responsedata.totalPages);
+                    setTotalNumberOfRecords(responsedata.totalRecordsCount);
                 } else if (responsedata.statusDetails === "Session Expired") {
                     confirmAlert({
                         message: responsedata.statusDetails,
@@ -277,11 +381,11 @@ function ViewAuditLogList(props) {
                     loadedClassName="loadedContent"
                 />
                 <div className='AditLgFltr'>
-                    <RangePicker defaultValue={[moment().subtract(3, 'months'), moment()]} // 3 months ago to today
+                    <RangePicker value={selectedDateRangeActulValue} // 3 months ago to today
                         format="YYYY-MM-DD" className='DtePckr' onChange={onDateRangeChange} />
                     {
                         operationTypeList.length !== 0 && (
-                            <Select defaultValue={operationTypeList[0]} onChange={e => handleOptionChange(e)} id='operationTypeID' className='OpratTyp'>
+                            <Select defaultValue={operationTypeList[0] ?? ''} onChange={e => handleOptionChange(e)} id='operationTypeID' className='OpratTyp'>
                                 {
                                     operationTypeList.map((posts, index) => (
                                         <Option key={`OPTType${index}`} value={posts}>{posts}</Option>
@@ -297,13 +401,51 @@ function ViewAuditLogList(props) {
                     pagination={{
                         pageSize: recordPerPage,
                         showQuickJumper: true,
-                        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+                        showTotal: (total, range) => `(Total records count-${totalNumberOfRecords}) ${range[0]}-${range[1]} of ${total} items`,
                     }}
                     onChange={handleTableChange}
                     scroll={{ x: '100%' }}
                     rowClassName={(record) => 'activeRow'}
+                    style={{ border: "1px solid lightgrey", borderRadius: "2px" }}
+                    key="TableFrmAntd"
                 />
             </div>
+            {
+                allowModel && (
+                    <div className="custom-modal">
+                        <div className="CustomModal-content">
+                            <span className="close" onClick={e => setAllowModel(false)}>&times;</span>
+                            <>
+                                <div className='USRINFOHEAD'>
+                                    <span>User Info</span>
+                                </div>
+                                <div className='USRINFODATAPAENT'>
+                                    <div className='USRINFOCHLD'>
+                                        <div className='USRINFODATALBLE'>Name</div>
+                                        <div className='USRINFODATACOLEN'>:</div>
+                                        <div className='USRINFOVAlUE'>{userData.name}</div>
+                                    </div>
+                                    <div className='USRINFOCHLD'>
+                                        <div className='USRINFODATALBLE'>Mobile Number</div>
+                                        <div className='USRINFODATACOLEN'>:</div>
+                                        <div className='USRINFOVAlUE'>{userData.mobileNumber}</div>
+                                    </div>
+                                    <div className='USRINFOCHLD'>
+                                        <div className='USRINFODATALBLE'>Emial ID</div>
+                                        <div className='USRINFODATACOLEN'>:</div>
+                                        <div className='USRINFOVAlUE'>{userData.emailID}</div>
+                                    </div>
+                                    <div className='USRINFOCHLD'>
+                                        <div className='USRINFODATALBLE'>KYC Status</div>
+                                        <div className='USRINFODATACOLEN'>:</div>
+                                        <div className='USRINFOVAlUE'>{userData.KYCStatus === 1 ? "Verified" : "Unverified"}</div>
+                                    </div>
+                                </div>
+                            </>
+                        </div>
+                    </div>
+                )
+            }
         </React.Fragment>
     )
 }

@@ -38,7 +38,7 @@ function ViewUserFeedbackList(props) {
             width: '15%',
             render: (text, record) => (
                 <div>
-                    <span onClick={e => viewIndividualUsersFeedback(record)} className="btn btn-link">View</span>
+                    <span style={{padding:"0px"}} onClick={e => viewIndividualUsersFeedback(record)} className="btn btn-link">View</span>
                 </div>
             )
         },

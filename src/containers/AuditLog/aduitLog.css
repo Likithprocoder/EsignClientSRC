@@ -12,6 +12,16 @@
         margin-bottom: 5px;
     }
 
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 80%;
+        max-height: 80%;
+        overflow: auto;
+        position: relative;
+    }
+
 }
 
 
@@ -29,6 +39,17 @@
     .DtePckr {
         margin-bottom: 10px;
         margin-right: 10px;
+    }
+
+    .CustomModal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 16px;
+        max-width: 40%;
+        max-height: 80%;
+        overflow: auto;
+        position: relative;
+        width: 34%;
     }
 }
 
@@ -55,4 +76,55 @@
 .react-confirm-alert-overlay {
     z-index: 10000;
 
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.USRINFOHEAD {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.USRINFODATAPAENT {
+    border: 2px solid grey;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: azure;
+    border-radius: 5px;
+}
+
+.USRINFOCHLD {
+    width: 100%;
+    display: inline-flex;
+    margin-bottom: 10px;
+}
+
+.USRINFODATALBLE {
+    width: 31%;
+}
+
+.USRINFODATACOLEN {
+    width: 5%;
+}
+
+.USRINFOVAlUE {
+    width: fit-content;
 }
