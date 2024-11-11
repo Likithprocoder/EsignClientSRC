@@ -49,8 +49,7 @@ class QRDetails extends Component {
     let additional_data = sessionStorage.getItem("additional_data");
 
     let jsonObject = {};
-    if (additional_data) {
-      // console.log('Content of additional_data:', additional_data);
+    if (additional_data !== null && additional_data !== "undefined") {
 
       try {
         jsonObject = JSON.parse(additional_data);
@@ -59,8 +58,6 @@ class QRDetails extends Component {
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
-    } else {
-      console.error('additional_data is null or undefined');
     }
 
     // console.log('additional_data:', typeof additional_data);

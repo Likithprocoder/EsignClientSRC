@@ -54,6 +54,10 @@ export default class APIIntegrations extends React.Component {
     this.setState({ apiKeyLimit: value });
   }
 
+  setIsDisabledState = (value) => {
+    this.setState({ isDisabled: value });
+  }
+
     // resend otp counter
     startResendOtpTimer = () => {
         this.setState({ timeleft: 30 });
@@ -272,14 +276,14 @@ export default class APIIntegrations extends React.Component {
                   <div style={{borderLeft: "5px solid grey", padding: "10px", background: "rgb(232, 234, 245)"}}>
                   <i class="fa fa-info-circle" aria-hidden="true" style={{ color: "grey"}}></i> To securely connect to DocuExec API(s), your application should use an API key with the necessary permissions to access the services.
                   </div>
-                  <Button className="btn btn-success" onClick={this.toggleModal} style={{ float: "left", marginBottom: "20px", marginTop: "15px" }}>Generate New API Key</Button>
+                  <Button className="btn btn-success" onClick={this.toggleModal} style={{ float: "left", marginBottom: "20px", marginTop: "15px" }} disabled={this.state.isDisabled}>Generate New API Key</Button>
                 </div>
               {/* </CardBody> */}
             {/* </Card> */}
         </Col>
         </Row>
 
-        {this.state.showApiKeyList && ((sessionStorage.getItem("roleID") === "6") && (<ApiKeyList roleId={sessionStorage.getItem("roleID")} setApiKeyLimit={this.setApiKeyLimit} />))}
+        {this.state.showApiKeyList && ((sessionStorage.getItem("roleID") === "6") && (<ApiKeyList roleId={sessionStorage.getItem("roleID")} setApiKeyLimit={this.setApiKeyLimit} setIsDisabledState={this.setIsDisabledState}/>))}
 
         <Modal open={this.state.modalOpen} onClose={this.toggleModal} center={true} closeOnOverlayClick={false} id="apiKeyModal" >
           {/* <div style={{ width: "24% !important"}}> */}

@@ -1030,6 +1030,7 @@ const Preview = (props) => {
                   const r_selectedOptionArray = storedData.selectedOptionArray;
                   const r_pageListArray = storedData.pageListArr;
                   const totalPages = parseInt(sessionStorage.getItem("TotalPages"), 10);
+                  handleModeChange(r_selectedMode);
 
                   // console.log(r_finalClientDimensions);
                   // Filter dragArray to only include objects with pageNo less than or equal to newPageCount
@@ -3455,14 +3456,21 @@ const Preview = (props) => {
             // console.log({allRangeArrayValues});
             // console.log({rangeArray});
             if (!(data?.hasOwnProperty("externalSigner") && data?.externalSigner)) {
-              sessionStorage.setItem("restoreCoordinates", true);
+
               // console.log({finalClientDimensions});
               // console.log({dragArray});
+
+              // Increment the 'top' property by 5px for each object in dragArray
+              const updatedDragArray = dragArray.map(item => {
+                // Parse the current 'top' value to an integer, add 5, and then convert it back to a string with 'px'
+                const newTop = `${parseInt(item.top) + 5}px`;
+                return { ...item, top: newTop };
+              });
 
               // Prepare the object to store in sessionStorage
               const sessionData = {
                 finalClientDimensions,
-                dragArray,
+                dragArray: updatedDragArray,
                 selectedMode,
                 selectedOptionArray,
                 pageListArr,
@@ -3471,6 +3479,7 @@ const Preview = (props) => {
 
               // Store the object in sessionStorage
               sessionStorage.setItem("restoreDetails", JSON.stringify(sessionData));
+              sessionStorage.setItem("restoreCoordinates", true);
             }
             if (selectedMode === "1") {
               props.history.push({
@@ -4357,7 +4366,7 @@ const Preview = (props) => {
 
   const handleModeChange = (e) => {
     if (selectedOption) {
-      setSelectedMode(e.target.value);
+      setSelectedMode(e?.target?.value || e);
       setLoaded(true);
       if (
         sessionStorage.getItem("ud") == "false" ||
@@ -4366,13 +4375,13 @@ const Preview = (props) => {
         var data = props?.location?.state?.details;
         //for multi user external signer fixing coordinates
         if (!(data?.hasOwnProperty("externalSigner") && data?.externalSigner)) {
-          getRequiredUnits(selectedOption, e.target.value);
+          getRequiredUnits(selectedOption, e?.target?.value || e);
         }
       } else {
-        getRequiredUnits(selectedOption, e.target.value);
+        getRequiredUnits(selectedOption, e?.target?.value || e);
       }
 
-      if (e.target.value === "2") {
+      if (e?.target?.value === "2" || e == 2) {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
@@ -4380,13 +4389,13 @@ const Preview = (props) => {
 
         setTandcHeader("Electronic Sign");
         setIsInsufficientUnits(false);
-      } else if (e.target.value === "1") {
+      } else if (e?.target?.value === "1" || e == 1) {
         document.getElementById("handSignContainer").style.display = ""; //
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
         document.getElementById("submitBtn").style.display = "";
         setTandcHeader("Aadhaar eSign");
-      } else if (e.target.value === "3") {
+      } else if (e?.target?.value === "3" || e == 3) {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "";
         document.getElementById("generateOtpMode").style.display = "none";
@@ -4395,7 +4404,7 @@ const Preview = (props) => {
         setTandcHeader("Self Token Sign");
         var units = parseInt(sessionStorage.getItem("units"), 10);
         setIsInsufficientUnits(false);
-      } else if (e.target.value === "4") {
+      } else if (e?.target?.value === "4" || e == 4) {
         document.getElementById("handSignContainer").style.display = "none";
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "";

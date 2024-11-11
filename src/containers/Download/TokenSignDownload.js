@@ -63,9 +63,17 @@ export default class TokenSignDownload extends React.Component {
 
   componentWillMount() {
     if (this.props.location.frompath !== "" && this.props.location.frompath === "/preview") {
+      let fileName = this.props.location.state?.details?.filename;
+      let actuFileName = "";
+      let formattedName = "";
+      if (fileName) {
+        actuFileName = fileName?.split("@");
+        formattedName = actuFileName[1].includes("$") ? actuFileName[1].replace("$", " ") : actuFileName[1];
+      }
       this.setState({
         mode: this.props.location.state.details.mode,
         fileName: this.props.location.state.details.filename,
+        actualFileName: formattedName,
         docId: this.props.location.state.details.docId,
         txnrefNo: this.props.location.state.details.txnrefNo,
         height: this.props.location.state.details.canvas_height,
@@ -77,6 +85,7 @@ export default class TokenSignDownload extends React.Component {
       this.setState({
         docId: this.props.location.state.details.docId,
         txnrefNo: this.props.location.state.details.txnrefNo,
+        actualFileName: this.props.location.state.details.filename,
       });
     } else {
       this.props.history.push({ pathname: "/accountInfo" });
@@ -706,7 +715,7 @@ export default class TokenSignDownload extends React.Component {
   }
 
   render() {
-    const { isFinish, fileName, blobUrl } = this.state;
+    const { isFinish, fileName, blobUrl, actualFileName } = this.state;
 
     return (
       <div>
@@ -764,7 +773,7 @@ export default class TokenSignDownload extends React.Component {
           {blobUrl && <PDF1
             key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
             url={blobUrl}
-            filename={fileName}
+            filename={actualFileName}
             finish={isFinish}  // Pass finish state to control Download button
           />}
           <div style={{ marginTop: "1%", textAlign: "center" }}>

@@ -13,6 +13,25 @@ const PDF1 = (props) => {
   const toolbarPluginInstance = toolbarPlugin();
   const { renderDefaultToolbar, Toolbar } = toolbarPluginInstance;
 
+  // Custom download function to download PDF with the original filename
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(props.url);
+      const blob = await response.blob();
+
+      // Create a link element for downloading the file
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = props.filename || "View Signed file.pdf"; // Set the desired filename here
+      link.click();
+
+      // Clean up
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Failed to download the file", error);
+    }
+  };
+
   // Define the toolbar transform logic
   let transform = (slot) => {
     if (props.finish === true) {
@@ -27,6 +46,17 @@ const PDF1 = (props) => {
         SwitchThemeMenuItem: () => <></>,
         Print: () => <></>,
         PrintMenuItem: () => <></>,
+        // PrintMenuItem: () => (
+        //   <button onClick={handlePrint} className="rpv-core__button" aria-label="Print PDF" style={{ marginLeft: "11%", backgroundColor: "white" }}>
+        //     Print
+        //   </button>
+        //   ),
+        // Download: () => <></>,
+        DownloadMenuItem: () => (
+          <button onClick={handleDownload} className="rpv-core__button" style={{ marginLeft: "11%", backgroundColor: "white" }}>
+           Download
+          </button>
+        ),
         Zoom: () => <></>,
         ZoomOut: () => <></>,
         ZoomOutMenuItem: () => <></>,
@@ -37,6 +67,16 @@ const PDF1 = (props) => {
         RotateForwardMenuItem: () => <></>,
         SwitchScrollMode: () => <></>,
         SwitchScrollModeMenuItem: () => <></>,
+        Download: () => (
+              <button onClick={handleDownload} className="rpv-core__button">
+                <i class="fa fa-download" aria-hidden="true" title="Download"></i>
+              </button>
+        ),
+        // Print: () => (
+        //   <button onClick={handlePrint} className="rpv-core__button" aria-label="Print PDF">
+        //     <i className="fa fa-print" aria-hidden="true"></i>
+        //   </button>
+        // ),
       };
     } else {
       // Download option is hidden when finish is false

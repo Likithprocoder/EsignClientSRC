@@ -28,6 +28,7 @@ export default class ApiKeyList extends React.Component {
       isReasonModalVisible: false,
       isDisabled: 0,
       disableReason: "",
+      showBtn: false,
     };
     this.getApiKeyListForPlatformAdmin = this.getApiKeyListForPlatformAdmin.bind(this);
     this.updateApiKeyStatus = this.updateApiKeyStatus.bind(this);
@@ -58,10 +59,19 @@ export default class ApiKeyList extends React.Component {
       })
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
-          var listOfApiKeys = responseJson.data;
-          listOfApiKeys =  listOfApiKeys.filter((item) => item.status !== 2)
-          if (this.props.roleId === "6") {
+          var listOfApiKeys =  responseJson.data;
+          var corporateEntityList = responseJson.data;
+          console.log({corporateEntityList});
+
+          if (this.props.roleId === "6" && listOfApiKeys.length != 0) {//To display records Incase of corporate admin
+            console.log(this.props);
+            listOfApiKeys =  listOfApiKeys.filter((item) => item.status !== 2)//Filtering out deleted records
             this.setState({ isDisabled: responseJson.data[0].isDisabled })
+            if (responseJson.data[0].isDisabled == 1) {
+              this.props.setIsDisabledState(true);
+            } else {
+              this.props.setIsDisabledState(false);
+            }
             if (listOfApiKeys.length === 5) {
               this.props.setApiKeyLimit(true); // Call the callback function
             } else {
@@ -70,44 +80,44 @@ export default class ApiKeyList extends React.Component {
           }
           let transformedData = [];
 
-        if (sessionStorage.getItem("roleID") === "1") {
-        listOfApiKeys.forEach((entity) => {
-        const [key, records] = Object.entries(entity)[0];
-          if (key === this.props.entityName) {
-            // If records are not empty, transform the data
-            if (records.length > 0) {
-              transformedData = records.map(record => ({
-                ...record,
-                corporateEntity: key,
-              }));
-              // Sort by createdOn date in descending order
-              transformedData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+          if (sessionStorage.getItem("roleID") === "1") {//To display records Incase of platform admin
+            corporateEntityList.forEach((entity) => {
+              const [key, records] = Object.entries(entity)[0];
+              if (key === this.props.entityName) {
+              console.log(entity[key][0]);
+              console.log(records);
+              // If records are not empty, transform the data
+              if (records.length > 0) {
+                transformedData = records.map(record => ({
+                  ...record,
+                  corporateEntity: key,
+                }));
+                // Sort by createdOn date in descending order
+                transformedData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
-              // Check if at least one record has status 1
-              const hasStatusOne = transformedData.some(item => item.status === 1);
-              if (hasStatusOne) {
-                this.setState({ enableStatus: true });
-                this.setState({ isDisabled: responseJson.data[0][this.props.entityName][0].isDisabled });
+                // Check if at least one record has status 1
+                // const hasStatusOne = transformedData.some(item => item.status === 1);
+                // if (hasStatusOne) {
+                //   // this.setState({ enableStatus: true });
+                // }
+                this.setState({ isDisabled: entity[key][0].isDisabled });
+
+              } else {
+                this.setState({ showBtn: true });
+                // Handle case where there are no records for the given entity
+                transformedData.push({
+                  corporateEntity: key,
+                  apiKey: "", // Placeholder value
+                  createdOn: "", // Placeholder value
+                  // Add other fields as needed with empty/default values
+                });
               }
-
-            } else {
-              // Handle case where there are no records for the given entity
-              transformedData.push({
-                corporateEntity: key,
-                apiKey: "", // Placeholder value
-                createdOn: "", // Placeholder value
-                // Add other fields as needed with empty/default values
-              });
             }
+            });
+          } else {
+              // Sort by createdOn date in descending order
+              corporateEntityList.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
           }
-          });
-
-          
-        } else {
-            // Sort by createdOn date in descending order
-            listOfApiKeys.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-        }
-
           this.setState({
             loaded: true,
             listOfApiKeys: (sessionStorage.getItem("roleID") === "6" ? listOfApiKeys : transformedData),
@@ -361,7 +371,7 @@ export default class ApiKeyList extends React.Component {
   handleReasonSubmit = () => {
     this.setState({ isReasonModalVisible: false });
     this.updateKeyStatus(0, "");
-    this.setState({ enableStatus: false });
+    // this.setState({ enableStatus: false });
     this.setState({ disableReason: "" });
   };
 
@@ -540,7 +550,7 @@ export default class ApiKeyList extends React.Component {
         {sessionStorage.getItem("roleID") !== "6" && <div id='tempGroupListCss' style={{ marginBottom: "10px", width: "100%"}}>
             {
                 <span>Corporate Entity: <span style={{color: "blue"}}>{this.props.entityName}</span> 
-                {this.state.enableStatus && !this.state.isDisabled ? <span style={{ float: "right"}}><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}>Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
+                {!this.state.isDisabled ? <span style={{ float: "right"}} ><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}disabled={this.state.showBtn} >Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
             }
         </div>}
         <MaterialTable
