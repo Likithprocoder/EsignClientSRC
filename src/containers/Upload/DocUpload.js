@@ -1,6 +1,6 @@
 import React from "react";
 import Dropzone from "react-dropzone";
-import { URL } from "../URLConstant";
+import { URL as url } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import PDF1 from "../Download/PDF1";
@@ -33,8 +33,12 @@ export default class DocUpload extends React.Component {
       uploadedFileName: "",
       uploadedFileSize: "",
       pageDimensions: "",
-      equalPageDimensions: true, 
+      equalPageDimensions: true,
       docId: null,
+      waterMarkContent: "",
+      waterMarkModal: false,
+      waterMarkFlag: false, // flase - No watermark, true - watermark..,
+      pdfURL: null
     };
   }
 
@@ -82,83 +86,107 @@ export default class DocUpload extends React.Component {
 
   next() {
     let data = {
-        files: this.state.files[0],
-        height: this.state.height,
-        width: this.state.width,
-        pageDimensions: this.state.pageDimensions,
-        equalPageDimensions: this.state.equalPageDimensions,
+      files: this.state.files[0],
+      height: this.state.height,
+      width: this.state.width,
+      pageDimensions: this.state.pageDimensions,
+      equalPageDimensions: this.state.equalPageDimensions,
     };
 
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-        loginname: sessionStorage.getItem("username"),
-        userIP: sessionStorage.getItem("userIP"),
-        docType: "PDF",
+      loginname: sessionStorage.getItem("username"),
+      userIP: sessionStorage.getItem("userIP"),
+      docType: "PDF"
     };
+    // key 'waterMarkContent' is attahched to the inputs, only if waterMark is added by the endUser.
+    if (this.state.waterMarkFlag) {
+      body["waterMarkContent"] = this.state.waterMarkContent;
+    }
 
     this.setState({ loaded: false });
     let data1 = new FormData();
     data1.append("file", this.state.files[0]);
     data1.append("inputDetails", JSON.stringify(body));
-
-    fetch(URL.uploadDocument, {
-        method: "POST",
-        headers: { enctype: "multipart/form-data",
-          'Authorization': `Bearer ${jsonWebToken}`
-         },
-        body: data1,
+    fetch(url.uploadDocument, {
+      method: "POST",
+      headers: {
+        enctype: "multipart/form-data",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: data1,
     })
-    .then(response => response.json())
-    .then(responseJson => {
+      .then(response => response.json())
+      .then(responseJson => {
         if (responseJson.status === "SUCCESS") {
+          // If the response is returned with key 'base64PDF', push the page to 'PDFWatermarkPreview'.
+          if ('base64PDF' in responseJson) {
+            // Convert the Base64 string to a Blob
+            const byteCharacters = atob(responseJson.base64PDF); // Decode the Base64 string
+            const byteArrays = [];
+            for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+              const slice = byteCharacters.slice(offset, offset + 1024);
+              const byteNumbers = new Array(slice.length);
+              for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              byteArrays.push(byteArray);
+            }
+            // Create a Blob from the byte arrays
+            const blob = new Blob(byteArrays, { type: 'application/pdf' });
+            // Create an object URL for the Blob
+            const url = URL.createObjectURL(blob);
+            this.setState({ pdfURL: url, loaded: true });
+          } else {
             data.docId = responseJson.docID;
             this.setState({ loaded: true });
-
             // Navigation logic moved here
             if (data.height != null && data.width != null) {
-                this.props.history.push({
-                    pathname: "/preview",
-                    frompath: "dropdoc",
-                    state: {
-                        details: data,
-                    },
-                });
+              this.props.history.push({
+                pathname: "/preview",
+                frompath: "dropdoc",
+                state: {
+                  details: data,
+                },
+              });
             } else {
-                alert("Error reading PDF file. Please upload file and try again.");
+              alert("Error reading PDF file. Please upload file and try again.");
             }
+          }
         } else {
-           if (responseJson.statusDetails === "Session Expired!!") {
+          if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
             this.setState({ loaded: true });
             confirmAlert({
               message: responseJson.statusDetails,
               buttons: [
-                  {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => {this.props.history.push("/login")},
-                  },
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push("/login") },
+                },
               ],
             });
           } else {
             this.setState({ loaded: true });
             confirmAlert({
-                message: responseJson.statusDetails,
-                buttons: [
-                    {
-                        label: "OK",
-                        className: "confirmBtn",
-                        onClick: () => {},
-                    },
-                ],
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { },
+                },
+              ],
             });
           }
         }
-    })
-    .catch(e => {
+      })
+      .catch(e => {
         this.setState({ loaded: true });
         alert(e);
-    });
+      });
   }
 
   imageToPDF(files) {
@@ -217,7 +245,7 @@ export default class DocUpload extends React.Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -232,7 +260,7 @@ export default class DocUpload extends React.Component {
       var file = files[0];
       var filesize = files[0]?.size;
       var filesizeinKB = filesize / 1024;
-      if ((filesizeinKB / 1024) < 25) {       
+      if ((filesizeinKB / 1024) < 25) {
         if (files[0].name.length < 128) {
           var fileName = files[0].name;
           var name1 = fileName.split(".pdf");
@@ -243,7 +271,7 @@ export default class DocUpload extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -275,76 +303,77 @@ export default class DocUpload extends React.Component {
               this.imageToPDF(files);
             } else {
               document.getElementById("img2pdfmsg").style.display = "none";
-            //replaced the old function with the new api
-            const loadingTask = pdfjs.getDocument(typedarray);
-            const pdf = await loadingTask.promise;
-            const numPages = pdf.numPages;
-            const pageDimensions = [];
-            for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-              const page = await pdf.getPage(pageNumber);
-              const viewport = page.getViewport({ scale: 1 });
+              //replaced the old function with the new api
+              const loadingTask = pdfjs.getDocument(typedarray);
+              const pdf = await loadingTask.promise;
+              const numPages = pdf.numPages;
+              const pageDimensions = [];
+              for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+                const page = await pdf.getPage(pageNumber);
+                const viewport = page.getViewport({ scale: 1 });
 
-              pageDimensions.push({
+                pageDimensions.push({
                   pageNumber: pageNumber,
                   width: viewport.width,
                   height: viewport.height,
-              });
-          }
-          this.setState({ pageDimensions: pageDimensions });
-
-          // Iterate through the array and compare dimensions
-          for (let i = 1; i < pageDimensions.length; i++) {
-            if (pageDimensions.length != 1) {
-
-              if (pageDimensions[i].width !== pageDimensions[0].width || 
-                pageDimensions[i].height !== pageDimensions[0].height) {
-                  this.setState({ equalPageDimensions: false});
-                  break;
+                });
               }
-            }
-          }
+              this.setState({ pageDimensions: pageDimensions });
 
-                loadingTask.promise.then(
-                  function(a) {a.getPage(1).then(
-                                function (b) {
-                                  var viewport = b.getViewport({ scale: 1 });
-                                  if (viewport.height != null && viewport.width != null) {
-                                  this.setState({ loaded: true });
-                                  this.setState({
-                                    width: viewport.width,
-                                    height: viewport.height,
-                                  });
-                                } else {
-                                  alert("Error reading PDF file. Please upload and try again.");
-                                }
-                                }.bind(this))
-                                .catch(function (error) {
-                                  // Handle errors while getting the page
-                                  // Display an error message and handle the case appropriately
-                                  this.setState({ isdisable: true });
-                                  let element = document.getElementById("next-button");
-                                  element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
-                                  element.style.cursor = "no-drop";
-                                  let element1 = document.getElementById("create-job");
-                                  element1.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
-                                  element1.style.cursor = "no-drop";
-                                  alert("Error reading PDF file. Please verify and upload3.");
-                                }.bind(this));
-                              }.bind(this))
-                          .catch((e) => {
-                            // Handle errors while loading the PDF
-                            // Display an error message and handle the case appropriately
-                            this.setState({ isdisable: true });
-                            let element = document.getElementById("next-button");
-                            element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
-                            element.style.cursor = "no-drop";
-                            let element1 = document.getElementById("create-job");
-                            element1.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
-                            element1.style.cursor = "no-drop";
-                            alert("Error reading PDF file. Please verify and upload.");
-                          });
+              // Iterate through the array and compare dimensions
+              for (let i = 1; i < pageDimensions.length; i++) {
+                if (pageDimensions.length != 1) {
+
+                  if (pageDimensions[i].width !== pageDimensions[0].width ||
+                    pageDimensions[i].height !== pageDimensions[0].height) {
+                    this.setState({ equalPageDimensions: false });
+                    break;
+                  }
+                }
+              }
+
+              loadingTask.promise.then(
+                function (a) {
+                  a.getPage(1).then(
+                    function (b) {
+                      var viewport = b.getViewport({ scale: 1 });
+                      if (viewport.height != null && viewport.width != null) {
+                        this.setState({ loaded: true });
+                        this.setState({
+                          width: viewport.width,
+                          height: viewport.height,
+                        });
+                      } else {
+                        alert("Error reading PDF file. Please upload and try again.");
                       }
-                    }.bind(this);
+                    }.bind(this))
+                    .catch(function (error) {
+                      // Handle errors while getting the page
+                      // Display an error message and handle the case appropriately
+                      this.setState({ isdisable: true });
+                      let element = document.getElementById("next-button");
+                      element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                      element.style.cursor = "no-drop";
+                      let element1 = document.getElementById("create-job");
+                      element1.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                      element1.style.cursor = "no-drop";
+                      alert("Error reading PDF file. Please verify and upload3.");
+                    }.bind(this));
+                }.bind(this))
+                .catch((e) => {
+                  // Handle errors while loading the PDF
+                  // Display an error message and handle the case appropriately
+                  this.setState({ isdisable: true });
+                  let element = document.getElementById("next-button");
+                  element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                  element.style.cursor = "no-drop";
+                  let element1 = document.getElementById("create-job");
+                  element1.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                  element1.style.cursor = "no-drop";
+                  alert("Error reading PDF file. Please verify and upload.");
+                });
+            }
+          }.bind(this);
 
           // this.setState({ loaded: true });
           reader.readAsArrayBuffer(file);
@@ -365,7 +394,7 @@ export default class DocUpload extends React.Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -392,7 +421,7 @@ export default class DocUpload extends React.Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {this.setState({ loaded: true });},
+            onClick: () => { this.setState({ loaded: true }); },
           },
         ],
       });
@@ -635,7 +664,7 @@ export default class DocUpload extends React.Component {
       docCode: "DOEXCONSENT",
     };
     this.setState({ loaded: false });
-    fetch(URL.consenteSign, {
+    fetch(url.consenteSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -675,7 +704,7 @@ export default class DocUpload extends React.Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -730,7 +759,7 @@ export default class DocUpload extends React.Component {
     var body = {
       loginname: sessionStorage.getItem("username"),
     };
-    fetch(URL.subscribedPlanDetails, {
+    fetch(url.subscribedPlanDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -755,7 +784,7 @@ export default class DocUpload extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -799,13 +828,13 @@ export default class DocUpload extends React.Component {
           />
 
 
-          <div style={{ marginTop:"40px", marginBottom:"-5px"}}>
-            
+          <div style={{ marginTop: "40px", marginBottom: "-5px" }}>
+
             {/* <p>Make sure all the pages of the document are in same page layout.</p> */}
             <p> <b class="blink_me">Note: </b>Make sure all pages of the document are in either landscape or portrait orientation only.</p>
             {/* <p>Please upload a PDF document with all pages in either landscape or portrait orientation only.</p> */}
           </div>
-          
+
           <div className="pdf-lg-container">
             <div className="pdf-container" id="pdf-container1">
               <section className="">
@@ -844,6 +873,47 @@ export default class DocUpload extends React.Component {
                 </span>
               </aside>
             </div>
+            <div>
+              <div style={{ fontSize: "16px", fontFamily: "initial", marginBottom: "8px" }}>
+                <input key="WaterMarkChckBox" id="WATRMRKCHEKBOX" onClick={e => {
+                  // check whether the checkbox is checked or unchecked.
+                  if (!e.target.checked) {
+                    confirmAlert({
+                      message: 'By unchecking the checkbox, the watermark will not be added to the PDF.',
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            // Your OK button logic here
+                            this.setState({
+                              waterMarkModal: false,
+                              waterMarkContent: "",
+                              waterMarkFlag: false
+                            })
+                          }
+                        },
+                        {
+                          label: "Cancel",
+                          className: "cancelBtn",
+                          onClick: () => {
+                            this.setState({
+                              waterMarkModal: false
+                            })
+                            document.getElementById("WATRMRKCHEKBOX").checked = true;
+                          }
+                        }
+                      ],
+                      closeOnClickOutside: false
+                    });
+                  } else {
+                    this.setState({
+                      waterMarkModal: true
+                    })
+                  }
+                }} type="checkbox" />{this.state.waterMarkContent !== "" ? "Watermark content- " : "Add watermark to the PDF."}
+                {this.state.waterMarkContent !== "" ? ` (${this.state.waterMarkContent})` : ""}</div>
+            </div>
             <div className="next-nav">
               <button
                 className="upload-button"
@@ -866,6 +936,55 @@ export default class DocUpload extends React.Component {
               </button>
             </div>
           </div>
+          {
+            this.state.waterMarkModal && (
+              <div className="custom-modal">
+                <div className="CustomModal-content">
+                  <span className="close" onClick={e => {
+                    this.setState({ waterMarkModal: false, waterMarkFlag: false })
+                    document.getElementById("WATRMRKCHEKBOX").checked = false;
+                  }}>&times;</span>
+                  <>
+                    <div style={{ marginTop: "15px" }}>
+                      <div style={{ textAlign: "end", marginBottom: "16px" }}>
+                        <button onClick={e => {
+                          // empty check..
+                          if (document.getElementById("WaterMarkContnt").value === "" || document.getElementById("WaterMarkContnt").value === null) {
+                            confirmAlert({
+                              message: 'Watermark content is empty!',
+                              buttons: [
+                                {
+                                  label: "OK",
+                                  className: "confirmBtn"
+                                }
+                              ], closeOnClickOutside: false
+                            });
+                          } else {
+                            // set watermark content to the state..
+                            this.setState({ waterMarkModal: false, waterMarkContent: document.getElementById("WaterMarkContnt").value, waterMarkFlag: true })
+                          }
+                        }} style={{ fontSize: "12px" }} className="btn btn-success">Add WaterMark</button>
+                      </div>
+                      <div style={{ marginBottom: "5px", fontSize: "12px" }}>
+                        <span style={{ color: "red" }}>Note</span>: A watermark with a maximum of 20 characters is allowed.
+                      </div>
+                      <div>
+                        <textarea id="WaterMarkContnt" maxLength="20" style={{ width: "100%", height: "80px", fontSize: "16px", backgroundColor: "lightcyan", borderRadius: "15px" }} placeholder="Watermark content"></textarea>
+                      </div >
+                    </div>
+                  </>
+                </div>
+              </div>
+            )
+          }
+          {this.state.pdfURL && (
+            <iframe
+              src={this.state.pdfURL}
+              title="PDF Viewer"
+              width="100%"
+              height="600px"
+            ></iframe>
+          )}
         </div>
       );
     } else {
@@ -891,26 +1010,26 @@ export default class DocUpload extends React.Component {
             loadedClassName="loadedContent"
           />
           <div id="pdfContainerdiv" style={{ height: "80vh" }}>
-              <PDF1
-                url={
-                  URL.viewConsentFile
-                  //  +
-                  // "?at=" +
-                  // btoa(sessionStorage.getItem("authToken"))
-                }
-                httpHeaders={headers}
-              />
-              <div style={{marginTop: "20px"}}>
-            <input
-              type="checkbox"
-              name="acceptance"
-              id="consentSigningCheckbox"
-              onChange={this.onConsentChecked}
-            ></input>
-            <label id="consentSigningLable" style={{ fontSize: "16px" }}>
-              &nbsp; I agree with all the terms and conditions of DocuExec
-            </label>
-          </div>
+            <PDF1
+              url={
+                url.viewConsentFile
+                //  +
+                // "?at=" +
+                // btoa(sessionStorage.getItem("authToken"))
+              }
+              httpHeaders={headers}
+            />
+            <div style={{ marginTop: "20px" }}>
+              <input
+                type="checkbox"
+                name="acceptance"
+                id="consentSigningCheckbox"
+                onChange={this.onConsentChecked}
+              ></input>
+              <label id="consentSigningLable" style={{ fontSize: "16px" }}>
+                &nbsp; I agree with all the terms and conditions of DocuExec
+              </label>
+            </div>
             {/* </div> */}
           </div>
           {/* <br></br> */}
@@ -938,6 +1057,7 @@ export default class DocUpload extends React.Component {
             </button>
           </div>
         </div>
+
       );
     }
   }
