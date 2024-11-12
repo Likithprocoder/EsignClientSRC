@@ -33,7 +33,7 @@ function ViewUserFeedbackList(props) {
             width: '15%',
             render: (text, record) => (
                 <div>
-                    <span onClick={e => viewIndividualUsersFeedback(record)} className="btn btn-link">View</span>
+                    <span style={{padding:"0px"}} onClick={e => viewIndividualUsersFeedback(record)} className="btn btn-link">View</span>
                 </div>
             )
         },
@@ -52,8 +52,21 @@ function ViewUserFeedbackList(props) {
         fetch(URL.getUsersFeedback, options)
             .then((response) => response.json())
             .then((responsedata) => {
-                if (responsedata.status === "SUCCESS") {
-                    setFeedbackList(responsedata.feedbackData);
+                if (responsedata.status === "SUCCESS") {                    
+                    setFeedbackList((prevItems) => {
+                        // Create a new copy of the array
+                        let updatedItems = [...prevItems];
+                        let indexData = (updatedItems.length);
+                        // Update the item at the given index
+                        const feedbackList = [...responsedata.feedbackData].reverse();   
+                        for (let index = 0; index < feedbackList.length; index++) {
+                            const element = feedbackList[index];
+                            updatedItems[indexData] = element;
+                            indexData++;
+                        }
+                        // Return the updated array to setItems
+                        return updatedItems;
+                    });
                 } else if (responsedata.statusDetails === "Session Expired") {
                     confirmAlert({
                         message: responsedata.statusDetails,
