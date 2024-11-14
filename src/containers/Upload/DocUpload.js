@@ -37,8 +37,8 @@ export default class DocUpload extends React.Component {
       docId: null,
       waterMarkContent: "",
       waterMarkModal: false,
-      waterMarkFlag: false, // flase - No watermark, true - watermark..,
-      pdfURL: null
+      waterMarkFlag: false, // flase - No watermark, true - watermark..
+      isdisableWR: true
     };
   }
 
@@ -105,7 +105,7 @@ export default class DocUpload extends React.Component {
     }
 
     this.setState({ loaded: false });
-    let data1 = new FormData();
+    let data1 = new FormData();    
     data1.append("file", this.state.files[0]);
     data1.append("inputDetails", JSON.stringify(body));
     fetch(url.uploadDocument, {
@@ -120,7 +120,9 @@ export default class DocUpload extends React.Component {
       .then(responseJson => {
         if (responseJson.status === "SUCCESS") {
           // If the response is returned with key 'base64PDF', push the page to 'PDFWatermarkPreview'.
-          if ('base64PDF' in responseJson) {
+          if ('base64PDF' in responseJson) {            
+            data.docId = responseJson.docID;
+            data.waterMarkContent = this.state.waterMarkContent;
             // Convert the Base64 string to a Blob
             const byteCharacters = atob(responseJson.base64PDF); // Decode the Base64 string
             const byteArrays = [];
@@ -137,18 +139,26 @@ export default class DocUpload extends React.Component {
             const blob = new Blob(byteArrays, { type: 'application/pdf' });
             // Create an object URL for the Blob
             const url = URL.createObjectURL(blob);
-            this.setState({ pdfURL: url, loaded: true });
+            data.PDFURL = url;
+            data.blob = blob;
+            this.props.history.push({
+              pathname: "/waterMarkPreview",
+              frompath: "dropdoc",
+              state: {
+                details: data
+              }
+            });
           } else {
             data.docId = responseJson.docID;
             this.setState({ loaded: true });
-            // Navigation logic moved here
+            // Navigation logic moved here            
             if (data.height != null && data.width != null) {
               this.props.history.push({
                 pathname: "/preview",
                 frompath: "dropdoc",
                 state: {
                   details: data,
-                },
+                }
               });
             } else {
               alert("Error reading PDF file. Please upload file and try again.");
@@ -283,6 +293,7 @@ export default class DocUpload extends React.Component {
             isdisable: false,
             uploadedFileName: fileName,
             uploadedFileSize: filesizeinKB.toFixed(2) + " KB",
+            isdisable: false
           });
 
           var filesizeinKB = filesize / 1024 + 50;
@@ -378,14 +389,18 @@ export default class DocUpload extends React.Component {
           // this.setState({ loaded: true });
           reader.readAsArrayBuffer(file);
 
-          if (this.state.isdisable === false) {
+          if (this.state.isdisable === false && this.state.waterMarkFlag === false) {
             let element = document.getElementById("next-button");
             element.style.backgroundColor = "#1DD1A1";
             element.style.cursor = "pointer";
-
             let element1 = document.getElementById("create-job");
             element1.style.backgroundColor = "#1DD1A1";
             element1.style.cursor = "pointer";
+          }
+          else {
+            let element2 = document.getElementById("watermark-preview");
+            element2.style.backgroundColor = "#1DD1A1";
+            element2.style.cursor = "pointer";
           }
         } else {
           confirmAlert({
@@ -725,7 +740,7 @@ export default class DocUpload extends React.Component {
       pageDimensions: this.state.pageDimensions,
       equalPageDimensions: this.state.equalPageDimensions,
     };
-    if (data.height != null && data.width != null) {
+    if (data.height != null && data.width != null) {      
       this.props.history.push({
         pathname: "/signerInfo",
         frompath: "dropdoc",
@@ -856,85 +871,116 @@ export default class DocUpload extends React.Component {
             </h5>
             <div className="dropped-files">
               <aside>
-                <h2
-                  className="dropped-files-name"
-                  id="droppedFile"
-                  style={{ display: "none" }}
-                >
-                  Uploaded file
-                </h2>
-                <span id="droppedFileNameSize" style={{ display: "none" }}>
-                  {this.state.uploadedFileName}-{this.state.uploadedFileSize}
-                  {/* {this.state.files.map((f) => (
+                <div style={{ display: "inline-flex" }}>
+                  <h2
+                    className="dropped-files-name"
+                    id="droppedFile"
+                    style={{ display: "none", marginRight: "5px" }}
+                  >
+                    Uploaded file
+                  </h2>
+                  <span id="droppedFileNameSize" style={{ display: "none", paddingTop: "7px" }}>{`( ${this.state.uploadedFileName} - ${this.state.uploadedFileSize} )`}</span>
+                </div>
+                {/* <span id="droppedFileNameSize" style={{ display: "none" }}> */}
+                { }{ }
+                {/* {this.state.files.map((f) => (
                     <span className="file-name-style" key={f.name}>
                       {f.name}- {f.size} bytes
                     </span>
                   ))} */}
-                </span>
+                {/* </span> */}
               </aside>
             </div>
             <div>
-              <div style={{ fontSize: "16px", fontFamily: "initial", marginBottom: "8px" }}>
-                <input key="WaterMarkChckBox" id="WATRMRKCHEKBOX" onClick={e => {
-                  // check whether the checkbox is checked or unchecked.
-                  if (!e.target.checked) {
-                    confirmAlert({
-                      message: 'By unchecking the checkbox, the watermark will not be added to the PDF.',
-                      buttons: [
-                        {
-                          label: "OK",
-                          className: "confirmBtn",
-                          onClick: () => {
-                            // Your OK button logic here
-                            this.setState({
-                              waterMarkModal: false,
-                              waterMarkContent: "",
-                              waterMarkFlag: false
-                            })
+              <div style={{ fontSize: "16px", fontFamily: "initial", marginBottom: "8px", display: "inline-flex" }}>
+                <div style={{ marginTop: "1px" }}>
+                  <input key="WaterMarkChckBox" id="WATRMRKCHEKBOX" onClick={e => {
+                    // check whether the checkbox is checked or unchecked.
+                    if (!e.target.checked) {
+                      confirmAlert({
+                        message: 'By unchecking the checkbox, the watermark will not be added to the PDF.',
+                        buttons: [
+                          {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {
+                              // Your OK button logic here
+                              this.setState({
+                                waterMarkModal: false,
+                                waterMarkContent: "",
+                                waterMarkFlag: false,
+                                isdisableWR: true
+                              })
+                            }
+                          },
+                          {
+                            label: "Cancel",
+                            className: "cancelBtn",
+                            onClick: () => {
+                              this.setState({
+                                waterMarkModal: false
+                              })
+                              document.getElementById("WATRMRKCHEKBOX").checked = true;
+                            }
                           }
-                        },
-                        {
-                          label: "Cancel",
-                          className: "cancelBtn",
-                          onClick: () => {
-                            this.setState({
-                              waterMarkModal: false
-                            })
-                            document.getElementById("WATRMRKCHEKBOX").checked = true;
-                          }
-                        }
-                      ],
-                      closeOnClickOutside: false
-                    });
-                  } else {
-                    this.setState({
-                      waterMarkModal: true
-                    })
-                  }
-                }} type="checkbox" />{this.state.waterMarkContent !== "" ? "Watermark content- " : "Add watermark to the PDF."}
-                {this.state.waterMarkContent !== "" ? ` (${this.state.waterMarkContent})` : ""}</div>
+                        ],
+                        closeOnClickOutside: false
+                      });
+                    } else {
+                      this.setState({
+                        waterMarkModal: true
+                      })
+                    }
+                  }} type="checkbox" />
+                </div>
+
+                <div>
+                  <span>
+                    {this.state.waterMarkContent !== "" ? "Watermark content- " : "Add watermark to the PDF."}
+                    {this.state.waterMarkContent !== "" ? ` (${this.state.waterMarkContent})` : ""}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="next-nav">
-              <button
-                className="upload-button"
-                id="next-button"
-                disabled={this.state.isdisable}
-                onClick={this.next.bind(this)}
-              >
-                <span>Sign by me &#8594;</span>
-              </button>
-              <br></br>
-            </div>
-            <div className="next-nav">
-              <button
-                className="upload-button"
-                id="create-job"
-                disabled={this.state.isdisable}
-                onClick={this.clientInfoPage.bind(this)}
-              >
-                <span>Send for signing &#8594;</span>
-              </button>
-            </div>
+            {
+              this.state.waterMarkFlag === false ? <React.Fragment>
+                <div className="next-nav">
+                  <button
+                    className="upload-button"
+                    id="next-button"
+                    disabled={this.state.isdisable}
+                    onClick={this.next.bind(this)}
+                  >
+                    <span>Sign by me &#8594;</span>
+                  </button>
+                  <br></br>
+                </div>
+                <div className="next-nav">
+                  <button
+                    className="upload-button"
+                    id="create-job"
+                    disabled={this.state.isdisable}
+                    onClick={this.clientInfoPage.bind(this)}
+                  >
+                    <span>Send for signing &#8594;</span>
+                  </button>
+                </div>
+              </React.Fragment>
+                :
+                <React.Fragment>
+                  <div className="next-nav">
+                    <button
+                      className="upload-button"
+                      id="watermark-preview"
+                      disabled={this.state.isdisableWR}
+                      onClick={this.next.bind(this)}
+                    >
+                      <span>Watermark Preview &#8594;</span>
+                    </button>
+                    <br></br>
+                  </div>
+                </React.Fragment>
+            }
           </div>
           {
             this.state.waterMarkModal && (
@@ -946,46 +992,46 @@ export default class DocUpload extends React.Component {
                   }}>&times;</span>
                   <>
                     <div style={{ marginTop: "15px" }}>
-                      <div style={{ textAlign: "end", marginBottom: "16px" }}>
-                        <button onClick={e => {
-                          // empty check..
-                          if (document.getElementById("WaterMarkContnt").value === "" || document.getElementById("WaterMarkContnt").value === null) {
-                            confirmAlert({
-                              message: 'Watermark content is empty!',
-                              buttons: [
-                                {
-                                  label: "OK",
-                                  className: "confirmBtn"
-                                }
-                              ], closeOnClickOutside: false
-                            });
-                          } else {
-                            // set watermark content to the state..
-                            this.setState({ waterMarkModal: false, waterMarkContent: document.getElementById("WaterMarkContnt").value, waterMarkFlag: true })
-                          }
-                        }} style={{ fontSize: "12px" }} className="btn btn-success">Add WaterMark</button>
-                      </div>
-                      <div style={{ marginBottom: "5px", fontSize: "12px" }}>
-                        <span style={{ color: "red" }}>Note</span>: A watermark with a maximum of 20 characters is allowed.
-                      </div>
-                      <div>
-                        <textarea id="WaterMarkContnt" maxLength="20" style={{ width: "100%", height: "80px", fontSize: "16px", backgroundColor: "lightcyan", borderRadius: "15px" }} placeholder="Watermark content"></textarea>
+                      <div style={{ marginBottom: "10px" }}>
+                        <textarea id="WaterMarkContnt" maxLength="30" style={{ width: "100%", height: "80px", fontSize: "16px", backgroundColor: "lightcyan", borderRadius: "15px" }} placeholder="Watermark content"></textarea>
                       </div >
+                      <div style={{ display: "inline-flex" }}>
+                        <div style={{ fontSize: "12px", marginRight: "12px", marginTop: "2%" }}>
+                          <span style={{ color: "red" }}>Note</span>: Maximum of 30 characters
+                        </div>
+                        <div style={{}}>
+                          <button onClick={e => {
+                            // empty check..
+                            if (document.getElementById("WaterMarkContnt").value === "" || document.getElementById("WaterMarkContnt").value === null) {
+                              confirmAlert({
+                                message: 'Watermark content is empty!',
+                                buttons: [
+                                  {
+                                    label: "OK",
+                                    className: "confirmBtn"
+                                  }
+                                ], closeOnClickOutside: false
+                              });
+                            } else {
+                              // set watermark content to the state..
+                              this.setState({ waterMarkModal: false, waterMarkContent: document.getElementById("WaterMarkContnt").value, waterMarkFlag: true });
+                              // Ensure the file is dropped.
+                              if (this.state.files.length !== 0) {
+                                this.setState({ isdisableWR: false })
+                              } else {
+                                this.setState({ isdisableWR: true })
+                              }
+                            }
+                          }} style={{ fontSize: "12px" }} className="btn btn-success">Add Watermark</button>
+                        </div>
+                      </div>
                     </div>
                   </>
                 </div>
               </div>
             )
           }
-          {this.state.pdfURL && (
-            <iframe
-              src={this.state.pdfURL}
-              title="PDF Viewer"
-              width="100%"
-              height="600px"
-            ></iframe>
-          )}
-        </div>
+        </div >
       );
     } else {
       return (

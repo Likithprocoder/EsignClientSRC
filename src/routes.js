@@ -93,10 +93,10 @@ const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedb
 
 
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
-const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
-const corporateAdminTopUp= React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
+const EmployeeList = React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const corporateAdminTopUp = React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
 const AuditLogRecords = React.lazy(() => import("./containers/AuditLog/ViewAuditLogList"));
-
+const waterMrkPreview = React.lazy(() => import("./containers/Upload/PDFWaterMarkPreview"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -273,23 +273,23 @@ const routes = [
   {
     path: "/addUsersToGroup",
     name: "Add Users To Groups",
-    component: AddUsersToGroup 
+    component: AddUsersToGroup
   },
-    {
+  {
     path: "/pendingSignsInbox",
     name: "Pending Signatures",
-    component: PendingActionInbox 
+    component: PendingActionInbox
   },
   {
     path: "/designationBonus",
     name: "Designation Bonus Management",
-    component: DesignationBonus 
+    component: DesignationBonus
   },
-  
+
   {
     path: "/uploadEmpDetails",
     name: "Upload Emp Details",
-    component: CSVUpload 
+    component: CSVUpload
   },
 
   {
@@ -312,7 +312,7 @@ const routes = [
     name: "API Integrations",
     component: APIIntegrations
   },
-    {
+  {
     path: "/userFeedback",
     name: "DocuExec Feedback",
     component: UserFeedback
@@ -336,8 +336,14 @@ const routes = [
     path: "/auditLogRecords",
     name: "Audit Logs",
     component: AuditLogRecords
+  },
+  {
+    path: "/waterMarkPreview",
+    name: "PDF Water Mark Preview",
+    component: waterMrkPreview
   }
-  
+
+
 ];
 
 

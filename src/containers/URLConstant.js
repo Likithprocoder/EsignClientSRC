@@ -10,6 +10,8 @@ const { UpdateRounded } = require("@material-ui/icons");
 const HOST = "http://localhost:8090/MYSIGN/";
 var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
+// const HOST = "https://docuxecstage.finfotech.co.in/MYSIGN/";
+// var paymenturl = "https://docuxecstage.finfotech.co.in/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
 
@@ -171,6 +173,7 @@ let URL = {
   fetchAuditOperationType: HOST + "V2/fetchAuditOperationType",
   fetchAuditLogs: HOST + "V2/fetchAuditLogs",
   fetchUserDetails: HOST + "V2/fetchUserDetails",
+  editWaterMark: HOST + "V2/editWaterMark"
 };
 
 module.exports = { URL };

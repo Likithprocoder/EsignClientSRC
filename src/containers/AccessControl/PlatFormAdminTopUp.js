@@ -3,7 +3,7 @@ import { CardBody, Table } from 'reactstrap';
 import { confirmAlert } from "react-confirm-alert";
 import { URL } from "../URLConstant";
 
-function PlatFormAdminTopUp(props) {
+function PlatFormAdminTopUp(props) {    
     const [topUp, SetTopUp] = useState(0);
 
     // To render the type of topUp
@@ -21,16 +21,12 @@ function PlatFormAdminTopUp(props) {
 
     useEffect(() => {
         // check the page is getting reloaded for the second time.
-        // if so then navigate back to the desired route
-        const hasReloaded = sessionStorage.getItem('hasReloaded');
-        if (hasReloaded) {
+        // if so then navigate back to the desired route        
+        if (!('corporateAdminCredntails' in (props.location))) {
             // Navigate back to the desired route
             sessionStorage.removeItem('hasReloaded');
             props.history.push("/addOrViewTempGroup");
         } else {
-            // Set the reload flag in sessionStorage
-            sessionStorage.setItem('hasReloaded', 'true');
-
             setCorporateAdminCredntails(props.location.corporateAdminCredntails);
             // check the corporate is enabled or disabled
             const corpDataInputs = {

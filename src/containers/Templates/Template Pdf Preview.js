@@ -287,6 +287,9 @@ class DisplayPdf1 extends Component {
 
   // used to get height and width of the pdf..
   onDrop = () => {
+    this.setState({
+      allowToRotate: false,
+    });
     var file = this.state.files1;
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -311,10 +314,15 @@ class DisplayPdf1 extends Component {
               );
             }.bind(this)
           )
-          .catch((e) => { });
+          .catch((e) => { 
+            this.setState({
+              allowToRotate: true,
+            });
+          });
       }
     }.bind(this);
     reader.readAsArrayBuffer(file);
+  
   }
 
   // push to old page with the data recieved..

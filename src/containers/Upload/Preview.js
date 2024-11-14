@@ -50,7 +50,7 @@ const defaultDragHeight = "48px"; //46,46,62
 const defaultDragWidthMob = "72px";//67
 const defaultDragHeightMob = "37px";//35
 
-const Preview = (props) => {
+const Preview = (props) => {  
   // alert("PREVIEW PAGE");
   const frompath = props?.location?.frompath;
 
@@ -423,7 +423,7 @@ const Preview = (props) => {
     }
 
     //Executes only in case if user wants to restore the seals and its coordinates from the previous uploaded and signed document of the current session
-    if (frompath === "dropdoc") {
+    if (frompath === "dropdoc" || frompath === "waterMarkPreview") {
       if (sessionStorage.hasOwnProperty("restoreCoordinates") && sessionStorage.getItem("restoreCoordinates")) {
         setShowRestoreBtn(true);
       }
@@ -1187,7 +1187,7 @@ const Preview = (props) => {
       frompath === "jsguest" ||
       frompath === "/download/tokenSignDownload" ||
       frompath === "inbox" ||
-      frompath === "/templatePdfPreview" || frompath === "deGuest"
+      frompath === "/templatePdfPreview" || frompath === "deGuest" || frompath === "waterMarkPreview"
     ) {
       if (frompath === "/templatePdfPreview") {
         sessionStorage.setItem(
@@ -2415,7 +2415,7 @@ const Preview = (props) => {
           data1.signCoordinates.signPage == "P")
     ) {
       pageListArr = pageListArr.concat(allRangeArrayValues);
-    } else if (frompath === "dropdoc") {
+    } else if (frompath === "dropdoc" || frompath === "waterMarkPreview") {
       pageListArr = pageListArr.concat(allRangeArrayValues);
     }
     pageListArr = pageListArr.filter(function (item, pos, self) {
