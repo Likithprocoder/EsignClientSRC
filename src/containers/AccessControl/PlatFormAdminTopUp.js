@@ -22,14 +22,11 @@ function PlatFormAdminTopUp(props) {
     useEffect(() => {
         // check the page is getting reloaded for the second time.
         // if so then navigate back to the desired route
-        const hasReloaded = sessionStorage.getItem('hasReloaded');
-        if (hasReloaded) {
+        if (!('corporateAdminCredntails' in (props.location))) {
             // Navigate back to the desired route
             sessionStorage.removeItem('hasReloaded');
             props.history.push("/addOrViewTempGroup");
         } else {
-            // Set the reload flag in sessionStorage
-            sessionStorage.setItem('hasReloaded', 'true');
 
             setCorporateAdminCredntails(props.location.corporateAdminCredntails);
             // check the corporate is enabled or disabled
@@ -240,7 +237,7 @@ function PlatFormAdminTopUp(props) {
                 });
             } else {
                 // Subscription topUp operation fetch call goes here..
-               
+
                 const options = {
                     method: "POST",
                     headers: {
