@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, DatePicker, Select } from 'antd';
+import { Table, DatePicker, Select, Input, Button } from 'antd';
 import Loader from "react-loader";
 import { URL } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
@@ -38,6 +38,8 @@ function ViewAuditLogList(props) {
 
     const [allowModel, setAllowModel] = useState(false);
 
+    const [userNameInput, setUserNameInput] = useState("");
+
     let columns = [
         {
             title: 'Operation Status',
@@ -57,7 +59,11 @@ function ViewAuditLogList(props) {
         {
             title: '',
             render: (record) => (
-                <span style={{ padding: "0px" }} onClick={e => fetchUserDetails(record)} className='btn btn-link'>More Info..</span>
+                <span style={{ padding: "0px" }} onClick={e => {
+                    setUserData({});
+                    fetchUserDetails(record)
+                }
+                } className='btn btn-link'>More Info..</span>
             )
         }
     ]
@@ -155,7 +161,7 @@ function ViewAuditLogList(props) {
                         setOperationType(responsedata.operationTypes[0]);
                         setOperationTypeList(responsedata.operationTypes);
                         // GET call to retrieve the operation types.
-                        fetchAuditLogs(moment().startOf("month"), moment(), responsedata.operationTypes[0], 0);
+                        fetchAuditLogs(moment().startOf("month"), moment(), responsedata.operationTypes[0], 0, "");
                     } else {
                         confirmAlert({
                             message: 'Empty audit log records!',
@@ -217,7 +223,7 @@ function ViewAuditLogList(props) {
         // Check if the user is on the last page
         if (current === numberOfPresntPage && pageNumber < numberOfpages) {
             // date should be selected..
-            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, (pageNumber + 1));
+            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, (pageNumber + 1), userNameInput);
         }
     };
 
@@ -244,39 +250,40 @@ function ViewAuditLogList(props) {
                 // On selection of dates exceeding 3months, empty of values, which is used to dislay to users.
                 setSelectedDateRangeActulValue([]);
             } else {
-                setAuditRecords([]);
-                setPageNumber(0);
+                // setAuditRecords([]);
+                // setPageNumber(0);
                 setSelectedDateRnge(dateStrings);
                 setSelectedDateRngeTwo(dateStrings);
                 setSelectedDateRangeActulValue(dates);
-                fetchAuditLogs(dates[0], dates[1], operationType, 0);
+                // fetchAuditLogs(dates[0], dates[1], operationType, 0);
             }
         }
     };
 
+
     const handleOptionChange = (event) => {
         // Check if the user has selected both date and operation type.
-        if (selectedDateRnge.length !== 0) {
-            setAuditRecords([]);
-            setPageNumber(0);
-            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], event, 0);
-        } else {
-            confirmAlert({
-                message: 'Select the date range for audit log records before submitting.',
-                buttons: [
-                    {
-                        label: "OK",
-                        className: "confirmBtn"
-                    },
-                ], closeOnClickOutside: false,
-            });
-            setOperationType(event);
-        }
+        // if (selectedDateRnge.length !== 0) {
+        //     setAuditRecords([]);
+        //     setPageNumber(0);
+        //     fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], event, 0);
+        // } else {
+        //     confirmAlert({
+        //         message: 'Select the date range for audit log records before submitting.',
+        //         buttons: [
+        //             {
+        //                 label: "OK",
+        //                 className: "confirmBtn"
+        //             },
+        //         ], closeOnClickOutside: false,
+        //     });
+        //     setOperationType(event);
+        // }
         setOperationType(event);
     };
 
     // Fetch call for audit logs.
-    const fetchAuditLogs = (startDte, endDte, operationType, pageIndex) => {
+    const fetchAuditLogs = (startDte, endDte, operationType, pageIndex, nameBsedSerch) => {
         setPageNumber(pageIndex);
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
@@ -289,7 +296,8 @@ function ViewAuditLogList(props) {
                 operationType: operationType,
                 startDate: startDte,
                 endDate: endDte,
-                indexNumber: pageIndex
+                indexNumber: pageIndex,
+                usrBasdSrchNme: nameBsedSerch
             })
         };
         fetch(URL.fetchAuditLogs, options)
@@ -390,6 +398,37 @@ function ViewAuditLogList(props) {
                             </Select>
                         )
                     }
+                    <Input
+                        placeholder="Enter the loginName"
+                        onChange={(e) => setUserNameInput((e.target.value).trim())}
+                        style={{ marginBottom: '10px', marginRight: "20px", width: "30%" }}
+                        id='nameBsedSerch'
+                    />
+                    <Button
+                        style={{ backgroundColor: 'lightblue', color: 'black', borderColor: 'lightblue' }}
+                        onClick={e => {
+                            //    check if the data is not empty 
+                            //    Check if the user has selected both date and operation type.
+                            if (selectedDateRnge.length !== 0) {
+                                setAuditRecords([]);
+                                setPageNumber(0);
+                                setUserNameInput(document.getElementById('nameBsedSerch').value.trim());
+                                fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, 0, document.getElementById('nameBsedSerch').value.trim());
+                            } else {
+                                confirmAlert({
+                                    message: 'Select the date range for audit log records before submitting.',
+                                    buttons: [
+                                        {
+                                            label: "OK",
+                                            className: "confirmBtn"
+                                        },
+                                    ], closeOnClickOutside: false,
+                                });
+                            }
+                        }}
+                    >
+                        Search
+                    </Button>
                 </div>
                 <Table
                     columns={columns}
@@ -431,7 +470,7 @@ function ViewAuditLogList(props) {
                                         <div className='USRINFODATACOLEN'>:</div>
                                         <div className='USRINFOVAlUE'>{userData.KYCStatus === 1 ? "Verified" : "Unverified"}</div>
                                     </div>
-                                    <div className='USRINFOCHLD'>
+                                    <div hidden={userData.additionalData === null} className='USRINFOCHLD'>
                                         <div className='USRINFODATALBLE'>Addition Data</div>
                                         <div className='USRINFODATACOLEN'>:</div>
                                         <div className='USRINFOVAlUE'>{userData.additionalData}</div>
@@ -442,7 +481,7 @@ function ViewAuditLogList(props) {
                     </div>
                 )
             }
-        </React.Fragment>
+        </React.Fragment >
     )
 }
 export default ViewAuditLogList
