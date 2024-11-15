@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, DatePicker, Select} from 'antd';
+import { Table, DatePicker, Select } from 'antd';
 import Loader from "react-loader";
 import { URL } from "../URLConstant";
 import { confirmAlert } from "react-confirm-alert";
@@ -40,23 +40,19 @@ function ViewAuditLogList(props) {
 
     let columns = [
         {
-            title: 'User Name',
-            dataIndex: 0
-        },
-        {
             title: 'Operation Status',
-            dataIndex: 2,
+            dataIndex: "sucesFailreRspnse",
             render: (record) => (
                 <span >{record === "1" ? "SUCCESS" : "FAILURE"}</span>
             )
         },
         {
             title: 'Entry Date',
-            dataIndex: 3
+            dataIndex: "entryDate"
         },
         {
             title: 'IP Address',
-            dataIndex: 1
+            dataIndex: "IP"
         },
         {
             title: '',
@@ -78,10 +74,10 @@ function ViewAuditLogList(props) {
                 'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                userName: record[0]
+                referenceId: record["referenceId"]
             })
         };
-        fetch(URL.fetchUserDetails, options)
+        fetch(URL.fetchAuditFullDetails, options)
             .then((response) => response.json())
             .then((responsedata) => {
                 if (responsedata.status === "SUCCESS") {
@@ -426,11 +422,6 @@ function ViewAuditLogList(props) {
                                         <div className='USRINFOVAlUE'>{userData.name}</div>
                                     </div>
                                     <div className='USRINFOCHLD'>
-                                        <div className='USRINFODATALBLE'>Mobile Number</div>
-                                        <div className='USRINFODATACOLEN'>:</div>
-                                        <div className='USRINFOVAlUE'>{userData.mobileNumber}</div>
-                                    </div>
-                                    <div className='USRINFOCHLD'>
                                         <div className='USRINFODATALBLE'>Emial ID</div>
                                         <div className='USRINFODATACOLEN'>:</div>
                                         <div className='USRINFOVAlUE'>{userData.emailID}</div>
@@ -439,6 +430,11 @@ function ViewAuditLogList(props) {
                                         <div className='USRINFODATALBLE'>KYC Status</div>
                                         <div className='USRINFODATACOLEN'>:</div>
                                         <div className='USRINFOVAlUE'>{userData.KYCStatus === 1 ? "Verified" : "Unverified"}</div>
+                                    </div>
+                                    <div className='USRINFOCHLD'>
+                                        <div className='USRINFODATALBLE'>Addition Data</div>
+                                        <div className='USRINFODATACOLEN'>:</div>
+                                        <div className='USRINFOVAlUE'>{userData.additionalData}</div>
                                     </div>
                                 </div>
                             </>

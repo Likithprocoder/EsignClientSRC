@@ -110,7 +110,7 @@ function PDFWaterMarkPreview(props) {
     };
 
     // Self signing, and the newly generated PDF updated operation.
-    const selfSigning = (e) => {
+    const selfSigning = (e,routeTo) => {
         setAllowLoader(false);
         let body = {
             docID: fileData.docId,
@@ -137,7 +137,7 @@ function PDFWaterMarkPreview(props) {
                 delete fileData["PDFURL"];
                 delete fileData["blob"];    
                 props.history.push({
-                    pathname: "/preview",
+                    pathname: routeTo,
                     frompath: "waterMarkPreview",
                     state: {
                         details: fileData,
@@ -224,7 +224,7 @@ function PDFWaterMarkPreview(props) {
                                 ], closeOnClickOutside: false
                             });
                         }}
-                        style={{ backgroundColor: "#ffc107" }}
+                        style={{ backgroundColor: "#f86c6b" }}
                         title="Back to upload document page"
                     >
                         <span>&#8592; Back</span>
@@ -248,7 +248,7 @@ function PDFWaterMarkPreview(props) {
                         className="upload-button"
                         id="next-button"
                         title="Self signing"
-                        onClick={e => selfSigning(e)}
+                        onClick={e => selfSigning(e,"/preview")}
                     >
                         <span>Sign by me &#8594;</span>
                     </button>
@@ -259,6 +259,7 @@ function PDFWaterMarkPreview(props) {
                         className="upload-button"
                         id="create-job"
                         title="3rd party signing"
+                        onClick={e => selfSigning(e,"/signerInfo")}
                     >
                         <span>Send for signing &#8594;</span>
                     </button>
@@ -291,7 +292,7 @@ function PDFWaterMarkPreview(props) {
                                         <div style={{}}>
                                             <button onClick={e => {
                                                 // empty check..
-                                                if (document.getElementById("WaterMarkContnt").value === "" || document.getElementById("WaterMarkContnt").value === null) {
+                                                if (document.getElementById("WaterMarkContnt").value.trim() === "" || document.getElementById("WaterMarkContnt").value.trim() === null) {
                                                     confirmAlert({
                                                         message: 'Watermark content is empty!',
                                                         buttons: [
@@ -306,9 +307,9 @@ function PDFWaterMarkPreview(props) {
                                                     // if it is equal to old watermark content, not API calls are made
                                                     if (watermarkContent.trim() !== document.getElementById("WaterMarkContnt").value.trim()) {
                                                         // fetch call to generate new watermark..
-                                                        addNewWaterMark(document.getElementById("WaterMarkContnt").value);
+                                                        addNewWaterMark(document.getElementById("WaterMarkContnt").value.trim());
                                                         // set watermark content to the state..
-                                                        setWatermarkContent(document.getElementById("WaterMarkContnt").value);
+                                                        setWatermarkContent(document.getElementById("WaterMarkContnt").value.trim());
                                                     } else {
                                                         setWaterMarkModal(false);
                                                     }

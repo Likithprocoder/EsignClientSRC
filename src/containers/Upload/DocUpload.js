@@ -105,7 +105,7 @@ export default class DocUpload extends React.Component {
     }
 
     this.setState({ loaded: false });
-    let data1 = new FormData();    
+    let data1 = new FormData();
     data1.append("file", this.state.files[0]);
     data1.append("inputDetails", JSON.stringify(body));
     fetch(url.uploadDocument, {
@@ -120,7 +120,7 @@ export default class DocUpload extends React.Component {
       .then(responseJson => {
         if (responseJson.status === "SUCCESS") {
           // If the response is returned with key 'base64PDF', push the page to 'PDFWatermarkPreview'.
-          if ('base64PDF' in responseJson) {            
+          if ('base64PDF' in responseJson) {
             data.docId = responseJson.docID;
             data.waterMarkContent = this.state.waterMarkContent;
             // Convert the Base64 string to a Blob
@@ -389,19 +389,33 @@ export default class DocUpload extends React.Component {
           // this.setState({ loaded: true });
           reader.readAsArrayBuffer(file);
 
-          if (this.state.isdisable === false && this.state.waterMarkFlag === false) {
+          if (this.state.waterMarkFlag === false) {
             let element = document.getElementById("next-button");
             element.style.backgroundColor = "#1DD1A1";
             element.style.cursor = "pointer";
             let element1 = document.getElementById("create-job");
             element1.style.backgroundColor = "#1DD1A1";
             element1.style.cursor = "pointer";
-          }
-          else {
+          } else {
             let element2 = document.getElementById("watermark-preview");
             element2.style.backgroundColor = "#1DD1A1";
             element2.style.cursor = "pointer";
+            this.setState({ isdisableWR: false });
           }
+
+          // if (this.state.isdisable === false) {
+          //   let element = document.getElementById("next-button");
+          //   element.style.backgroundColor = "#1DD1A1";
+          //   element.style.cursor = "pointer";
+          //   let element1 = document.getElementById("create-job");
+          //   element1.style.backgroundColor = "#1DD1A1";
+          //   element1.style.cursor = "pointer";
+          // }
+          // else {
+          //   let element2 = document.getElementById("watermark-preview");
+          //   element2.style.backgroundColor = "#1DD1A1";
+          //   element2.style.cursor = "pointer";
+          // }
         } else {
           confirmAlert({
             message: "File name cannot be more than 128 characters",
@@ -740,7 +754,7 @@ export default class DocUpload extends React.Component {
       pageDimensions: this.state.pageDimensions,
       equalPageDimensions: this.state.equalPageDimensions,
     };
-    if (data.height != null && data.width != null) {      
+    if (data.height != null && data.width != null) {
       this.props.history.push({
         pathname: "/signerInfo",
         frompath: "dropdoc",
@@ -898,7 +912,7 @@ export default class DocUpload extends React.Component {
                     // check whether the checkbox is checked or unchecked.
                     if (!e.target.checked) {
                       confirmAlert({
-                        message: 'By unchecking the checkbox, the watermark will not be added to the PDF.',
+                        message: 'By unticking the checkbox, the watermark will not be added to the PDF.',
                         buttons: [
                           {
                             label: "OK",
@@ -910,7 +924,11 @@ export default class DocUpload extends React.Component {
                                 waterMarkContent: "",
                                 waterMarkFlag: false,
                                 isdisableWR: true
-                              })
+                              });
+                              if (this.state.files.length === 0) {
+                                window.location.reload();
+                              }
+
                             }
                           },
                           {
@@ -1002,7 +1020,7 @@ export default class DocUpload extends React.Component {
                         <div style={{}}>
                           <button onClick={e => {
                             // empty check..
-                            if (document.getElementById("WaterMarkContnt").value === "" || document.getElementById("WaterMarkContnt").value === null) {
+                            if (document.getElementById("WaterMarkContnt").value.trim() === "" || document.getElementById("WaterMarkContnt").value.trim() === null) {
                               confirmAlert({
                                 message: 'Watermark content is empty!',
                                 buttons: [
@@ -1014,7 +1032,7 @@ export default class DocUpload extends React.Component {
                               });
                             } else {
                               // set watermark content to the state..
-                              this.setState({ waterMarkModal: false, waterMarkContent: document.getElementById("WaterMarkContnt").value, waterMarkFlag: true });
+                              this.setState({ waterMarkModal: false, waterMarkContent: document.getElementById("WaterMarkContnt").value.trim(), waterMarkFlag: true });
                               // Ensure the file is dropped.
                               if (this.state.files.length !== 0) {
                                 this.setState({ isdisableWR: false })

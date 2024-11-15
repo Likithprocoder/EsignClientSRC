@@ -172,7 +172,7 @@ let URL = {
   internalTopUp: HOST + "internalTopUp",
   fetchAuditOperationType: HOST + "V2/fetchAuditOperationType",
   fetchAuditLogs: HOST + "V2/fetchAuditLogs",
-  fetchUserDetails: HOST + "V2/fetchUserDetails",
+  fetchAuditFullDetails: HOST + "V2/fetchAuditFullDetails",
   editWaterMark: HOST + "V2/editWaterMark"
 };
 

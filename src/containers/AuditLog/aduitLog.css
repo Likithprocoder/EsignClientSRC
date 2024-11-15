@@ -126,5 +126,6 @@
 }
 
 .USRINFOVAlUE {
-    width: fit-content;
+    width: 64%;
+    overflow-wrap: break-word;
 }
