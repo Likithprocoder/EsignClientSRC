@@ -40,6 +40,9 @@ function ViewAuditLogList(props) {
 
     const [userNameInput, setUserNameInput] = useState("");
 
+    const [currentPage, setCurrentPage] = useState(1);
+
+
     let columns = [
         {
             title: 'Operation Status',
@@ -158,10 +161,10 @@ function ViewAuditLogList(props) {
                     // operation types lenght check..
                     if (responsedata.operationTypes.length !== 0) {
                         // Initial assigning of index 0 operationType value for a state.
-                        setOperationType(responsedata.operationTypes[0]);
+                        setOperationType(responsedata.operationTypes[0]["operation_Type"]);
                         setOperationTypeList(responsedata.operationTypes);
                         // GET call to retrieve the operation types.
-                        fetchAuditLogs(moment().startOf("month"), moment(), responsedata.operationTypes[0], 0, "");
+                        fetchAuditLogs(moment().startOf("month"), moment(), responsedata.operationTypes[0]["operation_Type"], 0, "", true);
                     } else {
                         confirmAlert({
                             message: 'Empty audit log records!',
@@ -218,12 +221,13 @@ function ViewAuditLogList(props) {
     // Handle table change event
     const handleTableChange = (pagination) => {
         const { current, pageSize } = pagination;
+        setCurrentPage(current);
         setRecordPerPage(pageSize);
         let numberOfPresntPage = auditRecords.length / 10;
         // Check if the user is on the last page
         if (current === numberOfPresntPage && pageNumber < numberOfpages) {
             // date should be selected..
-            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, (pageNumber + 1), userNameInput);
+            fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, (pageNumber + 1), userNameInput, false);
         }
     };
 
@@ -253,7 +257,6 @@ function ViewAuditLogList(props) {
                 // setAuditRecords([]);
                 // setPageNumber(0);
                 setSelectedDateRnge(dateStrings);
-                setSelectedDateRngeTwo(dateStrings);
                 setSelectedDateRangeActulValue(dates);
                 // fetchAuditLogs(dates[0], dates[1], operationType, 0);
             }
@@ -283,8 +286,12 @@ function ViewAuditLogList(props) {
     };
 
     // Fetch call for audit logs.
-    const fetchAuditLogs = (startDte, endDte, operationType, pageIndex, nameBsedSerch) => {
+    const fetchAuditLogs = (startDte, endDte, operationType, pageIndex, nameBsedSerch, boolean) => {
         setPageNumber(pageIndex);
+        // the page reset, needs to be done only when 'fetchAuditLogs()', is done from search button.
+        if (boolean) {
+            setCurrentPage(1);
+        }
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
@@ -389,10 +396,10 @@ function ViewAuditLogList(props) {
                         format="YYYY-MM-DD" className='DtePckr' onChange={onDateRangeChange} />
                     {
                         operationTypeList.length !== 0 && (
-                            <Select defaultValue={operationTypeList[0] ?? ''} onChange={e => handleOptionChange(e)} id='operationTypeID' className='OpratTyp'>
+                            <Select defaultValue={operationTypeList[0]["operation_Type"] ?? ''} onChange={e => handleOptionChange(e)} id='operationTypeID' className='OpratTyp'>
                                 {
                                     operationTypeList.map((posts, index) => (
-                                        <Option key={`OPTType${index}`} value={posts}>{posts}</Option>
+                                        <Option title={posts["operation_Description"]} key={`OPTType${index}`} value={posts["operation_Type"]}>{posts["operation_Type"]}</Option>
                                     ))
                                 }
                             </Select>
@@ -413,7 +420,8 @@ function ViewAuditLogList(props) {
                                 setAuditRecords([]);
                                 setPageNumber(0);
                                 setUserNameInput(document.getElementById('nameBsedSerch').value.trim());
-                                fetchAuditLogs(selectedDateRngeTwo[0], selectedDateRngeTwo[1], operationType, 0, document.getElementById('nameBsedSerch').value.trim());
+                                setSelectedDateRngeTwo(selectedDateRnge);
+                                fetchAuditLogs(selectedDateRnge[0], selectedDateRnge[1], operationType, 0, document.getElementById('nameBsedSerch').value.trim(), true);
                             } else {
                                 confirmAlert({
                                     message: 'Select the date range for audit log records before submitting.',
@@ -437,6 +445,7 @@ function ViewAuditLogList(props) {
                         pageSize: recordPerPage,
                         showQuickJumper: true,
                         showTotal: (total, range) => `(Total records count-${totalNumberOfRecords}) ${range[0]}-${range[1]} of ${total} items`,
+                        current: currentPage
                     }}
                     onChange={handleTableChange}
                     scroll={{ x: '100%' }}
