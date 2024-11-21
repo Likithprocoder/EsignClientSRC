@@ -48,9 +48,8 @@ const Subscription = React.lazy(() =>
 const QRDetails = React.lazy(() => import("./containers/Payment/QRDetails"));
 const Download = React.lazy(() => import("./containers/Download/Download"));
 const KYCStatus = React.lazy(() => import("./containers/DigiLocker/KYCStatus"));
-
 const BulkRegistration = React.lazy(() =>
-  import("./containers/AdminReports/BulkRegistration")
+  import("./containers/BulkRegistration/BulkRegistration")
 );
 const AccountDelete = React.lazy(() =>
   import("./containers/AdminReports/AccountDelete")
@@ -58,7 +57,6 @@ const AccountDelete = React.lazy(() =>
 const RevenueReport = React.lazy(() =>
   import("./containers/AdminReports/RevenueReport")
 );
-
 const DefaultTemplate = React.lazy(() => import("./containers/Templates/DefaultTemplates"))
 const Template = React.lazy(() => import("./containers/Templates/Template"))
 const DisplayPdf = React.lazy(() => import("./containers/Templates/Template Pdf Preview"))
@@ -90,8 +88,7 @@ const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegra
 const UserFeedback = React.lazy(() => import("./containers/Feebback/UserFeedback"));
 const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUserFeedbackList"));
 const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
-
-
+const BulkRegistationSummary= React.lazy(() => import("./containers/BulkRegistration/BulkRegistationSummary"));
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
 const routes = [
@@ -163,11 +160,6 @@ const routes = [
 
   // { path: "/download", name: "Download", component: Download },
   { path: "/KYCStatus", name: "KYC Status", component: KYCStatus },
-  {
-    path: "/BulkRegistration",
-    name: "Bulk Registration",
-    component: BulkRegistration,
-  },
   {
     path: "/accountDelete",
     name: "Account Delete",
@@ -322,6 +314,16 @@ const routes = [
     path: "/viewUserFeedback",
     name: "User Feedback",
     component: userFeedackView
-  }
+  },
+  {
+    path: "/bulkRegistration/summary",
+    name: "Bulk Registration Summary",
+    component: BulkRegistationSummary
+  },
+  {
+    path: "/bulkRegistration/upload",
+    name: "Bulk Registration",
+    component: BulkRegistration,
+  },
 ];
 export default routes;

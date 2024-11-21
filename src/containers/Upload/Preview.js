@@ -171,6 +171,7 @@ const Preview = (props) => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
+      userIP: sessionStorage.getItem("userIP")
     };
 
     fetch(URL.getWalletInfo, {

@@ -66,43 +66,44 @@ export default class BulkRegistration extends React.Component {
 
 
         if (responseJson.status == "SUCCESS") {
-          var msg = "";
-          var Data = responseJson.userInfo;
-          this.setState({
-            summaryRes: responseJson.summary,
-            responseData: responseJson.userInfo,
-          });
+          console.log({responseJson});
+          // var msg = "";
+          // var Data = responseJson.userInfo;
+          // this.setState({
+          //   summaryRes: responseJson.summary,
+          //   responseData: responseJson.userInfo,
+          // });
           document.getElementById("Registration-button").style.display = "none";
 
           document.getElementById("invalidFileValidation").style.display = "";
 
           this.setState({ color: "green" });
-          msg = "Users registration successfull";
-          document.getElementById("msgforRegistration").innerHTML = msg;
+          // msg = "Registration request has been accepted for the Batch no";
+          document.getElementById("msgforRegistration").innerHTML = responseJson.statusDetails;
 
           this.setState({ loaded: true });
-          $("#BulkRegistrationTbl").DataTable().destroy();
-          $("#BulkRegistrationTbl").dataTable({
-            buttons: [
-              {
-                extend: "csv",
-                filename: "BulkRegistration",
-              },
-              {
-                extend: "print",
-              },
-            ],
-            data: Data,
+          // $("#BulkRegistrationTbl").DataTable().destroy();
+          // $("#BulkRegistrationTbl").dataTable({
+          //   buttons: [
+          //     {
+          //       extend: "csv",
+          //       filename: "BulkRegistration",
+          //     },
+          //     {
+          //       extend: "print",
+          //     },
+          //   ],
+          //   data: Data,
 
-            columns: [
-              { data: "firstName" },
-             // { data: "LogInName" },
-              { data: "mobileNo" },
-              { data: "emailId" },
-              { data: "status" },
-              { data: "statusDetails" },
-            ],
-          });
+          //   columns: [
+          //     { data: "firstName" },
+          //    // { data: "LogInName" },
+          //     { data: "mobileNo" },
+          //     { data: "emailId" },
+          //     { data: "status" },
+          //     { data: "statusDetails" },
+          //   ],
+          // });
         } else {
           if (responseJson.statusDetails === "Session Expired!!") {
             this.setState({ sessionCheck: true });
@@ -122,87 +123,87 @@ export default class BulkRegistration extends React.Component {
             });
             this.setState({ loaded: true });
           }
-          if (responseJson.hasOwnProperty("validFile")) {
+          // if (responseJson.hasOwnProperty("validFile")) {
 
-            var msg = "";
-            msg = responseJson.statusDetails;
-            this.setState({ color: "red" });
-            document.getElementById("invalidFileValidation").style.display =
-              "none";
-            document.getElementById("Registration-button").style.display =
-              "none";
+          //   var msg = "";
+          //   msg = responseJson.statusDetails;
+          //   this.setState({ color: "red" });
+          //   document.getElementById("invalidFileValidation").style.display =
+          //     "none";
+          //   document.getElementById("Registration-button").style.display =
+          //     "none";
 
-            document.getElementById("msgforRegistration").innerHTML = msg;
-          } else {
-            if (!this.state.sessionCheck) {
-              var msg = "";
-              var Data = responseJson.userInfo;
-              this.setState({
-                summaryRes: responseJson.summary,
-                responseData: responseJson.userInfo,
-              });
-              this.setState({ color: "red" });
-              msg = "All users registration failed";
-              document.getElementById("msgforRegistration").innerHTML = msg;
+          //   document.getElementById("msgforRegistration").innerHTML = msg;
+          // } else {
+          //   if (!this.state.sessionCheck) {
+          //     var msg = "";
+          //     var Data = responseJson.userInfo;
+          //     this.setState({
+          //       summaryRes: responseJson.summary,
+          //       responseData: responseJson.userInfo,
+          //     });
+          //     this.setState({ color: "red" });
+          //     msg = "All users registration failed";
+          //     document.getElementById("msgforRegistration").innerHTML = msg;
 
-              document.getElementById("invalidFileValidation").style.display =
-                "";
-              document.getElementById("Registration-button").style.display =
-                "none";
+          //     document.getElementById("invalidFileValidation").style.display =
+          //       "";
+          //     document.getElementById("Registration-button").style.display =
+          //       "none";
 
-              this.setState({ loaded: true });
-              $("#BulkRegistrationTbl").DataTable().destroy();
-              $("#BulkRegistrationTbl").dataTable({
-                buttons: [
-                  {
-                    extend: "csv",
-                    filename: "BulkRegistration",
-                  },
-                  {
-                    extend: "print",
-                  },
-                ],
-                data: Data,
+          //     this.setState({ loaded: true });
+          //     $("#BulkRegistrationTbl").DataTable().destroy();
+          //     $("#BulkRegistrationTbl").dataTable({
+          //       buttons: [
+          //         {
+          //           extend: "csv",
+          //           filename: "BulkRegistration",
+          //         },
+          //         {
+          //           extend: "print",
+          //         },
+          //       ],
+          //       data: Data,
 
-                columns: [
-                  {
-                    data: "firstName",
-                  },
-                  //{ data: "LogInName" },
-                  { data: "mobileNo" },
-                  { data: "emailId" },
-                  { data: "status" },
-                  { data: "statusDetails" },
-                ],
-              });
-            } else {
-              confirmAlert({
-                message: "Session Expired!!",
-                buttons: [
-                  {
-                    label: "OK",
-                    className: "confirmBtn",
-                    onClick: () => {},
-                  },
-                ],
-              });
-              sessionStorage.clear();
-              this.setState({ loaded: true });
-              this.props.history.push("/login");
-            }
+          //       columns: [
+          //         {
+          //           data: "firstName",
+          //         },
+          //         //{ data: "LogInName" },
+          //         { data: "mobileNo" },
+          //         { data: "emailId" },
+          //         { data: "status" },
+          //         { data: "statusDetails" },
+          //       ],
+          //     });
+          //   } else {
+          //     confirmAlert({
+          //       message: "Session Expired!!",
+          //       buttons: [
+          //         {
+          //           label: "OK",
+          //           className: "confirmBtn",
+          //           onClick: () => {},
+          //         },
+          //       ],
+          //     });
+          //     sessionStorage.clear();
+          //     this.setState({ loaded: true });
+          //     this.props.history.push("/login");
+          //   }
 
-            if (responseJson.hasOwnProperty("bulkRegistrationPermission")) {
-              var msg = "";
-              msg = responseJson.statusDetails;
-              this.setState({ color: "red" });
-              document.getElementById("invalidFileValidation").style.display =
-                "none";
-              document.getElementById("Registration-button").style.display =
-                "none";
+          //   if (responseJson.hasOwnProperty("bulkRegistrationPermission")) {
+          //     var msg = "";
+          //     msg = responseJson.statusDetails;
+          //     this.setState({ color: "red" });
+          //     document.getElementById("invalidFileValidation").style.display =
+          //       "none";
+          //     document.getElementById("Registration-button").style.display =
+          //       "none";
 
-              document.getElementById("msgforRegistration").innerHTML = msg;
-            }
-          }
+          //     document.getElementById("msgforRegistration").innerHTML = msg;
+          //   }
+          // }
         }
       })
       .catch((e) => {
@@ -301,7 +302,8 @@ export default class BulkRegistration extends React.Component {
   }
 
   printTableData = () => {
-    $("#BulkRegistrationTbl").DataTable().buttons(["0"]).trigger();
+    // $("#BulkRegistrationTbl").DataTable().buttons(["0"]).trigger();
+    this.props.history.push("/BulkRegistration/summary");
   };
 
   render() {
@@ -376,9 +378,7 @@ export default class BulkRegistration extends React.Component {
           <div id="invalidFileValidation" style={{ display: "none" }}>
             <h5>
               {" "}
-              {this.state.summaryRes.successCount}
-              {this.state.summaryRes.totalRecordsCount} got success,{" "}
-              <a href="#" onClick={this.printTableData}>
+              <a href="" onClick={this.printTableData}>
                 click here
               </a>{" "}
               for more details.

@@ -1147,7 +1147,7 @@ export default class ProfileDetails extends React.Component {
                 }}>Exit from corporate entity?</a> <br />
                 <a hidden={!(sessionStorage.getItem("roleID") === "2")} href="" onClick={() => {
                   this.props.history.push("/userFeedback");
-                }}>Got any feedback thought on your mind?</a>
+                }}>Got any feedback/suggestion on your mind?</a>
               </CardBody>
             </Card>
             <Row id="buttons" className="mb-3">

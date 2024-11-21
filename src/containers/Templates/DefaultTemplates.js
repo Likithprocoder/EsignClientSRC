@@ -9,6 +9,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Tabs, Tab, Typography } from "@material-ui/core";
 import { confirmAlert } from "react-confirm-alert";
+var Loader = require("react-loader");
 
 
 class DefaultTemplates extends Component {
@@ -35,6 +36,7 @@ class DefaultTemplates extends Component {
   componentDidMount() {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // Check if the roleID is present 
+    this.setState({ loaded: false });
     if (sessionStorage.getItem("corpId") !== "undefined") {
       // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
       // If corporate is disabled then redirect to the old page.
@@ -111,8 +113,6 @@ class DefaultTemplates extends Component {
           this.props.location.push('/login');
         });
     }
-
-    this.setState({ loaded: false });
     fetch(URL.getTemplateGrps, {
       method: "POST",
       headers: {
@@ -127,6 +127,7 @@ class DefaultTemplates extends Component {
       .then((responseJson) => {
         if (responseJson.status == "SUCCESS") {
           this.setState({ GroupNameAndCode: responseJson.details });
+          this.setState({ loaded: true });
         }
         else if (responseJson.statusDetails == "Session Expired") {
           confirmAlert({
@@ -187,6 +188,7 @@ class DefaultTemplates extends Component {
   };
 
   test = (event, grpCode) => {
+    this.setState({ loaded: false });
     const url = URL.getTemplateList;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const options = {
@@ -255,7 +257,7 @@ class DefaultTemplates extends Component {
         this.props.history.push("/accountInfo");
       });
 
-    this.setState({ loaded: false });
+    this.setState({ loaded: true });
   };
 
   handleChange = (panel) => (event, isExpanded) => {
@@ -268,6 +270,26 @@ class DefaultTemplates extends Component {
 
     return (
       <div key="mainDIV">
+        <Loader
+          loaded={this.state.loaded}
+          lines={13}
+          radius={20}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#000"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner loader"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        />
+
         {GroupNameAndCode.length ? (
           GroupNameAndCode.map((posts, i) => (
             <div>

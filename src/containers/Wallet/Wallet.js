@@ -48,23 +48,10 @@ export default class Wallet extends React.Component {
       isOpen: false,
       tooltipOpen: false,
       isHovered: false,
-      planDescrip:"Current Plan",
-       isModalVisible: false, // State to control modal visibility
+      planDescrip: "Current Plan",
+      isModalVisible: false, // State to control modal visibility
     };
   }
-
-  setInput = (e) => {
-    let regNum = new RegExp(/^[0-9]*$/);
-    let value = e.target.value;
-    let name = e.target.name;
-    if (name === "otp") {
-      if (regNum.test(e.target.value)) {
-        this.setState({ otp: value });
-      } else {
-        return false;
-      }
-    }
-  };
 
   componentWillMount() {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
@@ -105,7 +92,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -149,17 +136,14 @@ export default class Wallet extends React.Component {
             responseJson.is_KYC_verified
           );
           // responseJson.pendingDocs = 1;//For testing purpose
-          if (responseJson.pendingDocs !== 0 &&  sessionStorage.getItem("actionExists") === "true") {
+          if (responseJson.pendingDocs !== 0 && sessionStorage.getItem("actionExists") === "true") {
             this.setState({ isModalVisible: true });
           } else {
-            sessionStorage.setItem("actionExists", false); 
+            sessionStorage.setItem("actionExists", false);
           }
           sessionStorage.setItem("maxFilesize", responseJson.maxFilesize);
           //to check the role of the user to make the template groups visible(if corp admin) for voucher purchase
           sessionStorage.setItem("roleId", responseJson.roleId);
-          if (responseJson.verifyMobile === "N") {
-            document.getElementById("verifyBtnContainer").style.display = "";
-          }
           if (responseJson.consenteSign === "true") {
             sessionStorage.setItem("consentFlag", responseJson.consentFlag);
             if (responseJson.consentFlag === "N") {
@@ -179,7 +163,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -233,9 +217,10 @@ export default class Wallet extends React.Component {
             document.getElementById("NoinQueuePlan").style.display = "none";
             document.getElementById("noSubscribedplans").style.display = "none";
           }
-          if(resp.planType==0){
+          if (resp.planType == 0) {
             this.setState({
-              planDescrip:"Free Storage Plan",})
+              planDescrip: "Free Storage Plan",
+            })
           }
           //console.log("resp " + resp);
           this.setState({
@@ -265,7 +250,7 @@ export default class Wallet extends React.Component {
           sessionStorage.setItem("usedstoragelimit", resp.usedstoragelimit);
           sessionStorage.setItem("noOfDaysLeft", resp.noOfDaysLeft);
 
-      
+
 
           let defaultlimit = resp.storagelimit.split(" ")[0];
           let usedlimt = resp.usedstoragelimit.split(" ")[0];
@@ -289,7 +274,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -298,115 +283,6 @@ export default class Wallet extends React.Component {
       })
       .catch((e) => {
         alert(e);
-      });
-  };
-  submitOtp = () => {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
-      otp: btoa(this.state.otp),
-    };
-    fetch(URL.validateOtp, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJson) => {
-        if (responseJson.status === "SUCCESS") {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-
-          sessionStorage.setItem("verifyMobile", responseJson.varifyMobile);
-          document.getElementById("verifyBtnContainer").style.display = "none";
-        } else {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-          // alert(responseJson.statusDetails)
-        }
-      })
-      .catch((e) => {
-        confirmAlert({
-          message: e,
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => {},
-            },
-          ],
-        });
-        //alert(e)
-      });
-  };
-
-  verifyMobile = () => {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
-    };
-    fetch(URL.getOtp, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJson) => {
-        if (responseJson.smsStatus === "SUCCESS") {
-          document.getElementById("verifyBtn").style.display = "none";
-          document.getElementById("otpRespContainer").style.display = "";
-        } else {
-          confirmAlert({
-            message: responseJson.otpStatusDescription,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-          // alert(responseJson.otpStatusDescription)
-        }
-      })
-      .catch((e) => {
-        confirmAlert({
-          message: "Please Sign or upload signature",
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => {},
-            },
-          ],
-        });
-        //alert(e)
       });
   };
 
@@ -549,7 +425,7 @@ export default class Wallet extends React.Component {
       }
     }
   };
-  
+
   // Function to handle button click
   handleButtonClick = () => {
     sessionStorage.setItem("actionExists", false);
@@ -565,7 +441,7 @@ export default class Wallet extends React.Component {
         {
           label: "OK",
           className: "confirmBtn",
-          onClick: () => {},
+          onClick: () => { },
         },
       ],
     });
@@ -643,37 +519,6 @@ export default class Wallet extends React.Component {
                 </table>
               </CardBody>
             </Card>
-            <div id="verifyBtnContainer" style={{ display: "none" }}>
-              <Button
-                id="verifyBtn"
-                color="primary"
-                className="px-4"
-                onClick={this.verifyMobile}
-              >
-                Verify Mobile
-              </Button>
-              <br></br>
-              <br></br>
-              <div id="otpRespContainer" style={{ display: "none" }}>
-                <Input
-                  type="text"
-                  name="otp"
-                  placeholder="Enter OTP"
-                  autoComplete="off"
-                  onChange={this.setInput}
-                  value={this.state.otp}
-                  maxLength="6"
-                />
-                <br></br>
-                <Button
-                  color="primary"
-                  className="px-4"
-                  onClick={this.submitOtp}
-                >
-                  Submit OTP
-                </Button>
-              </div>
-            </div>
           </Col>
 
           <Col xs="12" sm="6" md="5" id="subscribedplans">
@@ -686,38 +531,38 @@ export default class Wallet extends React.Component {
               </CardHeader>
               <CardBody>
                 {/* <Row > */}
-                {this.state.noSigns !== 0 &&(
-                <div>
-                  <span style={{ marginBottom: "0px" }}>
-                    Signs Completed &nbsp;:&nbsp;
-                    <b>{this.state.signedcount + "/" + this.state.noSigns}</b>
-                  </span>
-                  <Progress multi>
-                    <Progress
-                      bar
-                      style={{ color: "black" }}
-                      color={this.widgetStatusColor(
-                        this.state.signedcount,
-                        this.state.noSigns
-                      )}
-                      progress={this.widgetvalue(
-                        this.state.signedcount,
-                        this.state.noSigns
-                      )}
-                      value={this.widgetvalue(
-                        this.state.signedcount,
-                        this.state.noSigns
-                      )}
-                    >
-                      {this.widgetvalue(
-                        this.state.signedcount,
-                        this.state.noSigns
-                      )}{" "}
-                      %
+                {this.state.noSigns !== 0 && (
+                  <div>
+                    <span style={{ marginBottom: "0px" }}>
+                      Signs Completed &nbsp;:&nbsp;
+                      <b>{this.state.signedcount + "/" + this.state.noSigns}</b>
+                    </span>
+                    <Progress multi>
+                      <Progress
+                        bar
+                        style={{ color: "black" }}
+                        color={this.widgetStatusColor(
+                          this.state.signedcount,
+                          this.state.noSigns
+                        )}
+                        progress={this.widgetvalue(
+                          this.state.signedcount,
+                          this.state.noSigns
+                        )}
+                        value={this.widgetvalue(
+                          this.state.signedcount,
+                          this.state.noSigns
+                        )}
+                      >
+                        {this.widgetvalue(
+                          this.state.signedcount,
+                          this.state.noSigns
+                        )}{" "}
+                        %
+                      </Progress>
                     </Progress>
-                  </Progress>
-                </div>
-                 )}
+                  </div>
+                )}
                 <div style={{ marginTop: "13px" }}>
                   <span style={{ marginBottom: "0px" }}>
                     Storage Used &nbsp;:&nbsp;
@@ -751,12 +596,12 @@ export default class Wallet extends React.Component {
                   </Progress>
                 </div>
                 {this.state.endDate && (
-                <div style={{ marginTop: "13px" }}>
-                  <span>
-                    Subscription Expires On&nbsp;:&nbsp;
-                    <b>{this.state.endDate}</b>
-                  </span>
-                </div>
+                  <div style={{ marginTop: "13px" }}>
+                    <span>
+                      Subscription Expires On&nbsp;:&nbsp;
+                      <b>{this.state.endDate}</b>
+                    </span>
+                  </div>
                 )}
               </CardBody>
             </Card>
@@ -766,17 +611,17 @@ export default class Wallet extends React.Component {
             <Card>
               <CardHeader style={!this.state.isOpen ? { background: "center" } : {}}>
                 <b>Upcoming Plan</b>{!this.state.isOpen && ` - ${this.state.inQueuePlanID}`}
-                <Button onClick={this.toggleCollapse} style={{ fontSize:"6px", float: "right" }} id="collapseCard" onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
-                  {this.state.isOpen ? <i class="fa fa-chevron-up" aria-hidden="true" style={{ fontSize: "10px"}}></i> : <i class="fa fa-chevron-down" aria-hidden="true" style={{ fontSize: "10px"}}></i>}
+                <Button onClick={this.toggleCollapse} style={{ fontSize: "6px", float: "right" }} id="collapseCard" onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+                  {this.state.isOpen ? <i class="fa fa-chevron-up" aria-hidden="true" style={{ fontSize: "10px" }}></i> : <i class="fa fa-chevron-down" aria-hidden="true" style={{ fontSize: "10px" }}></i>}
                 </Button>
                 {this.state.isHovered ? (<Tooltip
-                    isOpen={this.state.tooltipOpen}
-                    target="collapseCard"
-                    placement="bottom"
-                    id="tooltip"
-                    hideArrow
-                  >
-                    {!this.state.isOpen ? "More info" : "Show less"}
+                  isOpen={this.state.tooltipOpen}
+                  target="collapseCard"
+                  placement="bottom"
+                  id="tooltip"
+                  hideArrow
+                >
+                  {!this.state.isOpen ? "More info" : "Show less"}
                 </Tooltip>
                 ) : null}
               </CardHeader>
@@ -864,7 +709,7 @@ export default class Wallet extends React.Component {
           onCancel={this.handleButtonClick}
           maskClosable={false}
           footer={[
-            <Button key="cancel" type="link" color="primary" onClick={this.handleButtonClick1} style={{ marginRight: "10px"}} outline>
+            <Button key="cancel" type="link" color="primary" onClick={this.handleButtonClick1} style={{ marginRight: "10px" }} outline>
               I'll do it later
             </Button>,
             <Button key="submit" type="primary" color="primary" onClick={this.handleActionClick}>

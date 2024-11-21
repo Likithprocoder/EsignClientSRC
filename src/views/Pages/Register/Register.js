@@ -523,68 +523,6 @@ fetch(window.location.href)
     obj.type = "password";
   };
 
-  validateOTP = () => {
-    let myColor = {
-      background: "#ff7675",
-      text: "#FFFFFF",
-    };
-    if (this.state.otp.length !== 0 && this.state.otp.trim() !== "") {
-      let json = {
-        otp: btoa(this.state.otp),
-        mobile: btoa(this.state.mobile),
-        email: btoa(this.state.email.toLowerCase()),
-      };
-      this.setState({ loaded: false });
-      fetch(URL.regValidateOtp, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(json),
-      })
-        .then((response) => {
-          return response.json();
-        })
-        .then((responseJson) => {
-          if (responseJson.status === "SUCCESS") {
-            this.setState({ loaded: true });
-
-            confirmAlert({
-              message: responseJson.statusDetails,
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => { },
-                },
-              ],
-            });
-            // alert(responseJson.statusDetails)
-            this.props.history.push("/");
-          } else {
-            this.setState({ loaded: true });
-            confirmAlert({
-              message: responseJson.statusDetails,
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => { },
-                },
-              ],
-            });
-            // alert(responseJson.statusDetails)
-          }
-        })
-        .catch((e) => {
-          this.setState({ loaded: true });
-          notify.show("Failed to connect to server", "custom", 5000, myColor);
-        });
-    } else {
-      notify.show("Please Enter OTP!!", "custom", 5000, myColor);
-    }
-  };
-
   registerTandC = () => {
     this.props.history.push("/termsandconditions");
     window.location.reload(false);
@@ -1876,15 +1814,6 @@ fetch(window.location.href)
                         onClick={this.register}
                       >
                         Register Account
-                      </Button>
-                      <Button
-                        id="otpBtn"
-                        color="success"
-                        style={{ display: "none" }}
-                        block
-                        onClick={this.validateOTP}
-                      >
-                        Verify OTP
                       </Button>
                       <div id="buttonOTP" className="text-center ">
                         {" "}
