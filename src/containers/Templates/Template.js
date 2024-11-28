@@ -290,6 +290,7 @@ function NewTemplate(props) {
         // Detect if the device is mobile based on the user agent string
         const checkIsMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         setIsMobile(checkIsMobile);
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // from template PDF preview page.
         if (props.location.frompath === "/draftTemplates" || props.location.frompath === "/templatePdfPreview") {
             const url = URL.getTemplateInputs;
@@ -297,9 +298,9 @@ function NewTemplate(props) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
                     templateCode: props.location.state.templateCode,
                 }),
             };
@@ -572,9 +573,9 @@ function NewTemplate(props) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
                     templateCode: templateCode,
                 }),
             };
@@ -1941,15 +1942,16 @@ function NewTemplate(props) {
         setAllowLoader(false);
         let additionalData = {};
         let reptData = { "reptDataToSveDraft": reptDataToSveDraft, "repeatAbleBlock": repeatAbleBlock };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         // appending the repetable Block to the dynamicTableArray..
         additionalData["repeatAbleBolckData"] = JSON.stringify(reptData);
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 templateData: listForSaveDraft,
                 templateCode: templateCode,
                 templateAttachments: templateAttachmentForDraft,

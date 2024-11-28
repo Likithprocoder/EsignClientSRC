@@ -56,8 +56,6 @@ class QRDetails extends Component {
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
-    } else {
-      console.error('additional_data is null or undefined');
     }
 
     // console.log('additional_data:', typeof additional_data);
@@ -87,10 +85,12 @@ class QRDetails extends Component {
     }
 
     this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getQR, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -155,11 +155,13 @@ class QRDetails extends Component {
       mysignTxnId: this.state.uuid,
       bankTxnId: this.state.txnId,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (this.state.statusCheckCount <= 30) {
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -248,11 +250,13 @@ class QRDetails extends Component {
         mysignTxnId: "",
         bankTxnId: this.state.txnId,
       };
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       this.setState({ loaded: false });
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         cache: "no-store",
         body: JSON.stringify(body),

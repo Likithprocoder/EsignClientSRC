@@ -71,13 +71,14 @@ function VoucherDetail(props) {
     let Csvtitle = ['Plan Description', 'Voucher Amount (RS)', 'Voucher Type', 'Number of Voucher', 'Vouchers Used', 'Purchased On', '', 'Voucher status', 'Used By', 'Contact Number', 'Voucher code'];
 
     useEffect(() => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 voucherID: props.location.state.voucherID.voucherID
             })
         }

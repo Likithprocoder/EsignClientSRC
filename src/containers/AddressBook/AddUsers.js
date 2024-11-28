@@ -163,14 +163,15 @@ export default class ApplicationInbox extends React.Component {
         this.setState({ columns: columns, groupName: this.props.location.state.groupName, UpdatedInfo: this.props.location.state.userInfo, editMode: this.props.location.state.editMode, initialInfo: this.props.location.state.userInfo, groupId: this.props.location.state.groupId })
         // }
 
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false })
         fetch(URL.fetchAddressBook, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 operationtype: "INDL",
                 groupId: this.props.location.state.groupId
             }),

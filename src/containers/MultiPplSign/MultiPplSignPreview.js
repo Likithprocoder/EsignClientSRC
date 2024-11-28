@@ -1287,6 +1287,9 @@ const MultiPplSignPreview = (props) => {
 
   // On click of Add seals this function will be called
   const signaturePageSelected = (optnValue) => {
+    if (sessionStorage.getItem("TotalPages") === "1" && optnValue === "A") {
+      optnValue = "C";
+    }
     // console.log(optnValue);
     if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       setTooltipOpen(true);
@@ -1433,16 +1436,17 @@ const MultiPplSignPreview = (props) => {
     if (selectedPagevalue) {
       setSelectedOption(selectedPagevalue);
       let body = {
-        authToken: sessionStorage.getItem("authToken"),
         loginname: sessionStorage.getItem("username"),
         signPage: selectedPagevalue,
         signMode: selectedModeValue,
       };
       setLoaded(false);
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       fetch(URL.getRequiredUnits, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -2094,7 +2098,6 @@ const MultiPplSignPreview = (props) => {
         loginname: sessionStorage.getItem("username"),
         signPurpose: "", //length-50 (future use)
         docType: "PDF",
-        authToken: sessionStorage.getItem("authToken"),
         externalJar: true,
         userIP: "10.10.10.111",
         enableSignOrder: props.location.state.details.enableSignOrder,
@@ -2369,9 +2372,10 @@ const MultiPplSignPreview = (props) => {
                 // console.log(file);
                 data.append("file", file);
                 data.append("inputDetails", JSON.stringify(value));
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 fetch(URL.mpsCreateJobsV2, {
                   method: "POST",
-                  headers: { enctype: "multipart/form-data" },
+                  headers: { enctype: "multipart/form-data", 'Authorization': `Bearer ${jsonWebToken}` },
                   body: data,
                 })
                   .then((r) => r.json(value))
@@ -2953,11 +2957,33 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                     </label>
                     <span id="clientdownloadspan" style={{ marginLeft: "20px" }}>
                       <a
-                        href={
-                          URL.downloadClientProgram +
-                          "?at=" +
-                          btoa(sessionStorage.getItem("authToken"))
-                        }
+                        // href="#"
+                        onClick={async () => {
+                          let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                          try {
+                            const response = await fetch(URL.downloadClientProgram, {
+                              method: "GET",
+                              headers: {
+                                'Authorization': `Bearer ${jsonWebToken}`
+                              },
+                            });
+
+                            if (!response.ok) {
+                              throw new Error("Network response was not ok");
+                            }
+
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.setAttribute("download", "DSCClientProgram.zip");
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          } catch (error) {
+                            console.error("Error downloading file:", error);
+                          }
+                        }}
                         id="clientdownload"
                         style={{ display: "none" }}
                       >

@@ -102,9 +102,8 @@ class AddressBook extends Component {
     }
 
     componentDidMount() {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         var body = {
-
-            authToken: sessionStorage.getItem("authToken"),
             operationtype: "SRCH",
         };
         this.setState({ loaded: false });
@@ -112,6 +111,7 @@ class AddressBook extends Component {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify(body),
         })
@@ -282,8 +282,8 @@ class AddressBook extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             contactId: deleteArray
                         }
                         this.setState({ loaded: false })
@@ -291,6 +291,7 @@ class AddressBook extends Component {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })
@@ -409,13 +410,13 @@ class AddressBook extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         let body = {}
                         let url = '';
 
 
                         if (this.state.editMode == 0) {
                             body = {
-                                authToken: sessionStorage.getItem("authToken"),
                                 userInfo: [{
                                     "firstName": name, "emailId": email, "mobileNo": mobile
                                 }]
@@ -425,7 +426,6 @@ class AddressBook extends Component {
                         else {
 
                             body = {
-                                authToken: sessionStorage.getItem("authToken"),
                                 contactId: this.state.contactId,
                                 updatedInfo: {
                                     "updcontactName": name, "updemailId": email, "updmobileNo": mobile
@@ -433,16 +433,13 @@ class AddressBook extends Component {
                             }
                             url = URL.modifyAddressBook;
                         }
-
-                        // let body = {
-                        //     authToken: sessionStorage.getItem("authToken"),
-                        //     userInfo: array
-                        // }
                         this.setState({ loaded: false })
                         fetch(url, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
+                                
                             },
                             body: JSON.stringify(body),
                         })
@@ -535,14 +532,15 @@ class AddressBook extends Component {
     setInput = (e) => {
         let value = e.target.value;
         if (e.target.id == 'contactName') {
-            let filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
+            // let filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
+            let filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, ' ');
             this.setState({ filteredName: filteredValue });
         }
         else if (e.target.id == 'contactMobile') {
             this.setState({ filteredMobile: value });
         }
         else {
-            this.setState({ filteredEmail: value });
+            this.setState({ filteredEmail: value.trim() });
         }
 
     }

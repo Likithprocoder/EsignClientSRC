@@ -35,6 +35,8 @@ export default class DocUpload extends React.Component {
       pageDimensions: "",
       equalPageDimensions: true, 
       docId: null,
+      blobUrl: null,
+      isFinish: false,
     };
   }
 
@@ -78,6 +80,25 @@ export default class DocUpload extends React.Component {
         element.style.cursor = "no-drop";
       }
     }
+
+    let viewFileURL = "";
+    viewFileURL = URL.viewConsentFile;
+    this.setState({ viewFileURl: URL.viewConsentFile });
+    
+    let viewURL = "";
+
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
+
+    viewURL = `${viewFileURL}`;
+
+    this.fetchDocument(viewURL, headers);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFinish !== this.state.isFinish) {
+    }
   }
 
   next() {
@@ -89,9 +110,9 @@ export default class DocUpload extends React.Component {
         equalPageDimensions: this.state.equalPageDimensions,
     };
 
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
         loginname: sessionStorage.getItem("username"),
-        authToken: sessionStorage.getItem("authToken"),
         userIP: sessionStorage.getItem("userIP"),
         docType: "PDF",
     };
@@ -103,7 +124,9 @@ export default class DocUpload extends React.Component {
 
     fetch(URL.uploadDocument, {
         method: "POST",
-        headers: { enctype: "multipart/form-data" },
+        headers: { enctype: "multipart/form-data",
+          'Authorization': `Bearer ${jsonWebToken}`
+         },
         body: data1,
     })
     .then(response => response.json())
@@ -163,7 +186,6 @@ export default class DocUpload extends React.Component {
     if (files.length > 0) {
       this.setState({ loaded: true });
       var fileToLoad = files[0];
-      // console.log(fileToLoad);
       var fileName = files[0].name;
       var name = fileName.split(".", 1);
       var srcData;
@@ -171,7 +193,6 @@ export default class DocUpload extends React.Component {
       fileReader.readAsDataURL(fileToLoad);
       fileReader.onload = function (fileLoadedEvent) {
         srcData = fileLoadedEvent.target.result; // <--- data: base64
-        // console.log(srcData);
         let imgHeigth;
         let imgWidth;
         var pdfWidth = 793;
@@ -267,7 +288,6 @@ export default class DocUpload extends React.Component {
           //   var typedarray = new Uint8Array(this.result);
           reader.onloadend = async function (e) {
             var typedarray = reader.result;
-            // console.log({typedarray});
 
             if (
               files[0].name.includes(".jpg") ||
@@ -439,9 +459,9 @@ export default class DocUpload extends React.Component {
 
   consenteSign = () => {
     let response_data = {};
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
@@ -451,6 +471,7 @@ export default class DocUpload extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -507,7 +528,6 @@ export default class DocUpload extends React.Component {
       pageDimensions: this.state.pageDimensions,
       equalPageDimensions: this.state.equalPageDimensions,
     };
-    // console.log(data);
     if (data.height != null && data.width != null) {
       this.props.history.push({
         pathname: "/signerInfo",
@@ -538,16 +558,16 @@ export default class DocUpload extends React.Component {
   };
 
   subscribedPlanDetails = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
-      // "activeStatus":1,
     };
     fetch(URL.subscribedPlanDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -579,7 +599,42 @@ export default class DocUpload extends React.Component {
       });
   };
 
+  fetchDocument = async (viewFileURL, headers) => {
+    this.setState({ loaded: false });
+    const url = viewFileURL; // Encode docId if necessary
+
+    try {
+
+      // Fetch the document from the server
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+      throw new Error('Expected a PDF document but received: ' + contentType);
+      }
+
+      // Convert the response into a Blob
+      const blob = await response.blob();
+
+      if (blob.size > 0) {
+        const blobUrl = window.URL.createObjectURL(blob);
+        this.setState({ blobUrl });
+        this.setState({ loaded: true });
+      } else {
+        this.setState({ error: 'Document is empty', loading: false });
+      }
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+    }
+  };
+
   render() {
+    const { isFinish, fileName, blobUrl } = this.state;
+
     if (this.state.loadUploadComponent) {
       return (
         <div
@@ -699,13 +754,17 @@ export default class DocUpload extends React.Component {
             loadedClassName="loadedContent"
           />
           <div id="pdfContainerdiv" style={{ height: "80vh" }}>
-              <PDF1
+              {/* <PDF1
                 url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
+                  URL.viewConsentFile
                 }
-              />
+              /> */}
+              {blobUrl && <PDF1
+                key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+                url={blobUrl}
+                filename={fileName}
+                finish={isFinish}  // Pass finish state to control Download button
+              />}
               <div style={{marginTop: "20px"}}>
             <input
               type="checkbox"
@@ -716,6 +775,17 @@ export default class DocUpload extends React.Component {
             <label id="consentSigningLable" style={{ fontSize: "16px" }}>
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
+          </div>
+          <div className="next-nav">
+            <button
+              className="upload-button"
+              id="submitConsentbutton"
+              disabled={this.state.isConsentdisable}
+              onClick={this.consenteSign.bind(this)}
+              style={{ margin: "auto" }}
+            >
+              <span>Submit &#8594;</span>
+            </button>
           </div>
             {/* </div> */}
           </div>
@@ -731,18 +801,6 @@ export default class DocUpload extends React.Component {
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
           </div> */}
-
-          <div className="next-nav">
-            <button
-              className="upload-button"
-              id="submitConsentbutton"
-              disabled={this.state.isConsentdisable}
-              onClick={this.consenteSign.bind(this)}
-              style={{ margin: "auto" }}
-            >
-              <span>Submit &#8594;</span>
-            </button>
-          </div>
         </div>
       );
     }

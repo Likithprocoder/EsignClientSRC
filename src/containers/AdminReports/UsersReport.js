@@ -38,15 +38,16 @@ export default class UsersReport extends React.Component {
 
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       startDate: fromDate,
       endDate: toDate,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.getUsersReports, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })

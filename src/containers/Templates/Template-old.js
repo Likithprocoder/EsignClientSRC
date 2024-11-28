@@ -3009,7 +3009,7 @@ function NewTemplate(props) {
                                                                                         // Check if getScreenshot is available
                                                                                         if (getScreenshot) {
                                                                                             const imageSrc = getScreenshot();
-                                                                                            console.log(imageSrc);
+                                                                                            // console.log(imageSrc);
                                                                                             setCaptureData(imageSrc);
                                                                                         } else {
                                                                                             console.error("getScreenshot is not available.");

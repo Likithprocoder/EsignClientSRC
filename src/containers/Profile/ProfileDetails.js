@@ -47,6 +47,7 @@ export default class ProfileDetails extends React.Component {
   }
 
   componentWillMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       authToken: sessionStorage.getItem("authToken"),
     };
@@ -55,6 +56,7 @@ export default class ProfileDetails extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -113,6 +115,7 @@ export default class ProfileDetails extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -222,13 +225,14 @@ export default class ProfileDetails extends React.Component {
   // to fetch the aadhaar details
   getAdharDetails() {
     document.getElementById("UserDetail").style.display = "";
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.KYCDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -257,7 +261,7 @@ export default class ProfileDetails extends React.Component {
             message: responseJson.statusDetails,
             buttons: [
               {
-                label: "ok",
+                label: "OK",
                 className: "confirmBtn",
                 onClick: () => { },
               },
@@ -434,7 +438,9 @@ export default class ProfileDetails extends React.Component {
       background: "#ff7675",
       text: "#FFFFFF",
     };
-    let body = {
+
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
       optnType: "CHGPAS",
     };
     let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(body));
@@ -457,6 +463,7 @@ export default class ProfileDetails extends React.Component {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(dataToserver),
             })
@@ -711,6 +718,7 @@ export default class ProfileDetails extends React.Component {
       this.state.otp.length == 6 &&
       this.state.otp.trim() !== ""
     ) {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       let json = {
         password: btoa(this.state.password),
         repassword: btoa(this.state.repassword),
@@ -731,6 +739,7 @@ export default class ProfileDetails extends React.Component {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(dataToserver),
       })
@@ -915,12 +924,13 @@ export default class ProfileDetails extends React.Component {
   // to open the model to collect the corp and corp group list..
   openModalForCorpAccount = (e) => {
     var json = {
-      authToken: sessionStorage.getItem("authToken"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getCorpDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(json)
     })
@@ -958,7 +968,7 @@ export default class ProfileDetails extends React.Component {
             message: responseJson.statusDetails,
             buttons: [
               {
-                label: "ok",
+                label: "OK",
                 className: "confirmBtn",
                 onClick: () => { },
               },
@@ -1004,14 +1014,15 @@ export default class ProfileDetails extends React.Component {
       corpoId = event.target.value;
     }
     if (corpoId !== '' || boolean) {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       var json = {
-        authToken: sessionStorage.getItem("authToken"),
         corpId: corpoId
       };
       fetch(URL.getTemplateGrps, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(json),
       })
@@ -1044,7 +1055,7 @@ export default class ProfileDetails extends React.Component {
               message: responseJson.statusDetails,
               buttons: [
                 {
-                  label: "ok",
+                  label: "OK",
                   className: "confirmBtn",
                   onClick: () => { },
                 },
@@ -1058,7 +1069,7 @@ export default class ProfileDetails extends React.Component {
               message: responseJson.statusDetails,
               buttons: [
                 {
-                  label: "ok",
+                  label: "OK",
                   className: "confirmBtn",
                   onClick: () => { },
                 },
@@ -1101,15 +1112,17 @@ export default class ProfileDetails extends React.Component {
       })
       this.closeTheModal(event);
 
+
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       var body = {
-        authToken: sessionStorage.getItem("authToken"),
         corpEntity: corpEntity
       };
 
       fetch(URL.addCorpMember, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body)
       })
@@ -1238,7 +1251,6 @@ export default class ProfileDetails extends React.Component {
     )
   }
 
-
   render() {
     return (
       <div>
@@ -1300,18 +1312,13 @@ export default class ProfileDetails extends React.Component {
                     </tr>
                   </tbody>
                 </table>
-                <div hidden={sessionStorage.getItem("roleID") !== "2"} id="disLinkToBecomCorpMem" style={{ display: 'flex', paddingTop: "6px", marginBottom: "7px" }}>
-                  <a href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a>
-                  {/* <div style={{ paddingTop: "6px" }}>
-                    To become member of the corporate entity.
-                  </div>
-                  <div>
-                    <button className="btn btn-link" onClick={e => this.openModalForCorpAccount(e)}>Click here</button>
-                  </div> */}
-                </div>
-                <a hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
+                <a hidden={sessionStorage.getItem("roleID") !== "2"} href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a> <br />
+                <a style={{ marginBottom: "7px" }} hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
                   this.props.history.push("/exitFromCorporate");
-                }}>Exit from corporate entity?</a>
+                }}>Exit from corporate entity?</a> <br />
+                <a hidden={!(sessionStorage.getItem("roleID") === "2")} href="" onClick={() => {
+                  this.props.history.push("/userFeedback");
+                }}>Got any feedback thought on your mind?</a>
               </CardBody>
             </Card>
             <Row id="buttons" className="mb-3">

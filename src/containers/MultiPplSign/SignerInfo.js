@@ -80,7 +80,6 @@ openEmailModal: false,
     document.body.removeEventListener('click', this.handleClickOutside);
 
     let obj = {
-      authToken: sessionStorage.getItem('authToken'),
       operationtype: "SRCH",
       //    groupId:"",
       userid: "8",
@@ -320,7 +319,6 @@ openEmailModal: false,
   handleSelectContact = (contact, index) => {
     if (contact.contactType === "g") {
       let obj = {
-        authToken: sessionStorage.getItem('authToken'),
         operationtype: "GRP",
         groupId: contact.contactId,
         userid: "8",
@@ -487,19 +485,19 @@ openEmailModal: false,
             }
 
             let body = {
-              authToken: sessionStorage.getItem("authToken"),
               userInfo: [{
                 "firstName": name, "emailId": email, "mobileNo": mobile
               }]
             }
 
 
-
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
             fetch(URL.insertToAddressBook, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -855,11 +853,12 @@ openEmailModal: false,
 
   //--API Call For getting the Template Validations from server-----------
   getEmailValidation = () => {
-    var authToken = "?authToken=" + sessionStorage.getItem("authToken");
-    fetch(URL.getEmailTemplateValidation + authToken, {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    fetch(URL.getEmailTemplateValidation, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
     })
       .then((response) => {
@@ -1148,10 +1147,12 @@ if(this.state.declineSigning===false){
   }
 
   fetchAddressBookDetails(obj) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.fetchAddressBook, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     }).then((response) => {
@@ -1187,10 +1188,12 @@ if(this.state.declineSigning===false){
   }
 
   fetchAddressBookGroupDetails = (obj, index) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.fetchAddressBook, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -1354,6 +1357,8 @@ handleDateInput(e) {
             name="endDate"
             onChange={this.finalDate.bind(this)}
             onInput={this.handleDateInput.bind(this)}
+            required={true}
+            onKeyDown={(e) => e.preventDefault()} // Prevents manual typing
           />
           <label id="enddate">Document Name: &nbsp;</label>
           <label id="docName">

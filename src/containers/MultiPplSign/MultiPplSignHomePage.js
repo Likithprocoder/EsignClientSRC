@@ -203,7 +203,7 @@ export default class MultiPplSignHomePage extends React.Component {
   };
   mpsSigningJob(data) {
     //getting access for external signer
-    fetch(URL.mpsGetGuestAccessV2, {
+    fetch(URL.mpsGetGuestAccess1, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -314,6 +314,7 @@ export default class MultiPplSignHomePage extends React.Component {
     let data = await response.blob();
     let testResponse = await this.test(data);
   }
+
 
   //routing to preview page
   async test(data) {

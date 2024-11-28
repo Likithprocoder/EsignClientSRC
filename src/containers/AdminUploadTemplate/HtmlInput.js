@@ -125,14 +125,14 @@ function HtmlInput1(props) {
 
     // to make server fetch calls 
     useEffect(() => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
-            })
+            body: JSON.stringify({})
         }
 
         fetch(URL.getAllTemplateGrps, options)

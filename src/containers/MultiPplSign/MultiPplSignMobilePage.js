@@ -66,8 +66,10 @@ export default class MultiPplSignMobilePage extends React.Component {
     this.setState({ loaded: false, openOTPModal: false });
     var path = null;
     let pathURL = this.props.location.search;
+    let pathNAME = this.props.location.pathname;
     var data = null;
-    // console.log(pathURL.includes("mobak"));
+    // console.log(this.props);
+    // console.log(pathURL);
     this.setState({ loaded: true });
     let regNum = new RegExp(/^[0-9]*$/);
 
@@ -75,54 +77,71 @@ export default class MultiPplSignMobilePage extends React.Component {
     // if link is only with mobak param without ref number show modal with asking ref no.
     //if link is with mobak param along with ref number as a part of link validate ref no and show modal with aking otp with prefield ref no.
     // if (pathURL.includes("mobak") && !pathURL.includes("=")) {
-      if (pathURL.includes("mview")) {
-      this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
-    } else if (pathURL.includes("mobak=")) {
-      path = pathURL.split("mobak=");
-      //console.log(path[1]);
-      this.setState({ refid: path[1], isCompleteUrl: true });
-
-      if (!regNum.test(path[1])) {
-        confirmAlert({
-          message: "Invalid reference number",
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => {
-                this.props.history.push("/login");
+    if (pathNAME.includes("/deGuest")) {
+      if (pathURL !== "" && !pathURL.includes("?mview")) {
+          confirmAlert({
+            message: "Invalid url",
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/login");
+                },
               },
-            },
-          ],
-        });
-      } else {
-        this.setState({ loaded: true, openOTPModal: true });
-        // var accesskey = { accessKey: path[1] };
-        // data = accesskey;
-        let obj = {
-          optnType: "MPSJOB",
-          mobRefNo: path[1],
-          //  loginname: loginName,
-          userIP: sessionStorage.getItem("userIP"),
-        };
-        this.setState({ refid: path[1], readOnly: true });
+            ],
+          });
+        } else {
+          this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
+        }
+    }
+    // else if (pathURL.includes("mobak=")) {
+    //   path = pathURL.split("mobak=");
+    //   //console.log(path[1]);
+    //   this.setState({ refid: path[1], isCompleteUrl: true });
 
-        this.setState({ loaded: true, openOTPModal: true });
-        this.generateotp(obj);
-        // this.mpsSigningJob(data);
-      }
-    } else if (pathURL.includes("jsak=")) {
-      path = pathURL.split("jsak=");
-      var accesskey = { accessKey: path[1] };
-      data = accesskey;
-      this.mpsSigningJob(data);
-    } else if (pathURL.includes("dwfl=")) {
-      path = pathURL.split("dwfl=");
-      var accesskey = { accessKey: path[1] };
-      data = accesskey;
-      this.downloadSignCmpltd(data);
+    //   if (!regNum.test(path[1])) {
+    //     confirmAlert({
+    //       message: "Invalid reference number",
+    //       buttons: [
+    //         {
+    //           label: "OK",
+    //           className: "confirmBtn",
+    //           onClick: () => {
+    //             this.props.history.push("/login");
+    //           },
+    //         },
+    //       ],
+    //     });
+    //   } else {
+    //     this.setState({ loaded: true, openOTPModal: true });
+    //     // var accesskey = { accessKey: path[1] };
+    //     // data = accesskey;
+    //     let obj = {
+    //       optnType: "MPSJOB",
+    //       mobRefNo: path[1],
+    //       //  loginname: loginName,
+    //       userIP: sessionStorage.getItem("userIP"),
+    //     };
+    //     this.setState({ refid: path[1], readOnly: true });
+
+    //     this.setState({ loaded: true, openOTPModal: true });
+    //     this.generateotp(obj);
+    //     // this.mpsSigningJob(data);
+    //   }
+    // } else if (pathURL.includes("jsak=")) {
+    //   path = pathURL.split("jsak=");
+    //   var accesskey = { accessKey: path[1] };
+    //   data = accesskey;
+    //   this.mpsSigningJob(data);
+    // } else if (pathURL.includes("dwfl=")) {
+    //   path = pathURL.split("dwfl=");
+    //   var accesskey = { accessKey: path[1] };
+    //   data = accesskey;
+    //   this.downloadSignCmpltd(data);
     
-    }else {
+    // } 
+    else {
       confirmAlert({
         message: "Invalid url",
         buttons: [
@@ -136,18 +155,6 @@ export default class MultiPplSignMobilePage extends React.Component {
         ],
       });
     }
-
-    // var timeleft = 30;
-    // var downloadTimer = setInterval(function () {
-    //   timeleft--;
-    //   document.getElementById("countdowntimer").textContent = timeleft;
-    //   if (timeleft <= 0){
-    //       clearInterval(downloadTimer);
-    //  document.getElementById("resendotpbtn").style.display = "";
-
-    //   }
-
-    // }, 1000);
   }
 
   // resend otp counter
@@ -210,8 +217,7 @@ export default class MultiPplSignMobilePage extends React.Component {
   };
   mpsSigningJob(data) {
     //getting access for external signer
-    // fetch(URL.mpsGetGuestAccess, {
-    fetch(URL.mpsGetGuestAccessV2, {
+    fetch(URL.mpsGetGuestAccess1, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -397,6 +403,8 @@ export default class MultiPplSignMobilePage extends React.Component {
       equalPageDimensions: equalPageDimensionsCheck,
     };
     this.setState({ loaded: true });
+    // console.log(this.props.history);
+    //alert("MPSMP");
     this.props.history.push({
       pathname: "/preview",
       frompath: "deGuest",

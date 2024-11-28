@@ -4,7 +4,7 @@ import { URL } from '../URLConstant';
 import '../../scss/jquery.dataTables.css'
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-
+import "./TxnDetails.css";
 var $ = require('jquery');
 var dt = require('datatables.net');
 var datetime = require('datetime-moment')
@@ -22,16 +22,17 @@ export default class TxnDetails extends React.Component {
         }
     }
 
-
     componentDidMount() {
         var body = {
-            "authToken": sessionStorage.getItem("authToken")
+            "loginname": sessionStorage.getItem("username"),
         };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false })
         fetch(URL.getUnitsHistory, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify(body)
         }).then((response) => {
@@ -41,9 +42,11 @@ export default class TxnDetails extends React.Component {
             if (responseJson.status === "SUCCESS") {
                 txnData = responseJson.txnHistory
                 this.setState({ loaded: true })
+                // Capture the `this` context of the React component
+                const that = this;
+
                 $(document).ready(function () {
                     $.fn.dataTable.moment('DD-MM-YYYY HH:mm:ss');
-                    // var table = $('#listtable').DataTable( {
                     $('#listtable').dataTable({
                         "pagingType": "full_numbers",
                         "ordering": false,
@@ -90,17 +93,22 @@ export default class TxnDetails extends React.Component {
                             {
                                 render: function (data, type, full, meta) {
                                     if (full.signMode === "2" || full.signMode === "4" || full.signMode === "1" ) {
-                                       
-                                        return '<a href=' + URL.getSummaryPDF + "?tID=" + btoa(full.txnId) + "&aT=" + btoa(sessionStorage.getItem("authToken")) +'>Download</a>'
+                                        // Add a data attribute to store txnId
+                                        return `<button class="download-btn" data-txnid="${full.txnId}">Download</button>`;
                                     } else {
                                         return ""
                                     }
                                 }
                             }
-                        ]
+                        ]   
                     });
+                     // Attach event listener using arrow function to ensure correct `this`
+                $('#listtable tbody').on('click', '.download-btn', function(event) {
+                    const txnId = $(event.currentTarget).data('txnid');
+                    // Use `that` to access the React method, not `this`
+                    that.downloadPDF(txnId);  // Correctly refer to the React component's method
                 });
-                // table.buttons().container().appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+                });
             } else {
                 this.setState({ loaded: true })
                 if (responseJson.statusDetails === "Session Expired!!") {
@@ -117,8 +125,6 @@ export default class TxnDetails extends React.Component {
                             }
                         ]
                     })
-                    //alert(responseJson.statusDetails)
-                    //this.props.history.push('/')
                 }
             }
         }).catch(e => {
@@ -126,6 +132,38 @@ export default class TxnDetails extends React.Component {
             alert(e)
         })
     }
+
+    // JavaScript function to handle the download
+    downloadPDF(txnId) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    
+    fetch(URL.getSummaryPDF + "?tID=" + btoa(txnId), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jsonWebToken}`
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob(); // Assuming the response is a file (PDF)
+        } else {
+            throw new Error('Failed to download file');
+        }
+    })
+    .then(blob => {
+        // Create a download link and click it programmatically
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'summary.pdf'; // You can modify the file name if needed
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
     handleEdit(e) {
         confirmAlert({
@@ -140,22 +178,6 @@ export default class TxnDetails extends React.Component {
         })
         //  alert(e)
     }
-
-    // renderTableData() {
-    //     return txnData.map((user, index) => {
-    //         const { slNo, date, formattedAmount, signType, txnId, filename } = user //destructuring
-    //         return (
-    //             <tr key={index}>
-    //                 <td>{slNo}</td>
-    //                 <td >{date}</td>
-    //                 <td>{formattedAmount}</td>
-    //                 <td>{signType}</td>
-    //                 <td>{txnId}</td>
-    //                 <td>{filename}</td>
-    //             </tr>
-    //         )
-    //     })
-    // }
 
     render() {
         return (
