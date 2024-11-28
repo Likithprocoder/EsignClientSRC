@@ -90,13 +90,12 @@ const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegra
 const UserFeedback = React.lazy(() => import("./containers/Feebback/UserFeedback"));
 const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUserFeedbackList"));
 const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
-
-
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList = React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
 const corporateAdminTopUp = React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
 const AuditLogRecords = React.lazy(() => import("./containers/AuditLog/ViewAuditLogList"));
 const waterMrkPreview = React.lazy(() => import("./containers/Upload/PDFWaterMarkPreview"));
+const configProperties = React.lazy(() => import("./containers/PropertiesConfiguration/PropertiesConfig"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -341,9 +340,12 @@ const routes = [
     path: "/waterMarkPreview",
     name: "PDF Water Mark Preview",
     component: waterMrkPreview
+  },
+  {
+    path: "/editConfigProperties",
+    name: "Edit Configuration Properties",
+    component: configProperties
   }
-
-
 ];
 
 
