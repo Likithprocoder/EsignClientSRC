@@ -154,7 +154,6 @@ class EmployeeList extends Component {
         fetch(URL.updateCorpEmpMapping, options)
             .then(response => (response.json()))
             .then(data => {
-                console.log(data);
                 if (data.status === "SUCCESS") {
                     if (data.statusDetails == "Employee removed successfully") {
                         this.setState({ contactModal: false });
@@ -368,8 +367,6 @@ class EmployeeList extends Component {
             alert("Please enter designation");
             return false;
         }
-        
-        console.log(this.state.empMoreDetail);
     
         if (
             name === this.state.empMoreDetail.name &&
@@ -406,7 +403,6 @@ class EmployeeList extends Component {
                                 "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
                             }
                         };
-                        console.log(body);
                         const url = URL.updateCorpEmpMapping;
     
                         this.setState({ loaded: false });

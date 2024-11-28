@@ -15,7 +15,7 @@ class ServerMaintainanceRegistration extends Component {
         <div>
           <h3 style={{ textAlign: "center", marginTop: "10%" }}>
             Server under maintenance. Sorry for the inconvenience. Please login
-            after 1 P.M on 28-June-2024..
+            after 6:30 P.M on 26-November-2024..
           </h3>
         </div>
       </div>

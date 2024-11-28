@@ -953,8 +953,6 @@ const Preview = (props) => {
             }
           }
 
-          console.log("Flat array:", flatArray);
-
           setCount(count + flatArray.length);
           let tempFlatArray = [...flatArray];
           tempFlatArray = tempFlatArray.filter(
@@ -3198,7 +3196,7 @@ const Preview = (props) => {
         }
       }
 
-      console.log("docid: "+docid);
+      // console.log("docid: "+docid);
       let obj = {
         //****starts here
         //added the keys for template based generated PDF.
@@ -3237,7 +3235,6 @@ const Preview = (props) => {
           docdata: "",
         },
       };
-      console.log({ obj });
 
       if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
         data.append("file", null);
@@ -4069,7 +4066,6 @@ const Preview = (props) => {
         body: JSON.stringify(body),
       })
         .then((response) => {
-          console.log(response);
           // if (response.status === 400) {
           //   props.history.push("/esign_error");
           // } else if (response.status === 200) {
@@ -4080,7 +4076,6 @@ const Preview = (props) => {
           // }
         })
         .then((responseJson) => {
-          console.log(responseJson)
           if (responseJson.status=== "SUCCESS") {
             setLoaded(true);
             setTandC(responseJson.TandC);
@@ -4275,7 +4270,6 @@ const Preview = (props) => {
     if (dragArray.length != 0) {
       let result = false;
       result = stampingPosition();
-      console.log(result);
       if (result == true) {
         confirmAlert({
           // message:
@@ -4296,7 +4290,6 @@ const Preview = (props) => {
         if (planActive == true) {
           document.getElementById("generateOtpBtn").disabled = true;
           let data = new FormData();
-          console.log("docId: "+docId);
           let obj = {
             authToken: sessionStorage.getItem("authToken"),
             selectedMode: selectedMode,

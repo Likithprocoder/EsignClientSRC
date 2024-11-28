@@ -76,7 +76,6 @@ export default class MultiPplSignMobilePage extends React.Component {
     //if link is with mobak param along with ref number as a part of link validate ref no and show modal with aking otp with prefield ref no.
     // if (pathURL.includes("mobak") && !pathURL.includes("=")) {
       if (pathURL.includes("mview")) {
-      console.log("inside mview")
       this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
     } else if (pathURL.includes("mobak=")) {
       path = pathURL.split("mobak=");
@@ -359,9 +358,6 @@ export default class MultiPplSignMobilePage extends React.Component {
           });
       }
 
-      // Output page dimensions
-      console.log("Page dimensions:", pageDimensions);
-
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
@@ -374,8 +370,6 @@ export default class MultiPplSignMobilePage extends React.Component {
           }
         }
       }
-      console.log(equalPageDimensionsCheck);
-      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -445,6 +439,7 @@ export default class MultiPplSignMobilePage extends React.Component {
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
           //call resend otp counter
+          // this.resendOtpTimer();
           this.startResendOtpTimer();
 
           // console.log("success");

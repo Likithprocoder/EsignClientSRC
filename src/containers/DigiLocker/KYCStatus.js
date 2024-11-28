@@ -41,8 +41,7 @@ class KYCStatus extends React.Component {
     // this.setState({ loaded: false });
 
     var body = {
-      loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
+      authToken: sessionStorage.getItem("authToken")
     };
     this.setState({ loaded: false });
     fetch(URL.getFlags, {

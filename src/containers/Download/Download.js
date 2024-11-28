@@ -52,7 +52,6 @@ export default class Download extends React.Component {
   componentWillMount() {
     var url = window.location.href;
     var commonurl = url.split("/download");
-    console.log(this.props);
     this.setState({ commonurl: commonurl[0] });
     let qp = this.props.location.search;
     qp = qp.replace("?", "");
@@ -623,8 +622,6 @@ export default class Download extends React.Component {
         signPage: this.state.signPage,
         pageList: this.state.pageList
       }
-      console.log({signCoordinates});
-      console.log(this.state.signCoordinates);
   
       let data1 = {
         // files: file1,

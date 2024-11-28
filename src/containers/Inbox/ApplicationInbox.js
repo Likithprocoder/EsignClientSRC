@@ -396,7 +396,6 @@ export default class ApplicationInbox extends React.Component {
     var reader = new FileReader();
     reader.onloadend = function (e) {
       var data = reader.result;
-      console.log("data" + data);
       if (files.name.includes(".jpg") || files.name.includes(".png")) {
         //  this.imageToPDF(files);
       } else {
@@ -802,7 +801,6 @@ export default class ApplicationInbox extends React.Component {
       },
     })
       .then((response) => {
-        console.log(response.status);
         if (response.status === 423) {
           confirmAlert({
             message: "Session Expired",

@@ -25,7 +25,6 @@ export default class TxnDetails extends React.Component {
 
     componentDidMount() {
         var body = {
-            "loginname": sessionStorage.getItem("username"),
             "authToken": sessionStorage.getItem("authToken")
         };
         this.setState({ loaded: false })

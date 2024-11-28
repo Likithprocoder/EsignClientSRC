@@ -47,7 +47,6 @@ class EditProfile extends Component {
 
   componentWillMount() {
     var body = {
-      loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
@@ -86,7 +85,7 @@ class EditProfile extends Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -144,7 +143,7 @@ class EditProfile extends Component {
       value = e.target.value;
 
       if (regNum.test(value)) {
-          this.setState({ mobile: value });
+        this.setState({ mobile: value });
       } else {
         return false;
       }
@@ -176,9 +175,7 @@ class EditProfile extends Component {
     // };
     // console.log(json1, this.state.optnType);
     let json = {
-      loginname: this.state.loginname,
       username: this.state.username,
-      authToken: sessionStorage.getItem("authToken"),
       // mobile: btoa(this.state.mobile),
       // email: btoa(this.state.email.toLowerCase()),
       mobile: this.state.mobile,
@@ -186,8 +183,8 @@ class EditProfile extends Component {
       // password: btoa(this.state.password),
       userIP: sessionStorage.getItem("userIP"),
     };
-    if (this.state.optnType === "USREDM"  || this.state.optnType === "USREDE" ||this.state.optnType === "USREDU") {
-   
+    if (this.state.optnType === "USREDM" || this.state.optnType === "USREDE" || this.state.optnType === "USREDU") {
+
       if (
         this.state.mobileNumOtp.length !== 0 &&
         this.state.mobileNumOtp.length == 6 &&
@@ -212,7 +209,7 @@ class EditProfile extends Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -224,7 +221,7 @@ class EditProfile extends Component {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -236,17 +233,22 @@ class EditProfile extends Component {
       text: "#FFFFFF",
     };
   };
-  editProfileCall = (data) => {
+  editProfileCall = async (data) => {
     let json = data;
     let myColor = {
       color: yellow,
+    };
+    let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(json));
+    var dataToserver = {
+      authToken: sessionStorage.getItem("authToken"),
+      encryptedData: encryptedData
     };
     fetch(URL.editProfile, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(json),
+      body: JSON.stringify(dataToserver),
     })
       .then((response) => {
         return response.json();
@@ -267,7 +269,7 @@ class EditProfile extends Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -277,14 +279,14 @@ class EditProfile extends Component {
           confirmAlert({
             message:
               responseJson.statusDetails ===
-              "Validation Failed.Enter Correct OTP"
+                "Validation Failed.Enter Correct OTP"
                 ? "Enter the correct OTP"
                 : responseJson.statusDetails,
             buttons: [
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -371,45 +373,98 @@ class EditProfile extends Component {
   //             email: responseJson.email,
   //             mobile: responseJson.mobile,
   //--------------Update Fetch API----------
-  userUpdateAPI = () => {
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
+    }
+  };
+
+
+  userUpdateAPI = async () => {
     let editJsondata;
     // email update json
     if (this.state.optnType == "USREDE") {
       editJsondata = {
         optnType: "USREDE",
         emailId: this.state.email.toLowerCase(),
-        loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
       this.setState({ editJsondata: editJsondata });
     } else if (this.state.optnType == "USREDM") {
-        var mobNumFirstDigit= this.state.mobile.charAt(0);
-        if(mobNumFirstDigit<6){
-          confirmAlert({
-            message: "Invalid mobile number, please verify",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-          return;
-        }
+      var mobNumFirstDigit = this.state.mobile.charAt(0);
+      if (mobNumFirstDigit < 6) {
+        confirmAlert({
+          message: "Invalid mobile number, please verify",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { },
+            },
+          ],
+        });
+        return;
+      }
       editJsondata = {
         optnType: "USREDM",
         mobileNum: this.state.mobile,
-        loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
     } else if (this.state.optnType === "USREDU") {
       editJsondata = {
         optnType: "USREDU",
         emailId: this.state.email.toLowerCase(),
         mobileNum: this.state.mobile,
-        loginname: this.state.loginname,
-        authToken: sessionStorage.getItem("authToken"),
       };
     }
     // console.log(this.state.prevusername, this.state.username);
@@ -423,7 +478,7 @@ class EditProfile extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -437,7 +492,7 @@ class EditProfile extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -451,7 +506,7 @@ class EditProfile extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -475,12 +530,17 @@ class EditProfile extends Component {
             this.state.mobile.length == 10 &&
             this.state.mobile.trim() !== ""
           ) {
+            let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(data));
+            var dataToserver = {
+              authToken: sessionStorage.getItem("authToken"),
+              encryptedData: encryptedData
+            };
             fetch(URL.getOtpforEditProfileVerftn, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(data),
+              body: JSON.stringify(dataToserver),
             })
               .then((response) => {
                 return response.json();
@@ -492,7 +552,7 @@ class EditProfile extends Component {
                 });
 
                 if (responseJson.status === "SUCCESS") {
-                 
+
                   if (
                     JSON.stringify(responseJson).includes("mobRefNo") ||
                     JSON.stringify(responseJson).includes("emailRefNo")
@@ -503,49 +563,49 @@ class EditProfile extends Component {
                     ) {
                       this.mobRefNo = responseJson.mobRefNo;
                       this.emailRefNo = responseJson.emailRefNo;
-                       confirmAlert({
-                         message: "OTP sent to registered email ID and mobile number.",
-                         buttons: [
-                           {
-                             label: "OK",
-                             className: "confirmBtn",
-                             onClick: () => {
-                               this.startResendOtpTimer();
-                               document.getElementById(
-                                 "mobileOtpContainer"
-                               ).style.display = "";
-                               document.getElementById(
-                                 "emailOtpContainer"
-                               ).style.display = "";
-                               document.getElementById(
-                                 "username"
-                               ).readOnly = true;
-                               document.getElementById("email").readOnly = true;
-                               document.getElementById(
-                                 "mobile"
-                               ).readOnly = true;
-                               //k------------making userEdit,mobileEdit,emailEdit icons disable-------------
-                               document.getElementById(
-                                 "mobileEdit"
-                               ).style.pointerEvents = "none";
-                               document.getElementById(
-                                 "emailEdit"
-                               ).style.pointerEvents = "none";
-                               document.getElementById(
-                                 "userEdit"
-                               ).style.pointerEvents = "none";
-                               document.getElementById(
-                                 "submitBtn"
-                               ).style.display = "none";
-                               document.getElementById(
-                                 "submitchangesBtn"
-                               ).style.display = "";
-                               // document.getElementById("resentOTPBtn").style.display = "";
-                             },
-                           },
-                         ],
-                       });
-                      
+                      confirmAlert({
+                        message: "OTP sent to registered email ID and mobile number.",
+                        buttons: [
+                          {
+                            label: "OK",
+                            className: "confirmBtn",
+                            onClick: () => {
+                              this.startResendOtpTimer();
+                              document.getElementById(
+                                "mobileOtpContainer"
+                              ).style.display = "";
+                              document.getElementById(
+                                "emailOtpContainer"
+                              ).style.display = "";
+                              document.getElementById(
+                                "username"
+                              ).readOnly = true;
+                              document.getElementById("email").readOnly = true;
+                              document.getElementById(
+                                "mobile"
+                              ).readOnly = true;
+                              //k------------making userEdit,mobileEdit,emailEdit icons disable-------------
+                              document.getElementById(
+                                "mobileEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "emailEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "userEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "submitBtn"
+                              ).style.display = "none";
+                              document.getElementById(
+                                "submitchangesBtn"
+                              ).style.display = "";
+                              // document.getElementById("resentOTPBtn").style.display = "";
+                            },
+                          },
+                        ],
+                      });
+
                     } else if (
                       JSON.stringify(responseJson).includes("emailRefNo")
                     ) {
@@ -558,38 +618,38 @@ class EditProfile extends Component {
                             label: "OK",
                             className: "confirmBtn",
                             onClick: () => {
-                               document.getElementById("mobile").readOnly = true;
-                            document.getElementById("email").readOnly = true;
-                            // document.getElementById("mobileEdit").disabled = true;
-                            document.getElementById("username").readOnly = true;
-                            // document.getElementById("userEdit").disabled = true;
-                            //k------------making userEdit,mobileEdit,emailEdit icons disable-------------
-                            document.getElementById(
-                              "mobileEdit"
-                            ).style.pointerEvents = "none";
-                            document.getElementById(
-                              "emailEdit"
-                            ).style.pointerEvents = "none";
-                            document.getElementById(
-                              "userEdit"
-                            ).style.pointerEvents = "none";
-                            document.getElementById(
-                              "mobileOtpContainer"
-                            ).style.display = "none";
-                            document.getElementById(
-                              "emailOtpContainer"
-                            ).style.display = "";
-                            document.getElementById("submitBtn").style.display =
-                              "none";
-                            document.getElementById(
-                              "submitchangesBtn"
-                            ).style.display = "";
+                              document.getElementById("mobile").readOnly = true;
+                              document.getElementById("email").readOnly = true;
+                              // document.getElementById("mobileEdit").disabled = true;
+                              document.getElementById("username").readOnly = true;
+                              // document.getElementById("userEdit").disabled = true;
+                              //k------------making userEdit,mobileEdit,emailEdit icons disable-------------
+                              document.getElementById(
+                                "mobileEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "emailEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "userEdit"
+                              ).style.pointerEvents = "none";
+                              document.getElementById(
+                                "mobileOtpContainer"
+                              ).style.display = "none";
+                              document.getElementById(
+                                "emailOtpContainer"
+                              ).style.display = "";
+                              document.getElementById("submitBtn").style.display =
+                                "none";
+                              document.getElementById(
+                                "submitchangesBtn"
+                              ).style.display = "";
 
                             },
                           },
                         ],
                       });
-                     
+
                       // document.getElementById("resentOTPBtn").style.display = "";
                     } else if (
                       JSON.stringify(responseJson).includes("mobRefNo")
@@ -638,7 +698,7 @@ class EditProfile extends Component {
                           },
                         ],
                       });
-                    
+
                     }
                   }
                 } else {
@@ -651,7 +711,7 @@ class EditProfile extends Component {
                         {
                           label: "OK",
                           className: "confirmBtn",
-                          onClick: () => {},
+                          onClick: () => { },
                         },
                       ],
                     });
@@ -663,7 +723,7 @@ class EditProfile extends Component {
                           {
                             label: "OK",
                             className: "confirmBtn",
-                            onClick: () => {},
+                            onClick: () => { },
                           },
                         ],
                       });
@@ -674,7 +734,7 @@ class EditProfile extends Component {
                           {
                             label: "OK",
                             className: "confirmBtn",
-                            onClick: () => {},
+                            onClick: () => { },
                           },
                         ],
                       });
@@ -694,7 +754,7 @@ class EditProfile extends Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -706,7 +766,7 @@ class EditProfile extends Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -718,7 +778,7 @@ class EditProfile extends Component {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -730,11 +790,11 @@ class EditProfile extends Component {
     this.setState({ timeleft: 30 });
     let timerElement = document.getElementById("timer");
     let resendOtpBtn = document.getElementById("resentOTPBtn");
-  
+
     if (timerElement && resendOtpBtn) {
       resendOtpBtn.style.display = "none";
       timerElement.style.display = "";
-  
+
       let timeleftSec = this.state.timeleft;
 
       // Clear any existing timer event
@@ -748,7 +808,7 @@ class EditProfile extends Component {
         } else {
           timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
         }
-  
+
         timeleftSec -= 1;
       }, 1000);
     }
@@ -783,12 +843,12 @@ class EditProfile extends Component {
   // };
 
   goBackToProfileDetails = () => {
-    this.setState({ backToProfileDetails: false});
+    this.setState({ backToProfileDetails: false });
     this.props.history.push("/profileDetails");
     document.getElementById("timer").style.display = "none";
     document.getElementById("resentOTPBtn").style.display = "none";
     this.stopResendOtpTimer();
-  };  
+  };
 
   render() {
     return (
@@ -814,9 +874,9 @@ class EditProfile extends Component {
         />
         <Row>
           <Col xs="12" sm="6" md="5" style={{ marginLeft: "-25px" }}>
-          {(this.state.backToProfileDetails) && (<Button style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px", margin: "0% 6% 2% 6%" }} onClick={this.goBackToProfileDetails}>
-                    <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey"}}>&larr;</div>
-                  </Button>)}
+            {(this.state.backToProfileDetails) && (<Button style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px", margin: "0% 6% 2% 6%" }} onClick={this.goBackToProfileDetails}>
+              <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
+            </Button>)}
             <Card className="mx-4">
               <CardHeader>
                 <b>Edit Profile</b>
@@ -1045,7 +1105,7 @@ class EditProfile extends Component {
                           style={{ display: "none", margin: "0% 0% 0% 2%" }}
                           id="resentOTPBtn"
                           onClick={this.userUpdateAPI}
-                          // onClick={this.verify}
+                        // onClick={this.verify}
                         >
                           Resend OTP
                         </Button>{" "}
@@ -1072,7 +1132,7 @@ class EditProfile extends Component {
             id="submitBtn"
             onClick={this.userUpdateAPI}
 
-            // onClick={this.profileEdit}
+          // onClick={this.profileEdit}
           >
             Save Changes &#8594;
           </Button>

@@ -22,12 +22,12 @@ export default class RateCard extends React.Component{
         };
     }
     toQRCode(e){
-        sessionStorage.setItem("amount", e)
+        sessionStorage.setItem("units", e)
         //sessionStorage.setItem("paymentType", this.state.paymentType);
          //this.props.history.push("/qrcode");
         let data = {
           paymentType: "ESM",
-          amount:e
+          units:e
         };
 
         this.setState({ loaded: true });
@@ -49,7 +49,7 @@ export default class RateCard extends React.Component{
                //   this.props.history.push("/qrcode");
                let data = {
                  paymentType: "ESM",
-                 amount: this.state.customUnits * 5,
+                 units: this.state.customUnits,
                };
 
                this.setState({ loaded: true });
@@ -105,7 +105,7 @@ export default class RateCard extends React.Component{
                     <td>{rate.slNo}</td>
                     <td>{rate.amount}</td>
                     <td>{rate.units}</td>
-                    <td><Badge color="primary" style={{cursor: "pointer"}} onClick={() => this.toQRCode(rate.amount)}>TopUp</Badge></td>
+                    <td><Badge color="primary" style={{cursor: "pointer"}} onClick={() => this.toQRCode(rate.units)}>TopUp</Badge></td>
                 </tr>
             )
         })

@@ -894,7 +894,6 @@ const MultiPplSignPreview = (props) => {
           dragArr.dragId !== batchValue[0].dragId
       );
     }
-    console.log({batchArray});
 
     let newLeft = Number(mainXCord.slice(0, -2));
     let newTop = Number(mainYCord.slice(0, -2));
@@ -921,8 +920,6 @@ const MultiPplSignPreview = (props) => {
         batchArray[i].top = mainYCord;
       }
     }
-    console.log({dragIdsToBeAdded});
-    console.log({dragIdsToBeRemoved});
 
     // Update the customPositionedDragIds state
     setCustomPositionedDragIds(prevCustomPositionedDragIds => [
@@ -974,8 +971,6 @@ const MultiPplSignPreview = (props) => {
         batchArray[i].resizeDragWidth = mainResizedWidth;
       }
     }
-    console.log({dragIdsToBeAdded});
-    console.log({dragIdsToBeRemoved});
 
     //Update the customResizedDragIds state
     setCustomResizedDragIds(prevCustomResizedDragIds => [
@@ -1164,8 +1159,6 @@ const MultiPplSignPreview = (props) => {
         // Remove duplicates and sort the array
         stringInputs = [...new Set(stringInputs)].sort((a, b) => a - b);
     
-        console.log(stringInputs);
-    
         if (stringInputs && stringInputs[0] !== 0 && stringInputs[0] !== currentPage) {
           jumpToPage(stringInputs[0] - 1);
         }
@@ -1283,7 +1276,6 @@ const MultiPplSignPreview = (props) => {
     } else {
       handleBadgeClick(option);
       if (document.getElementById("addCustomBtn").style.display === "") {
-        console.log("OPENED");
         document.getElementById("removeAll").style.marginTop = "-5px";
       }
       document.getElementById("range-fieldIdAdd").className = "range-field";
@@ -2062,7 +2054,6 @@ const MultiPplSignPreview = (props) => {
   };
 
   const nextPreview = () => {
-    console.log(dragArray);
     setSelectedOptionArray([]);
 
     let result = false;
@@ -2097,8 +2088,6 @@ const MultiPplSignPreview = (props) => {
       preparingSignerInfo();
       let lastDate = props.location.state.details.endDate;
       let noOfSigns = props.location.state.details.noSigns;
-
-      console.log(signerInfoo);
       let InputsVal = {
         emailDetails: props.location.state.details.emailDetails,
         declineSigning:props.location.state.details.declineSigning,
@@ -2168,7 +2157,6 @@ const MultiPplSignPreview = (props) => {
   };
 
   const handleModeChange = (e) => {
-    console.log(e.target.value);
     if (selectedOption) {
     setSelectedMode(e.target.value);
     setLoaded(true);

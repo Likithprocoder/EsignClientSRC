@@ -4010,7 +4010,6 @@ function NewTemplate(props) {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(webcamRef.current, 0, 0, canvas.width, canvas.height);
         const dataUri = canvas.toDataURL('image/jpeg', 0.9);
-        console.log(dataUri);
         setCaptureData(dataUri);
         const stream = webcamRef.current.srcObject;
         stream.getTracks().forEach(track => track.stop());
@@ -4162,7 +4161,6 @@ function NewTemplate(props) {
             );
             // Convert the cropped image to a data URL
             const croppedURL = canvas.toDataURL('image/jpeg', 0.9);
-            console.log(croppedURL);
             // Set the cropped image URL
             setCroppedImageUrl(croppedURL);
             setCropedSize(crop);
@@ -4206,7 +4204,6 @@ function NewTemplate(props) {
                             setSelectedOption('None')
                             base64Data = captureData.split(",")[1];
                             proceedingWithImg(base64Data);
-                            console.log(base64Data);
                         },
                     },
                     {
@@ -4216,7 +4213,6 @@ function NewTemplate(props) {
                         onClick: () => {
                             base64Data = croppedImageUrl.split(",")[1];
                             proceedingWithImg(base64Data);
-                            console.log(base64Data);
                             
                         },
                     },
@@ -4262,7 +4258,6 @@ function NewTemplate(props) {
                                 setSelectedOption('None')
                                 base64Data = captureData.split(",")[1];
                                 proceedingWithImg(base64Data);
-                                console.log(base64Data);
                             },
                         },
                         {
@@ -4291,7 +4286,6 @@ function NewTemplate(props) {
                                 // let imageURL = canvas.toDataURL('image/jpeg',"0.1");
                                 base64Data = imageURL.split(",")[1];
                                 proceedingWithImg(base64Data);
-                                console.log(base64Data);
                             },
                         },
                     ], closeOnClickOutside: false,

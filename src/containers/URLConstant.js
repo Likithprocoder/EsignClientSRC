@@ -1,15 +1,18 @@
 
-// const HOST = "/MYSIGN/";
-// var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
+const HOST = "/MYSIGN/";
+var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
 
 const { UpdateRounded } = require("@material-ui/icons");
 
-// const HOST = "https://docuxecstage.finfotech.co.in/MYSIGN/";
-// var paymenturl = "https://docuxecstage.finfotech.co.in/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "https://uat.docuexec.com/MYSIGN/";
+// var paymenturl = "https://uat.docuexec.com/PAYMENTSIMULATOR/getunitscalltesting";
 
-const HOST = "http://localhost:8090/MYSIGN/";
-var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "http://localhost:8090/MYSIGN/";
+// var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
+
+// const HOST = "http://10.10.40.43:8090/MYSIGN/";
+// var paymenturl = "http://10.10.40.43:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
   "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.28";
@@ -150,6 +153,7 @@ let URL = {
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
   deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
+  getKey: HOST+"getkey"
 };
 
 module.exports = { URL };

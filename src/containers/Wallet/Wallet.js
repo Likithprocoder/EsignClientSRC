@@ -119,8 +119,7 @@ export default class Wallet extends React.Component {
 
   componentDidMount() {
     var body = {
-      loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
+      authToken: sessionStorage.getItem("authToken")
     };
     // this.setState({ loaded: false })
     fetch(URL.getFlags, {
@@ -199,7 +198,6 @@ export default class Wallet extends React.Component {
         return response.json();
       })
       .then((responseJson) => {
-        console.log(responseJson.uatsetupenabled)
         let uatsetupenabled = responseJson.uatsetupenabled;
         sessionStorage.setItem("uatsetupenabled", uatsetupenabled);
         if (responseJson.status === "SUCCESS") {
@@ -350,7 +348,6 @@ export default class Wallet extends React.Component {
 
   verifyMobile = () => {
     var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
       authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.getOtp, {
@@ -667,11 +664,10 @@ export default class Wallet extends React.Component {
                         this.state.noSigns
                       )}
                     >
-                      {this.widgetvalue(
+                      {/* {this.widgetvalue(
                         this.state.signedcount,
                         this.state.noSigns
-                      )}{" "}
-                      %
+                      )}{" "} */}
                     </Progress>
                   </Progress>
                 </div>
@@ -700,11 +696,10 @@ export default class Wallet extends React.Component {
                         this.state.storagelimit
                       )}
                     >
-                      {this.widgetvalueforStorage(
+                      {/* {this.widgetvalueforStorage(
                         this.state.usedstoragelimit,
                         this.state.storagelimit
-                      )}{" "}
-                      %
+                      )}{" "} */}
                     </Progress>
                   </Progress>
                 </div>

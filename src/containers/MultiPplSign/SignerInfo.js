@@ -1138,7 +1138,6 @@ if(this.state.declineSigning===false){
     const month = String(e.getMonth() + 1).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
     const day = String(e.getDate()).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
     endDateValue = `${year}-${month}-${day}`;
-    console.log(endDateValue);
 
     this.setState({
       startDate: `${d.getFullYear()}-${

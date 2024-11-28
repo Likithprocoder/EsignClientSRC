@@ -234,9 +234,7 @@ class AddressBook extends Component {
 
     handle = (record) => {
 
-        console.log(record.contactType)
         if (record.contactType === 'i') {
-            console.log(record)
             this.setState({ editMode: 1, contactModal: true, contactId: record.contactId, filteredName: record.contactName, filteredEmail: record.emailId, filteredMobile: record.mobileNo })
 
 
@@ -269,10 +267,8 @@ class AddressBook extends Component {
         let deleteArray = [];
         // e.preventDefault();
         this.state.selectedRows.forEach(row => {
-            console.log(row.contactId);
             deleteArray.push(row.contactId)
         });
-        console.log(deleteArray)
         let message = '';
         if (deleteArray.length > 1) { message = "contacts are" }
         else {
@@ -435,7 +431,6 @@ class AddressBook extends Component {
                                     "updcontactName": name, "updemailId": email, "updmobileNo": mobile
                                 }
                             }
-                            console.log(body)
                             url = URL.modifyAddressBook;
                         }
 

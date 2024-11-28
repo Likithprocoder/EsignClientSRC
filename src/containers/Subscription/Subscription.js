@@ -119,7 +119,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
           let data = {
             paymentType: "SUBM",
             planID: planId,
-            amount: amount,
+            units: "",
             //ESM
           };
           this.setState({ loaded: true });
@@ -281,7 +281,6 @@ if (sessionStorage.getItem("consenteSign") === "true") {
   
     if (this.state.couponValue) {
     if (/^[a-zA-Z0-9]{10}$/.test(this.state.couponValue)) {
-      console.log(this.state.couponValue);
 
     let data = {
       voucherCode: this.state.couponValue,
@@ -300,7 +299,6 @@ if (sessionStorage.getItem("consenteSign") === "true") {
         return response.json();
       })
       .then((responseJson) => {
-        console.log(responseJson);
         if (responseJson.status == "SUCCESS") {
           confirmAlert({
             message: responseJson.statusDetails,

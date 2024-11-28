@@ -61,7 +61,6 @@ export default class TokenSignDownload extends React.Component {
   }
   componentWillMount() {
     // console.log(this.props);
-    console.log(this.props.location.frompath);
     if (sessionStorage.hasOwnProperty("sealMsg")) {
       sessionStorage.setItem("sealMsg", "");
     }
@@ -456,7 +455,6 @@ export default class TokenSignDownload extends React.Component {
         });
 
         const responseJson = await response.json();
-        console.log("getstoredFilefrmTempDetails responseJson:", responseJson);
         if (responseJson.status === "SUCCESS") {
             document.getElementById("discardOptionsdiv").style.display = "none";
 
@@ -502,7 +500,6 @@ export default class TokenSignDownload extends React.Component {
       body: JSON.stringify(data),
     })
     const responseJson = await response.json();
-    console.log("getSignCoordinateDetails responseJson:", responseJson);
     if (responseJson.status == "SUCCESS"){
           this.setState({
             loaded: true,
@@ -558,7 +555,6 @@ export default class TokenSignDownload extends React.Component {
         signedStatus
     );
     let data = await response.blob();
-    console.log("createFile data:", data);
       let arrayBuffer = await this.blobToArrayBuffer(data);
     let testResponse = this.test(arrayBuffer);
   }
@@ -594,7 +590,6 @@ export default class TokenSignDownload extends React.Component {
               });
           }
           this.setState({ pageDimensions: pageDimensionsArr });
-          console.log(pageDimensionsArr);
 
           // Iterate through the array and compare dimensions
           for (let i = 1; i < pageDimensionsArr.length; i++) {
@@ -612,10 +607,8 @@ export default class TokenSignDownload extends React.Component {
     let metadata = {
       type: "application/pdf",
     };
-    console.log(this.state.fileName);
     var file1 = new File([data], this.state.fileName.split("@")[1], metadata);
     file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
-    console.log(file1);
 
     let signCoordinates = {
       signCoordinates: this.state.signCoordinates,
