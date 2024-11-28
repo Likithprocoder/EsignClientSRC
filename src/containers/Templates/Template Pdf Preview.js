@@ -250,11 +250,6 @@ class DisplayPdf1 extends Component {
   
     // Ensure files1 is an array with a File object
     // const filesArray = [this.state.files1];
-  
-    // console.log(height);
-    // console.log(width);
-    // console.log(this.state.height);
-    // console.log(this.state.width);
     let data = {
       files: this.state.files1,
       height: height,

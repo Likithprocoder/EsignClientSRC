@@ -45,16 +45,14 @@ class QRDetails extends Component {
     if (sessionStorage.hasOwnProperty("paymentType")) {
       paymentType = sessionStorage.getItem("paymentType");
     }
-
+    
     let additional_data = sessionStorage.getItem("additional_data");
 
     let jsonObject = {};
-    if (additional_data !== null && additional_data !== "undefined") {
-
+    if (additional_data !== "undefined") {
       try {
         jsonObject = JSON.parse(additional_data);
         delete jsonObject.vouchrCodeNote;
-        // console.log('Parsed JSON object:', jsonObject);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
@@ -66,17 +64,23 @@ class QRDetails extends Component {
     let body = {};
     if (sessionStorage.getItem("paymentType") === "VOUC") {
       body = {
-        loginname: sessionStorage.getItem("username"),
-        amount: sessionStorage.getItem("amount"),
+        authToken: sessionStorage.getItem("authToken"),
         paymentType: paymentType,
-        additional_data: add_data,//
+        additional_data: add_data
       };
-    } else {
+    } else if (sessionStorage.getItem("paymentType") === "SUBM") {
       body = {
-        loginname: sessionStorage.getItem("username"),
-        amount: sessionStorage.getItem("amount"),
+        authToken: sessionStorage.getItem("authToken"),
         paymentType: paymentType,
+        planID: sessionStorage.getItem("planID"),
         additional_data: { "userIp": sessionStorage.getItem("userIP") }
+      };
+    } 
+    else {
+      body = {
+        authToken: sessionStorage.getItem("authToken"),
+        units: sessionStorage.getItem("units"),
+        paymentType: paymentType
       };
     }
 
@@ -95,8 +99,8 @@ class QRDetails extends Component {
       })
       .then((responseJson) => {
         if (responseJson.status == "SUCCESS") {
-          sessionStorage.removeItem("paymentType");
-
+          // sessionStorage.removeItem("paymentType");
+          sessionStorage.setItem("totalAmount", responseJson.totalAmount);
           if (sessionStorage.hasOwnProperty("additional_data")) {
             sessionStorage.removeItem("additional_data");
           }
@@ -125,6 +129,7 @@ class QRDetails extends Component {
             sessionStorage.clear();
             this.setState({ loaded: true });
             this.props.history.push("/login");
+            this.setState({ loaded: true });
           } else {
             confirmAlert({
               message: responseJson.statusDetails,
@@ -132,21 +137,21 @@ class QRDetails extends Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => { this.props.history.push('/rateCard') },
                 },
-              ],
+              ], closeOnClickOutside: false
             });
             //alert(responseJson.statusDetails)
-            this.setState({ loaded: true });
           }
         }
+        this.setState({ loaded: true });
       });
   }
 
   //fro auto payment check
   autoPaymentCheck = () => {
     const body = {
-      loginname: sessionStorage.getItem("username"),
+      authToken: sessionStorage.getItem("authToken"),
       mysignTxnId: this.state.uuid,
       bankTxnId: this.state.txnId,
     };
@@ -241,7 +246,7 @@ class QRDetails extends Component {
   checkPaymentStatus = () => {
     if (this.state.txnId.length !== 0 && this.state.txnId.trim() !== "") {
       let body = {
-        loginname: sessionStorage.getItem("username"),
+        authToken: sessionStorage.getItem("authToken"),
         mysignTxnId: "",
         bankTxnId: this.state.txnId,
       };
@@ -314,7 +319,7 @@ class QRDetails extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -384,22 +389,22 @@ class QRDetails extends Component {
             <tr style={{ height: "25px" }}>
               <td>Net Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.netAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.netAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>GST Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.gstAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.gstAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Other Charges</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.addCharge}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.addCharge}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Total Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.totalAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.totalAmount}</td>
             </tr>
 
             <tr style={{ height: "25px" }}>
@@ -422,7 +427,7 @@ class QRDetails extends Component {
         >
           {/* For Mobile Payments{" "} */}
           <a href={QrURL} class="upi-pay">
-            <Button id="invoicepayBtn" color="primary" onClick={() => {}}>
+            <Button id="invoicepayBtn" color="primary" onClick={() => { }}>
               Pay Using UPI App
             </Button>
           </a>{" "}

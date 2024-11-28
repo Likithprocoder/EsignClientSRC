@@ -150,7 +150,6 @@ class GroupManagement extends Component {
         }
 
         if (this.props.location.state.editMode === 2) {
-            // console.log(this.props.location.state)
             // this.setState({ groupName: this.props.location.state.groupName, info: this.props.location.state.userInfo, editMode: this.props.location.state.actualEditMode, initialInfo: this.props.location.state.initialInfo, groupId: this.props.location.state.groupId })
             // document.getElementById('editSave').click()
 
@@ -593,7 +592,6 @@ class GroupManagement extends Component {
             // console.log(row.contactId);
             deleteArray.push(row)
         });
-        // console.log(deleteArray)
 
         const newData = this.state.info.filter(item => !deleteArray.includes(item));
         // console.log(newData)

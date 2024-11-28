@@ -164,7 +164,6 @@ class EmployeeList extends Component {
         fetch(URL.updateCorpEmpMapping, options)
             .then(response => (response.json()))
             .then(data => {
-                // console.log(data);
                 if (data.status === "SUCCESS") {
                     this.setState({ loaded: true });
                     if (data.statusDetails == "Employee removed successfully") {
@@ -387,9 +386,7 @@ class EmployeeList extends Component {
             alert("Please enter designation");
             return false;
         }
-
-        // console.log(this.state.empMoreDetail);
-
+    
         if (
             name === this.state.empMoreDetail.name &&
             mobile === this.state.empMoreDetail.mobileNo &&

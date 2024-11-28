@@ -4372,7 +4372,6 @@ const Preview = (props) => {
         body: JSON.stringify(body),
       })
         .then((response) => {
-          // console.log(response);
           // if (response.status === 400) {
           //   props.history.push("/esign_error");
           // } else if (response.status === 200) {
@@ -4383,7 +4382,6 @@ const Preview = (props) => {
           // }
         })
         .then((responseJson) => {
-          // console.log(responseJson)
           if (responseJson.status=== "SUCCESS") {
             setLoaded(true);
             setTandC(responseJson.TandC);
@@ -4579,7 +4577,6 @@ const Preview = (props) => {
     if (dragArray.length != 0) {
       let result = false;
       result = stampingPosition();
-      // console.log(result);
       if (result == true) {
         confirmAlert({
           // message:

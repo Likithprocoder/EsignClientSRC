@@ -11,6 +11,9 @@ const { UpdateRounded } = require("@material-ui/icons");
 // var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
+// const HOST = "http://10.10.40.43:8090/MYSIGN/";
+// var paymenturl = "http://10.10.40.43:8095/PAYMENTSIMULATOR/getunitscalltesting";
+
 const footerContent =
 
   "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
@@ -165,7 +168,8 @@ let URL = {
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken:HOST+"fetchAccessToken"
+  fetchAccessToken:HOST+"fetchAccessToken",
+    getKey: HOST+"getkey"
 };
 
 module.exports = { URL };

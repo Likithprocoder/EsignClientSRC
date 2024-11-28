@@ -127,7 +127,7 @@ export default class Wallet extends React.Component {
   componentDidMount() {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: sessionStorage.getItem("username"),
+      authToken: sessionStorage.getItem("authToken")
     };
     fetch(URL.getFlags, {
       method: "POST",
@@ -364,7 +364,7 @@ export default class Wallet extends React.Component {
   verifyMobile = () => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
+      authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.getOtp, {
       method: "POST",

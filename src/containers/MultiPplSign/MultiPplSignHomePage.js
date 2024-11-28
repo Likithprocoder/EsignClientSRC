@@ -392,7 +392,6 @@ export default class MultiPplSignHomePage extends React.Component {
       }
 
       // Output page dimensions
-      // console.log("Page dimensions:", pageDimensions);
 
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
@@ -406,7 +405,6 @@ export default class MultiPplSignHomePage extends React.Component {
           }
         }
       }
-      // console.log(equalPageDimensionsCheck);
 
       // const response = await fetch(file1.preview);
       // const blob = await response.blob();
@@ -416,11 +414,9 @@ export default class MultiPplSignHomePage extends React.Component {
       // const regex = /\/Type\s*\/Page[^s]/g;
       // const matches = pdfString.match(regex);
       // numPages = matches ? matches.length : 0;
-      // console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
-    // console.log(this.state.signCoordinates);
     // console.log(this.state.signCoordinates.signCoordinates[0].signCoordinatesValues[0].totHeight);
 
     let data1 = null;
@@ -466,8 +462,6 @@ export default class MultiPplSignHomePage extends React.Component {
       };
     }
     this.setState({ loaded: true });
-
-    // console.log({data1});
     // console.log(data1.signCoordinates.signPage);
     // if (data1.signCoordinates.signPage != "A" || data1.signCoordinates.signPage != "P") { 
     //   data1.signCoordinates.signPage = "P";
