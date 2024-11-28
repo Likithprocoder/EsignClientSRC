@@ -709,11 +709,10 @@ export default class Wallet extends React.Component {
                         this.state.noSigns
                       )}
                     >
-                      {this.widgetvalue(
+                      {/* {this.widgetvalue(
                         this.state.signedcount,
                         this.state.noSigns
-                      )}{" "}
-                      %
+                      )}{" "} */}
                     </Progress>
                   </Progress>
                 </div>
@@ -742,11 +741,6 @@ export default class Wallet extends React.Component {
                         this.state.storagelimit
                       )}
                     >
-                      {this.widgetvalueforStorage(
-                        this.state.usedstoragelimit,
-                        this.state.storagelimit
-                      )}{" "}
-                      %
                     </Progress>
                   </Progress>
                 </div>

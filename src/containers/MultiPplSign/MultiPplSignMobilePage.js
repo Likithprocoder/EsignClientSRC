@@ -68,8 +68,7 @@ export default class MultiPplSignMobilePage extends React.Component {
     let pathURL = this.props.location.search;
     let pathNAME = this.props.location.pathname;
     var data = null;
-    // console.log(this.props);
-    // console.log(pathURL);
+    // console.log(pathURL.includes("mobak"));
     this.setState({ loaded: true });
     let regNum = new RegExp(/^[0-9]*$/);
 
@@ -77,23 +76,23 @@ export default class MultiPplSignMobilePage extends React.Component {
     // if link is only with mobak param without ref number show modal with asking ref no.
     //if link is with mobak param along with ref number as a part of link validate ref no and show modal with aking otp with prefield ref no.
     // if (pathURL.includes("mobak") && !pathURL.includes("=")) {
-    if (pathNAME.includes("/deGuest")) {
-      if (pathURL !== "" && !pathURL.includes("?mview")) {
-          confirmAlert({
-            message: "Invalid url",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/login");
-                },
-              },
-            ],
-          });
-        } else {
+    if (pathNAME.includes("/deGuest") && pathURL.includes("?mview")) {
+      // if (!pathURL.includes("?") && pathURL !== "" && !pathURL.includes("?mview")) {
+      //     confirmAlert({
+      //       message: "Invalid url",
+      //       buttons: [
+      //         {
+      //           label: "OK",
+      //           className: "confirmBtn",
+      //           onClick: () => {
+      //             this.props.history.push("/login");
+      //           },
+      //         },
+      //       ],
+      //     });
+      //   } else {
           this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
-        }
+      //   }
     }
     // else if (pathURL.includes("mobak=")) {
     //   path = pathURL.split("mobak=");
@@ -261,6 +260,7 @@ export default class MultiPplSignMobilePage extends React.Component {
             JSON.stringify(responseJson.signerListDetails)
             // responseJson.signerListDetails
           );
+          sessionStorage.setItem("declineSigning", responseJson.declineSigning);
 
           //   this.createFile(responseJson.fileName);
           //changed for encryption
@@ -403,15 +403,13 @@ export default class MultiPplSignMobilePage extends React.Component {
       equalPageDimensions: equalPageDimensionsCheck,
     };
     this.setState({ loaded: true });
-    // console.log(this.props.history);
-    //alert("MPSMP");
-    this.props.history.push({
-      pathname: "/preview",
-      frompath: "deGuest",
-      state: {
-        details: data1,
-      },
-    });
+    // this.props.history.push({
+    //   pathname: "/preview",
+    //   frompath: "deGuest",
+    //   state: {
+    //     details: data1,
+    //   },
+    // });
   }
 
   digitValidate(ele) {
