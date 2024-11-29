@@ -68,6 +68,7 @@ export default class MultiPplSignHomePage extends React.Component {
   componentDidMount() {
     this.setState({ loaded: false, openOTPModal: false });
     var path = null;
+    var isInapp = null;
     let pathURL = this.props.location.search;
    
     var data = null;
@@ -84,10 +85,18 @@ export default class MultiPplSignHomePage extends React.Component {
       this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
     } else if (pathURL.includes("mobak=")) {
       path = pathURL.split("mobak=");
-      //console.log(path[1]);
-      this.setState({ refid: path[1], isCompleteUrl: true });
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = path[1].split("=");
+        isInapp = path[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      this.setState({ refid: path, isCompleteUrl: true });
 
-      if (!regNum.test(path[1])) {
+      if (!regNum.test(path)) {
         confirmAlert({
           message: "Invalid reference number",
           buttons: [
@@ -106,11 +115,11 @@ export default class MultiPplSignHomePage extends React.Component {
         // data = accesskey;
         let obj = {
           optnType: "MPSJOB",
-          mobRefNo: path[1],
+          mobRefNo: path,
           //  loginname: loginName,
           userIP: sessionStorage.getItem("userIP"),
         };
-        this.setState({ refid: path[1], readOnly: true });
+        this.setState({ refid: path, readOnly: true });
 
         this.setState({ loaded: true, openOTPModal: true });
         this.generateotp(obj);
@@ -118,16 +127,39 @@ export default class MultiPplSignHomePage extends React.Component {
       }
     } else if (pathURL.includes("jsak=")) {
       path = pathURL.split("jsak=");
-      var accesskey = { accessKey: path[1] };
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = pathURL.split("&");
+        isInapp = isInapp[1].split("=")
+        isInapp = isInapp[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      console.log(isInapp);
+      if (isInapp === "true") {
+        sessionStorage.setItem("isInapp", true);
+      } else {
+
+      }
+      var accesskey = { accessKey: path };
       data = accesskey;
       this.mpsSigningJob(data);
     } else if (pathURL.includes("dwfl=")) {
       path = pathURL.split("dwfl=");
-      var accesskey = { accessKey: path[1] };
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = path[1].split("=");
+        isInapp = path[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      var accesskey = { accessKey: path };
       data = accesskey;
       this.downloadSignCmpltd(data);
-    
-    
     }  else {
       confirmAlert({
         message: "Invalid url",
@@ -252,6 +284,7 @@ export default class MultiPplSignHomePage extends React.Component {
             JSON.stringify(responseJson.signerListDetails)
             // responseJson.signerListDetails
           );
+          sessionStorage.setItem("declineSigning", responseJson.declineSigning);
 
           //   this.createFile(responseJson.fileName);
           //changed for encryption
@@ -359,7 +392,6 @@ export default class MultiPplSignHomePage extends React.Component {
       }
 
       // Output page dimensions
-      // console.log("Page dimensions:", pageDimensions);
 
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
@@ -373,7 +405,6 @@ export default class MultiPplSignHomePage extends React.Component {
           }
         }
       }
-      // console.log(equalPageDimensionsCheck);
 
       // const response = await fetch(file1.preview);
       // const blob = await response.blob();
@@ -383,11 +414,9 @@ export default class MultiPplSignHomePage extends React.Component {
       // const regex = /\/Type\s*\/Page[^s]/g;
       // const matches = pdfString.match(regex);
       // numPages = matches ? matches.length : 0;
-      // console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
-    // console.log(this.state.signCoordinates);
     // console.log(this.state.signCoordinates.signCoordinates[0].signCoordinatesValues[0].totHeight);
 
     let data1 = null;
@@ -433,8 +462,6 @@ export default class MultiPplSignHomePage extends React.Component {
       };
     }
     this.setState({ loaded: true });
-
-    // console.log({data1});
     // console.log(data1.signCoordinates.signPage);
     // if (data1.signCoordinates.signPage != "A" || data1.signCoordinates.signPage != "P") { 
     //   data1.signCoordinates.signPage = "P";

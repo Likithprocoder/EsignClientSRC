@@ -53,7 +53,6 @@ export default class Download extends React.Component {
   componentWillMount() {
     var url = window.location.href;
     var commonurl = url.split("/download");
-    // console.log(this.props);
     this.setState({ commonurl: commonurl[0] });
     let qp = this.props.location.search;
     qp = qp.replace("?", "");
@@ -125,16 +124,27 @@ export default class Download extends React.Component {
       viewFileURL = URL.viewStoredFile;
       this.setState({ viewFileURl: URL.viewStoredFile });
     }
-
-    // let docID = this.props.location.state.details.docId;
     let docID = sessionStorage.getItem("docid");
-    // console.log("docID: "+docID);
+    console.log("docID: "+docID);
 
-    let viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+    // let viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+
+    // let headers = {
+    //   Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    // };
+
+    let viewURL = "";
 
     let headers = {
-      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+      // Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
     };
+
+    if (sessionStorage.getItem("authToken") != null) {
+      viewURL = `${URL.viewStoredFile}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+    } else {
+      viewURL = `${URL.viewStoredFileV2}?docID=${btoa(docID)}`;
+      headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+    }
 
     this.fetchDocument(viewURL, headers);
   }
@@ -180,9 +190,6 @@ export default class Download extends React.Component {
         console.error('Blob is empty or size is too small:', blob);
         this.setState({ error: 'Document is empty', loading: false });
       }
-
-      // // Set the Blob URL to state and stop loading
-      // this.setState({ blobUrl });
 
     } catch (error) {
       this.setState({ error: error.message, loading: false });
@@ -690,8 +697,6 @@ export default class Download extends React.Component {
         signPage: this.state.signPage,
         pageList: this.state.pageList
       }
-      // console.log({signCoordinates});
-      // console.log(this.state.signCoordinates);
   
       let data1 = {
         // files: file1,
@@ -735,9 +740,6 @@ export default class Download extends React.Component {
   render() {
     const {blobUrl} = this.state;
     // Define the headers to include in the fetch request
-    let headers = {
-      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
-    };
     return (
       <div className="login-main-container">
         <Loader
@@ -801,15 +803,7 @@ export default class Download extends React.Component {
           {/* </ol>
             </nav> */}
         </div>
-        {/*  <Loader loaded={this.state.loaded} lines={13} radius={20} corners={1} rotate={0} direction={1} color="#000" speed={1} trail={60} shadow={false} hwaccel={false} className="spinner loader" zIndex={2e9} top="50%" left="50%" scale={1.00} loadedClassName="loadedContent" /> */}
-        {/* <PDF1
-          url={
-            this.state.viewFileURl +
-            "?docID=" +
-            btoa(this.state.docId)
-          }
-          httpHeaders={headers}
-        /> */}
+        {console.log(blobUrl)}
         {blobUrl && <PDF1
           url={blobUrl}
         />}

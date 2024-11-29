@@ -115,7 +115,6 @@ function UserDetailValidation(userData, validationType) {
     }
   }
   else if (validationType === "Date of Birth") {
-    // console.log("date of birth called!!");
     let selectedDate = new Date(userData);
     let SelectedDate = selectedDate.getDate();
     let SelectedMonth = selectedDate.getMonth() + 1;

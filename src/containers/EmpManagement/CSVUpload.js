@@ -218,7 +218,6 @@ export default class CSVUpload extends React.Component {
   }
 
   onDrop(files) {
-    // console.log(files);
   
     if (files.length > 0) {
       const fileName = files[0].name;

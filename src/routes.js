@@ -48,6 +48,7 @@ const Subscription = React.lazy(() =>
 const QRDetails = React.lazy(() => import("./containers/Payment/QRDetails"));
 const Download = React.lazy(() => import("./containers/Download/Download"));
 const KYCStatus = React.lazy(() => import("./containers/DigiLocker/KYCStatus"));
+
 const BulkRegistration = React.lazy(() =>
   import("./containers/BulkRegistration/BulkRegistration")
 );
@@ -57,6 +58,7 @@ const AccountDelete = React.lazy(() =>
 const RevenueReport = React.lazy(() =>
   import("./containers/AdminReports/RevenueReport")
 );
+
 const DefaultTemplate = React.lazy(() => import("./containers/Templates/DefaultTemplates"))
 const Template = React.lazy(() => import("./containers/Templates/Template"))
 const DisplayPdf = React.lazy(() => import("./containers/Templates/Template Pdf Preview"))

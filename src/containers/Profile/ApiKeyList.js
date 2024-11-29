@@ -550,7 +550,7 @@ export default class ApiKeyList extends React.Component {
         {sessionStorage.getItem("roleID") !== "6" && <div id='tempGroupListCss' style={{ marginBottom: "10px", width: "100%"}}>
             {
                 <span>Corporate Entity: <span style={{color: "blue"}}>{this.props.entityName}</span> 
-                {!this.state.isDisabled ? <span style={{ float: "right"}} ><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}disabled={this.state.showBtn} >Disable all</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable all</button></span>}</span>
+                {!this.state.isDisabled ? <span style={{ float: "right"}} ><button className="btn btn-danger" onClick={()=>this.updateApiKeyStatus(0, this.state.corpId)}disabled={this.state.showBtn} >Disable</button></span> : <span style={{ float: "right"}} onClick={()=>this.updateApiKeyStatus(1, this.state.corpId)}><button className="btn btn-primary">Enable</button></span>}</span>
             }
         </div>}
         <MaterialTable

@@ -13,10 +13,10 @@ class QRcode extends Component {
       loaded: true,
       paymentType: "",
       planID: "",
-      amount: "",
+      units: "",
     };
   }
-  componentWillMount() {
+  componentWillMount() {    
     if (
       this.props.location.frompath === "/subscriptions" ||
       this.props.location.frompath === "/rateCard" ||
@@ -25,7 +25,7 @@ class QRcode extends Component {
       this.setState({
         paymentType: this.props.location.state.details.paymentType,
         planID: this.props.location.state.details.planID,
-        amount: this.props.location.state.details.amount,
+        units: this.props.location.state.details.units,
         additional_data: this.props.location.state.details.additional_data
       });
     }
@@ -34,7 +34,7 @@ class QRcode extends Component {
       this.props.location.state.details.paymentType
     );
     sessionStorage.setItem("planID", this.props.location.state.details.planID);
-    sessionStorage.setItem("amount", this.props.location.state.details.amount);
+    sessionStorage.setItem("units", this.props.location.state.details.units);
     sessionStorage.setItem("additional_data", JSON.stringify(this.props.location.state.details.additional_data));
   }
 
@@ -50,13 +50,23 @@ class QRcode extends Component {
 
 
   payment = () => {
-    let body = {
-      amount: sessionStorage.getItem("amount"),
-      username: sessionStorage.getItem("username"),
-      mysignTxnId: sessionStorage.getItem("mysignTxnId"),
-    };
-
-
+    let body = {};       
+    if (sessionStorage.getItem("paymentType") === "ESM") {
+    body = {
+        amount: sessionStorage.getItem("units")*5+"",
+        username: sessionStorage.getItem("username"),
+        mysignTxnId: sessionStorage.getItem("mysignTxnId"),
+      };
+    }
+    else {      
+      const amount = sessionStorage.getItem("totalAmount").split(".")[0];;
+      body = {
+        amount: amount,
+        username: sessionStorage.getItem("username"),
+        mysignTxnId: sessionStorage.getItem("mysignTxnId"),
+      };
+    }
+   
     this.setState({ loaded: false });
    // For the eStamping payments we are calling the DBS UAT Simulator
     //   let body = {
@@ -65,9 +75,7 @@ class QRcode extends Component {
     // txntype: "IUPI"
     //   }
     //    fetch(URL.dbsUAT, {
-
     fetch(URL.paymenturl, {
-   
       method: "POST",
       headers: {
         "Content-Type": "application/json",

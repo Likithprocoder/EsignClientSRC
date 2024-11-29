@@ -165,7 +165,8 @@ let URL = {
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken: HOST + "fetchAccessToken"
+  fetchAccessToken:HOST+"fetchAccessToken",
+  getKey: HOST+"getkey"
 };
 
 module.exports = { URL };

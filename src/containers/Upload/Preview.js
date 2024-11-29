@@ -222,12 +222,60 @@ const Preview = (props) => {
 
     if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
       div.style.display = "none";
-      document.getElementById("assignedSealInfo").style.display = "";
+      if (sessionStorage.getItem("isInapp") !== "true") {
+        document.getElementById("assignedSealInfo").style.display = "";
+      }
     }
   };
 
   useEffect(() => {
     var data = props?.location?.state?.details;
+
+    if (sessionStorage.getItem("isInapp") === "true") {
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) {
+        sidebar.style.display = 'none';
+      }
+      const togglerIcon = document.querySelector('.navbar-toggler-icon');
+      if (togglerIcon) {
+        togglerIcon.style.display = 'none';
+      }
+      const sidebarToggler = document.querySelector('.d-md-down-none');
+      if (sidebarToggler) {
+        sidebarToggler.style.display = 'none';
+      }
+      const breadcrumb = document.querySelector('.breadcrumb');
+      if (breadcrumb) {
+        breadcrumb.style.display = 'none';
+      }
+      const logoutOption = document.querySelector('.ml-auto');
+      if (logoutOption) {
+        logoutOption.style.display = 'none';
+      }
+      const docdiv0 = document.getElementById("docdiv0");
+      if (docdiv0) {
+        docdiv0.style.display = 'none';
+      }
+      const assignedSealInfo = document.getElementById("assignedSealInfo");
+      if (assignedSealInfo) {
+        console.log("AssignedSealInfo");
+        assignedSealInfo.style.display = 'none';
+      }
+      const mainClass = document.querySelector(".main");
+      if (mainClass) {
+        if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          mainClass.style.marginLeft = "100px";
+        }
+      }
+      const container = document.querySelector(".container");
+      if (container) {
+        container.style.marginTop = "20px";
+      }
+      const appFooter = document.querySelector(".app-footer");
+      if (appFooter) {
+        appFooter.style.marginLeft = "0px";
+      }
+    }
 
     setTimeleft(30);//For OTP signing 
     toggleDiv();
@@ -290,7 +338,11 @@ const Preview = (props) => {
           // setExternalSignCurrentPageNum(parseInt(signPage));
         }
 
-        document.getElementById("declineButton").style.display = "";
+        if (sessionStorage.getItem("declineSigning") == "false") {
+          document.getElementById("declineButton").style.display = "none";
+        } else {
+          document.getElementById("declineButton").style.display = "";
+        }
 
         document.getElementById("documntsender0").style.display = "";
         document.getElementById("documntsender").style.display = "";
@@ -3456,8 +3508,7 @@ const Preview = (props) => {
             );
             // console.log({allRangeArrayValues});
             // console.log({rangeArray});
-            if (!(data?.hasOwnProperty("externalSigner") && data?.externalSigner)) {
-
+            if (!(data2?.hasOwnProperty("externalSigner") && data2?.externalSigner)) {
               // console.log({finalClientDimensions});
               // console.log({dragArray});
 
@@ -3624,7 +3675,7 @@ const Preview = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
+        // 'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -3707,7 +3758,7 @@ const Preview = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
+        // 'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(data),
     })
@@ -3774,17 +3825,27 @@ const Preview = (props) => {
       status: clientCallRespData.status,
       signerName: clientCallRespData.signerName,
       txnid: TxnID,
+      // authToken: clientCallRespData.authToken,
       externalSigner: sessionStorage.getItem("externalSigner"),
       loginMode: loginMode,
     };
-    // console.log(obj);
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+
+    // console.log(clientCallRespData);
+    // console.log(jsonWebToken);
+    if (jsonWebToken == null) {
+      obj.authToken = clientCallRespData.authToken;
+    } else {
+      headers["Authorization"] = `Bearer ${jsonWebToken}`;
+    }
+    
     fetch(URL.selfTokenSign, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
+      headers: headers,
       body: JSON.stringify(obj),
     })
       .then((response) => {
@@ -4312,7 +4373,6 @@ const Preview = (props) => {
         body: JSON.stringify(body),
       })
         .then((response) => {
-          // console.log(response);
           // if (response.status === 400) {
           //   props.history.push("/esign_error");
           // } else if (response.status === 200) {
@@ -4323,7 +4383,6 @@ const Preview = (props) => {
           // }
         })
         .then((responseJson) => {
-          // console.log(responseJson)
           if (responseJson.status=== "SUCCESS") {
             setLoaded(true);
             setTandC(responseJson.TandC);
@@ -4519,7 +4578,6 @@ const Preview = (props) => {
     if (dragArray.length != 0) {
       let result = false;
       result = stampingPosition();
-      // console.log(result);
       if (result == true) {
         confirmAlert({
           // message:

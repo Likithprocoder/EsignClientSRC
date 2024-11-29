@@ -250,11 +250,6 @@ class DisplayPdf1 extends Component {
   
     // Ensure files1 is an array with a File object
     // const filesArray = [this.state.files1];
-  
-    // console.log(height);
-    // console.log(width);
-    // console.log(this.state.height);
-    // console.log(this.state.width);
     let data = {
       files: this.state.files1,
       height: height,
@@ -302,7 +297,7 @@ class DisplayPdf1 extends Component {
               a.getPage(1).then(
                 function (b) {
                   var viewport = b.getViewport({ scale: 1 });
-                  this.setState({ loaded: true });
+                  this.setState({ allowToRotate: true });
                   this.setState({
                     height: viewport.height,
                     width: viewport.width,
@@ -319,16 +314,16 @@ class DisplayPdf1 extends Component {
   }
 
   next = () => {
+    this.setState({
+      allowToRotate: false,
+    });
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
         loginname: sessionStorage.getItem("username"),
         userIP: sessionStorage.getItem("userIP"),
         docType: "PDF",
     };
-
-    this.setState({ loaded: false });
     let data1 = new FormData();
-
     console.log(this.state.files1);
     data1.append("file", this.state.files1);
     data1.append("inputDetails", JSON.stringify(body));
@@ -345,12 +340,14 @@ class DisplayPdf1 extends Component {
         if (responseJson.status === "SUCCESS") {
             this.setState({ docId: responseJson.docID });
             this.onDrop(responseJson.docID);
-            this.setState({ loaded: true });
-        } else {
+            this.setState({
+              allowToRotate: true,
+            });        } else {
            if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
-            this.setState({ loaded: true });
-            confirmAlert({
+            this.setState({
+              allowToRotate: true,
+            });            confirmAlert({
               message: responseJson.statusDetails,
               buttons: [
                   {
@@ -358,10 +355,10 @@ class DisplayPdf1 extends Component {
                       className: "confirmBtn",
                       onClick: () => {this.props.history.push("/login")},
                   },
-              ],
+              ],closeOnClickOutside:false
             });
           } else {
-            this.setState({ loaded: true });
+            this.setState({ allowToRotate: true });
             confirmAlert({
                 message: responseJson.statusDetails,
                 buttons: [
@@ -370,13 +367,13 @@ class DisplayPdf1 extends Component {
                         className: "confirmBtn",
                         onClick: () => {},
                     },
-                ],
+                ],closeOnClickOutside:false
             });
           }
         }
     })
     .catch(e => {
-        this.setState({ loaded: true });
+        this.setState({ allowToRotate: true });
         alert(e);
     });
   }

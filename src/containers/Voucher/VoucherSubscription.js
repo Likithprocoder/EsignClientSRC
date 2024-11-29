@@ -233,9 +233,6 @@ class VoucherSubscription extends Component {
 
 
   custUnitstoQrCode = (e, i) => {
-
-
-
     const { name, value } = i.target;
     let responsedata = [...this.state.responsedata];
     if (name === "planID") {
@@ -377,7 +374,6 @@ class VoucherSubscription extends Component {
         additional_data.corpId = this.state.curntCrpId;
         additional_data.corpUsage = this.state.corpUsage;
         if (this.state.voucherUsageType !== "Any User") {
-          // console.log(this.state.tempGroupsCheckBox);
           let corpSubGrpSelected = [];
           // Adding the list of selected template groups to the additional data
           for (let key in this.state.curntSubGrpList) {
@@ -400,6 +396,7 @@ class VoucherSubscription extends Component {
         paymentType: "VOUC",
         amount: this.state.amount * this.state.voucherQuantity,
         additional_data: additional_data,
+
       };
       // console.log(data);
       this.props.history.push({

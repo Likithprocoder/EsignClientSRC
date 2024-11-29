@@ -664,7 +664,6 @@ export default class TokenSignDownload extends React.Component {
               });
           }
           this.setState({ pageDimensions: pageDimensionsArr });
-          // console.log(pageDimensionsArr);
 
           // Iterate through the array and compare dimensions
           for (let i = 1; i < pageDimensionsArr.length; i++) {

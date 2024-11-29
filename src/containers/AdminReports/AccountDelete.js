@@ -75,23 +75,83 @@ export default class AccountDelete extends React.Component {
       }
     }
   };
-  getOtp = (event) => {
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+
+
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
+    }
+  };
+
+  getOtp = async (event) => {
 
     if (!$("#agreed").not(':checked').length) {
-
-      this.setState({ loaded: false });
       var body = {
-        loginname: btoa(sessionStorage.getItem("username")),
-        optnType: "UADEL",
+        optnType: "UADEL"
       };
-      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(body));
+      this.setState({ loaded: false });
+      var dataToserver = {
+        authToken: sessionStorage.getItem("authToken"),
+        encryptedData: encryptedData
+      };
       fetch(URL.getOtp, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': `Bearer ${jsonWebToken}`
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(dataToserver),
       })
         .then((response) => {
           return response.json();
@@ -188,15 +248,19 @@ export default class AccountDelete extends React.Component {
       this.deleteUser();
     }
   };
-  deleteUser = () => {
+  deleteUser = async () => {
     this.setState({ loaded: false });
-
     var body = {
       optnType: "UADEL",
       mobileNumOtp: btoa(this.state.otp),
       mobRefNo: btoa(this.state.mobotpref),
-      loginname: sessionStorage.getItem("username"),
-      userIP: sessionStorage.getItem("userIP"),
+      userIP: sessionStorage.getItem("userIP")
+    };
+    let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(body));
+    this.setState({ loaded: false });
+    var dataToserver = {
+      authToken: sessionStorage.getItem("authToken"),
+      encryptedData: encryptedData
     };
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.DeleteUser, {
@@ -205,7 +269,7 @@ export default class AccountDelete extends React.Component {
         "Content-Type": "application/json",
         'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(dataToserver),
     })
       .then((response) => {
         return response.json();

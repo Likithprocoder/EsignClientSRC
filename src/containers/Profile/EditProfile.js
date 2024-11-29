@@ -48,7 +48,7 @@ class EditProfile extends Component {
   componentWillMount() {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: sessionStorage.getItem("username"),
+      authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
     fetch(URL.getProfileDetails, {
@@ -176,7 +176,6 @@ class EditProfile extends Component {
     // };
     // console.log(json1, this.state.optnType);
     let json = {
-      loginname: this.state.loginname,
       username: this.state.username,
       // mobile: btoa(this.state.mobile),
       // email: btoa(this.state.email.toLowerCase()),
@@ -235,20 +234,24 @@ class EditProfile extends Component {
       text: "#FFFFFF",
     };
   };
-  editProfileCall = (data) => {
+  editProfileCall = async (data) => {
     let json = data;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let myColor = {
       color: yellow,
     };
-    this.setState({ loaded: false });
+    let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(json));
+    var dataToserver = {
+      authToken: sessionStorage.getItem("authToken"),
+      encryptedData: encryptedData
+    };
     fetch(URL.editProfile, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(json),
+      body: JSON.stringify(dataToserver),
     })
       .then((response) => {
         return response.json();
@@ -260,7 +263,9 @@ class EditProfile extends Component {
           this.startResendOtpTimer.bind(this).timeleft = 0;
           document.getElementById("timer").innerHTML =
             "Resend OTP in " + 30 + " Secs";
+
           clearInterval(timerEvent);
+          this.setState({ loaded: true });
           confirmAlert({
             message: responseJson.statusDetails,
             buttons: [
@@ -272,6 +277,7 @@ class EditProfile extends Component {
             ], closeOnClickOutside: false
           });
         } else {
+          this.setState({ loaded: true });
           confirmAlert({
             message:
               responseJson.statusDetails ===
@@ -367,7 +373,66 @@ class EditProfile extends Component {
   //             email: responseJson.email,
   //             mobile: responseJson.mobile,
   //--------------Update Fetch API----------
-  userUpdateAPI = () => {
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
+    }
+  };
+
+
+  userUpdateAPI = async () => {
     let editJsondata;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // email update json
@@ -375,7 +440,6 @@ class EditProfile extends Component {
       editJsondata = {
         optnType: "USREDE",
         emailId: this.state.email.toLowerCase(),
-        loginname: this.state.loginname,
       };
       this.setState({ editJsondata: editJsondata });
     } else if (this.state.optnType == "USREDM") {
@@ -396,14 +460,12 @@ class EditProfile extends Component {
       editJsondata = {
         optnType: "USREDM",
         mobileNum: this.state.mobile,
-        loginname: this.state.loginname,
       };
     } else if (this.state.optnType === "USREDU") {
       editJsondata = {
         optnType: "USREDU",
         emailId: this.state.email.toLowerCase(),
         mobileNum: this.state.mobile,
-        loginname: this.state.loginname,
       };
     }
     // console.log(this.state.prevusername, this.state.username);
@@ -469,13 +531,18 @@ class EditProfile extends Component {
             this.state.mobile.length == 10 &&
             this.state.mobile.trim() !== ""
           ) {
+            let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(data));
+            var dataToserver = {
+              authToken: sessionStorage.getItem("authToken"),
+              encryptedData: encryptedData
+            };
             fetch(URL.getOtpforEditProfileVerftn, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 'Authorization': `Bearer ${jsonWebToken}`
               },
-              body: JSON.stringify(data),
+              body: JSON.stringify(dataToserver),
             })
               .then((response) => {
                 return response.json();
