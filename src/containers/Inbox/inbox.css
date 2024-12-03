@@ -142,12 +142,17 @@
   width: 0%;
 }
 
-#deleteIconColor,
+.deleteIconColor,
 #fafatimesid,
 #signingCancelledid,
 #signingdeclinedid{
   color: #f86c6b;
 }
+
+.deleteIconColorDisabled{
+  color: pink;
+}
+
 
 #moreOptions {
   margin-top: 7px;
@@ -392,5 +397,12 @@ hr {
 
 @keyframes blinker {  
   50% { opacity: 0; }
+}
+
+.DelAndFltrOpt{
+  margin-bottom: 5px;
+  text-align: end;
+  display: inline-flex;
+  width: 100%;
 }
 
