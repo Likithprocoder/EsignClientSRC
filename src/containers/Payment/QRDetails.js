@@ -80,7 +80,8 @@ class QRDetails extends Component {
       body = {
         authToken: sessionStorage.getItem("authToken"),
         units: sessionStorage.getItem("units"),
-        paymentType: paymentType
+        paymentType: paymentType,
+        additional_data: { "userIp": sessionStorage.getItem("userIP") }
       };
     }
 

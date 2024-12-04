@@ -146,10 +146,12 @@ export default class AccountDelete extends React.Component {
         authToken: sessionStorage.getItem("authToken"),
         encryptedData: encryptedData
       };
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       fetch(URL.getOtp, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(dataToserver),
       })
