@@ -2275,18 +2275,24 @@ export default class Inbox extends React.Component {
                   isFreeAction: false,
                   hidden: false,
                 },
-                (rowData) => {
-                  return {
-                    icon: () => <Delete className="deleteIconColor" id={`deleteDocumnt${rowData.DOC_ID}`} />,
-                    tooltip: "Delete",
-                    onClick: (event, rowData) => this.fileDelete(rowData),
-                    isFreeAction: false,
-                    hidden: false,
-                    cellStyle: {
-                      padding: "0px"
-                    }
-                  }
-                },
+                rowData => ({
+                  icon: () => (
+                    <Delete
+                      style={{
+                        color: (rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec') ? 'gray' : 'red',
+                      }} id={`deleteDocumnt${rowData.DOC_ID}`}
+                    />
+                  ),
+                  tooltip:(rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec') ? "T&C cannot be deleted" : "Delete",
+                  onClick: (event) => this.fileDelete(rowData),
+                  isFreeAction: false,
+                  hidden: false,
+                  disabled:(rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec'), // Disable icon if DOC_OWNER is 'jsign'
+                  cellStyle: {
+                    padding: "0px",
+                  },
+                }),
+
                 (rowData) => {
                   return rowData.isSignEnable
                     ? {
