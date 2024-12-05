@@ -25,11 +25,11 @@
 
 .ParntDivPC {
     width: 100%;
-    height: 100%;
     border-radius: 10px;
     background-color: #eeeded;
     padding: 20px;
     padding-bottom: 14px;
+    min-height: 450px;
 }
 
 .variables {
@@ -63,5 +63,23 @@
 
 .editBTN{
     text-align: end;
+}
+
+.SwtchSMSProvider{
+    width: 60%;
+    text-align: end;
+    padding-right: 1%;
+    padding-top: 5px;
+    font-weight: 500;
+}
+
+.SwtchSMSProviderDrpDwn{
+    width: 20%;
+    text-align: end;
+}
+
+.ConfigSelectRow{
+    display: inline-flex;
+    width: 100%;
 }
 /* PropertiesConfig.js (END) */

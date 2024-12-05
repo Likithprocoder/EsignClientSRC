@@ -173,7 +173,10 @@ let URL = {
   fetchAuditOperationType: HOST + "V2/fetchAuditOperationType",
   fetchAuditLogs: HOST + "V2/fetchAuditLogs",
   fetchAuditFullDetails: HOST + "V2/fetchAuditFullDetails",
-  editWaterMark: HOST + "V2/editWaterMark"
+  editWaterMark: HOST + "V2/editWaterMark",
+  fetchConfigKeys: HOST + "V2/fetchConfigKeys",
+  switchProvider: HOST + "V2/switchProvider",
+  saveConfigKeys: HOST + "V2/saveConfigKeys"
 };
 
 module.exports = { URL };
