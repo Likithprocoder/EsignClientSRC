@@ -162,6 +162,7 @@ function PropertiesConfig(props) {
         setOTType(type);
         if (type === "SMS") {
             // From server side, an active SMS provider key is sent, that will be assigned..
+            // key ---> activeProvider
             setSMSProvider("AQUA");
         }
         //             let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));

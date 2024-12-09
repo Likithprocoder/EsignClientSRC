@@ -96,6 +96,7 @@ const corporateAdminTopUp = React.lazy(() => import("./containers/AccessControl/
 const AuditLogRecords = React.lazy(() => import("./containers/AuditLog/ViewAuditLogList"));
 const waterMrkPreview = React.lazy(() => import("./containers/Upload/PDFWaterMarkPreview"));
 const configProperties = React.lazy(() => import("./containers/PropertiesConfiguration/PropertiesConfig"));
+const watermarkPDf =   React.lazy(() => import("./containers/Upload/WaterMarkPDF"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -345,7 +346,13 @@ const routes = [
     path: "/editConfigProperties",
     name: "Edit Configuration Properties",
     component: configProperties
+  },
+  {
+    path: "/watermarkPDf",
+    name: "Edit Configuration Properties",
+    component: watermarkPDf
   }
+  
 ];
 
 
