@@ -14,47 +14,68 @@ const WatermarkPDF = () => {
     };
 
     // Function to calculate the width of the text
-    const getTextWidth = (text, fontSize) => {
+    const getTextWidth = (text) => {
         // Create a canvas element
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-
-        // Set the font for the context (same as in Java code)
-        context.font = `${fontSize}px Helvetica`;
-
-        // Measure the width of the text
         const width = context.measureText(text).width;
-
         return width;
+
+
     };
 
-    function extendString(input, targetLength) {
-        // Check if the input is already at the target length
-        if (input.length === targetLength) {
-          return input; // No changes needed if input is already at the target length
+    function isItNearBy(wtrkMarkWidth, targetLength) {
+        // A intial check if the wtrkMarkWidth is alredy greater then targetLength.
+        if (wtrkMarkWidth > targetLength) {
+            return {
+                status: "Greater"
+            };
+        } else {
+            if ((targetLength === Math.round(wtrkMarkWidth)) || (targetLength - 1 === Math.round(wtrkMarkWidth))) {
+                return {
+                    status: "Equal"
+                };
+            } else {
+                return {
+                    status: "NotEqual"
+                };
+            }
         }
-      
-        // If the input is one character less than the target length, add one space
-        if (input.length === targetLength - 1) {
-          return input + " ";
+    };
+
+    function extendString(wtrMrkCntnt, targetLength) {
+        // Deep nesting..
+        let newAppendString = `${wtrMrkCntnt}`;
+        let stopWhileLoop = true;
+        while (stopWhileLoop) {
+            newAppendString += " ";
+            // Pass the string to the method below, which will basically returns the width of the string that has been passed.
+            // Determine whether, the more string needs to be added or not..
+            let response = isItNearBy(getTextWidth(newAppendString), targetLength);
+            if (response["status"] === "Equal") {
+                stopWhileLoop = false;
+            } else if (response["status"] === "Greater") {
+                stopWhileLoop = false;
+            } else {
+                for (let key in wtrMrkCntnt) {
+                    newAppendString += wtrMrkCntnt[key];
+                    // Pass the string to the method below, which will basically returns the width of the string that has been passed.
+                    // Determine whether, the more string needs to be added or not..
+                    let response = isItNearBy(getTextWidth(newAppendString), targetLength);
+                    if (response["status"] === "Equal") {
+                        stopWhileLoop = false;
+                        break;
+                    } else if (response["status"] === "Greater") {
+                        stopWhileLoop = false;
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+            }
         }
-      
-        // Initialize the result with the original input string
-        let result = input;
-      
-        // Keep appending the entire input word until the result length approaches the target length
-        while (result.length + 1 + input.length <= targetLength) {
-          result += " " + input;
-        }
-      
-        // If adding another full word would exceed the target length, add only as many characters as needed
-        const remainingLength = targetLength - result.length;
-        if (remainingLength > 1) {
-          result += " " + input.substring(0, remainingLength - 1);
-        }
-      
-        return result;
-      }
+        return newAppendString
+    };
 
     // Function to add watermark to the PDF
     const addWatermarkToPDF = async () => {
@@ -62,49 +83,30 @@ const WatermarkPDF = () => {
             alert('Please upload a PDF file first!');
             return;
         }
-
         // Read the file as an array buffer
         const fileArrayBuffer = await file.arrayBuffer();
         const pdfDoc = await PDFDocument.load(fileArrayBuffer);
-
         // Get the pages of the PDF
         const pages = pdfDoc.getPages();
-
         // Add watermark to each page
         pages.forEach((page) => {
-            const { width, height } = page.getSize();
-            let extendedString  = extendString('hii', 19);
-            console.log(extendedString);
-            
-            let wtrkMarkWidth = getTextWidth(extendedString);
-            console.log(wtrkMarkWidth);
-            
-            const textHeight = 80; // Rough estimate based on font size
-
-            // Convert angle to radians
-            const angleInRadians = (50 * Math.PI) / 180;
-
-            // Calculate rotated bounding box width and height
-            const rotatedWidth = Math.abs(Math.cos(angleInRadians)) * wtrkMarkWidth + Math.abs(Math.sin(angleInRadians)) * textHeight;
-            const rotatedHeight = Math.abs(Math.sin(angleInRadians)) * wtrkMarkWidth + Math.abs(Math.cos(angleInRadians)) * textHeight;
-
+            let yPosition = page.getHeight() / 12;
+            let xPosition = page.getWidth() / 10;
+            let totalDimension = page.getHeight() + page.getWidth();
+            const textHeight =  (4/100) * totalDimension; // Rough estimate based on font size
+            let extendedString = extendString('WWWWWWWWWWWWWWW', 92);
             // Calculate the position to center the rotated watermark on the page
-            const xPosition = (width - rotatedWidth) / 2;
-            const yPosition = (height - rotatedHeight) / 2;
-
             page.drawText(extendedString, {
-                x: 80,
-                y: 100,
+                x: xPosition,
+                y: yPosition,
                 size: textHeight,
                 color: rgb(0.75, 0.75, 0.75),
                 rotate: degrees(50),  // Use degrees() function to rotate text
-                opacity: 0.5,
+                opacity: 0.4
             });
         });
-
         // Save the PDF with watermark
         const pdfBytes = await pdfDoc.save();
-
         // Create a Blob URL for the new PDF and set it to the state
         const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
         const pdfUrl = URL.createObjectURL(pdfBlob);
