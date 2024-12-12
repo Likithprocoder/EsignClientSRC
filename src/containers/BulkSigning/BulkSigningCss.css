@@ -1,0 +1,89 @@
+@media screen and (max-width: 900px) {
+
+    .DRPZONEPARENT1 {
+        margin-bottom: 30px;
+        display: "";
+    }
+
+    .DROPZONE1 {
+        margin-bottom: 22px;
+        width: 100%;
+    }
+
+    .DROPZONE2 {
+        width: 100%;
+    }
+
+    .CsvAndSignedDocuFile {
+        cursor: pointer;
+        height: 100px;
+        width: 80%;
+        display: flex;
+        border: 2px dashed gray;
+        background-color: #efefef;
+        border-radius: 2%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fileNameAndSize {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        line-height: 1.2;
+        text-align: center;
+    }
+}
+
+@media screen and (min-width: 900px) {
+
+    .DRPZONEPARENT1 {
+        display: flex;
+        margin-bottom: 30px;
+    }
+
+    .DROPZONE1 {
+        margin-bottom: 22px;
+        width: 50%;
+    }
+
+    .DROPZONE2 {
+        width: 50%;
+    }
+
+    .CsvAndSignedDocuFile {
+        cursor: pointer;
+        height: 250px;
+        width: 400px;
+        display: flex;
+        border: 2px dashed gray;
+        background-color: #efefef;
+        border-radius: 4%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fileNameAndSize {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3125rem;
+        font-weight: 500;
+        letter-spacing: 3px;
+        line-height: 2.0;
+        text-align: center;
+    }
+}
+
+
+
+.uploadfilebtn {
+    width: fit-content;
+    font-size: inherit;
+    background-color: burlywood;
+    color: white;
+    height: fit-content;
+    text-align: center;
+    font-size: 17px;
+    border-radius: 15px;
+    cursor: default;
+}

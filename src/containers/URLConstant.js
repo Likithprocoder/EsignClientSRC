@@ -153,7 +153,13 @@ let URL = {
   deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
   updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
   deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
-  getKey: HOST+"getkey"
+  getKey: HOST+"getkey",
+  uploadBulkSignFile: HOST+"uploadBulkSignFile",
+  getbulkSigningdetails: HOST+"getbulkSigningdetails",
+  uploadBulkSigndetails: HOST +"uploadBulkSigndetails",
+  inAPPAPI: "http://localhost:8090/MYSIGN/INAPP/mpsCreateJobsV2",
+  getApplicationKeys: HOST + "getApplicationKeys",
+  fetchInputFieldsData: HOST + "fetchInputFieldsData",
 };
 
 module.exports = { URL };

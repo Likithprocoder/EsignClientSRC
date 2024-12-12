@@ -73,7 +73,28 @@ class DisplayPdf1 extends Component {
         flag: this.props.location.state.flag,
         fromPath: this.props.location.state.frompath
       });
+      if (!this.props.location.state.flag) {
+        this.setState({
+          encodeBatchNdSequence: this.props.location.state.encodeBatchNdSequence
+        })
+      }
+    }
 
+    if (this.props.location.state.flag) {
+      bodyData = {
+        authToken: sessionStorage.getItem("authToken"),
+        templateCode: tempCode,
+        templateData: templateData,
+        templateAttachments: this.props.location.state.templateAttachments,
+        temptDrftRef: this.props.location.state.temptDrftRef,
+        dynamicTableData: dynamicTableData
+      };
+    }
+    else {
+      bodyData = {
+        encodedBatchAdSequencNO: this.props.location.state.encodeBatchNdSequence,
+        inputFieldValues: templateData
+      };
     }
     // converting dynamic tables data to array format and storing on server side.
     let additionalData = {};
@@ -139,7 +160,7 @@ class DisplayPdf1 extends Component {
                 className: "confirmBtn",
                 onClick: () => {
                   this.props.history.push({
-                    pathname: "/template",
+                    pathname: this.state.fromPath,
                     frompath: "/templatePdfPreview",
                     state: {
                       userDetails: this.props.location.state.userDetails,
@@ -150,6 +171,8 @@ class DisplayPdf1 extends Component {
                       toPathName: this.props.location.pathname,
                       reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
                       repeatAbleBlck: this.props.location.state.repeatAbleBlck,
+					  flag: this.props.location.state.flag,
+                      toPathName: this.props.location.pathname
                     }
                   });
                 },
@@ -192,6 +215,16 @@ class DisplayPdf1 extends Component {
       type: "application/pdf",
       lastModified: new Date(),
     });
+    console.log(file);
+
+    if (!this.props.location.state.flag) {
+      // let file = new File([], this.state.templateName, { type: "application/pdf" });
+      let filenput = document.getElementById("fileInput");
+      let list = new DataTransfer();
+      list.items.add(file);
+      let myFileList = list.files;
+      filenput.files = myFileList;
+    }
 
     pdfjsforOnDrag.getDocument(url).promise.then(pdf => {
       let promises = [];
@@ -323,13 +356,15 @@ class DisplayPdf1 extends Component {
       toPathName: this.props.location.pathname,
       repeatAbleBlck: this.props.location.state.repeatAbleBlck,
       reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
+	  flag: this.props.location.state.flag,
+      toPathName: this.props.location.pathname
     };
     if (!this.props.location.state.flag) {
       state.encodeBatchNdSequence = this.state.encodeBatchNdSequence;
     }
 
     this.props.history.push({
-      pathname: "/template",
+      pathname: this.state.fromPath,
       frompath: "/templatePdfPreview",
       state: state,
     });

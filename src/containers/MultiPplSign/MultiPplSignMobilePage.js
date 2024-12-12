@@ -38,6 +38,7 @@ export default class MultiPplSignMobilePage extends React.Component {
       fileName: "",
       ownerloginName: "",
       openOTPModal: false,
+      openOTPModalBS: false,
       mobNo: "",
       mobileotpvalue: "",
       accesskey: "",
@@ -48,6 +49,9 @@ export default class MultiPplSignMobilePage extends React.Component {
       isCompleteUrl: true,
       signerListDetails: [],
       equalPageDimensions: true,
+	  optnType: "",
+      pathURL: "",
+      mobileNum: "",
     };
   }
 
@@ -66,6 +70,7 @@ export default class MultiPplSignMobilePage extends React.Component {
     this.setState({ loaded: false, openOTPModal: false });
     var path = null;
     let pathURL = this.props.location.search;
+	this.setState({ pathURL: pathURL});
     var data = null;
     // console.log(pathURL.includes("mobak"));
     this.setState({ loaded: true });
@@ -97,8 +102,6 @@ export default class MultiPplSignMobilePage extends React.Component {
         });
       } else {
         this.setState({ loaded: true, openOTPModal: true });
-        // var accesskey = { accessKey: path[1] };
-        // data = accesskey;
         let obj = {
           optnType: "MPSJOB",
           mobRefNo: path[1],
@@ -122,7 +125,21 @@ export default class MultiPplSignMobilePage extends React.Component {
       data = accesskey;
       this.downloadSignCmpltd(data);
     
-    }else {
+    } else if (pathURL.includes("bulksigning=")) {
+      path = pathURL.split("bulksigning=");
+      let accesskey = path[1];
+      // let accesskey = { accesskey: path[1] };
+      // console.log(accesskey);
+      this.setState({ accesskey: accesskey});
+      let obj = {
+        optnType: "BLKSGN",
+        bulkSigningRefIdData: accesskey,
+        mobNo: this.state.mobNo,
+        userIP: sessionStorage.getItem("userIP"),
+      };
+      this.generateotp(obj);
+      this.setState({ loaded: true, openOTPModalBS: true, isCompleteUrl: false });
+    } else {
       confirmAlert({
         message: "Invalid url",
         buttons: [
@@ -136,18 +153,6 @@ export default class MultiPplSignMobilePage extends React.Component {
         ],
       });
     }
-
-    // var timeleft = 30;
-    // var downloadTimer = setInterval(function () {
-    //   timeleft--;
-    //   document.getElementById("countdowntimer").textContent = timeleft;
-    //   if (timeleft <= 0){
-    //       clearInterval(downloadTimer);
-    //  document.getElementById("resendotpbtn").style.display = "";
-
-    //   }
-
-    // }, 1000);
   }
 
   // resend otp counter
@@ -193,24 +198,41 @@ export default class MultiPplSignMobilePage extends React.Component {
     ) {
       alert("Enter 6 digit valid OTP");
     } else {
-      // console.log(this.state.accesskey.mobRefNo);
-      let obj = {
-        optnType: "MPSJOB",
-        mobileNumOtp: btoa(this.state.mobileotpvalue),
-        mobAK: btoa(this.state.refid),
-        mobRefNo: btoa(this.state.mobotpref),
-        loginname: btoa(sessionStorage.getItem("username")),
-       userIP: sessionStorage.getItem("userIP"),
-       
-      };
-
-      this.setState({ loaded: true });
+      let obj = {};
+      if (this.state.pathURL.includes("bulksigning=")) {
+        obj = {
+          optnType: "BLKSGN",
+          mobileNumOtp: btoa(this.state.mobileotpvalue),
+          mobRefNo: btoa(this.state.mobotpref),
+          userIP: sessionStorage.getItem("userIP"),
+          bulkSigningRefIdData: this.state.accesskey,
+        }
+      } else if (this.state.accesskey != "" && this.state.optnType != "") {
+        obj = {
+          optnType: this.state.optnType,
+          mobileNumOtp: btoa(this.state.mobileotpvalue),
+          mobRefNo: btoa(this.state.mobotpref),
+          userIP: sessionStorage.getItem("userIP"),
+          bulkSigningRefIdData: this.state.accesskey,
+        }
+      } else {
+        obj = {
+          optnType: "MPSJOB",
+          mobileNumOtp: btoa(this.state.mobileotpvalue),
+          mobAK: btoa(this.state.refid),
+          mobRefNo: btoa(this.state.mobotpref),
+          loginname: btoa(sessionStorage.getItem("username")),
+          userIP: sessionStorage.getItem("userIP"),
+        };
+      }
       this.mpsSigningJob(obj);
     }
   };
   mpsSigningJob(data) {
+    // console.log({data});
+    this.setState({ loaded: false});
+    let signingDetails = {};
     //getting access for external signer
-    // fetch(URL.mpsGetGuestAccess, {
     fetch(URL.mpsGetGuestAccessV2, {
       method: "POST",
       headers: {
@@ -226,15 +248,23 @@ export default class MultiPplSignMobilePage extends React.Component {
 
           clearInterval(timerEvent);
     
-          this.setState({
-            loaded: true,
-            signMode: responseJson.signMode,
-            fileName: responseJson.fileName,
-            signCoordinates: responseJson.signCoordinates,
-            // signCoordinates: JSON.parse(responseJson.signCoordinates),
-            ownerloginName: responseJson.ownername,
-            openOTPModal: false,
-          });
+          if (responseJson.hasOwnProperty("bulkSigningRefIdData")) {
+            // console.log("OTP VERIFIED"); 
+            this.setState({ loaded: true });
+            let form = document.getElementById("BKDocSigning");
+            // let form = this.refs.form;
+            // form.submit();
+            form.submit();
+          } else {
+            this.setState({
+              loaded: true,
+              signMode: responseJson.signMode,
+              fileName: responseJson.fileName,
+              signCoordinates: responseJson.signCoordinates,
+              // signCoordinates: JSON.parse(responseJson.signCoordinates),
+              ownerloginName: responseJson.ownername,
+              openOTPModal: false,
+            });
 
           sessionStorage.setItem("senderName", responseJson.senderName);
           sessionStorage.setItem("requestedTime", responseJson.requestedTime);
@@ -262,24 +292,23 @@ export default class MultiPplSignMobilePage extends React.Component {
         } else {
           if(responseJson.statusDetails=="Validation Failed.Enter Correct OTP"){
             alert(responseJson.statusDetails);
-    
-          }else{
-          this.setState({ openOTPModal: false });
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                 
+            this.setState({ loaded: true });
+          } else {
+            this.setState({ openOTPModal: false });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                  
+                  },
                 },
-              },
-            ],
-          });
-          //alert(responseJson.statusDetails)
-          this.setState({ loaded: true });
-        }
+              ],
+            });
+            this.setState({ loaded: true });
+          }
       }
       });
   }
@@ -299,11 +328,6 @@ export default class MultiPplSignMobilePage extends React.Component {
    
   //  console.log("Downloading document please wait....");
     var winclose = window.close();
-    //Self.close();
-    // win.focus();
-    // win.onblur=function(){win.close()};
-    // win.close();
-      //URL.downloadSignCmpltd + "?acskey=" + btoa(accessKeyValue);
     
   }
 
@@ -330,8 +354,6 @@ export default class MultiPplSignMobilePage extends React.Component {
     };
     var file1 = new File([data], this.state.fileName.split("@")[1], metadata);
     file1.preview = window.URL.createObjectURL(new File([data], this.state.fileName.split("@")[1], metadata));
-
-    // console.log(this.state.signCoordinates.signCoordinates[0].signCoordinatesValues[0].totWidth);
 
     let numPages=null;
     // Initialize array to store page dimensions
@@ -423,9 +445,8 @@ export default class MultiPplSignMobilePage extends React.Component {
     }
   }
   generateotp = (obj) => {
+	this.setState({ loaded: false });
 
-    this.setState({ loaded: false });
-  
     fetch(URL.generateOtpforMobAccess, {
       method: "POST",
       headers: {
@@ -437,28 +458,76 @@ export default class MultiPplSignMobilePage extends React.Component {
         return response.json();
       })
       .then((responseJson) => {
-        if (responseJson.status === "SUCCESS") {
-          //call resend otp counter
-          // this.resendOtpTimer();
-          this.startResendOtpTimer();
+        // console.log({responseJson});
+        // if (responseJson.status === "SUCCESS") {
+        //   console.log({responseJson});
+        //   //call resend otp counter
+        //   this.startResendOtpTimer();
+        //   if (!this.state.pathURL.includes("bulksigning=")) {
+        //     document.getElementById("refIDGroup").readOnly = true;
+        //     document.getElementById("mpsotpbtn").style.display = "none";
+        //     document.getElementById("refidMsg").style.display = "none";
+        //   } else if (responseJson.hasOwnProperty("BulkSigningDetails") && responseJson.hasOwnProperty("optnType")) {
+        //     this.setState({ optnType: responseJson.optnType });
+        //     this.setState({ accesskey: responseJson.BulkSigningDetails });
+        //   }
 
-          // console.log("success");
-          document.getElementById("refIDGroup").readOnly = true;
-          document.getElementById("mpsotpbtn").style.display = "none";
+        //   document.getElementById("mobOtpGroup").style.display = "";
+        //   document.getElementById("mobilemsg").style.display = "";
+        //   document.getElementById("refidMsg").style.display = "none";
+        //   document.getElementById("mpssubmit").style.display = "";
+
+        //   this.setState({
+        //     loaded: true,
+        //     mobotpref: responseJson.mobRefNo,
+        //     mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
+        //   });
+        // } 
+        if  (responseJson.status === "SUCCESS") {
+          // console.log({responseJson});
+                  //call resend otp counter
+                  this.startResendOtpTimer();
+        if (this.state.pathURL.includes("bulksigning=")) {
           document.getElementById("mobOtpGroup").style.display = "";
-          document.getElementById("mobilemsg").style.display = "";
-          document.getElementById("refidMsg").style.display = "none";
-
-          // document.getElementById("countdowntimer1").style.display = "";
-          document.getElementById("mpssubmit").style.display = "";
-          // document.getElementById("resendotpbtn").style.display = "";
-
-          this.setState({
-            loaded: true,
-            mobotpref: responseJson.mobRefNo,
-            mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
-          });
+                  document.getElementById("mobilemsg").style.display = "";
+                  document.getElementById("mpssubmit").style.display = "";
+        
+                  if (responseJson.hasOwnProperty('mobileNum')) {
+                    this.setState({
+                      loaded: true,
+                      mobotpref: responseJson.mobRefNo,
+                      mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
+                      mobileNum: responseJson.mobileNum,
+                    });
+                  } else {
+                    this.setState({
+                      loaded: true,
+                      mobotpref: responseJson.mobRefNo,
+                    });
+                  }
         } else {
+          if (responseJson.hasOwnProperty("BulkSigningDetails") && responseJson.hasOwnProperty("optnType")) {
+                    this.setState({ optnType: responseJson.optnType });
+                    this.setState({ accesskey: responseJson.BulkSigningDetails });
+                  }
+        
+                  document.getElementById("refIDGroup").readOnly = true;
+                  document.getElementById("mpsotpbtn").style.display = "none";
+                  document.getElementById("mobOtpGroup").style.display = "";
+                  document.getElementById("mobilemsg").style.display = "";
+                  document.getElementById("refidMsg").style.display = "none";
+        
+                  // document.getElementById("countdowntimer1").style.display = "";
+                  document.getElementById("mpssubmit").style.display = "";
+        
+                  this.setState({
+                    loaded: true,
+                    mobotpref: responseJson.mobRefNo,
+                    mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
+                  });
+        }
+        }
+        else {
           if (responseJson.statusDetails === "Session Expired!!") {
             sessionStorage.clear();
             this.setState({ loaded: true, openOTPModal: false });
@@ -509,7 +578,10 @@ export default class MultiPplSignMobilePage extends React.Component {
     }
   };
   sendotp = () => {
-    document.getElementById("mobrefid").disabled = true;
+    let elementId = document.getElementById("mobrefid");
+    if (elementId) {
+      elementId.disabled = true;
+    }
     let obj = {
       optnType: "MPSJOB",
       mobRefNo: this.state.refid,
@@ -520,13 +592,24 @@ export default class MultiPplSignMobilePage extends React.Component {
     this.generateotp(obj);
   };
   resendotp = () => {
-    let obj = {
-      optnType: "MPSJOB",
-      mobRefNo: this.state.refid,
-      //  loginname: loginName,
-      userIP: sessionStorage.getItem("userIP"),
-     
-    };
+  let obj = {};
+    if (this.state.pathURL.includes("bulksigning=")) {
+    // console.log(this.state.mobileNum);
+      obj = {
+        optnType: "BLKSGN",
+        bulkSigningRefIdData: this.state.accesskey,
+        mobNo: this.state.mobileNum,
+        userIP: sessionStorage.getItem("userIP"),
+      };
+    } else {
+      obj = {
+        optnType: "MPSJOB",
+        mobRefNo: this.state.refid,
+        //  loginname: loginName,
+        userIP: sessionStorage.getItem("userIP"),
+      };
+    }
+    // console.log({obj});
     this.generateotp(obj);
   };
 
@@ -553,12 +636,12 @@ export default class MultiPplSignMobilePage extends React.Component {
           loadedClassName="loadedContent"
         />
         <div style={{ display: "none" }}>
-          <canvas className="xx" id="textCanvas" height="60"></canvas>
-          <img id="image" hidden={true} />
-        </div>
-        <div id="handSignContainer" style={{ display: "none" }}>
-          <HandSign  data={"dxgfx"} />
-        </div>
+            <canvas className="xx" id="textCanvas" height="60"></canvas>
+            <img id="image" hidden={true} />
+          </div>
+          <div id="handSignContainer" style={{ display: "none" }}>
+            <HandSign  data={"dxgfx"} />
+          </div>
         <div
           id="loadingMessage"
           style={{
@@ -577,6 +660,94 @@ export default class MultiPplSignMobilePage extends React.Component {
                 marginTop: "-26px",
               }}
             >
+              <Modal
+                className="modal-container"
+                open={this.state.openOTPModalBS}
+                onClose={this.onCloseOTPModal}
+                center={true}
+                closeOnOverlayClick={false}
+              >
+                <div className="modal-head-1">
+                  <span style={{ color: "#c79807",fontSize:"26px"}}>
+                    Signer Authentication
+                  </span>
+                </div>
+           
+                <div className="para-text" id="otpmodalpara-text">
+                  <div className="para-content" id="paraContentMb">
+                    <Row id="otpmodalrow">
+                      <InputGroup
+                        id="mobOtpGroup"
+                        className="mb-2"
+                      >
+                        <label
+                          id="entermobileotp"
+                          style={{marginTop: "0.3rem"}}
+                        >
+                          Mobile OTP:  &nbsp;&nbsp;&nbsp;
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Enter Mobile OTP"
+                          name="mobileotp"
+                          onChange={this.setInput}
+                          maxLength={6}
+                          required={true}
+                          value={this.state.mobileotp}
+                          autoComplete="off"
+                          onKeyPress={(event) => {
+                            if (!/[0-9]/.test(event.key)) {
+                              event.preventDefault();
+                            }
+                          }}
+                        />
+                      </InputGroup>
+                    </Row>
+                  </div>
+                </div>
+                <br />
+                <span id="mobilemsg">
+                  OTP Sent to Mobile No. :{this.state.mobNo}.
+                </span>
+                <div
+                  className="agree-div"
+                  style={{ textAlign: "-webkit-center" }}
+                >
+                  <button
+                    className="aggree-button"
+                    id="mpssubmit"
+                    style={{ width: "150px" }}
+                    onClick={this.validateOtp.bind()}
+                  >
+                    <span>SUBMIT &#8594; </span>
+                  </button>
+                  <span
+                    id="timer"
+                    style={{
+                      verticalAlign: "-webkit-baseline-middle",
+
+                      marginLeft: "-5px",
+                      marginTop: "3%",
+                      display: "",
+                      color: "#73818f",
+                      fontSize: "0.875rem",
+                    }}
+                  ></span>{" "}
+                  <Button
+                    color="link"
+                    id="resendotpbtn"
+                    style={{ marginTop: "5px" }}
+                    title="OTP based Resend OTP"
+                    onClick={this.resendotp.bind()}
+                  >
+                    {" "}
+                    Resend OTP
+                  </Button>
+                  <br />
+                  <br />
+                </div>
+              </Modal>
+
               <Modal
                 className="modal-container"
                 open={this.state.openOTPModal}

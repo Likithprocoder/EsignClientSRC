@@ -84,11 +84,12 @@ const AddressBook = React.lazy(() => import("./containers/AddressBook/AddressBoo
 const AddressBookGroups = React.lazy(() => import("./containers/AddressBook/GroupManagement"));
 const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUsers"));
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
-// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
-
-
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
+const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
+const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
+// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/docUpload", name: "Sign Document", component: DocUpload },
@@ -180,7 +181,8 @@ const routes = [
     component: ApplicationInbox,
   },
   { path: "/templates", name: "Templates", component: DefaultTemplate },
-  { path: "/template", name: "Template", component: Template },
+  //{ path: "/template", name: "Template", component: Template },
+  { path: "/templateEditing", name: "Template", component: Template },
   {
     path: "/templatePdfPreview",
     name: " Template Pdf Preview",
@@ -293,6 +295,22 @@ const routes = [
     name: "Exit or unlink from the corporate entity",
     component: extFrmCorp
   }
+  
+    {
+    path: "/bulkSigning",
+    name: "Bulk Signing",
+    component: FileUploadBulkSigning
+  },
+  {
+    path: "/htmlPreview",
+    name: "HTML Preview",
+    component: HtmlPreview
+  },
+  {
+    path: "/bulkSigningSummary",
+    name: "Bulk Signing Summary",
+    component: BulkSigningSummary
+  },
 
 ];
 export default routes;

@@ -130,6 +130,12 @@ const MultiPplSignPreview = (props) => {
   const [cooling, setCooling] = useState({});
   const [showSignaturePages, setShowSignaturePage] = useState(false);
   const [allRangeArrayValues, setAllRangeArrayValues] = useState([]);
+  const [min, setMin] = useState("");
+  const [csvFileRefNo, setCsvFileRefNo] = useState("");
+  const [fileRefNo, setFileRefNo] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
+  const [startDate1, setStartDate1] = useState("");
+  const [responsedata, setResponsedata] = useState({});
 
   //-------Page change event...geting TotalPages, currentPage-----
   const handlePageChange = (event) => {
@@ -342,6 +348,26 @@ const MultiPplSignPreview = (props) => {
       setLoaded(false);
       setCustomDocName(props.location.state.details.custDocName);
       setSenderComments(props.location.state.details.senderComments);
+    } else if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+      setSEDate();
+      let today = new Date().toISOString().split("T")[0];
+      setMin(today);
+      setCsvFileRefNo(props?.location?.state?.details.csvFileRefNo);
+      setFileRefNo(props?.location?.state?.details?.fileRefNo);
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("initiateBtn").style.display = "";
+      document.getElementById("custDocumentName").style.display = "";
+      document.getElementById("documentTitleId").style.display = "";
+      document.getElementById("endDateLabel").style.display = "";
+      document.getElementById("enddateId").style.display = "";
+      // document.getElementById("signersComments").style.display = "none";
+      document.getElementById("documentTitle1").style.display = "none";
+      document.getElementById("documentTitle2").style.display = "";
+
+      setFile(props?.location?.state?.details?.files);
+      setCanvas_width(props?.location?.state?.details?.width);
+      setCanvas_height(props?.location?.state?.details?.height);
     } else {
       props.history.push("/");
     }
@@ -392,6 +418,31 @@ const MultiPplSignPreview = (props) => {
     return updatedDimensions;
   };
 
+  const setSEDate = () => {
+    let d = new Date();
+    let e = new Date();
+    console.log(e);
+    e.setDate(e.getDate() + 15);
+    let endDateValue = "";
+    // to display the default enddate in the browser
+    //date format yyyy-mm-dd
+    if (e.getDate() < 10 && e.getMonth() < 10) {
+      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-0${e.getDate()}`;
+    } else if (e.getDate() < 10 && e.getMonth() > 9) {
+      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-0${e.getDate()}`;
+    } else if (e.getDate() > 9 && e.getMonth() < 10) {
+      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-${e.getDate()}`;
+    } else {
+      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
+    }
+    console.log(endDateValue);
+    setStartDate1(`${d.getFullYear()}-${
+      d.getMonth() + 1
+    }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`);
+    setEndDateTime(endDateValue + " " +"23:59:59");
+    setEndDate(endDateValue);
+  }
+  
   useEffect(() => {
     var data = props.location.state.details;
     // setFileUrl(data.files.preview);
@@ -1042,67 +1093,6 @@ const MultiPplSignPreview = (props) => {
     }
   };
 
-  // //Providing the validations for custom selectedOptionArray field
-  // const setRangeValue = (e) => {
-  //   let input = e.target.value;
-  //   let regExp = new RegExp(/^[0-9,-\s]*$/); // Update regex to include hyphens and spaces for ranges
-  //   if (regExp.test(input)) {
-  //     var stringInputs = [];
-  //     let inputs = e.target.value.split(",");
-  
-  //     for (let input of inputs) {
-  //       input = input.trim(); // Trim spaces
-  //       if (input.includes("-")) {
-  //         let rangeParts = input.split("-");
-  //         if (rangeParts.length === 2) {
-  //           let [start, end] = rangeParts.map(Number);
-  //           if (!isNaN(start) && !isNaN(end) && start <= end) {
-  //             for (let i = start; i <= end; i++) {
-  //               stringInputs.push(i);
-  //             }
-  //           } else if (rangeParts[1] === "") {
-  //             // Allow partial range input like "1-"
-  //             continue;
-  //           } else {
-  //             console.error(`Invalid range: ${input}`);
-  //             // return;
-  //             continue;
-  //           }
-  //         } else {
-  //           console.error(`Invalid range format: ${input}`);
-  //           return;
-  //         }
-  //       } else {
-  //         let num = Number(input);
-  //         if (!isNaN(num)) {
-  //           stringInputs.push(num);
-  //         } else if (input === "") {
-  //           // Allow empty input
-  //           continue;
-  //         } else {
-  //           console.error(`Invalid number: ${input}`);
-  //           return;
-  //         }
-  //       }
-  //     }
-  
-  //     console.log(stringInputs);
-  
-  //     if (stringInputs && stringInputs[0] !== 0 && stringInputs[0] !== currentPage) {
-  //       jumpToPage(stringInputs[0] - 1);
-  //     }
-  //     for (var page of stringInputs) {
-  //       if (page > Number(sessionStorage.getItem("TotalPages"))) {
-  //         return;
-  //       }
-  //     }
-  //     setRange(e.target.value);
-  //     removeItems(stringInputs, [0, NaN]);
-  //     setRangeArray([...new Set(stringInputs)]);
-  //     setAllRangeArrayValues([...allRangeArrayValues, ...new Set(stringInputs)]);
-  //   }
-  // };
-
     //Custom page input field validations where user allowed to type numbers excluding zero, ranges, only positive numbers
     const setRangeValue = (e) => {
       let input = e.target.value;
@@ -1173,28 +1163,6 @@ const MultiPplSignPreview = (props) => {
         setAllRangeArrayValues([...allRangeArrayValues, ...stringInputs]);
       }
     };
-
-  // //Providing the validations for custom field
-  // const setRangeValue = (e) => {
-  //   let input = e.target.value;
-
-  //   let regExp = new RegExp(/^[ 0-9, ]*$/);
-  //   if (regExp.test(input)) {
-  //     var stringInputs = e.target.value.split(",").map(Number);
-  //     if (stringInputs && stringInputs[0] != 0 && stringInputs[0] != currentPage) {/////
-  //       jumpToPage(stringInputs[0] - 1);//
-  //     }//
-  //     for (var page of stringInputs) {
-  //       if (page > Number(sessionStorage.getItem("TotalPages"))) {
-  //         return;
-  //       }
-  //     }
-
-  //     setRange(e.target.value);
-  //     removeItems(stringInputs, [0, NaN]);
-  //     setRangeArray([...new Set(stringInputs)]);
-  //   }
-  // };
 
   //For removing all the seals which are added
   const removeAllPageSeals = (e) => {
@@ -1671,14 +1639,17 @@ const MultiPplSignPreview = (props) => {
   }
 
   const preparingSignerInfo = () => {
-    setSignerNameEmail(
-      "" +
-        clientInfo[count2].signerName +
-        "(" +
-        clientInfo[count2].signerEmail +
-        ")"
-    );
-    setSignerBatchNum(signerBatchNum + 1);
+    if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+    } else {
+      setSignerNameEmail(
+        "" +
+          clientInfo[count2].signerName +
+          "(" +
+          clientInfo[count2].signerEmail +
+          ")"
+      );
+      setSignerBatchNum(signerBatchNum + 1);
+    }
 
     let totalNumberOfPages = sessionStorage.getItem("TotalPages");
     let pageListArr = [];
@@ -2025,27 +1996,40 @@ const MultiPplSignPreview = (props) => {
       }
     }
     
-    let info = {
-      signMode: selectedMode,
-      startDate: fromDate,
-      endDate: lastDate + " 23:59:59",
-      signOrder: "" + clientInfo[count2].signOrder,
-      signInfo: [
-        {
-          id: "1",
-          handSignImg: "",
-          displayMsg: "",
+    let info = {};
+    if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+      info = {
+        signMode: selectedMode,
+        startDate: startDate1,
+        endDate: endDateTime,
+        signOrder: "0",
+        signCoordinates: signCoordinatesArray,
+        signPage: "" + signPg,
+        pages: pgList,
+      };
+    } else {
+      info = {
+        signMode: selectedMode,
+        startDate: fromDate,
+        endDate: lastDate + " 23:59:59",
+        signOrder: (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") ? "" : "" + clientInfo[count2].signOrder,
+        signInfo: [
+          {
+            id: "1",
+            handSignImg: "",
+            displayMsg: "",
+          },
+        ],
+        signerInfo: {
+          signerName: clientInfo[count2].signerName,
+          signerEmail: clientInfo[count2].signerEmail,
+          signerMobile: clientInfo[count2].signerMobile,
         },
-      ],
-      signerInfo: {
-        signerName: clientInfo[count2].signerName,
-        signerEmail: clientInfo[count2].signerEmail,
-        signerMobile: clientInfo[count2].signerMobile,
-      },
-      signCoordinates: signCoordinatesArray,
-      signPage: "" + signPg,
-      pages: pgList,
-    };
+        signCoordinates: signCoordinatesArray,
+        signPage: "" + signPg,
+        pages: pgList,
+      };
+	}
 
     let temp = signerInfoo;
     temp.push(info);
@@ -2088,7 +2072,23 @@ const MultiPplSignPreview = (props) => {
       preparingSignerInfo();
       let lastDate = props.location.state.details.endDate;
       let noOfSigns = props.location.state.details.noSigns;
-      let InputsVal = {
+      let InputsVal = {};
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+        InputsVal = {
+          loginname: sessionStorage.getItem("username"),
+          authToken: sessionStorage.getItem("authToken"),
+          // externalJar: true,
+          userIP: sessionStorage.getItem("userIP"),
+          fileRefNo:fileRefNo,
+          csvFileRefNo:csvFileRefNo,
+          signingDetails: {
+            customDocName: customDocName,
+            endDate: endDateTime,
+            signersInfo: signerInfoo,
+          },
+        };
+        console.log(InputsVal)
+        	} else {
         emailDetails: props.location.state.details.emailDetails,
         declineSigning:props.location.state.details.declineSigning,
         loginname: sessionStorage.getItem("username"),
@@ -2121,6 +2121,7 @@ const MultiPplSignPreview = (props) => {
       setDragArray1([]);
       setDragArray1(dragArray);
       // console.log(InputsVal);
+    }
       return InputsVal;
     } else {
       confirmAlert({
@@ -2334,6 +2335,24 @@ const MultiPplSignPreview = (props) => {
     }
 
     let flag = false;
+    if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+      flag = true;
+    } else {
+      let result = false;
+      result = stampingPosition();
+      if (result == true) {
+        confirmAlert({
+          message: "Please verify and place the signing position on the document",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        return;
+      }
     for (let j = 0; j < dragArray.length; j++) {
       if ("signer" + btnCount == dragArray[j].signersBatch) {// To check whether atleast one seal is added for current signer
         setCount3(count3 + 1);
@@ -2349,12 +2368,13 @@ const MultiPplSignPreview = (props) => {
       // console.log(isInsufficientUnitsValue);
       if (!isInsufficientUnitsValue) {
         confirmAlert({
-          title: "Confirm signing request",
+          // title: "Confirm signing request",
+          title: <h1 id='customtitle'>Confirm signing request</h1>,
           message: (
-            <div>
-              <p>No. of Signers: {props.location.state.details.noSigns}</p>
+            (props.location.frompath !== "/htmlPreview" && props.location.frompath !== "/bulkSigning") ? <div>
+              <p>No. of Signers: {props?.location?.state?.details?.noSigns}</p>
               {selectedMode == "1" ? <p>Total Units Charged: {totalUnits + reqUnits}</p> : ""}
-            </div>
+            </div> : <di><p>Do you want to proceed?</p></di>
           ),
           buttons: [
             {
@@ -2364,49 +2384,108 @@ const MultiPplSignPreview = (props) => {
                 let value = nextPreview();
                 // console.log(value);
                 setLoaded(false);
-                let data = new FormData();
-                setCount2(count2 - 1);
-                // console.log(file);
-                data.append("file", file);
-                data.append("inputDetails", JSON.stringify(value));
-                fetch(URL.mpsCreateJobsV2, {
-                  method: "POST",
-                  headers: { enctype: "multipart/form-data" },
-                  body: data,
-                })
-                  .then((r) => r.json(value))
-                  .then((res) => {
-                    // console.log(res);
-                    if (res.status === "SUCCESS") {
-                      setLoaded(true);
+                if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+                  fetch(URL.uploadBulkSigndetails, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(value)
+                  })
+                  .then((response) => {
+                    console.log(response);
+                    // setLoaded(true);
+                    return response.json();
+                    // if (response.status === 400) {
+                    //   props.history.push("/esign_error");
+                    // } else if (response.status === 200) {
+                    //   return response.json();
+                    // } else {
+                    //   props.history.push("/");
+                    // }
+                  })
+                  .then((responseJson) => {
+                    // response_data = responseJson;
+                    setResponsedata(responseJson);
+                    console.log(responseJson);
+                    if (responseJson.status === "SUCCESS") {
                       confirmAlert({
-                        message: res.statusDetails,
+                        message: "Signing request initiated!",
                         buttons: [
                           {
                             label: "OK",
                             className: "confirmBtn",
-                            onClick: () => {},
+                            onClick: () => {
+                              setLoaded(true);
+                              props.history.push("/bulkSigningSummary");
+                            },
                           },
                         ],
                       });
-                      //alert(res.statusDetails)
-                      props.history.push("/");
                     } else {
-                      setLoaded(true);
                       confirmAlert({
-                        message: res.statusDetails,
+                        message: "Failed to initiate signing, Try again later",
                         buttons: [
                           {
                             label: "OK",
                             className: "confirmBtn",
-                            onClick: () => {},
+                            onClick: () => {
+                              // props.history.push("/inbox");
+                              setLoaded(true);
+                            },
                           },
                         ],
                       });
-                      //alert(res.statusDetails)
-                      props.history.push("/");
                     }
+                  })
+                  .catch((e) => {
+                    alert(e);
                   });
+                } else {
+                  let data = new FormData();
+                  setCount2(count2 - 1);
+                  // console.log(file);
+                  data.append("file", file);
+                  data.append("inputDetails", JSON.stringify(value));
+                  fetch(URL.mpsCreateJobsV2, {
+                    method: "POST",
+                    headers: { enctype: "multipart/form-data" },
+                    body: data,
+                  })
+                    .then((r) => r.json(value))
+                    .then((res) => {
+                      // console.log(res);
+                      if (res.status === "SUCCESS") {
+                        setLoaded(true);
+                        confirmAlert({
+                          message: res.statusDetails,
+                          buttons: [
+                            {
+                              label: "OK",
+                              className: "confirmBtn",
+                              onClick: () => {},
+                            },
+                          ],
+                        });
+                        //alert(res.statusDetails)
+                        props.history.push("/");
+                      } else {
+                        setLoaded(true);
+                        confirmAlert({
+                          message: res.statusDetails,
+                          buttons: [
+                            {
+                              label: "OK",
+                              className: "confirmBtn",
+                              onClick: () => {},
+                            },
+                          ],
+                        });
+                        //alert(res.statusDetails)
+                        props.history.push("/");
+                      }
+                    });
+                };
               },
             },
             {
@@ -2507,6 +2586,78 @@ const MultiPplSignPreview = (props) => {
     return false;
   };
 
+  const custDocNameCheck = () => {
+    console.log("HtmlPreview");
+    if (customDocName == "") {
+      confirmAlert({
+        message: "Please provide the document title",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {},
+          },
+        ],
+      });
+    } else if (endDate == "") {
+      confirmAlert({
+        message: "Please provide the end date",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {},
+          },
+        ],
+      });
+    } else {
+      let selectedOptionValue = sessionStorage.getItem("selectedOption");
+      if (selectedOptionValue == null) {
+        sessionStorage.setItem("selectedOption", selectedOption);
+      }
+
+      setSelectedOptionArray(
+        selectedOptionArray.filter(function (item, index, inputArray) {
+          return inputArray.indexOf(item) == index;
+        })
+      );
+
+      let result = false;
+      if (dragArray.length != 0) {
+        result = stampingPosition();
+      } else {
+        confirmAlert({
+          message: "Please add the seal to proceed",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        return;
+      }
+      console.log(result);
+      if (result == true) {
+        confirmAlert({
+          message: "Please verify and place the signing position on the document",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        return;
+      } else {
+        // nextPreview();
+        submitJob();
+      }
+    }
+  }
+
   const reportData = {
     totalPages: sessionStorage.getItem("TotalPages"),
     numSigns: dragArray.length,
@@ -2543,39 +2694,6 @@ const MultiPplSignPreview = (props) => {
   return result;
 };
 
-//Mine code
-// const getPagesToSign = (totalPages, pagesToSign) => {
-//   const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
-//   const excludedPages = allPages.filter(page => !pagesToSign.includes(page));
-//   const pagesWithSeal = [...new Set(dragArray.map(item => item.pageNo))];
-//   console.log({allPages});
-//   console.log({excludedPages});
-//   if (dragArray.length !== 0) {
-//     if (pagesWithSeal.length === Number(totalPages)) {
-//       return 'All pages';
-//     } else if (excludedPages.length <= totalPages / 2) {
-//       return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//         // if (showAllPages) {
-//             // return groupPages(pagesToSign).join(', ');
-//         // } else {
-//             // return `${groupPages(pagesToSign).slice(0, 4).join(', ')}...`;
-//         // }
-//     } else if (excludedPages.length >= totalPages / 2) {
-//       return groupPages(pagesToSign).join(', ');
-//     } else if (pagesWithSeal.length <= totalPages / 2) {
-//       return groupPages(pagesToSign).join(', ');
-//         // if (showAllPages) {
-//             // return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//         // } else {
-//             // return `All pages except ${groupPages(excludedPages).slice(0, 4).join(', ')}...`;
-//         // }
-//     } else if (pagesWithSeal.length >= totalPages / 2) {
-//       return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//     }
-//   } else {
-//     return `No seals added`;
-//   }
-// };
 
   const toggleModal1 = () => {
     setModalOpen1(!modalOpen1);
@@ -2629,6 +2747,34 @@ const MultiPplSignPreview = (props) => {
   }
 
   return ranges;
+  };
+  
+  const finalDate = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(value);
+    setEndDate(value);
+  };
+
+  const docuName = (e) => {
+    let regName = new RegExp(/^[a-zA-Z0-9\-.@'#_/ ]*$/);
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(value);
+    if (name === "custDocName") {
+      ////console.log("helllo"+name);
+      let encodedName = encodeURI(e.target.value);
+      ////console.log("helllo" + encodedName.length);
+      if (encodedName.length > 29) {
+        alert("Document title should be of within 30 characters");
+      } else {
+        if (regName.test(e.target.value)) {
+          setCustomDocName(value);
+        } else {
+          return false;
+        }
+      }
+    }
   };
 
 const shouldShowToggle = (totalPages, pagesToSign) => {
@@ -2691,7 +2837,7 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
         theme="colored"
       ></ToastContainer>
       <div className="row">
-      <div className="col-md-6">
+      <div className="col-md-6" id="documentTitle1">
       <h4>Document Title: &nbsp;{customDocName}</h4>
       {/* {(btnCount <= noSigns) && <h6>Current Signer({btnCount}): &nbsp;{clientInfo[btnCount-1].signerName}({clientInfo[btnCount-1].signerEmail})</h6>} */}
       {btnCount <= noSigns && (
@@ -2701,21 +2847,48 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
         </h6>
       )}
       </div>
-      {/* <button
-            style={{
-              fontSize: '12px',
-              width: '76px',
-              marginTop: "15px",
-              height: "32px",
-              marginLeft: props.location.state.details.hasOwnProperty("externalSigner") && props.location.state.details.externalSigner ? "18rem" : "-1rem",
+      <div id="documentTitle2">
+      <b 
+          id="custDocumentName" 
+          style={{
+            // padding: "0% 0% 0% 0%",
+            paddingLeft: "10px",
+            color: "black",
+            fontSize: "13px",
+            display: "none",
           }}
-          type="button" 
-          class="btn btn-primary"
-                id="viewModal"
-                onClick={() => setShown(true)}
-              >
-                Read PDF
-              </button> */}
+          >Document Title: </b>
+          <input
+            id="documentTitleId"
+            className="docTitle"
+            placeholder="Enter Document Title"
+            name="custDocName"
+            onChange={docuName}
+            maxLength={30}
+            required={true}
+            style={{ display: "none" }}
+          />
+
+          <b
+            style={{
+              // padding: "0% 0% 0% 0%",
+              paddingLeft: "10px",
+              color: "black",
+              fontSize: "13px",
+              display: "none"
+            }} id="endDateLabel">Sign By: </b>
+            <input
+            id="enddateId"
+            className="signerDate"
+            type="date"
+            value={endDate}
+            min={min}
+            name="endDate"
+            onChange={finalDate}
+            style={{ display: "none" }}
+            />
+      </div>
+
               <Button
             style={{
               fontSize: "12px",

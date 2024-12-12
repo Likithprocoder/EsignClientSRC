@@ -2093,33 +2093,6 @@ const Preview = (props) => {
       setAllRangeArrayValues([...allRangeArrayValues, ...stringInputs]);
     }
   };
-  
-  
-
-  // const setRangeValue = (e) => {
-  //   let input = e.target.value;
-  //   let regExp = new RegExp(/^[ 0-9, ]*$/);
-  //   if (regExp.test(input)) {
-  //     var stringInputs = e.target.value.split(",").map(Number);
-
-  //     if (
-  //       stringInputs &&
-  //       stringInputs[0] != 0 &&
-  //       stringInputs[0] != currentPage
-  //     ) {
-  //       jumpToPage(stringInputs[0] - 1);
-  //     }
-  //     for (var page of stringInputs) {
-  //       if (page > Number(sessionStorage.getItem("TotalPages"))) {
-  //         return;
-  //       }
-  //     }
-  //     setRange(e.target.value);
-  //     removeItems(stringInputs, [0, NaN]);
-  //     setRangeArray([...new Set(stringInputs)]);
-  //     setAllRangeArrayValues([...allRangeArrayValues, ...new Set(stringInputs)]);
-  //   }
-  // };
 
   // resend otp counter for starting the timer
   const startResendOtpTimer = () => {
@@ -2178,6 +2151,76 @@ const Preview = (props) => {
       }
     }
   };
+
+  const custDocNameCheck = () => {
+    if (customDocName == "") {
+      confirmAlert({
+        message: "Please provide the document title",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {},
+          },
+        ],
+      });
+    } else if (endDate == "") {
+      confirmAlert({
+        message: "Please provide the end date",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {},
+          },
+        ],
+      });
+    } else {
+      let selectedOptionValue = sessionStorage.getItem("selectedOption");
+      if (selectedOptionValue == null) {
+        sessionStorage.setItem("selectedOption", selectedOption);
+      }
+
+      setSelectedOptionArray(
+        selectedOptionArray.filter(function (item, index, inputArray) {
+          return inputArray.indexOf(item) == index;
+        })
+      );
+
+      let result = false;
+      if (dragArray.length != 0) {
+        result = stampingPosition();
+      } else {
+        confirmAlert({
+          message: "Please add the seal to proceed",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        return;
+      }
+      console.log(result);
+      if (result == true) {
+        confirmAlert({
+          message: "Please verify and place the signing position on the document",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        return;
+      } else {
+        submit();
+      }
+    }
+  }
 
   //On accepting the T&C this will get called
   const submit = () => {
@@ -3202,10 +3245,96 @@ const Preview = (props) => {
         }
       }
 
-      // console.log("docid: "+docid);
-      let obj = {
-        //****starts here
-        //added the keys for template based generated PDF.
+      let obj = {};
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+        let loginname = sessionStorage.getItem("username");
+        obj = {
+          //****starts here
+          //added the keys for template based generated PDF.
+          // customSealInfo:finalArray,
+          loginname: loginname,
+          authToken: authToken,
+          userIP: sessionStorage.getItem("userIP"),
+          fileRefNo:fileRefNo,
+          csvFileRefNo:csvFileRefNo,
+          signingDetails: {
+            customDocName: customDocName,
+            endDate: endDateTime,
+            signersInfo:[{
+              signMode: selectedMode,
+              startDate: startDate,
+              endDate: endDateTime,
+              signOrder:"0",
+              signCoordinates: signCoordinatesArray,
+              signPage: signPg,
+              pages: pgList,
+            }],
+          },
+        };
+        if (sessionStorage.getItem("isCorpMember") !== "" && finalArray.length != 0) {
+          obj.customSealInfo = finalArray;
+        }
+
+        fetch(URL.uploadBulkSigndetails, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj)
+        })
+        .then((response) => {
+          console.log(response);
+          // setLoaded(true);
+          return response.json();
+          // if (response.status === 400) {
+          //   props.history.push("/esign_error");
+          // } else if (response.status === 200) {
+          //   return response.json();
+          // } else {
+          //   props.history.push("/");
+          // }
+        })
+        .then((responseJson) => {
+          response_data = responseJson;
+          // setResponsedata(responseJson);
+          console.log(responseJson);
+          if (responseJson.status === "SUCCESS") {
+            confirmAlert({
+              message: "Signing request initiated!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    setLoaded(true);
+                    props.history.push("/bulkSigningSummary");
+                  },
+                },
+              ],
+            });
+          } else {
+            confirmAlert({
+              message: "Failed to initiate signing, Try again later",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    // props.history.push("/inbox");
+                    setLoaded(true);
+                  },
+                },
+              ],
+            });
+          }
+        })
+        .catch((e) => {
+          alert(e);
+        });
+      } else {
+      	obj = {
+        	//****starts here
+        	//added the keys for template based generated PDF.
         tempCode: tempCode,
         groupCode: groupCode,
         subGroup: subGroup,
@@ -3388,6 +3517,7 @@ const Preview = (props) => {
         .catch((e) => {
           alert(e);
         });
+      }
     } else {
       confirmAlert({
         message: "Sorry, your browser does'nt support for preview",
@@ -3400,6 +3530,7 @@ const Preview = (props) => {
         ],
       });
     }
+    
     sessionStorage.setItem("ud", false);
     sessionStorage.removeItem("txnrefNo");
     sessionStorage.removeItem("signedStatus");
@@ -3977,7 +4108,6 @@ const Preview = (props) => {
       });
       return;
     } else if (selectedOptionArray.at(-1) != "R" && dragArray.length != 0) {
-      // console.log(selectedMode);
       if (selectedMode != 0) {
         if (selectedMode === "1") {
           validationCheck();
@@ -4025,7 +4155,6 @@ const Preview = (props) => {
     } else {
       confirmAlert({
         message: "Please add the seal to proceed",
-        // message: "Please select the page!!!",
         buttons: [
           {
             label: "OK",
@@ -4035,7 +4164,6 @@ const Preview = (props) => {
         ],
       });
     }
-    // }
   };
 
   const validationCheck = () => {
@@ -5145,7 +5273,6 @@ const Preview = (props) => {
     return result.length > 36;
   };
 
-
   return (
     <div id="mainDiv" style={{ overflow: overflow }}>
       <Loader
@@ -5183,7 +5310,7 @@ const Preview = (props) => {
         className="container"
         style={{ display: "flex", flexDirection: "column" }}
       >
-        <Row>
+        <Row id="headSection">
           <Button
             style={{
               marginLeft: commentsMargin,
@@ -5193,6 +5320,7 @@ const Preview = (props) => {
               lineHeight: "1.2",
               fontSize: "17px",
               marginTop: "-5px",
+              marginRight: "33%",
             }}
             color="link"
             id="signersComments"

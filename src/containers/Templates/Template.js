@@ -175,6 +175,13 @@ function NewTemplate(props) {
     // to store the eachInputName 
     const [htmlDrpDwnFieldKey, setHtmlDrpDwnFieldKey] = useState("");
 
+    // to store the encoded batch And Sequence number..
+    const [encodeBatchNdSequence, setEncodeBatchNdSequence] = useState("");
+
+    // flag indication to differnciate between Normal Template Edit
+    // or Bulk Signing Edit..
+    const [flag, setFlag] = useState(true);
+    
     // holds the array values of the rept block to be edited..
     const [childNodeOfRptBlck, setChildNodeOfRptBlck] = useState([]);
 
@@ -303,6 +310,28 @@ function NewTemplate(props) {
                     templateCode: props.location.state.templateCode,
                 }),
             };
+ // if the page is routed directed from the server, for a 3rd party signing..
+        // if the page is routed directed from the server, for a 3rd party signing..
+         } else if (props?.location?.pathname === "/template") {
+            const params = new URLSearchParams(props?.location?.search);
+            let encodedkeysForBulkSigning = params.get('bulksigning');
+            // checking the URL..
+            if ((props?.location?.search).includes("bulksigning=")) {
+                setFromPath(props?.location?.pathname);
+                setToPathName("/bulkSigningPdfPreview");
+                setEncodeBatchNdSequence(encodedkeysForBulkSigning);
+                setAllowLoader(false);
+                const url = URL.fetchInputFieldsData;
+                const options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        // authToken: sessionStorage.getItem("authToken"),
+                        encodedReferenceNumber: encodedkeysForBulkSigning
+                    })
+                };
 
             fetch(url, options)
                 .then((response) => response.json())
@@ -842,6 +871,7 @@ function NewTemplate(props) {
                 });
             setAllowLoader(true);
         }
+    }
     }, []);
 
     // to reassign the check/ticks on template every time when render returns..
@@ -3610,7 +3640,8 @@ function NewTemplate(props) {
             temptDrftRef: temptDrftRef,
             repeatAbleBlck: repeatAbleBlock,
             reptDataToSveDraft: reptDataToSveDraft,
-            reptBlckOfInputs: reptBlckOfInputs
+            reptBlckOfInputs: reptBlckOfInputs,
+			flag: flag
         };
         props.history.push({
             pathname: toPathName,
