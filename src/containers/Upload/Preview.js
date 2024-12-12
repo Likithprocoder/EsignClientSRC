@@ -327,7 +327,13 @@ const Preview = (props) => {
       }
     }
 
-    subscribedPlanDetails();
+    
+
+    let thirdParty = props?.location?.state?.details;
+    if (!(thirdParty?.hasOwnProperty("externalSigner") && thirdParty?.externalSigner)) {
+      subscribedPlanDetails();
+    }
+
     var is_KYC_Verified = sessionStorage.getItem("is_KYC_verified");
     if (is_KYC_Verified != 1) {
       // document.getElementById("availableBalanceId").style.display = "none";
