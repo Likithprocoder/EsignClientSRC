@@ -16,7 +16,9 @@ export default class ESign extends Component{
     }
 
     componentWillMount(){
+        
         let data = JSON.parse(sessionStorage.getItem("download_data"))
+        console.log(data);
         this.setState({
             aspUrl: data.aspUrl,
             aspRespXML: data.espXML

@@ -90,6 +90,10 @@ class Register extends Component {
 
       secretKey: "",
       referenceNo: "",
+      mobileNo: "",
+      email: "",
+      unregisteredDocId:"",
+      referalName:"",
     };
   }
 
@@ -143,6 +147,7 @@ class Register extends Component {
 
     this.generateSecretKey();
   };
+  
 
   generateSecretKey = async () => {
     try {
@@ -214,6 +219,18 @@ class Register extends Component {
   componentDidMount() {
     this.generateRSAKeyPair();
     // console.log(this.state.awsTransactionID);
+    const queryParams = new URLSearchParams(window.location.search);
+    const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
+    const email = queryParams.has("email") ? queryParams.get("email") : undefined;
+    const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
+    const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
+ // Set state only if values are present and not empty
+    this.setState({
+      moble: mobileNo ? mobileNo : "", // Set only if mobileNo exists
+      email: email ? email : "",         // Set only if email exists
+      unregisteredDocId:unregisteredDocId ? unregisteredDocId : "",
+      referalName:referalName ? referalName :"",
+    });
     if (this.state.awsTransactionID != null) {
       // Now delete the cookie
       this.deleteCookie('AWSTransactionID');
@@ -538,6 +555,16 @@ fetch(window.location.href)
                               mobile: btoa(this.state.moble),
                               userIP: sessionStorage.getItem("userIP"),
                             };
+                            // Conditionally add `unregisteredDocId` if it has a value
+                            if (this.state.unregisteredDocId) {
+                             json.unregisteredDocId = this.state.unregisteredDocId;
+                              }
+
+                            // Conditionally add `referalName` if it has a value
+                            if (this.state.referalName) {
+                            json.referalName = this.state.referalName;
+                            }
+
                             if (this.state.awsTransactionID !== null) {
                               json.AWSTransactionID = this.state.awsTransactionID;
                             }
@@ -1683,9 +1710,12 @@ fetch(window.location.href)
 
 
   render() {
+     // Destructure state here inside the render method
+     const { moble, email } = this.state;
     return (
       <div className="app flex-row align-items-center">
         <Notifications />
+        
         <Loader
           loaded={this.state.loaded}
           lines={13}
@@ -1705,6 +1735,7 @@ fetch(window.location.href)
           scale={1.0}
           loadedClassName="loadedContent"
         />
+        
         <Container>
           <div className="isign-logo">
             <img style={{ height: "100%" }} src={mySignLogo}></img>

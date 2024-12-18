@@ -50,8 +50,8 @@ function UploadFileFrBulkSigning(props) {
     const [fileName, setFileName] = useState("");
     const [width, setWidth] = useState("");
     const [height, setHeight] = useState("");
-    const  [csvFileRefNo, setCsvFileRefNo] = useState("");
-    const  [fileRefNo, setFileRefNo] = useState("");
+    const [csvFileRefNo, setCsvFileRefNo] = useState("");
+    const [fileRefNo, setFileRefNo] = useState("");
 
     useEffect(() => {
         document.getElementById('create-job').disabled = true;
@@ -87,9 +87,9 @@ function UploadFileFrBulkSigning(props) {
         const headerAndValues = {};
         for (let key in headersWithSpace) {
             if ((headersWithSpace[key]).includes("\r")) {
-                headers.push(headersWithSpace[key].split("\r")[0]);
+                headers.push(headersWithSpace[key].split("\r")[0].trim());
             } else {
-                headers.push(headersWithSpace[key]);
+                headers.push(headersWithSpace[key].trim());
             }
         }
 
@@ -104,17 +104,18 @@ function UploadFileFrBulkSigning(props) {
                 for (let j = 0; j < headers.length; j++) {
                     let valuesArray = [];
                     for (let keysz in headerAndValues[headers[j]]) {
-                        valuesArray.push(headerAndValues[headers[j]][keysz]);
+                        valuesArray.push(headerAndValues[headers[j]][keysz].trim());
                     }
                     if ((line[j]).includes("\r")) {
-                        valuesArray.push(line[j].split("\r")[0]);
+                        valuesArray.push(line[j].split("\r")[0].trim());
                     } else {
-                        valuesArray.push(line[j]);
+                        valuesArray.push(line[j].trim());
                     }
                     headerAndValues[headers[j]] = valuesArray;
                 }
             }
         }
+                
         for (let keyzz in headerAndValues) {
             let obj = { [keyzz]: headerAndValues[keyzz] };
             data.push(obj);
@@ -135,6 +136,8 @@ function UploadFileFrBulkSigning(props) {
                 const text = e.target.result;
                 const csvData = parseCSV(text);
                 setConvertedCSVData(csvData);
+                console.log(csvData);
+                
                 if (csvData.length === 0) {
                     confirmAlertFunction("The uploaded file contains empty data, please add data(s) and re-upload!");
                     return;
@@ -156,7 +159,7 @@ function UploadFileFrBulkSigning(props) {
                         // to limit the validation of 2 column only..
                         // validating empty check 
                         if (index <= 2) {
-                            for (let keysz in jsonObj[Object.keys(jsonObj)[0]]) {
+                            for (let keysz in jsonObj[Object.keys(jsonObj)[0]]) {                                
                                 if (jsonObj[Object.keys(jsonObj)[0]][keysz] === "" && index <= 1) {
                                     confirmAlertFunction("The file should not contain any empty values for columns 'Signer Name And Mobile Number'. Please fill and re-upload!");
                                     return;
@@ -228,32 +231,30 @@ function UploadFileFrBulkSigning(props) {
     }
 
     // logic to fetch the unique keys from the HTML uploaded and store in an variable..
-    const getKeysFromHtml = (text) => {
-        let eachLineText = text.split('\n');
-        for (let index = 0; index <= eachLineText.length - 1; index++) {
-            let splitedText = eachLineText[index].split(" ");
-            for (let j = 0; j <= splitedText.length - 1; j++) {
-                // the word contains with out any spaces in between..
-                if (splitedText[j].includes("{{") || splitedText[j].includes("}}")) {
-                    if ((splitedText[j]).startsWith("{{") && (splitedText[j]).endsWith("}}")) {
-                        setHtmlKeys(oldvalue => ([
-                            ...oldvalue,
-                            splitedText[j]
-                        ]));
-                        // else is exceuted if the word contains spaces in between..
-                        // spaces are removed and formed to a proper word.
-                    } else {
-                        const spacedWords = splitedText[j];
-                        const unspacedWords = spacedWords.split('').filter(char => char !== ' ').join('');
-                        setHtmlKeys(oldvalue => ([
-                            ...oldvalue,
-                            unspacedWords
-                        ]));
-                    }
-
-                }
-            }
-        }
+    const getKeysFromHtml = (htmlText) => {
+        let allInpustFrmHTML = {};
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const htmlTag = doc.querySelector("html");
+        // regex to find the input fields...
+        const regexJSInput = /{{jsonObj\.[^}]+}}/g;
+        // Use the match method to find all matches
+        const matchesJSInput = htmlTag.textContent.match(regexJSInput);
+        // If there are no matches, matches will be null, so handle that case
+        const keysArrayONE = matchesJSInput ? matchesJSInput : [];
+        // At this point variable 'keysArrayONE', which is above, will be holding all the inputs, including several duplicates,
+        // In order to remove the duplicate keys, a JsonObject is declared, which allows only unique keys and the keys are iterated and added to 
+        // the above JsonObject variable..
+        for (let key in keysArrayONE) {
+            allInpustFrmHTML[keysArrayONE[key]] = keysArrayONE[key];
+        };
+        // Iterating the unique keys, and assigning to an state.
+        for (let key in allInpustFrmHTML) {
+            setHtmlKeys(oldvalue => ([
+                ...oldvalue,
+                allInpustFrmHTML[key]
+            ]));
+        };
     }
 
     // to collect the HTML or PDF file uploaded.
@@ -285,7 +286,7 @@ function UploadFileFrBulkSigning(props) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const text = e.target.result;
-                    let expectResult = getKeysFromHtml(text);
+                    getKeysFromHtml(text);
                 }
                 reader.readAsText(file);
                 setUploadedFileName({
@@ -332,7 +333,7 @@ function UploadFileFrBulkSigning(props) {
         if (uploadedFileName.html_pdfFile.fileType === "text/html") {
             props.history.push({
                 pathname: "/htmlPreview",
-                frompath: "/bulkSigning",
+                frompath: "/bulkSigningUpload",
                 state: {
                     htmlFile: toBeSignedDoc,
                     htmlKeys: htmlKeys,
@@ -375,11 +376,6 @@ function UploadFileFrBulkSigning(props) {
                                     className: "confirmBtn",
                                     onClick: () => {
                                         createPDF(data.PDFValue, data.csvFileRefNo, data.fileRefNo);
-                                        // props.history.push({
-                                        //     pathname: "/preview",
-                                        //     frompath: "bulkSigning",
-                                        //     state: data
-                                        // });
                                     }
                                 }
                             ],
@@ -398,7 +394,7 @@ function UploadFileFrBulkSigning(props) {
                                         props.history.push("/login");
                                     },
                                 },
-                            ],
+                            ],closeOnClickOutside: false,
                         });
                     }
                     else {
@@ -409,7 +405,7 @@ function UploadFileFrBulkSigning(props) {
                                     label: "OK",
                                     className: "confirmBtn"
                                 },
-                            ],
+                            ],closeOnClickOutside: false,
                         });
                     }
 
@@ -423,7 +419,7 @@ function UploadFileFrBulkSigning(props) {
                                 label: "OK",
                                 className: "confirmBtn",
                             },
-                        ],
+                        ],closeOnClickOutside: false,
                     });
                 })
         }
@@ -436,35 +432,35 @@ function UploadFileFrBulkSigning(props) {
         // storing individual bytes of binary data..
         const uint8Array = new Uint8Array(data.length);
         for (let i = 0; i < data.length; i++) {
-          uint8Array[i] = data.charCodeAt(i);
+            uint8Array[i] = data.charCodeAt(i);
         }
         const blob = new Blob([uint8Array], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         console.log(url);
         var file = new File([blob], `${fileName.split(".")[0]}.pdf`, {
-          type: "application/pdf",
-          lastModified: new Date(),
+            type: "application/pdf",
+            lastModified: new Date(),
         });
-    
+
         let localPages = null; // Declare local variable for pages
         let equalPageDimensions1 = true;
         let width1 = 0;
         let height1 = 0;
-    
+
         try {
             const pdf = await pdfjsforOnDrag.getDocument(url).promise;
-    
+
             let promises = [];
-        
+
             // Fetch dimensions for each page
             for (let i = 1; i <= pdf.numPages; i++) {
                 promises.push(pdf.getPage(i).then(page => {
-                    if ( i == 1 ) {
+                    if (i == 1) {
                         width1 = page.getViewport({ scale: 1 }).width;
                         height1 = page.getViewport({ scale: 1 }).height;
                         setWidth(page.getViewport({ scale: 1 }).width);
                         setHeight(page.getViewport({ scale: 1 }).height);
-                    } 
+                    }
                     return {
                         pageNumber: i,
                         width: page.getViewport({ scale: 1 }).width,
@@ -472,18 +468,18 @@ function UploadFileFrBulkSigning(props) {
                     };
                 }));
             }
-    
+
             // Resolve all promises
             const pages = await Promise.all(promises);
             localPages = pages; // Assign pages to local variable
-    
+
             // Store page dimensions in state or use as needed
             setPageDimensions(pages);
-    
+
             // Iterate through the array and compare dimensions
             for (let i = 1; i < pages.length; i++) {
                 if (pages.length != 1) {
-                    if (pages[i].width !== pages[0].width || 
+                    if (pages[i].width !== pages[0].width ||
                         pages[i].height !== pages[0].height) {
                         equalPageDimensions1 = false;
                         setEqualPageDimensions(false);
@@ -494,7 +490,7 @@ function UploadFileFrBulkSigning(props) {
         } catch (error) {
             console.error("Error fetching PDF dimensions:", error);
         }
-    
+
         file.preview = window.URL.createObjectURL(new File([blob], `${fileName.split(".")[0]}.pdf`, {
             type: "application/pdf",
             lastModified: new Date(),
@@ -510,16 +506,16 @@ function UploadFileFrBulkSigning(props) {
             fileRefNo: fileRefNo1,
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
-          };
-          console.log({filedata});
-          props.history.push({
-            // pathname: "/preview",
-            pathname: "/multiPplSignPreview",
+        };
+        console.log({ filedata });
+        props.history.push({
+            pathname: "/preview",
+            // pathname: "/multiPplSignPreview",
             frompath: "/htmlPreview",
             state: {
-              details: filedata,
+                details: filedata,
             },
-          });
+        });
     }
 
     return (

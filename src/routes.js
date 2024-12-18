@@ -294,10 +294,9 @@ const routes = [
     path: "/exitFromCorporate",
     name: "Exit or unlink from the corporate entity",
     component: extFrmCorp
-  }
-  
-    {
-    path: "/bulkSigning",
+  },
+  {
+    path: "/bulkSigningUpload",
     name: "Bulk Signing",
     component: FileUploadBulkSigning
   },

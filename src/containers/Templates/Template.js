@@ -146,7 +146,7 @@ function NewTemplate(props) {
     });
 
     // to store the PDF preview pathName.
-    const [toPathName, setToPathName] = useState("");
+    const [toPathName, setToPathName] = useState("/templatePdfPreview");
 
     // to control the collapse dropDown of all repeat blocks.
     const [repeatDrpDwn, setrepeatDrpDwn] = useState("");
@@ -181,7 +181,7 @@ function NewTemplate(props) {
     // flag indication to differnciate between Normal Template Edit
     // or Bulk Signing Edit..
     const [flag, setFlag] = useState(true);
-    
+
     // holds the array values of the rept block to be edited..
     const [childNodeOfRptBlck, setChildNodeOfRptBlck] = useState([]);
 
@@ -206,7 +206,7 @@ function NewTemplate(props) {
 
     const [screenSize, setScreenSize] = useState({});
 
-    const [repeatContentUpdateHTML, setRepeatContentUpdateHTML] = useState();
+    const [repeatContentUpdateHTML, setRepeatContentUpdateHTML] = useState([]);
 
     const [cropedSize, setCropedSize] = useState(null);
 
@@ -297,42 +297,32 @@ function NewTemplate(props) {
         // Detect if the device is mobile based on the user agent string
         const checkIsMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         setIsMobile(checkIsMobile);
+        console.log(props);
+
         // from template PDF preview page.
-        if (props.location.frompath === "/draftTemplates" || props.location.frompath === "/templatePdfPreview") {
-            const url = URL.getTemplateInputs;
+        if (props.location.frompath === "/draftTemplates" || props.location.frompath === "/templatePdfPreview" || props.location.frompath === "/bulkSigningPdfPreview") {
+            let url = null;
+            let body = null;
+            if (props.location.frompath === "/bulkSigningPdfPreview") {
+                url = URL.fetchInputFieldsData;
+                body = {
+                    encodedReferenceNumber: props.location.state.encodeBatchNdSequence
+                };
+            } else {
+                url = URL.getTemplateInputs;
+                body = {
+                    authToken: sessionStorage.getItem("authToken"),
+                    templateCode: props.location.state.templateCode,
+                };
+            };
+
             const options = {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
-                    templateCode: props.location.state.templateCode,
-                }),
+                body: JSON.stringify(body),
             };
- // if the page is routed directed from the server, for a 3rd party signing..
-        // if the page is routed directed from the server, for a 3rd party signing..
-         } else if (props?.location?.pathname === "/template") {
-            const params = new URLSearchParams(props?.location?.search);
-            let encodedkeysForBulkSigning = params.get('bulksigning');
-            // checking the URL..
-            if ((props?.location?.search).includes("bulksigning=")) {
-                setFromPath(props?.location?.pathname);
-                setToPathName("/bulkSigningPdfPreview");
-                setEncodeBatchNdSequence(encodedkeysForBulkSigning);
-                setAllowLoader(false);
-                const url = URL.fetchInputFieldsData;
-                const options = {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        // authToken: sessionStorage.getItem("authToken"),
-                        encodedReferenceNumber: encodedkeysForBulkSigning
-                    })
-                };
-
             fetch(url, options)
                 .then((response) => response.json())
                 .then((responsedata) => {
@@ -533,21 +523,27 @@ function NewTemplate(props) {
                             templateDescription: resposedata.templateDescription,
                             templateInputs: resposedata.templateInputs
                         });
+
+                        if (props.location.frompath !== "/bulkSigningPdfPreview") {
+                            setTempRadioValidation(responsedata.templateRadioInputs);
+                            setModeOfSignature(responsedata.modeOfSignature);
+                            setCustomFieldData(responsedata.customFeildInputs);
+                            setFileAttahments(responsedata.templateAttachmentList);
+                        }else{
+                            setFlag(false);
+                            setEncodeBatchNdSequence(props.location.state.encodeBatchNdSequence);
+                        }
                         setHTMLFileServer(btoa(StringHTML));
-                        setTempRadioValidation(responsedata.templateRadioInputs);
-                        setModeOfSignature(responsedata.modeOfSignature);
-                        setCustomFieldData(responsedata.customFeildInputs);
-                        setFileAttahments(responsedata.templateAttachmentList);
                         setDetail(props.location.state.userDetails);
                         setTemplateCode(props.location.state.templateCode);
                         setTemplateName(props.location.state.templateName);
                         setTemplateAttachment(props.location.state.templateAttachments);
                         setTempDrftRef(props.location.state.temptDrftRef);
-                        setToPathName(props.location.state.toPathName);
                         setReptDataToSveDraft(props.location.state.reptDataToSveDraft);
                         setRepeatAbleBlock(props.location.state.repeatAbleBlck);
                         setFromPath(props.location.pathname);
                         setTemplateForRendering(props.location.state.templateAttachments);
+                        setToPathName(props.location.state.toPathName);
                         setAllowLoader(true);
                         setRenderFromOtherPage(true);
                     }
@@ -588,6 +584,90 @@ function NewTemplate(props) {
                 });
 
         }
+        // if the page is routed directed from the server, for a 3rd party signing..
+        else if (props?.location?.pathname === "/template") {
+            const params = new URLSearchParams(props?.location?.search);
+            let encodedkeysForBulkSigning = params.get('bulksigning');
+            // checking the URL..
+            if ((props?.location?.search).includes("bulksigning=")) {
+                setFromPath(props?.location?.pathname);
+                setEncodeBatchNdSequence(encodedkeysForBulkSigning);
+                setAllowLoader(false);
+                const options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        //   authToken: sessionStorage.getItem("authToken"),
+                        encodedReferenceNumber: encodedkeysForBulkSigning
+                    })
+                };
+
+                fetch(URL.fetchInputFieldsData, options)
+                    .then((response) => response.json())
+                    .then((responsedata) => {
+                        if (responsedata.status === "SUCCESS") {
+                            setForm({
+                                HtmlBase64String: btoa(responsedata.HtmlBase64String),
+                                templateInputs: responsedata.templateInputs,
+                                status: responsedata.status,
+                                templateDescription: responsedata.templateDescription
+                            });
+                            setHTMLFileServer(responsedata.HtmlBase64String);
+                            setDetail(responsedata.inputFieldValues)
+                            setFlag(false);
+                            setAllowDataToRenderThisPage(true);
+                            setRenderFromOtherPage(true);
+                            setTemplateName(responsedata.fileName);
+                            setTemplateInputs(responsedata.templateInputs);
+                            setToPathName("/bulkSigningPdfPreview");
+                        }
+                        else {
+                            confirmAlert({
+                                message: responsedata.statusDetails,
+                                buttons: [
+                                    {
+                                        label: "OK",
+                                        className: "confirmBtn",
+                                        onClick: () => {
+                                            props.history.push("/login");
+                                        },
+                                    },
+                                ], closeOnClickOutside: false
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        confirmAlert({
+                            message: `Technical issues! Please try again later.`,
+                            buttons: [
+                                {
+                                    label: "OK",
+                                    className: "confirmBtn",
+                                    onClick: () => {
+                                        props.history.push("/login");
+                                    },
+                                },
+                            ], closeOnClickOutside: false
+                        });
+                    });
+                setAllowLoader(true);
+            } /*Invalid URL will be pushed to login page*/  else {
+                confirmAlert({
+                    message: "Invalid url",
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn"
+                        }
+                    ]
+                });
+                props.history.push("/login");
+            }
+
+        }
         // for the first fetch call when page renders...
         else {
             let templateCode = "";
@@ -595,7 +675,6 @@ function NewTemplate(props) {
             if (props.location.state !== undefined) {
                 templateCode = props.location.state.templateCode
             };
-            setToPathName("/templatePdfPreview");
             const url = URL.getTemplateInputs;
             const options = {
                 method: "POST",
@@ -871,7 +950,6 @@ function NewTemplate(props) {
                 });
             setAllowLoader(true);
         }
-    }
     }, []);
 
     // to reassign the check/ticks on template every time when render returns..
@@ -1304,6 +1382,10 @@ function NewTemplate(props) {
     /*------------------------Template Input form-------------------------------------*/
     // when ever any value changes for template inputs..
     const inputFieldOnchange = (e, FieldId, datatype) => {
+        console.log(datatype);
+
+        console.log();
+
         e.preventDefault();
         const container = document.getElementById('ScrollBarX');
         const element = document.getElementById(FieldId);
@@ -3081,7 +3163,7 @@ function NewTemplate(props) {
                                                                                     onChange={handleRadioChange}
                                                                                 />A4&nbsp;
                                                                             </div>
-                                                                            
+
                                                                             <div>
                                                                                 <input
                                                                                     type="radio"
@@ -3099,7 +3181,7 @@ function NewTemplate(props) {
                                                                                     onChange={handleRadioChange}
                                                                                 />ID -Portrait&nbsp;
                                                                             </div>
-                                                                            
+
                                                                             <div>
                                                                                 <input
                                                                                     type="radio"
@@ -3641,8 +3723,18 @@ function NewTemplate(props) {
             repeatAbleBlck: repeatAbleBlock,
             reptDataToSveDraft: reptDataToSveDraft,
             reptBlckOfInputs: reptBlckOfInputs,
-			flag: flag
+            flag: flag,
+            frompath: fromPath,
+            pathname: toPathName
         };
+        // if the HTML edit is performed for Bulk Signing..
+        if (!flag) {
+            state.encodeBatchNdSequence = encodeBatchNdSequence;
+        }
+        console.log(state);
+        console.log(toPathName);
+        console.log(fromPath);
+
         props.history.push({
             pathname: toPathName,
             frompath: fromPath,
@@ -4244,7 +4336,7 @@ function NewTemplate(props) {
                         onClick: () => {
                             base64Data = croppedImageUrl.split(",")[1];
                             proceedingWithImg(base64Data);
-                            
+
                         },
                     },
                 ], closeOnClickOutside: false,
@@ -4294,7 +4386,7 @@ function NewTemplate(props) {
                         {
                             label: "Cropped",
                             className: "confirmBtn",
-                            onClick: () => {               
+                            onClick: () => {
                                 //Cropping the image based on cropping tool position
                                 const image = new Image();
                                 image.src = captureData;
@@ -4457,7 +4549,7 @@ function NewTemplate(props) {
                 </div>
                 <form id="URL" name="URL" method="POST" action="http:localhost:8090/MYSIGN/login" encType="multipart/form-data" target="my_iframe">
                 </form>
-                <div className="saveDraftCss">
+                <div style={{ display: flag ? "" : "none" }} className="saveDraftCss">
                     <button className="btn btn-primary" onClick={e => saveDraft(e)}>Save Draft</button>
                 </div>
             </div>
@@ -4476,7 +4568,9 @@ function NewTemplate(props) {
                         <div className="FormCss ">
                             <h6 className=" form-montrol1 ">Fill the document details</h6>
                             <form>
-
+                                {
+                                    console.log(templateInputs)
+                                }
                                 {(templateInputs.length !== 0)
                                     ? templateInputs.map((posts, index) => (
                                         //below disabled attribute in style tag is used to.

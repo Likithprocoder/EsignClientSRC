@@ -57,10 +57,33 @@ export default class TokenSignDownload extends React.Component {
       pageList: [],
       pageDimensions: "",
       equalPageDimensions: true,
+      emailId:"",
+      mobileNo:"",
+      referalName:"",
+      unregisteredDocId:""
+
     };
   }
   componentWillMount() {
-    // console.log(this.props);
+    console.log(this.props);
+    console.log(this.props.location.state.details.hasOwnProperty("referalName"));
+    console.log(this.props.location.state);
+    console.log(this.props.location.state.details);
+
+  // -----------------resgister user-------
+        
+  if (this.props.location.state.details.hasOwnProperty("referalName")) {
+    this.setState({
+      referalName:this.props.location.state.details.referalName,
+      mobileNo:this.props.location.state.details.mobileNo,
+      emailId:this.props.location.state.details.emailId,
+      unregisteredDocId:this.props.location.state.details.docId
+    })
+     //document.getElementById("registerUser").style.display = "";
+    
+  }
+
+ // ----------------end of register user----------------
     if (sessionStorage.hasOwnProperty("sealMsg")) {
       sessionStorage.setItem("sealMsg", "");
     }
@@ -88,6 +111,10 @@ export default class TokenSignDownload extends React.Component {
   }
 
   componentDidMount() {
+if(this.state.referalName){
+
+  document.getElementById("registerUser").style.display = "";
+}
     // if (this.state.mode === "3") {
     //     this.setState({ Msg: "DSC Token Signing Successful" })
     // }
@@ -99,6 +126,7 @@ export default class TokenSignDownload extends React.Component {
       sessionStorage.getItem("externalSigner") === "true"
     ) {
       if (sessionStorage.getItem("userId") === "0") {
+    
         var username = sessionStorage.getItem("username");
         var email = sessionStorage.getItem("email");
         this.setState({
@@ -638,12 +666,55 @@ export default class TokenSignDownload extends React.Component {
     });
   }
 
+  // registerUser = () => {
+  //     let windowFeatures = "popup";
+  //     var win = window.open(
+  //       URL.registerUser,
+  //       windowFeatures
+  //     );
+  //   };
+
+
+  registerUser = () => {
+    let windowFeatures = "popup";
+  
+    // Data to send
+    const mobileNo = this.state.mobileNo;
+    const email = this.state.emailId;
+    const referalName= this.state.referalName;
+    const unregisteredDocId=this.state.unregisteredDocId;
+    // Build the URL with query parameters
+    //const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}`;
+    const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}&referalName=${encodeURIComponent(referalName)}&docId=${encodeURIComponent(unregisteredDocId)}`;
+
+  
+    // Open the new window with the modified URL
+    var win = window.open(registerURL, windowFeatures);
+  };
+  
+
   render() {
     let fileName = this.state.fileName;
     return (
       <div>
         <ToastContainer></ToastContainer>
         <div className="login-main-container">
+        <div 
+       
+          className="consenteSignLink"
+          id="registerUser"
+          style={{ display: "none" }}
+          onClick={this.consenteSignLink}
+        >
+          <p>
+          <a title="register" href="" onClick={this.registerUser}>
+            Click here
+          </a>{" "}
+          to signup for DocuExec account.
+          </p>
+            
+            
+          </div>
           <div className="" id="discardOptionsdiv" style={{ display: "none" }}>
             {/* <nav class="" id="performActionnavid" aria-label="breadcrumb">
               <ol id="performActionBreadcrumbid" class="breadcrumb"> */}

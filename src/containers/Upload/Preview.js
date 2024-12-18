@@ -151,6 +151,12 @@ const Preview = (props) => {
   const [draftRefNumber, setDraftRefNumber] = useState("");
   const [fromTemplatePage, setFromTemplatePage] = useState("");
   const [shown, setShown] = useState(false);
+  const [endDate, setEndDate] = useState("");
+  const [endDateTime, setEndDateTime] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [min, setMin] = useState("");
+  const [csvFileRefNo, setCsvFileRefNo] = useState("");
+  const [fileRefNo, setFileRefNo] = useState("");
   const [clientDimensions, setClientDimensions] = useState([]);
   const [finalClientDimensions, setFinalClientDimensions] = useState([]);
   const [pageDimensions, setPageDimensions] = useState(props?.location?.state?.details?.pageDimensions || []);
@@ -177,7 +183,7 @@ const Preview = (props) => {
 
   const getWalletDetailsonLoad = () => {
     var body = {
-      loginname: sessionStorage.getItem("username"),
+      // loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
     };
 
@@ -207,7 +213,7 @@ const Preview = (props) => {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -327,11 +333,13 @@ const Preview = (props) => {
       }
     }
 
-    
+
 
     let thirdParty = props?.location?.state?.details;
     if (!(thirdParty?.hasOwnProperty("externalSigner") && thirdParty?.externalSigner)) {
       subscribedPlanDetails();
+    } else {
+      setPlanActive(true);
     }
 
     var is_KYC_Verified = sessionStorage.getItem("is_KYC_verified");
@@ -368,13 +376,13 @@ const Preview = (props) => {
         calltoclientforTokenCheck();
       }
     }
-  },[responsedata]);
+  }, [responsedata]);
 
   useEffect(() => {
     if (clientCallRespData.status === "SUCCESS") {
       clientResponse();
     }
-  },[clientCallRespData]);
+  }, [clientCallRespData]);
 
   const getColor = () =>
     `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(
@@ -389,7 +397,7 @@ const Preview = (props) => {
     let tempAllPageBatch = 1;
     let tempCustomPageBatch = 1;
     let data = {};
-    
+
     //Incase of Aadhaar signing this below block gets executed
     if (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true") {
       data.signCoordinates = JSON.parse(sessionStorage.getItem("signCoordinates"));
@@ -397,52 +405,52 @@ const Preview = (props) => {
       data = props?.location?.state?.details;
     }
 
-        //Setting the signPage values to P if we get the SignPage value other than P and A.(*Not From DE from DE I will be always getting signPage value as P and A)
-        if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
-          if (data.signCoordinates.signPage == "F") {
-            data.signCoordinates.signPage = "P";
-            data.signCoordinates.pageList.push(1);
-            data.signCoordinates.signCoordinates[0].page = 1;
-          } else if (data.signCoordinates.signPage == "L") {
-            data.signCoordinates.signPage = "P";
-            data.signCoordinates.pageList.push(
-              Number(sessionStorage.getItem("TotalPages"))
-            );
-            data.signCoordinates.signCoordinates[0].page = Number(
-              sessionStorage.getItem("TotalPages")
-            );
-          } else if (
-            data.signCoordinates.signPage != "F" &&
-            data.signCoordinates.signPage != "L" &&
-            data.signCoordinates.signPage != "A" &&
-            data.signCoordinates.signPage != "P"
-          ) {
-            data.signCoordinates.signCoordinates[0].page = Number(
-              data.signCoordinates.signPage
-            );
-            data.signCoordinates.pageList.push(
-              Number(data.signCoordinates.signPage)
-            );
-            data.signCoordinates.signPage = "P";
-          }
-        }
+    //Setting the signPage values to P if we get the SignPage value other than P and A.(*Not From DE from DE I will be always getting signPage value as P and A)
+    if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
+      if (data.signCoordinates.signPage == "F") {
+        data.signCoordinates.signPage = "P";
+        data.signCoordinates.pageList.push(1);
+        data.signCoordinates.signCoordinates[0].page = 1;
+      } else if (data.signCoordinates.signPage == "L") {
+        data.signCoordinates.signPage = "P";
+        data.signCoordinates.pageList.push(
+          Number(sessionStorage.getItem("TotalPages"))
+        );
+        data.signCoordinates.signCoordinates[0].page = Number(
+          sessionStorage.getItem("TotalPages")
+        );
+      } else if (
+        data.signCoordinates.signPage != "F" &&
+        data.signCoordinates.signPage != "L" &&
+        data.signCoordinates.signPage != "A" &&
+        data.signCoordinates.signPage != "P"
+      ) {
+        data.signCoordinates.signCoordinates[0].page = Number(
+          data.signCoordinates.signPage
+        );
+        data.signCoordinates.pageList.push(
+          Number(data.signCoordinates.signPage)
+        );
+        data.signCoordinates.signPage = "P";
+      }
+    }
 
-        if (
-          (data?.hasOwnProperty("externalSigner") && data?.externalSigner) ||
-          frompath === "/download/tokenSignDownload" ||
-          frompath === "inbox" || sessionStorage.getItem("txnrefNo") != null &&
-          sessionStorage.getItem("ud") == "true"
-        ) {
-          let xVal = [];
-          let yVal = [];
-          let widthVal = [];
-          let heightVal = [];
-          let width_ratio_arr = [];
-          let height_ratio_arr = [];
+    if (
+      (data?.hasOwnProperty("externalSigner") && data?.externalSigner) ||
+      frompath === "/download/tokenSignDownload" ||
+      frompath === "inbox" || sessionStorage.getItem("txnrefNo") != null &&
+      sessionStorage.getItem("ud") == "true"
+    ) {
+      let xVal = [];
+      let yVal = [];
+      let widthVal = [];
+      let heightVal = [];
+      let width_ratio_arr = [];
+      let height_ratio_arr = [];
 
 
-          for (let i = 0; i < pageDimensions.length; i++) {
-          if (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true") {
+      for (let i = 0; i < pageDimensions.length; i++) {
+        if (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true") {
           if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             //For cross compatibality check, the below if block gets executed
             if ((data?.hasOwnProperty("externalSigner") && data?.externalSigner) || frompath === "inbox") {
@@ -462,538 +470,538 @@ const Preview = (props) => {
             //-7 is the default offset value of the height
             height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 6)); //11.5
           }
-            setSelectedOptionArray([
-              ...selectedOptionArray,
-              data.signCoordinates.signPage,
-            ]);
-            setRangeArray([...rangeArray, ...data.signCoordinates.pageList]);
-            setAllRangeArrayValues([...data.signCoordinates.pageList]);
-          } else {
-            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-              //For cross compatibality check, the below if block gets executed
-              if ((data?.hasOwnProperty("externalSigner") && data?.externalSigner) || frompath === "inbox") {
-                //-8 value is the default offset value
-                width_ratio_arr.push(pageDimensions[i].width / (finalDimensions[i].clientWidth - 15)); //8,20
-                height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 7)); //11.5, 8, 7
-              } else {
-                //-8 value is the default offset value
-                width_ratio_arr.push(pageDimensions[i].width / (finalDimensions[i].clientWidth - 20)); //8
-                height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 9)); //11.5, 8, 7
-              }
+          setSelectedOptionArray([
+            ...selectedOptionArray,
+            data.signCoordinates.signPage,
+          ]);
+          setRangeArray([...rangeArray, ...data.signCoordinates.pageList]);
+          setAllRangeArrayValues([...data.signCoordinates.pageList]);
+        } else {
+          if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            //For cross compatibality check, the below if block gets executed
+            if ((data?.hasOwnProperty("externalSigner") && data?.externalSigner) || frompath === "inbox") {
+              //-8 value is the default offset value
+              width_ratio_arr.push(pageDimensions[i].width / (finalDimensions[i].clientWidth - 15)); //8,20
+              height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 7)); //11.5, 8, 7
             } else {
               //-8 value is the default offset value
               width_ratio_arr.push(pageDimensions[i].width / (finalDimensions[i].clientWidth - 20)); //8
-              height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 6)); //11.5, 8, 7
+              height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 9)); //11.5, 8, 7
             }
-
-            if (data?.signCoordinates?.signPage) {
-              setSelectedOptionArray([
-                ...selectedOptionArray,
-                data?.signCoordinates?.signPage,
-              ]);
-            }
-            if (data?.signCoordinates?.pageList || data?.signCoordinates?.pages) {
-              setRangeArray([...rangeArray, ...data?.signCoordinates?.pageList] || [...rangeArray, ...data?.signCoordinates?.pages]);
-              setAllRangeArrayValues([...allRangeArrayValues, ...data?.signCoordinates?.pageList] || [...allRangeArrayValues, ...data?.signCoordinates?.pages]);
-            }
-            }
+          } else {
+            //-8 value is the default offset value
+            width_ratio_arr.push(pageDimensions[i].width / (finalDimensions[i].clientWidth - 20)); //8
+            height_ratio_arr.push(pageDimensions[i].height / (finalDimensions[i].clientHeight - 6)); //11.5, 8, 7
           }
 
-          //Create x-coordinate and y-coordinate values Array
+          if (data?.signCoordinates?.signPage) {
+            setSelectedOptionArray([
+              ...selectedOptionArray,
+              data?.signCoordinates?.signPage,
+            ]);
+          }
+          if (data?.signCoordinates?.pageList || data?.signCoordinates?.pages) {
+            setRangeArray([...rangeArray, ...data?.signCoordinates?.pageList] || [...rangeArray, ...data?.signCoordinates?.pages]);
+            setAllRangeArrayValues([...allRangeArrayValues, ...data?.signCoordinates?.pageList] || [...allRangeArrayValues, ...data?.signCoordinates?.pages]);
+          }
+        }
+      }
+
+      //Create x-coordinate and y-coordinate values Array
+      for (
+        let j = 0;
+        j < data?.signCoordinates?.signCoordinates?.length;
+        j++
+      ) {
+        for (
+          let i = 0;
+          i <
+          data.signCoordinates.signCoordinates[j].signCoordinatesValues
+            .length;
+          i++
+        ) {
+          let signCoordinatesData =
+            data.signCoordinates.signCoordinates[j].signCoordinatesValues[
+            i
+            ];
+
+          if (
+            data.hasOwnProperty("externalSigner") &&
+            data.externalSigner
+          ) {
+            if (signCoordinatesData.x != "0" && sessionStorage.getItem("TotalPages") != "1") {
+              xVal.push(
+                parseInt(
+                  Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
+                  10
+                )
+              );
+            } else {
+              xVal.push(
+                parseInt(
+                  Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
+                  10
+                )
+              );
+            }
+          } else if (
+            frompath === "/download/tokenSignDownload" ||
+            frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")
+          ) {
+            //if (data.signCoordinates.signPage == "P") {
+            if (
+              sessionStorage.getItem("TotalPages") != "1" &&
+              signCoordinatesData.x != "0"
+            ) {
+              xVal.push(
+                parseInt(
+                  Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]) -
+                  5,
+                  10
+                )
+              );
+            } else {
+              xVal.push(
+                parseInt(
+                  Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
+                  10
+                )
+              );
+            }
+          }
+          yVal.push(
+            parseInt(
+              Math.round(Number(signCoordinatesData.y) / height_ratio_arr[data.signCoordinates.pageList[j] - 1]),
+              10
+            )
+          );
+
+          widthVal.push(
+            parseInt(
+              Math.round(Number(signCoordinatesData.width) / width_ratio_arr[0]),
+              10
+            )
+          );
+          heightVal.push(
+            parseInt(
+              Math.round(Number(signCoordinatesData.height) / height_ratio_arr[data.signCoordinates.pageList[j] - 1]),
+              10
+            )
+          );
+        }
+      }
+
+      // Preparing an array selectedBatchArr which includes which and all batches got added
+      let selectedBatchArr = [];
+      let defaultPageList = [];
+      for (
+        let k = 0;
+        k < data?.signCoordinates?.signCoordinates?.length;
+        k++
+      ) {
+        for (
+          let j = 0;
+          j <
+          data?.signCoordinates?.signCoordinates[k]?.signCoordinatesValues
+            .length;
+          j++
+        ) {
+          let internalData =
+            data?.signCoordinates?.signCoordinates[k]?.signCoordinatesValues[
+            j
+            ];
+
+          if (internalData.hasOwnProperty("selectedBatch")) {
+            if (internalData.selectedBatch?.charAt(0) !== "A") {
+              selectedBatchArr.push(internalData.selectedBatch);
+            } else if (internalData.selectedBatch?.charAt(0) === "A") {
+              selectedBatchArr.push(internalData.selectedBatch);
+            }
+          }
+        }
+      }
+
+      //Creating an dragArray object and setting to state so that on page loads that respective objects values will be applied to respective pages
+      if (data.signCoordinates.signPage == "P") {
+        // Create a page list array---------------
+        let pageListArray = [];
+        for (
+          let a = 0;
+          a < data?.signCoordinates?.signCoordinates?.length;
+          a++
+        ) {
+          for (
+            let b = 0;
+            b <
+            data?.signCoordinates?.signCoordinates[a]?.signCoordinatesValues
+              .length;
+            b++
+          ) {
+            pageListArray.push(
+              data?.signCoordinates?.signCoordinates[a]?.page
+            );
+          }
+        }
+
+        //Creating an dragArray object---------------
+        for (let i = 0; i < pageListArray.length; i++) {
+          dragArrayObject.push({
+            count: count4 + i,
+            dragId: "draggable" + (count4 + i),
+            left: xVal[i] + "px",
+            top: yVal[i] + "px",
+            pageNo: pageListArray[i],
+            resizeDragHeight: heightVal[i] + "px",
+            resizeDragWidth: widthVal[i] + "px",
+            selectedPBatch: selectedBatchArr[i],
+          });
+        }
+      } else if (data?.signCoordinates?.signPage == "A") {
+        let pageListA = [];
+        //Preparing pagelist array------------------
+        for (
+          let i = 0;
+          i < data?.signCoordinates?.signCoordinates?.length;
+          i++
+        ) {
           for (
             let j = 0;
-            j < data?.signCoordinates?.signCoordinates?.length;
+            j <
+            data?.signCoordinates?.signCoordinates[i]?.signCoordinatesValues
+              .length;
             j++
           ) {
-            for (
-              let i = 0;
-              i <
-              data.signCoordinates.signCoordinates[j].signCoordinatesValues
-                .length;
-              i++
-            ) {
-              let signCoordinatesData =
-                data.signCoordinates.signCoordinates[j].signCoordinatesValues[
-                  i
-                ];
+            pageListA.push(data?.signCoordinates?.signCoordinates[i]?.page);
+          }
+        }
 
+        pageListA = pageListA.filter(function (item, pos, self) {
+          //Removing the duplicates from the array
+          return self.indexOf(item) == pos;
+        });
+        pageListA.shift();
+        setRangeArray([...rangeArray, ...pageListA]);
+        setAllRangeArrayValues([...allRangeArrayValues, ...pageListA]);
+
+        //Preparing the defaultPageListA where default seals are present
+        let defaultPageListA = [];
+        if (data?.hasOwnProperty("externalSigner") && data.externalSigner) {
+          for (let i = 0; i < sessionStorage.getItem("TotalPages"); i++) {
+            defaultPageListA.push(i + 1);
+          }
+        } else if (
+          frompath === "/download/tokenSignDownload" ||
+          frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")
+        ) {
+          for (let i = 0; i < sessionStorage.getItem("TotalPages"); i++) {
+            defaultPageListA.push(i + 1);
+          }
+        }
+
+        defaultPageList = defaultPageListA.filter(
+          (item) => !pageListA.includes(item)
+        );
+
+        let k = 0;
+        for (
+          let j = 0;
+          j <
+          data?.signCoordinates?.signCoordinates[0]?.signCoordinatesValues
+            .length;
+          j++
+        ) {
+          //Preparing the dragArray objects for default seal positions
+          for (let i = 0; i < defaultPageList.length; i++) {
+            let dataSignCoordinates =
+              data?.signCoordinates?.signCoordinates[0]?.signCoordinatesValues[
+              j
+              ];
+            let temp_obj = {
+              count: count4 + k,
+              dragId: "draggable" + (count4 + k),
+              left:
+                (data?.hasOwnProperty("externalSigner") &&
+                  data?.externalSigner)
+                  ? (sessionStorage.getItem("TotalPages") == "1" ||
+                    dataSignCoordinates.x == 0)
+                    ? parseInt(
+                      Math.round(
+                        Number(dataSignCoordinates.x) / width_ratio_arr[0]
+                      ),
+                      10
+                    ) + "px"
+                    : parseInt(
+                      Math.round(
+                        Number(dataSignCoordinates.x) / width_ratio_arr[0] - 5
+                      ),
+                      10
+                    ) + "px"
+                  : sessionStorage.getItem("TotalPages") == "1" || dataSignCoordinates.x == 0
+                    ? parseInt(
+                      Math.round(
+                        Number(dataSignCoordinates.x) / width_ratio_arr[0]
+                      ),
+                      10
+                    ) + "px"
+                    : parseInt(
+                      Math.round(
+                        Number(dataSignCoordinates.x) / width_ratio_arr[0] - 5
+                      ),
+                      10
+                    ) + "px",
+              top:
+                parseInt(
+                  Math.round(Number(dataSignCoordinates.y) / height_ratio_arr[defaultPageList[i] - 1]),
+                  10
+                ) + "px",
+              pageNo: defaultPageList[i],
+              resizeDragHeight:
+                parseInt(
+                  Math.round(
+                    Number(dataSignCoordinates.height) / height_ratio_arr[defaultPageList[i] - 1]
+                  ),
+                  10
+                ) + "px",
+              resizeDragWidth:
+                parseInt(dataSignCoordinates.width / width_ratio_arr[0], 10) +
+                "px",
+              selectedABatch: dataSignCoordinates.selectedBatch,
+            };
+            dragArrayObject.push(temp_obj);
+            k++;
+          }
+        }
+
+
+        //Preparing the dragArray objects for custom seal positions
+        for (
+          let p = 0;
+          p < data.signCoordinates.signCoordinates.length;
+          p++
+        ) {
+          if (p != 0) {
+            for (
+              let q = 0;
+              q <
+              data?.signCoordinates?.signCoordinates[p]?.signCoordinatesValues
+                .length;
+              q++
+            ) {
+              let signCoordinateData =
+                data?.signCoordinates?.signCoordinates[p]
+                  .signCoordinatesValues[q];
               if (
-                data.hasOwnProperty("externalSigner") &&
-                data.externalSigner
+                (signCoordinateData.hasOwnProperty("selectedBatch") &&
+                  signCoordinateData.selectedBatch?.charAt(0) == "A") ||
+                (data.hasOwnProperty("externalSigner") &&
+                  data.externalSigner)
               ) {
-                if (signCoordinatesData.x != "0" && sessionStorage.getItem("TotalPages") != "1") {
-                  xVal.push(
-                    parseInt(
-                      Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
-                      10
-                    )
-                  );
-                } else {
-                  xVal.push(
-                    parseInt(
-                      Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
-                      10
-                    )
-                  );
-                }
-              } else if (
-                frompath === "/download/tokenSignDownload" ||
-                frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")
-              ) {
-                //if (data.signCoordinates.signPage == "P") {
-                if (
-                  sessionStorage.getItem("TotalPages") != "1" &&
-                  signCoordinatesData.x != "0"
-                ) {
-                  xVal.push(
-                    parseInt(
-                      Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]) -
-                        5,
-                      10
-                    )
-                  );
-                } else {
-                  xVal.push(
-                    parseInt(
-                      Math.round(Number(signCoordinatesData.x) / width_ratio_arr[0]),
-                      10
-                    )
-                  );
-                }
-              }
-              yVal.push(
-                parseInt(
-                  Math.round(Number(signCoordinatesData.y) / height_ratio_arr[data.signCoordinates.pageList[j] - 1]),
-                  10
-                )
-              );
-
-              widthVal.push(
-                parseInt(
-                  Math.round(Number(signCoordinatesData.width) / width_ratio_arr[0]),
-                  10
-                )
-              );
-              heightVal.push(
-                parseInt(
-                  Math.round(Number(signCoordinatesData.height) / height_ratio_arr[data.signCoordinates.pageList[j] - 1]),
-                  10
-                )
-              );
-            }
-          }
-
-          // Preparing an array selectedBatchArr which includes which and all batches got added
-          let selectedBatchArr = [];
-          let defaultPageList = [];
-          for (
-            let k = 0;
-            k < data?.signCoordinates?.signCoordinates?.length;
-            k++
-          ) {
-            for (
-              let j = 0;
-              j <
-              data?.signCoordinates?.signCoordinates[k]?.signCoordinatesValues
-                .length;
-              j++
-            ) {
-              let internalData =
-                data?.signCoordinates?.signCoordinates[k]?.signCoordinatesValues[
-                  j
-                ];
-
-              if (internalData.hasOwnProperty("selectedBatch")) {
-                if (internalData.selectedBatch?.charAt(0) !== "A") {
-                  selectedBatchArr.push(internalData.selectedBatch);
-                } else if (internalData.selectedBatch?.charAt(0) === "A") {
-                  selectedBatchArr.push(internalData.selectedBatch);
-                }
-              }
-            }
-          }
-
-          //Creating an dragArray object and setting to state so that on page loads that respective objects values will be applied to respective pages
-          if (data.signCoordinates.signPage == "P") {
-            // Create a page list array---------------
-            let pageListArray = [];
-            for (
-              let a = 0;
-              a < data?.signCoordinates?.signCoordinates?.length;
-              a++
-            ) {
-              for (
-                let b = 0;
-                b <
-                data?.signCoordinates?.signCoordinates[a]?.signCoordinatesValues
-                  .length;
-                b++
-              ) {
-                pageListArray.push(
-                  data?.signCoordinates?.signCoordinates[a]?.page
-                );
-              }
-            }
-
-            //Creating an dragArray object---------------
-            for (let i = 0; i < pageListArray.length; i++) {
-              dragArrayObject.push({
-                count: count4 + i,
-                dragId: "draggable" + (count4 + i),
-                left: xVal[i] + "px",
-                top: yVal[i] + "px",
-                pageNo: pageListArray[i],
-                resizeDragHeight: heightVal[i] + "px",
-                resizeDragWidth: widthVal[i] + "px",
-                selectedPBatch: selectedBatchArr[i],
-              });
-            }
-          } else if (data?.signCoordinates?.signPage == "A") {
-            let pageListA = [];
-            //Preparing pagelist array------------------
-            for (
-              let i = 0;
-              i < data?.signCoordinates?.signCoordinates?.length;
-              i++
-            ) {
-              for (
-                let j = 0;
-                j <
-                data?.signCoordinates?.signCoordinates[i]?.signCoordinatesValues
-                  .length;
-                j++
-              ) {
-                pageListA.push(data?.signCoordinates?.signCoordinates[i]?.page);
-              }
-            }
-
-            pageListA = pageListA.filter(function (item, pos, self) {
-              //Removing the duplicates from the array
-              return self.indexOf(item) == pos;
-            });
-            pageListA.shift();
-            setRangeArray([...rangeArray, ...pageListA]);
-            setAllRangeArrayValues([...allRangeArrayValues, ...pageListA]);  
-
-            //Preparing the defaultPageListA where default seals are present
-            let defaultPageListA = [];
-            if (data?.hasOwnProperty("externalSigner") && data.externalSigner) {
-              for (let i = 0; i < sessionStorage.getItem("TotalPages"); i++) {
-                defaultPageListA.push(i + 1);
-              }
-            } else if (
-              frompath === "/download/tokenSignDownload" ||
-              frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")
-            ) {
-              for (let i = 0; i < sessionStorage.getItem("TotalPages"); i++) {
-                defaultPageListA.push(i + 1);
-              }
-            }
-
-            defaultPageList = defaultPageListA.filter(
-              (item) => !pageListA.includes(item)
-            );
-
-            let k = 0;
-            for (
-              let j = 0;
-              j <
-              data?.signCoordinates?.signCoordinates[0]?.signCoordinatesValues
-                .length;
-              j++
-            ) {
-              //Preparing the dragArray objects for default seal positions
-              for (let i = 0; i < defaultPageList.length; i++) {
-                let dataSignCoordinates =
-                  data?.signCoordinates?.signCoordinates[0]?.signCoordinatesValues[
-                    j
-                  ];
-                let temp_obj = {
+                dragArrayObject.push({
                   count: count4 + k,
                   dragId: "draggable" + (count4 + k),
                   left:
-                    (data?.hasOwnProperty("externalSigner") &&
-                    data?.externalSigner)
-                      ? (sessionStorage.getItem("TotalPages") == "1" ||
-                        dataSignCoordinates.x == 0)
-                        ? parseInt(
-                            Math.round(
-                              Number(dataSignCoordinates.x) / width_ratio_arr[0]
-                            ),
-                            10
-                          ) + "px"
-                        : parseInt(
-                            Math.round(
-                              Number(dataSignCoordinates.x) / width_ratio_arr[0] - 5
-                            ),
-                            10
-                          ) + "px"
-                      : sessionStorage.getItem("TotalPages") == "1" || dataSignCoordinates.x == 0
+                    (data.hasOwnProperty("externalSigner") &&
+                      data.externalSigner) ||
+                      signCoordinateData.x != "0"
                       ? parseInt(
-                          Math.round(
-                            Number(dataSignCoordinates.x) / width_ratio_arr[0]
-                          ),
-                          10
-                        ) + "px"
+                        Math.round(
+                          Number(signCoordinateData.x / width_ratio_arr[0]) - 5
+                        ),
+                        10
+                      ) + "px"
                       : parseInt(
-                          Math.round(
-                            Number(dataSignCoordinates.x) / width_ratio_arr[0] - 5
-                          ),
-                          10
-                        ) + "px",
-                  top:
-                    parseInt(
-                      Math.round(Number(dataSignCoordinates.y) / height_ratio_arr[defaultPageList[i] - 1]),
-                      10
-                    ) + "px",
-                  pageNo: defaultPageList[i],
+                        Math.round(
+                          Number(signCoordinateData.x) / width_ratio_arr[0]
+                        ),
+                        10
+                      ) + "px",
+                  pageNo: data.signCoordinates.signCoordinates[p].page,
                   resizeDragHeight:
                     parseInt(
                       Math.round(
-                        Number(dataSignCoordinates.height) / height_ratio_arr[defaultPageList[i] - 1]
+                        Number(signCoordinateData.height) / height_ratio_arr[data.signCoordinates.signCoordinates[p].page - 1]
                       ),
                       10
                     ) + "px",
                   resizeDragWidth:
-                    parseInt(dataSignCoordinates.width / width_ratio_arr[0], 10) +
-                    "px",
-                  selectedABatch: dataSignCoordinates.selectedBatch,
-                };
-                dragArrayObject.push(temp_obj);
+                    parseInt(
+                      Math.round(
+                        Number(signCoordinateData.width) / width_ratio_arr[0]
+                      ),
+                      10
+                    ) + "px",
+                  top:
+                    parseInt(
+                      Math.round(
+                        Number(signCoordinateData.y) / height_ratio_arr[data.signCoordinates.signCoordinates[p].page - 1]
+                      ),
+                      10
+                    ) + "px",
+                  selectedABatch: signCoordinateData.selectedBatch,
+                });
+                k++;
+              } else if (
+                (signCoordinateData.hasOwnProperty("selectedBatch") &&
+                  signCoordinateData.selectedBatch?.charAt(0) != "A") ||
+                (data.hasOwnProperty("externalSigner") &&
+                  data.externalSigner)
+              ) {
+                dragArrayObject.push({
+                  count: count4 + k,
+                  dragId: "draggable" + (count4 + k),
+                  left:
+                    data.hasOwnProperty("externalSigner") &&
+                      data.externalSigner
+                      ? parseInt(
+                        Math.round(
+                          Number(signCoordinateData.x) / width_ratio_arr[0]
+                        ),
+                        10
+                      ) + "px"
+                      : (signCoordinateData.x == 0) ? parseInt(
+                        Math.round(
+                          Number(signCoordinateData.x) / width_ratio_arr[0]
+                        ),
+                        10
+                      ) + "px" : parseInt(
+                        Math.round(
+                          Number(signCoordinateData.x) / width_ratio_arr[0] - 5
+                        ),
+                        10
+                      ) + "px",
+                  pageNo: data?.signCoordinates?.signCoordinates[p]?.page,
+                  resizeDragHeight:
+                    parseInt(
+                      Math.round(
+                        Number(signCoordinateData.height) / height_ratio_arr[q]
+                      ),
+                      10
+                    ) + "px",
+                  resizeDragWidth:
+                    parseInt(
+                      Math.round(
+                        Number(signCoordinateData.width) / width_ratio_arr[0]
+                      ),
+                      10
+                    ) + "px",
+                  top:
+                    parseInt(
+                      Math.round(
+                        Number(signCoordinateData.y) / height_ratio_arr[q]
+                      ),
+                      10
+                    ) + "px",
+                  selectedPBatch: signCoordinateData.selectedBatch,
+                });
                 k++;
               }
             }
-
-
-          //Preparing the dragArray objects for custom seal positions
-            for (
-              let p = 0;
-              p < data.signCoordinates.signCoordinates.length;
-              p++
-            ) {
-              if (p != 0) {
-                for (
-                  let q = 0;
-                  q <
-                  data?.signCoordinates?.signCoordinates[p]?.signCoordinatesValues
-                    .length;
-                  q++
-                ) {
-                  let signCoordinateData =
-                    data?.signCoordinates?.signCoordinates[p]
-                      .signCoordinatesValues[q];
-                  if (
-                    (signCoordinateData.hasOwnProperty("selectedBatch") &&
-                      signCoordinateData.selectedBatch?.charAt(0) == "A") ||
-                    (data.hasOwnProperty("externalSigner") &&
-                      data.externalSigner)
-                  ) {
-                    dragArrayObject.push({
-                      count: count4 + k,
-                      dragId: "draggable" + (count4 + k),
-                      left:
-                        (data.hasOwnProperty("externalSigner") &&
-                          data.externalSigner) ||
-                        signCoordinateData.x != "0"
-                          ? parseInt(
-                              Math.round(
-                                Number(signCoordinateData.x / width_ratio_arr[0]) - 5
-                              ),
-                              10
-                            ) + "px"
-                          : parseInt(
-                              Math.round(
-                                Number(signCoordinateData.x) / width_ratio_arr[0]
-                              ),
-                              10
-                            ) + "px",
-                      pageNo: data.signCoordinates.signCoordinates[p].page,
-                      resizeDragHeight:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.height) / height_ratio_arr[data.signCoordinates.signCoordinates[p].page - 1]
-                          ),
-                          10
-                        ) + "px",
-                      resizeDragWidth:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.width) / width_ratio_arr[0]
-                          ),
-                          10
-                        ) + "px",
-                      top:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.y) / height_ratio_arr[data.signCoordinates.signCoordinates[p].page - 1]
-                          ),
-                          10
-                        ) + "px",
-                      selectedABatch: signCoordinateData.selectedBatch,
-                    });
-                    k++;
-                  } else if (
-                    (signCoordinateData.hasOwnProperty("selectedBatch") &&
-                      signCoordinateData.selectedBatch?.charAt(0) != "A") ||
-                    (data.hasOwnProperty("externalSigner") &&
-                      data.externalSigner)
-                  ) {
-                    dragArrayObject.push({
-                      count: count4 + k,
-                      dragId: "draggable" + (count4 + k),
-                      left:
-                        data.hasOwnProperty("externalSigner") &&
-                        data.externalSigner
-                          ? parseInt(
-                              Math.round(
-                                Number(signCoordinateData.x) / width_ratio_arr[0]
-                              ),
-                              10
-                            ) + "px"
-                          : (signCoordinateData.x == 0) ? parseInt(
-                              Math.round(
-                                Number(signCoordinateData.x) / width_ratio_arr[0]
-                              ),
-                              10
-                            ) + "px" : parseInt(
-                              Math.round(
-                                Number(signCoordinateData.x) / width_ratio_arr[0] - 5
-                              ),
-                              10
-                            ) + "px",
-                      pageNo: data?.signCoordinates?.signCoordinates[p]?.page,
-                      resizeDragHeight:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.height) / height_ratio_arr[q]
-                          ),
-                          10
-                        ) + "px",
-                      resizeDragWidth:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.width) / width_ratio_arr[0]
-                          ),
-                          10
-                        ) + "px",
-                      top:
-                        parseInt(
-                          Math.round(
-                            Number(signCoordinateData.y) / height_ratio_arr[q]
-                          ),
-                          10
-                        ) + "px",
-                      selectedPBatch: signCoordinateData.selectedBatch,
-                    });
-                    k++;
-                  }
-                }
-              }
-            }
           }
-          const groupedByPBatch = {};
-          const groupedByABatch = {};
-
-          dragArrayObject.forEach((obj) => {
-            if ("selectedPBatch" in obj) {
-              const pBatch = obj.selectedPBatch;
-              if (!groupedByPBatch[pBatch]) {
-                groupedByPBatch[pBatch] = [];
-              }
-              groupedByPBatch[pBatch].push(obj);
-            } else if ("selectedABatch" in obj) {
-              // } else if ("selectedBatch" in obj && obj.selectedBatch?.charAt(0) === "A") {
-              const aBatch = obj.selectedABatch;
-              if (!groupedByABatch[aBatch]) {
-                groupedByABatch[aBatch] = [];
-              }
-              groupedByABatch[aBatch].push(obj);
-            }
-          });
-          let batchList = {};
-          for (const batchName in groupedByABatch) {
-            if (groupedByABatch.hasOwnProperty(batchName)) {
-              groupedByABatch[batchName].forEach((obj) => {
-                if (!batchList.hasOwnProperty(batchName)) {
-                  batchList[batchName] = getColor();
-                }
-                obj.color = batchList[batchName];
-              });
-            }
-          }
-
-          for (const batchName in groupedByPBatch) {
-            if (groupedByPBatch.hasOwnProperty(batchName)) {
-              groupedByPBatch[batchName].forEach((obj) => {
-                if (!batchList.hasOwnProperty(batchName)) {
-                  batchList[batchName] = getColor();
-                }
-                obj.selectedPBatch === "F" ||
-                obj.selectedPBatch === "C" ||
-                obj.selectedPBatch === "L"
-                  ? (obj.color = getColor())
-                  : (obj.color = batchList[batchName]);
-              });
-            }
-          }
-
-          // Combine objects from the first grouped array
-          for (const batchName in groupedByPBatch) {
-            if (groupedByPBatch.hasOwnProperty(batchName)) {
-              groupedByPBatch[batchName].forEach((obj) => {
-                // Add the batchName to each object for reference
-                obj.batchName = batchName;
-                flatArray.push(obj);
-              });
-            }
-          }
-
-          // Combine objects from the second grouped array
-          for (const batchName in groupedByABatch) {
-            if (groupedByABatch.hasOwnProperty(batchName)) {
-              groupedByABatch[batchName].forEach((obj) => {
-                // Add the batchName to each object for reference
-                obj.batchName = batchName;
-                flatArray.push(obj);
-              });
-            }
-          }
-
-          setCount(count + flatArray.length);
-          let tempFlatArray = [...flatArray];
-          tempFlatArray = tempFlatArray.filter(
-            (obj, index, self) =>
-              self.findIndex(
-                (item) =>
-                  (item.selectedABatch || item.selectedPBatch) ===
-                  (obj.selectedABatch || obj.selectedPBatch)
-              ) === index
-          );
-
-          for (let i = 0; i < tempFlatArray.length; i++) {
-            if (
-              tempFlatArray[i].selectedABatch &&
-              tempFlatArray[i].selectedABatch.charAt(0) == "A"
-            ) {
-              tempAllPageBatch = tempAllPageBatch + 1;
-            } else if (
-              tempFlatArray[i].selectedPBatch &&
-              tempFlatArray[i].selectedPBatch.charAt(0) == "P"
-            ) {
-              tempCustomPageBatch = tempCustomPageBatch + 1;
-            }
-          }
-          setAllPageBatch(tempAllPageBatch);
-          setCustomPageBatch(tempCustomPageBatch);
-          setDragArray(flatArray);
-          // setShowSignaturePage(true);
-        // }
-      // }
-        // clearInterval(intervalId);
-        // handlePageChange();
-        // clearInterval(intervalId);
+        }
       }
-      setLoaded(true);
+      const groupedByPBatch = {};
+      const groupedByABatch = {};
+
+      dragArrayObject.forEach((obj) => {
+        if ("selectedPBatch" in obj) {
+          const pBatch = obj.selectedPBatch;
+          if (!groupedByPBatch[pBatch]) {
+            groupedByPBatch[pBatch] = [];
+          }
+          groupedByPBatch[pBatch].push(obj);
+        } else if ("selectedABatch" in obj) {
+          // } else if ("selectedBatch" in obj && obj.selectedBatch?.charAt(0) === "A") {
+          const aBatch = obj.selectedABatch;
+          if (!groupedByABatch[aBatch]) {
+            groupedByABatch[aBatch] = [];
+          }
+          groupedByABatch[aBatch].push(obj);
+        }
+      });
+      let batchList = {};
+      for (const batchName in groupedByABatch) {
+        if (groupedByABatch.hasOwnProperty(batchName)) {
+          groupedByABatch[batchName].forEach((obj) => {
+            if (!batchList.hasOwnProperty(batchName)) {
+              batchList[batchName] = getColor();
+            }
+            obj.color = batchList[batchName];
+          });
+        }
+      }
+
+      for (const batchName in groupedByPBatch) {
+        if (groupedByPBatch.hasOwnProperty(batchName)) {
+          groupedByPBatch[batchName].forEach((obj) => {
+            if (!batchList.hasOwnProperty(batchName)) {
+              batchList[batchName] = getColor();
+            }
+            obj.selectedPBatch === "F" ||
+              obj.selectedPBatch === "C" ||
+              obj.selectedPBatch === "L"
+              ? (obj.color = getColor())
+              : (obj.color = batchList[batchName]);
+          });
+        }
+      }
+
+      // Combine objects from the first grouped array
+      for (const batchName in groupedByPBatch) {
+        if (groupedByPBatch.hasOwnProperty(batchName)) {
+          groupedByPBatch[batchName].forEach((obj) => {
+            // Add the batchName to each object for reference
+            obj.batchName = batchName;
+            flatArray.push(obj);
+          });
+        }
+      }
+
+      // Combine objects from the second grouped array
+      for (const batchName in groupedByABatch) {
+        if (groupedByABatch.hasOwnProperty(batchName)) {
+          groupedByABatch[batchName].forEach((obj) => {
+            // Add the batchName to each object for reference
+            obj.batchName = batchName;
+            flatArray.push(obj);
+          });
+        }
+      }
+
+      setCount(count + flatArray.length);
+      let tempFlatArray = [...flatArray];
+      tempFlatArray = tempFlatArray.filter(
+        (obj, index, self) =>
+          self.findIndex(
+            (item) =>
+              (item.selectedABatch || item.selectedPBatch) ===
+              (obj.selectedABatch || obj.selectedPBatch)
+          ) === index
+      );
+
+      for (let i = 0; i < tempFlatArray.length; i++) {
+        if (
+          tempFlatArray[i].selectedABatch &&
+          tempFlatArray[i].selectedABatch.charAt(0) == "A"
+        ) {
+          tempAllPageBatch = tempAllPageBatch + 1;
+        } else if (
+          tempFlatArray[i].selectedPBatch &&
+          tempFlatArray[i].selectedPBatch.charAt(0) == "P"
+        ) {
+          tempCustomPageBatch = tempCustomPageBatch + 1;
+        }
+      }
+      setAllPageBatch(tempAllPageBatch);
+      setCustomPageBatch(tempCustomPageBatch);
+      setDragArray(flatArray);
+      // setShowSignaturePage(true);
+      // }
+      // }
+      // clearInterval(intervalId);
+      // handlePageChange();
+      // clearInterval(intervalId);
+    }
+    setLoaded(true);
     // };
     // const intervalId = setInterval(checkForElement, 100);
     // return () => clearInterval(intervalId);
@@ -1014,7 +1022,7 @@ const Preview = (props) => {
     if (sessionStorage.externalSigner != "true") {
       getWalletDetailsonLoad();
     }
-    
+
     if (
       sessionStorage.getItem("txnrefNo") != null &&
       sessionStorage.getItem("ud") == "true"
@@ -1058,7 +1066,6 @@ const Preview = (props) => {
           JSON.parse(props?.location?.state?.details?.signerListDetails)
         );
       }
-      setFile(props?.location?.state?.details?.files);
       setCanvas_width(props?.location?.state?.details?.width);
       setCanvas_height(props?.location?.state?.details?.height);
       setSenderName(props?.location?.state?.details?.sendername);
@@ -1070,7 +1077,7 @@ const Preview = (props) => {
       setOwnerloginName(props?.location?.state?.details?.ownerloginName);
       setCustomDocName(props?.location?.state?.details?.customDocName || sessionStorage.getItem("customDocName"));
       // console.log(data.docId);
-	  setDocId(data.docId);
+      setDocId(data.docId);
       sessionStorage.setItem("externalSigner", false);
       if (
         frompath === "inbox" &&
@@ -1081,7 +1088,7 @@ const Preview = (props) => {
       } else {
         setAuthToken(sessionStorage.getItem("authToken"));
       }
-    
+
       // for multi user external signer fixing coordinates
       if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
         setHeight(data.height);
@@ -1091,9 +1098,26 @@ const Preview = (props) => {
         setDocId(props?.location?.state?.details?.docId);
         sessionStorage.setItem("externalSigner", true);
       }
+    } else if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+      console.log(props);
+      setSEDate();
+      let today = new Date().toISOString().split("T")[0];
+      setMin(today);
+      setCsvFileRefNo(props?.location?.state?.details?.csvFileRefNo);
+      setFileRefNo(props?.location?.state?.details?.fileRefNo);
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("initiateBtn").style.display = "";
+      document.getElementById("custDocumentName").style.display = "";
+      document.getElementById("documentTitleId").style.display = "";
+      document.getElementById("endDateLabel").style.display = "";
+      document.getElementById("enddateId").style.display = "";
+      document.getElementById("signersComments").style.display = "none";
     } else {
       props.history.push("/");
     }
+    setFile(props?.location?.state?.details?.files);
+    setCanvas_width(props?.location?.state?.details?.width);
+    setCanvas_height(props?.location?.state?.details?.height);
   }, []);
 
   const initialRenderCal = () => {
@@ -1118,17 +1142,17 @@ const Preview = (props) => {
       });
     }
     setUnequalPages(unequalPages);
-        
+
     let capturedDimensions = [];
     const finalDimensions = [];
     const checkForElement = async () => {
-    setLoaded(false);
-    
+      setLoaded(false);
+
       // Array to store the final result    
       let docuPageTestElement = document.getElementById("docuPageTest" + currentPage);
       if (docuPageTestElement) {
         clearInterval(intervalId);//It stops the function checkForElement from executing further
-        
+
         //Setting the width to static so that it will work even when assigned from old UI
         //Since we have a scroll in new UI and not in old UI 
         if (sessionStorage.getItem("TotalPages") == 1) {
@@ -1137,15 +1161,15 @@ const Preview = (props) => {
           document.getElementById("parent-div").style.width = "476.67px";
         }
 
-      // Call this function with the unequal pages array ..enters on in case of muti page document
-      if (!props?.location?.state?.details?.equalPageDimensions && unequalPages.length > 0) {
+        // Call this function with the unequal pages array ..enters on in case of muti page document
+        if (!props?.location?.state?.details?.equalPageDimensions && unequalPages.length > 0) {
           setLoaded(false);
           if (currentPage == 1 && equalPages[0] == 1) {
           } else {
             jumpToPage(equalPages[0] - 1)
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
-    
+
           //One record from equal pages to create All pages object
           const pageElementEqual = document.getElementById(`docuPageTest${equalPages[0]}`);
           if (pageElementEqual) {
@@ -1160,7 +1184,7 @@ const Preview = (props) => {
             capturedDimensions.push(newDimensions);
             // setClientDimensions(prevDimensions => [...prevDimensions, newDimensions]);
           }
-    
+
           for (let i = 0; i < unequalPages.length; i++) {
             setLoaded(false);
             if (currentPage == 1 && unequalPages[i] == 1) {
@@ -1180,8 +1204,8 @@ const Preview = (props) => {
             const pageElement = document.getElementById(`docuPageTest${unequalPages[i]}`);
             if (pageElement) {
               setLoaded(false);
-              const pageNumberValue = pageElement.getAttribute('aria-label'); 
-              	const newDimensions = {
+              const pageNumberValue = pageElement.getAttribute('aria-label');
+              const newDimensions = {
                 pageNumber: pageNumberValue,
                 clientWidth: pageElement.clientWidth,
                 clientHeight: pageElement.clientHeight
@@ -1192,101 +1216,101 @@ const Preview = (props) => {
             }
           }
           jumpToPage(0);
-		// Check if the dimensions of any unequal page match with those of any equal page
-        const matchFound = unequalPages.some(unequalPageNumber => {
-          const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
-          const unequalPageHeight = unequalPage.clientHeight;
+          // Check if the dimensions of any unequal page match with those of any equal page
+          const matchFound = unequalPages.some(unequalPageNumber => {
+            const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
+            const unequalPageHeight = unequalPage.clientHeight;
 
-          return equalPages.some(eqPage => {
+            return equalPages.some(eqPage => {
               const equalPage = capturedDimensions.find(page => page.pageNumber === `Page ${eqPage}`);
               return equalPage && equalPage.clientHeight === unequalPageHeight;
+            });
           });
-      });
 
-      if (matchFound) {
-        // Recapture the dimensions of unequal pages
-        await recaptureDimensions();
-      } else {
-        setLoaded(false);
-        // Iterate over the total number of pages in the document
-        for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
-          const pageNumber = `Page ${i}`;
-              
-          // Check if the page already exists in capturedDimensions
-          const pageExists = capturedDimensions.some(obj => obj.pageNumber === pageNumber);
+          if (matchFound) {
+            // Recapture the dimensions of unequal pages
+            await recaptureDimensions();
+          } else {
+            setLoaded(false);
+            // Iterate over the total number of pages in the document
+            for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
+              const pageNumber = `Page ${i}`;
 
-          // If the page doesn't already exist, add the first page dimensions
-          if (!pageExists) {
-              finalDimensions.push({
+              // Check if the page already exists in capturedDimensions
+              const pageExists = capturedDimensions.some(obj => obj.pageNumber === pageNumber);
+
+              // If the page doesn't already exist, add the first page dimensions
+              if (!pageExists) {
+                finalDimensions.push({
                   pageNumber,
                   clientWidth: capturedDimensions[0].clientWidth,
                   clientHeight: capturedDimensions[0].clientHeight
-              });
-          } else {
-              // If the page exists, add the dimensions from capturedDimensions
-              finalDimensions.push(capturedDimensions.find(obj => obj.pageNumber === pageNumber));
+                });
+              } else {
+                // If the page exists, add the dimensions from capturedDimensions
+                finalDimensions.push(capturedDimensions.find(obj => obj.pageNumber === pageNumber));
+              }
+            }
+            setFinalClientDimensions([...finalDimensions]);
           }
-        }
-        setFinalClientDimensions([...finalDimensions]);
-      }
-      } else {
-        // Iterate over the total number of pages in the document
-        for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
-          const pageNumber = `Page ${i}`;
+        } else {
+          // Iterate over the total number of pages in the document
+          for (let i = 1; i <= sessionStorage.getItem("TotalPages"); i++) {
+            const pageNumber = `Page ${i}`;
 
-              const newDimensions = {
+            const newDimensions = {
               pageNumber: pageNumber,
               clientWidth: docuPageTestElement.clientWidth,
               clientHeight: docuPageTestElement.clientHeight
             };
             // Assign values to clientDimensions array
             finalDimensions.push(newDimensions);
+          }
+          setFinalClientDimensions([...finalDimensions]);
+          // setLoaded(true);
         }
-        setFinalClientDimensions([...finalDimensions]);
-        // setLoaded(true);
-      }
       }
 
       if (finalDimensions != []) {
-          if (finalDimensions.length == sessionStorage.getItem("TotalPages")) {
-            if (unequalPages.length == 0) {
-              if (currentPage == 1) {
-                jumpToPage(sessionStorage.getItem("TotalPages") - 1);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                jumpToPage(0);
-              }
+        if (finalDimensions.length == sessionStorage.getItem("TotalPages")) {
+          if (unequalPages.length == 0) {
+            if (currentPage == 1) {
+              jumpToPage(sessionStorage.getItem("TotalPages") - 1);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              jumpToPage(0);
             }
-            renderInitialValuesToState(finalDimensions);
           }
+          renderInitialValuesToState(finalDimensions);
         }
       }
-
-      const intervalId = setInterval(checkForElement, 100);
-      return () => clearInterval(intervalId);
     }
+
+    const intervalId = setInterval(checkForElement, 100);
+    return () => clearInterval(intervalId);
+  }
 
   const recaptureDimensions = async () => {
     setLoaded(false);
     const recapturedDimensions = [];
     for (let i = 0; i < unequalPages.length; i++) {
-        const pageNum = unequalPages[i];
-        jumpToPage(pageNum - 1);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const pageElement = document.getElementById(`docuPageTest${pageNum}`);
-        if (pageElement) {
-            const pageNumberValue = pageElement.getAttribute('aria-label'); 
-            const newDimensions = {
-                pageNumber: pageNumberValue,
-                clientWidth: pageElement.clientWidth,
-                clientHeight: pageElement.clientHeight
-            };
-            // Assign values to recapturedDimensions array
-            recapturedDimensions.push(newDimensions);
-        }
+      const pageNum = unequalPages[i];
+      jumpToPage(pageNum - 1);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const pageElement = document.getElementById(`docuPageTest${pageNum}`);
+      if (pageElement) {
+        const pageNumberValue = pageElement.getAttribute('aria-label');
+        const newDimensions = {
+          pageNumber: pageNumberValue,
+          clientWidth: pageElement.clientWidth,
+          clientHeight: pageElement.clientHeight
+        };
+        // Assign values to recapturedDimensions array
+        recapturedDimensions.push(newDimensions);
+      }
     }
     setFinalClientDimensions([...recapturedDimensions]);
     // setLoaded(true);
-};
+  };
 
   useEffect(() => {
     if (file?.preview && !fileUrl) {
@@ -1304,12 +1328,12 @@ const Preview = (props) => {
     try {
       let response = await fetch(
         URL.downloadfromtemp +
-          "?at=" +
-          btoa(sessionStorage.getItem("authToken")) +
-          "&txnrefNo=" +
-          btoa(txnrefNo) +
-          "&signedStatus=" +
-          signedStatus
+        "?at=" +
+        btoa(sessionStorage.getItem("authToken")) +
+        "&txnrefNo=" +
+        btoa(txnrefNo) +
+        "&signedStatus=" +
+        signedStatus
       );
       let data = await response.blob();
       await test(data); // Call the test function here
@@ -1319,43 +1343,43 @@ const Preview = (props) => {
   };
 
   const test = async (data) => {
-     // Convert blob data to ArrayBuffer
-     const arrayBuffer = await data.arrayBuffer();
+    // Convert blob data to ArrayBuffer
+    const arrayBuffer = await data.arrayBuffer();
 
     const loadingTask = pdfjsforOnDrag.getDocument(arrayBuffer);
     const pdf = await loadingTask.promise;
-            const numPages = pdf.numPages;
-            const pageDimensionsArr = [];
-          for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-              const page = await pdf.getPage(pageNumber);
-              const viewport = page.getViewport({ scale: 1 });
+    const numPages = pdf.numPages;
+    const pageDimensionsArr = [];
+    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1 });
 
-              pageDimensionsArr.push({
-                  pageNumber: pageNumber,
-                  width: viewport.width,
-                  height: viewport.height,
-              });
-          }
-          setPageDimensions(pageDimensionsArr);
+      pageDimensionsArr.push({
+        pageNumber: pageNumber,
+        width: viewport.width,
+        height: viewport.height,
+      });
+    }
+    setPageDimensions(pageDimensionsArr);
 
-          // Iterate through the array and compare dimensions
-          for (let i = 1; i < pageDimensionsArr.length; i++) {
-            if (pageDimensionsArr.length != 1) {
+    // Iterate through the array and compare dimensions
+    for (let i = 1; i < pageDimensionsArr.length; i++) {
+      if (pageDimensionsArr.length != 1) {
 
-              if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width || 
-                pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
-                  setEqualPageDimensions(false);
-                  break;
-              }
-            }
-          }
+        if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width ||
+          pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
+          setEqualPageDimensions(false);
+          break;
+        }
+      }
+    }
 
     let metadata = {
       type: data.type || "application/pdf", // Fallback to application/pdf if type is not provided
     };
-  
+
     let fileName = sessionStorage.getItem("fileName");
-  
+
     var file1 = new File([data], fileName.split("@")[1], metadata);
     file1.preview = window.URL.createObjectURL(file1);
     setFile(file1);
@@ -1384,9 +1408,9 @@ const Preview = (props) => {
       }, 1000);
     } else {
       if (frompath === "/download/tokenSignDownload" || frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")) {
-        if (data.signCoordinates.signMode+"" === "1" || data.signCoordinates.signMode+"" === "2" || data.signCoordinates.signMode+"" === "3" || data.signCoordinates.signMode+"" === "4") {
+        if (data.signCoordinates.signMode + "" === "1" || data.signCoordinates.signMode + "" === "2" || data.signCoordinates.signMode + "" === "3" || data.signCoordinates.signMode + "" === "4") {
           setSelectedMode(data.signCoordinates.signMode + "");
-        } 
+        }
         if (data.signCoordinates.signMode == "1") {
           document.getElementById("handSignContainer").style.display = ""; //
           document.getElementById("clientdownload").style.display = "none";
@@ -1562,7 +1586,7 @@ const Preview = (props) => {
   useEffect(() => {
     // Assuming this is some listener which cannot be created on every re-render
     // Possibly a socket connection or a listner on video
-    const timer = setInterval(() => {}, 2000);
+    const timer = setInterval(() => { }, 2000);
     return () => {
       clearInterval(timer);
     };
@@ -1904,7 +1928,7 @@ const Preview = (props) => {
 
     // Update the customPositionedDragIds state
     setCustomPositionedDragIds(prevCustomPositionedDragIds => [
-      ...prevCustomPositionedDragIds.filter(id => !dragIdsToBeRemoved.includes(id)), 
+      ...prevCustomPositionedDragIds.filter(id => !dragIdsToBeRemoved.includes(id)),
       ...dragIdsToBeAdded
     ]);
   };
@@ -2030,7 +2054,7 @@ const Preview = (props) => {
     if (regExp.test(input)) {
       let stringInputs = [];
       let inputs = input.split(",");
-  
+
       for (let part of inputs) {
         part = part.trim(); // Trim spaces
         if (part.includes("-")) {
@@ -2075,10 +2099,10 @@ const Preview = (props) => {
           }
         }
       }
-  
+
       // Remove duplicates and sort the array
       stringInputs = [...new Set(stringInputs)].sort((a, b) => a - b);
-  
+
       if (stringInputs && stringInputs[0] !== 0 && stringInputs[0] !== currentPage) {
         jumpToPage(stringInputs[0] - 1);
       }
@@ -2093,6 +2117,33 @@ const Preview = (props) => {
       setAllRangeArrayValues([...allRangeArrayValues, ...stringInputs]);
     }
   };
+
+
+
+  // const setRangeValue = (e) => {
+  //   let input = e.target.value;
+  //   let regExp = new RegExp(/^[ 0-9, ]*$/);
+  //   if (regExp.test(input)) {
+  //     var stringInputs = e.target.value.split(",").map(Number);
+
+  //     if (
+  //       stringInputs &&
+  //       stringInputs[0] != 0 &&
+  //       stringInputs[0] != currentPage
+  //     ) {
+  //       jumpToPage(stringInputs[0] - 1);
+  //     }
+  //     for (var page of stringInputs) {
+  //       if (page > Number(sessionStorage.getItem("TotalPages"))) {
+  //         return;
+  //       }
+  //     }
+  //     setRange(e.target.value);
+  //     removeItems(stringInputs, [0, NaN]);
+  //     setRangeArray([...new Set(stringInputs)]);
+  //     setAllRangeArrayValues([...allRangeArrayValues, ...new Set(stringInputs)]);
+  //   }
+  // };
 
   // resend otp counter for starting the timer
   const startResendOtpTimer = () => {
@@ -2160,7 +2211,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -2171,7 +2222,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -2197,7 +2248,7 @@ const Preview = (props) => {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -2211,7 +2262,7 @@ const Preview = (props) => {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -2299,8 +2350,8 @@ const Preview = (props) => {
       (selectedOptionArray.includes("A") &&
         selectedOptionArray.includes("P")) ||
       (frompath === "/download/tokenSignDownload" || frompath === "inbox" || (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true")) &&
-        (data1.signCoordinates.signPage == "A" ||
-          data1.signCoordinates.signPage == "P")
+      (data1.signCoordinates.signPage == "A" ||
+        data1.signCoordinates.signPage == "P")
     ) {
       pageListArr = pageListArr.concat(allRangeArrayValues);
     }
@@ -2479,7 +2530,7 @@ const Preview = (props) => {
               }
             }
 
-            defaultPositionedArr = dragArray.filter(item => !customPositionedDragArray.some(customItem => customItem.pageNo === item.pageNo));            
+            defaultPositionedArr = dragArray.filter(item => !customPositionedDragArray.some(customItem => customItem.pageNo === item.pageNo));
 
             // for (let i = 0; i < customPageListA.length; i++) {
             //   for (let j = 0; j < dragArray.length; j++) {
@@ -2500,7 +2551,7 @@ const Preview = (props) => {
                 parseInt(
                   Math.round(
                     (Number(defaultPositionedArr[i].left.slice(0, -2)) + 5) *
-                      width_ratio_arr[0]
+                    width_ratio_arr[0]
                   ),
                   10
                 )
@@ -2510,7 +2561,7 @@ const Preview = (props) => {
                 parseInt(
                   Math.round(
                     Number(defaultPositionedArr[i].top.slice(0, -2)) *
-                      height_ratio_arr[defaultPositionedArr[i].pageNo - 1]
+                    height_ratio_arr[defaultPositionedArr[i].pageNo - 1]
                   ),
                   10
                 )
@@ -2548,7 +2599,7 @@ const Preview = (props) => {
                     Math.round(
                       (Number(customPositionedDragArray[i].left.slice(0, -2)) +
                         5) *
-                        width_ratio_arr[0]
+                      width_ratio_arr[0]
                     ),
                     10
                   )
@@ -2558,7 +2609,7 @@ const Preview = (props) => {
                   parseInt(
                     Math.round(
                       Number(customPositionedDragArray[i].left.slice(0, -2)) *
-                        width_ratio_arr[0]
+                      width_ratio_arr[0]
                     ),
                     10
                   )
@@ -2568,7 +2619,7 @@ const Preview = (props) => {
                 parseInt(
                   Math.round(
                     Number(customPositionedDragArray[i].top.slice(0, -2)) *
-                      height_ratio_arr[customPositionedDragArray[i].pageNo - 1]
+                    height_ratio_arr[customPositionedDragArray[i].pageNo - 1]
                   ),
                   10
                 )
@@ -2633,7 +2684,7 @@ const Preview = (props) => {
               parseInt(
                 Math.round(
                   Number(dragArray[i].resizeDragWidth.slice(0, -2)) *
-                    width_ratio_arr[0]
+                  width_ratio_arr[0]
                 ),
                 10
               )
@@ -2642,7 +2693,7 @@ const Preview = (props) => {
               parseInt(
                 Math.round(
                   Number(dragArray[i].resizeDragHeight.slice(0, -2)) *
-                    height_ratio_arr[dragArray[i].pageNo - 1]
+                  height_ratio_arr[dragArray[i].pageNo - 1]
                 ),
                 10
               )
@@ -2667,7 +2718,7 @@ const Preview = (props) => {
                   Math.round(
                     (Number(defaultPositionedDragArray2[i].left.slice(0, -2)) +
                       5) *
-                      width_ratio_arr[0]
+                    width_ratio_arr[0]
                   ),
                   10
                 )
@@ -2729,7 +2780,7 @@ const Preview = (props) => {
                   Math.round(
                     (Number(customPositionedDragArray2[i].left.slice(0, -2)) +
                       5) *
-                      width_ratio_arr[0]
+                    width_ratio_arr[0]
                   ),
                   10
                 )
@@ -2799,7 +2850,7 @@ const Preview = (props) => {
                 parseInt(
                   Math.round(
                     Number(dragArray[i].left.slice(0, -2)) * width_ratio_arr[0]
-                    ),
+                  ),
                   10
                 )
               );
@@ -2833,8 +2884,8 @@ const Preview = (props) => {
           }
         } else if (
           (selectedOptionArray.includes("F") ||
-          selectedOptionArray.includes("L") ||
-          selectedOptionArray.includes("C")) &&
+            selectedOptionArray.includes("L") ||
+            selectedOptionArray.includes("C")) &&
           !selectedOptionArray.includes("A")
         ) {
           for (let i = 0; i < dragArray.length; i++) {
@@ -2873,7 +2924,7 @@ const Preview = (props) => {
               parseInt(
                 Math.round(
                   Number(dragArray[i].resizeDragWidth.slice(0, -2)) *
-                    width_ratio_arr[0]
+                  width_ratio_arr[0]
                 ),
                 10
               )
@@ -2882,7 +2933,7 @@ const Preview = (props) => {
               parseInt(
                 Math.round(
                   Number(dragArray[i].resizeDragHeight.slice(0, -2)) *
-                    height_ratio_arr[dragArray[i].pageNo - 1]
+                  height_ratio_arr[dragArray[i].pageNo - 1]
                 ),
                 10
               )
@@ -3251,29 +3302,25 @@ const Preview = (props) => {
         obj = {
           //****starts here
           //added the keys for template based generated PDF.
-          // customSealInfo:finalArray,
           loginname: loginname,
           authToken: authToken,
           userIP: sessionStorage.getItem("userIP"),
-          fileRefNo:fileRefNo,
-          csvFileRefNo:csvFileRefNo,
+          fileRefNo: fileRefNo,
+          csvFileRefNo: csvFileRefNo,
           signingDetails: {
             customDocName: customDocName,
             endDate: endDateTime,
-            signersInfo:[{
+            signersInfo: [{
               signMode: selectedMode,
               startDate: startDate,
               endDate: endDateTime,
-              signOrder:"0",
+              signOrder: "0",
               signCoordinates: signCoordinatesArray,
               signPage: signPg,
               pages: pgList,
             }],
           },
         };
-        if (sessionStorage.getItem("isCorpMember") !== "" && finalArray.length != 0) {
-          obj.customSealInfo = finalArray;
-        }
 
         fetch(URL.uploadBulkSigndetails, {
           method: "POST",
@@ -3282,242 +3329,254 @@ const Preview = (props) => {
           },
           body: JSON.stringify(obj)
         })
-        .then((response) => {
-          console.log(response);
-          // setLoaded(true);
-          return response.json();
-          // if (response.status === 400) {
-          //   props.history.push("/esign_error");
-          // } else if (response.status === 200) {
-          //   return response.json();
-          // } else {
-          //   props.history.push("/");
-          // }
-        })
-        .then((responseJson) => {
-          response_data = responseJson;
-          // setResponsedata(responseJson);
-          console.log(responseJson);
-          if (responseJson.status === "SUCCESS") {
-            confirmAlert({
-              message: "Signing request initiated!",
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    setLoaded(true);
-                    props.history.push("/bulkSigningSummary");
-                  },
-                },
-              ],
-            });
-          } else {
-            confirmAlert({
-              message: "Failed to initiate signing, Try again later",
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    // props.history.push("/inbox");
-                    setLoaded(true);
-                  },
-                },
-              ],
-            });
-          }
-        })
-        .catch((e) => {
-          alert(e);
-        });
-      } else {
-      	obj = {
-        	//****starts here
-        	//added the keys for template based generated PDF.
-        tempCode: tempCode,
-        groupCode: groupCode,
-        subGroup: subGroup,
-        isPrivate: isPrivate,
-        signerComments: signerComments,
-        authToken: authToken,
-        docType: "PDF",
-        docId: docid,
-        sc: "Y",
-        signersInfo: {
-          signPage: signPg,
-          pages: pgList,
-          signMode: selectedMode,
-          sealInfo: [
-            {
-              id: "1",
-              handSignImg: handSignImg,
-              displayMsg: "",
-            },
-          ],
-          signCoordinates: signCoordinatesArray,
-        },
-        mobilenumotp: mobileotpvalue,
-        emailnumotp: emailotpvalue,
-        userIP: sessionStorage.getItem("userIP"),
-        externalJar: externalJar,
-        draftRefNumber: draftRefNumber,
-        fromTemplatePage: fromTemplatePage,
-        // imgpath: "",
-        signUser: "",
-        estampdtls: {},
-        documentdtls: {
-          docdata: "",
-        },
-      };
-
-      if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
-        data.append("file", null);
-      } else {
-        // console.log(file);
-        data.append("file", file);
-        // data.append("file", null);
-      }
-      data.append("inputDetails", JSON.stringify(obj));
-      // setLoaded(true);
-      fetch(URL.getSignedDocV2, {
-        method: "POST",
-        headers: {
-          enctype: "multipart/form-data",
-        },
-        body: data,
-      })
-        .then((response) => {
-          setLoaded(true);
-          if (response.status === 400) {
-            // props.history.push("/esign_error");
+          .then((response) => {
+            console.log(response);
+            // setLoaded(true);
             return response.json();
-          } else if (response.status === 200) {
-            return response.json();
-          } else {
-            // props.history.push("/");
-            return response.json();
-          }
-        })
-        .then((responseJson) => {
-          response_data = responseJson;
-          setResponsedata(responseJson);
-          if (responseJson.status === "SUCCESS") {
-            setSignerComments("");
-            sessionStorage.setItem(
-              "download_data",
-              JSON.stringify(response_data)
-            );
-            if (selectedMode === "1") {
-              props.history.push({
-                pathname: "/esign",
-                frompath: "/preview",
-              });
-            } else if (selectedMode === "2") {
-              let data = {
-                mode: selectedMode,
-                docId: responseJson.docid,
-                txnrefNo: responseJson.token,
-                filename: responseJson.filename,
-                actualFileName: responseJson.actualFileName,
-                canvas_height: canvas_height,
-                canvas_width: canvas_width,
-              };
-              props.history.push({
-                pathname: "/download/tokenSignDownload",
-                frompath: "/preview",
-                state: {
-                  details: data,
-                },
-              });
-            } else if (selectedMode === "3") {
-              setLoaded(false);
-              if (responseJson.externalSigner) {
-                if (responseJson.hasOwnProperty("loginMode")) {
-                  var loginmode;
-                  if (responseJson.loginMode === "INBOX") {
-                    loginmode = 0;
-                  } else if (responseJson.loginMode === "MOBILE") {
-                    loginmode = 1;
-                  } else if (responseJson.loginMode === "EMAIL") {
-                    loginmode = 2;
-                  }
-                  setLoginMode(loginmode);
-                }
-              }
-              // calltoclientforTokenCheck();
-            } else if (selectedMode === "4") {
-              setLoaded(true);
-              document.getElementById("resendOtpbtn").style.display = "none";
-              document.getElementById("timer").style.display = "none";
-              startResendOtpTimer.timeleft = 0;
-              document.getElementById("timer").innerHTML =
-                "Resend OTP in " + 30 + " Secs";
-
-              clearInterval(timerEvent);
-              onCloseFirstModal();
-              let data = {
-                mode: selectedMode,
-                docId: responseJson.docid,
-                txnrefNo: responseJson.token,
-                filename: responseJson.filename,
-                actualFileName: responseJson.actualFileName,
-                canvas_height: canvas_height,
-                canvas_width: canvas_width,
-              };
-              props.history.push({
-                pathname: "/download/tokenSignDownload",
-                frompath: "/preview",
-                state: {
-                  details: data,
-                },
-              });
-            }
-          } else {
-            if (responseJson.statusDetails === "Session Expired!!") {
-              sessionStorage.clear();
-              setLoaded(true);
-              props.history.push("/login");
-            } else if (responseJson.statusDetails.includes("OTP Validation Failed")) {
-              alert(responseJson.statusDetails);
-              onCloseFirstModal();
-            } else if (responseJson.statusDetails.includes("Technical issue")) {
-              onCloseFirstModal();
-              onCloseOTPModal();
+            // if (response.status === 400) {
+            //   props.history.push("/esign_error");
+            // } else if (response.status === 200) {
+            //   return response.json();
+            // } else {
+            //   props.history.push("/");
+            // }
+          })
+          .then((responseJson) => {
+            response_data = responseJson;
+            // setResponsedata(responseJson);
+            console.log(responseJson);
+            if (responseJson.status === "SUCCESS") {
               confirmAlert({
-                message: responseJson.statusDetails,
+                message: "Signing request initiated!",
                 buttons: [
                   {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
                       setLoaded(true);
+                      props.history.push("/bulkSigningSummary");
                     },
                   },
                 ],
               });
             } else {
-              onCloseFirstModal();
-              onCloseOTPModal();
               confirmAlert({
-                message: responseJson.statusDetails, //
+                message: "Failed to initiate signing, Try again later",
                 buttons: [
                   {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
+                      // props.history.push("/inbox");
                       setLoaded(true);
                     },
                   },
                 ],
               });
             }
-          }
+          })
+          .catch((e) => {
+            alert(e);
+          });
+      } else {
+        obj = {
+          //****starts here
+          //added the keys for template based generated PDF.
+          tempCode: tempCode,
+          groupCode: groupCode,
+          subGroup: subGroup,
+          isPrivate: isPrivate,
+          signerComments: signerComments,
+          authToken: authToken,
+          docType: "PDF",
+          docId: docid,
+          sc: "Y",
+          signersInfo: {
+            signPage: signPg,
+            pages: pgList,
+            signMode: selectedMode,
+            sealInfo: [
+              {
+                id: "1",
+                handSignImg: handSignImg,
+                displayMsg: "",
+              },
+            ],
+            signCoordinates: signCoordinatesArray,
+          },
+          mobilenumotp: mobileotpvalue,
+          emailnumotp: emailotpvalue,
+          userIP: sessionStorage.getItem("userIP"),
+          externalJar: externalJar,
+          draftRefNumber: draftRefNumber,
+          fromTemplatePage: fromTemplatePage,
+          // imgpath: "",
+          signUser: "",
+          estampdtls: {},
+          documentdtls: {
+            docdata: "",
+          },
+        };
+        if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
+          data.append("file", null);
+        } else {
+          data.append("file", file);
+          // data.append("file", null);
+        }
+        // console.log(data);
+        data.append("inputDetails", JSON.stringify(obj));
+        fetch(URL.getSignedDocV2, {
+          method: "POST",
+          headers: {
+            enctype: "multipart/form-data",
+          },
+          body: data,
         })
-        .catch((e) => {
-          alert(e);
-        });
+          .then((response) => {
+            setLoaded(true);
+            // console.log(response);
+            if (response.status === 400) {
+              props.history.push("/esign_error");
+            } else if (response.status === 200) {
+              return response.json();
+            } else {
+              props.history.push("/");
+            }
+          })
+          .then((responseJson) => {
+            // console.log(responseJson);
+            response_data = responseJson;
+            setResponsedata(responseJson);
+            console.log(responseJson);
+            if (responseJson.status === "SUCCESS") {
+              setSignerComments("");
+              sessionStorage.setItem(
+                "download_data",
+                JSON.stringify(response_data)
+              );
+              if (selectedMode === "1") {
+                props.history.push({
+                  pathname: "/esign",
+                  frompath: "/preview",
+                });
+              } else if (selectedMode === "2") {
+                let data = {
+                  mode: selectedMode,
+                  docId: responseJson.docid,
+                  txnrefNo: responseJson.token,
+                  filename: responseJson.filename,
+                  actualFileName: responseJson.actualFileName,
+                  canvas_height: canvas_height,
+                  canvas_width: canvas_width,
+                  referalName: responseJson?.referalName,
+                  mobileNo: responseJson?.mobileNo,
+                  emailId: responseJson?.emailId,
+                };
+                props.history.push({
+                  pathname: "/download/tokenSignDownload",
+                  frompath: "/preview",
+                  state: {
+                    details: data,
+                  },
+                });
+              } else if (selectedMode === "3") {
+                setLoaded(false);
+                if (responseJson.externalSigner) {
+                  if (responseJson.hasOwnProperty("loginMode")) {
+                    var loginmode;
+                    if (responseJson.loginMode === "INBOX") {
+                      loginmode = 0;
+                    } else if (responseJson.loginMode === "MOBILE") {
+                      loginmode = 1;
+                    } else if (responseJson.loginMode === "EMAIL") {
+                      loginmode = 2;
+                    }
+                    setLoginMode(loginmode);
+                  }
+                }
+                // calltoclientforTokenCheck();
+              } else if (selectedMode === "4") {
+                setLoaded(true);
+                document.getElementById("resendOtpbtn").style.display = "none";
+                document.getElementById("timer").style.display = "none";
+                startResendOtpTimer.timeleft = 0;
+                document.getElementById("timer").innerHTML =
+                  "Resend OTP in " + 30 + " Secs";
+
+                clearInterval(timerEvent);
+                onCloseFirstModal();
+                let data = {
+                  mode: selectedMode,
+                  docId: responseJson.docid,
+                  txnrefNo: responseJson.token,
+                  filename: responseJson.filename,
+                  actualFileName: responseJson.actualFileName,
+                  canvas_height: canvas_height,
+                  canvas_width: canvas_width,
+                };
+                props.history.push({
+                  pathname: "/download/tokenSignDownload",
+                  frompath: "/preview",
+                  state: {
+                    details: data,
+                  },
+                });
+              }
+            } else {
+              if (responseJson.statusDetails.includes("OTP Validation Failed")) {
+                alert(responseJson.statusDetails);
+                onCloseFirstModal();
+              } else if (responseJson.statusDetails.includes("Technical issue")) {
+                onCloseFirstModal();
+                onCloseOTPModal();
+                confirmAlert({
+                  message: responseJson.statusDetails,
+                  buttons: [
+                    {
+                      label: "OK",
+                      className: "confirmBtn",
+                      onClick: () => {
+                        // props.history.push("/inbox");
+                        setLoaded(true);
+                      },
+                    },
+                  ],
+                });
+                // } else if (!responseJson.statusDetails.includes(
+                //     'JSONObject["userIP"] not a string'
+                //   )
+                // ) {
+                //   // console.log("UserIpNotAString");
+                //   setCount5(count5 + 1);
+                //   if (count5 < 3) {
+                //     // console.log(count5);
+                //     submit();
+                //   }
+              } else {
+                onCloseFirstModal();
+                onCloseOTPModal();
+                confirmAlert({
+                  message: responseJson.statusDetails, //
+                  buttons: [
+                    {
+                      label: "OK",
+                      className: "confirmBtn",
+                      onClick: () => {
+                        // props.history.push("/inbox");
+                        setLoaded(true);
+                      },
+                    },
+                  ],
+                });
+              }
+            }
+          })
+          .catch((e) => {
+            alert(e);
+            // props.history.push('/')
+          });
       }
+      console.log({ obj });
     } else {
       confirmAlert({
         message: "Sorry, your browser does'nt support for preview",
@@ -3525,12 +3584,11 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
     }
-    
     sessionStorage.setItem("ud", false);
     sessionStorage.removeItem("txnrefNo");
     sessionStorage.removeItem("signedStatus");
@@ -3730,6 +3788,9 @@ const Preview = (props) => {
             actualFileName: responseJson.actualFileName,
             canvas_height: canvas_height,
             canvas_width: canvas_width,
+            referalName: responseJson?.referalName,
+            mobileNo: responseJson?.mobileNo,
+            emailId: responseJson?.emailId,
           };
           props.history.push({
             pathname: "/download/tokenSignDownload",
@@ -3805,7 +3866,7 @@ const Preview = (props) => {
           {
             label: "Cancel",
             className: "cancelBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -3817,7 +3878,7 @@ const Preview = (props) => {
             fontSize: "14px",
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -3985,7 +4046,7 @@ const Preview = (props) => {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -4051,7 +4112,7 @@ const Preview = (props) => {
     }
 
     var body = {
-      loginname: sendername,
+      // loginname: sendername,
       authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.subscribedPlanDetails, {
@@ -4102,12 +4163,13 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
       return;
     } else if (selectedOptionArray.at(-1) != "R" && dragArray.length != 0) {
+      // console.log(selectedMode);
       if (selectedMode != 0) {
         if (selectedMode === "1") {
           validationCheck();
@@ -4122,7 +4184,7 @@ const Preview = (props) => {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -4132,11 +4194,11 @@ const Preview = (props) => {
           // if (props?.location?.frompath === "inbox" && selectedMode == "undefined") {
           //   setSelectedMode("2");
           // } else {
-            // var handSignImg = sessionStorage.getItem("handSignImg");
-            if (mobileotpvalue.length == 0 || emailotpvalue.length == 0) {
-              alert("Please Enter Both the OTP Fields");
-              return;
-            }
+          // var handSignImg = sessionStorage.getItem("handSignImg");
+          if (mobileotpvalue.length == 0 || emailotpvalue.length == 0) {
+            alert("Please Enter Both the OTP Fields");
+            return;
+          }
           // }
           validationCheck();
         }
@@ -4147,7 +4209,7 @@ const Preview = (props) => {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -4155,15 +4217,17 @@ const Preview = (props) => {
     } else {
       confirmAlert({
         message: "Please add the seal to proceed",
+        // message: "Please select the page!!!",
         buttons: [
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
     }
+    // }
   };
 
   const validationCheck = () => {
@@ -4186,7 +4250,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -4203,14 +4267,14 @@ const Preview = (props) => {
           // if (response.status === 400) {
           //   props.history.push("/esign_error");
           // } else if (response.status === 200) {
-            return response.json();
+          return response.json();
           // } else {
-            // props.history.push("/");
-            // return response.json();
+          // props.history.push("/");
+          // return response.json();
           // }
         })
         .then((responseJson) => {
-          if (responseJson.status=== "SUCCESS") {
+          if (responseJson.status === "SUCCESS") {
             setLoaded(true);
             setTandC(responseJson.TandC);
             setOpenFirstModal(true);
@@ -4220,13 +4284,14 @@ const Preview = (props) => {
               confirmAlert({
                 message: "Session Expired!!",
                 buttons: [
-                    {
-                        label: "OK",
-                        className: "confirmBtn",
-                        onClick: () => {setLoaded(true); 
-                          props.history.push("/login");
-                        },
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      setLoaded(true);
+                      props.history.push("/login");
                     },
+                  },
                 ],
               });
             } else {
@@ -4306,7 +4371,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -4328,7 +4393,7 @@ const Preview = (props) => {
       signMode: selectedMode,
       username: username,
       email: signeremail,
-      userId: signeruserId,
+      // userId: signeruserId,
       email: signeremail,
       docrefNo: docrefNo,
     };
@@ -4366,7 +4431,7 @@ const Preview = (props) => {
       signMode: selectedMode,
       username: username,
       email: signeremail,
-      userId: signeruserId,
+      // userId: signeruserId,
       email: signeremail,
       mobileNo: signerMobileNumber,
     };
@@ -4414,7 +4479,7 @@ const Preview = (props) => {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => {},
+              onClick: () => { },
             },
           ],
         });
@@ -4427,7 +4492,7 @@ const Preview = (props) => {
           let obj = {
             authToken: sessionStorage.getItem("authToken"),
             selectedMode: selectedMode,
-            loginname: sessionStorage.getItem("username"),
+            // loginname: sessionStorage.getItem("username"),
             userIP: sessionStorage.getItem("userIP"),
             docId: docId,
             isPrivate: isPrivate,
@@ -4452,7 +4517,7 @@ const Preview = (props) => {
                     {
                       label: "OK",
                       className: "confirmBtn",
-                      onClick: () => {},
+                      onClick: () => { },
                     },
                   ],
                 });
@@ -4530,7 +4595,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -4611,7 +4676,7 @@ const Preview = (props) => {
       setSelectedOption(selectedPagevalue);
       let body = {
         authToken: sessionStorage.getItem("authToken"),
-        loginname: sessionStorage.getItem("username"),
+        // loginname: sessionStorage.getItem("username"),
         signPage: selectedPagevalue,
         signMode: selectedModeValue,
       };
@@ -4678,7 +4743,7 @@ const Preview = (props) => {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -4693,7 +4758,7 @@ const Preview = (props) => {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -4705,7 +4770,7 @@ const Preview = (props) => {
     let obj = {
       authToken: sessionStorage.getItem("authToken"),
       selectedMode: selectedMode,
-      loginname: sessionStorage.getItem("username"),
+      // loginname: sessionStorage.getItem("username"),
       docID: docId,
     };
     setLoaded(false);
@@ -4725,7 +4790,7 @@ const Preview = (props) => {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -4901,6 +4966,64 @@ const Preview = (props) => {
     );
   };
 
+  const finalDate = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(value);
+    setEndDate(value);
+  };
+
+  const setSEDate = () => {
+    let d = new Date();
+    let e = new Date();
+    console.log(e);
+    e.setDate(e.getDate() + 15);
+    let endDateValue = "";
+    // to display the default enddate in the browser
+    //date format yyyy-mm-dd
+    if (e.getDate() < 10 && e.getMonth() < 10) {
+      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-0${e.getDate()}`;
+    } else if (e.getDate() < 10 && e.getMonth() > 9) {
+      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-0${e.getDate()}`;
+    } else if (e.getDate() > 9 && e.getMonth() < 10) {
+      endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-${e.getDate()}`;
+    } else {
+      endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
+    }
+    console.log(endDateValue);
+    setStartDate(`${d.getFullYear()}-${d.getMonth() + 1
+      }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`);
+    setEndDateTime(endDateValue + " " + "23:59:59");
+    setEndDate(endDateValue);
+    // this.setState({
+    //   startDate: `${d.getFullYear()}-${
+    //     d.getMonth() + 1
+    //   }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`,
+    //   endDate: endDateValue,
+    // });
+  }
+
+  const docuName = (e) => {
+    let regName = new RegExp(/^[a-zA-Z0-9\-.@'#_/ ]*$/);
+    const name = e.target.name;
+    const value = e.target.value;
+    console.log(value);
+    if (name === "custDocName") {
+      ////console.log("helllo"+name);
+      let encodedName = encodeURI(e.target.value);
+      ////console.log("helllo" + encodedName.length);
+      if (encodedName.length > 29) {
+        alert("Document title should be of within 30 characters");
+      } else {
+        if (regName.test(e.target.value)) {
+          setCustomDocName(value);
+        } else {
+          return false;
+        }
+      }
+    }
+  };
+
   const getTooltipMessageForFullScreen = () => {
     return "Full preview";
   };
@@ -4941,13 +5064,13 @@ const Preview = (props) => {
         // Find the anchor element associated with the annotation
         const linkElement = e.container.querySelector(`[data-annotation-id="${annotation.id}"] a`);
         if (linkElement) {
-            // linkElement.setAttribute('target', '_blank');
-            // Remove the href attribute to disable the link
-            linkElement.removeAttribute('href');
-            // Optionally, you can also prevent the default behavior of the link
-            linkElement.addEventListener('click', (event) => {
-                event.preventDefault();
-            });
+          // linkElement.setAttribute('target', '_blank');
+          // Remove the href attribute to disable the link
+          linkElement.removeAttribute('href');
+          // Optionally, you can also prevent the default behavior of the link
+          linkElement.addEventListener('click', (event) => {
+            event.preventDefault();
+          });
         }
       }
     });
@@ -4957,7 +5080,7 @@ const Preview = (props) => {
   };
 
   const customPlugin = {
-      onAnnotationLayerRender: onRenderAnnotations,
+    onAnnotationLayerRender: onRenderAnnotations,
   };
 
   const pdfViewer = () => {
@@ -5007,9 +5130,9 @@ const Preview = (props) => {
                 defaultScale={SpecialZoomLevel.PageWidth}
                 // defaultScale={SpecialZoomLevel.ActualSize}//
                 onPageChange={handlePageChange}
-                // onDocumentLoad={renderInitialValuesToState}
-                // pageLayout={pageLayout}
-                // onAnnotationLayerRender={annotationLayerRender}
+              // onDocumentLoad={renderInitialValuesToState}
+              // pageLayout={pageLayout}
+              // onAnnotationLayerRender={annotationLayerRender}
               />}
             </div>
           </div>
@@ -5022,10 +5145,10 @@ const Preview = (props) => {
   const submitDeclineComments = () => {
     if (!signerComments) {
       if (!commentsListDetails.length) {
-      
+
         onlyopenAddCommentsModal();
       } else {
-      
+
         setOpensignersCommentsModal(true);
         if (isPrivate === 1) {
           document.getElementById("makeprivatecomment").checked = true;
@@ -5071,47 +5194,47 @@ const Preview = (props) => {
                       console.log("Navigating to /home with loginMode:", responseJson.loginMode);
                       props.history.push("/home");
                     }
-                    
-                  
+
+
                   },
                 },
               ],
             });
-          } else if((responseJson.statusDetails="Cannot decline signing, document signing was already declined")||(responseJson.statusDetails="Decline Signing Failed. Try again later.")){
-            
-              confirmAlert({
-                message: responseJson.statusDetails,
-                buttons: [
-                  {
-                    label: "OK",
-                    className: "confirmBtn",
-                    onClick: () => {
-        
-                      if (responseJson?.loginMode === 0) {
-                        console.log("Navigating to /inbox with loginMode:", responseJson.loginMode);
-                        props.history.push("/inbox");
-                      } else {
-                        console.log("Navigating to /home with loginMode:", responseJson.loginMode);
-                        props.history.push("/home");
-                      }
-                      
-                    },
+          } else if ((responseJson.statusDetails = "Cannot decline signing, document signing was already declined") || (responseJson.statusDetails = "Decline Signing Failed. Try again later.")) {
+
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+
+                    if (responseJson?.loginMode === 0) {
+                      console.log("Navigating to /inbox with loginMode:", responseJson.loginMode);
+                      props.history.push("/inbox");
+                    } else {
+                      console.log("Navigating to /home with loginMode:", responseJson.loginMode);
+                      props.history.push("/home");
+                    }
+
                   },
-                ],
-              })
-            }else{
-                confirmAlert({
-      
-                  message: responseJson.statusDetails,
-                  buttons: [
-                    {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => { },
-                    },
-                  ],
-                });
-              }
+                },
+              ],
+            })
+          } else {
+            confirmAlert({
+
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { },
+                },
+              ],
+            });
+          }
         })
         .catch((error) => {
           alert(error.message);
@@ -5130,64 +5253,64 @@ const Preview = (props) => {
     const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
     const excludedPages = allPages.filter(page => !pagesToSign.includes(page));
     const pagesWithSeal = [...new Set(dragArray.map(item => item.pageNo))];
-    
+
     let result;
 
     if (dragArray.length !== 0) {
-        if (pagesWithSeal.length === Number(totalPages)) {
-            result = 'All pages';
-        } else if (excludedPages.length <= totalPages / 2) {
-            result = `All pages except ${groupPages(excludedPages).join(', ')}`;
-        } else if (excludedPages.length >= totalPages / 2) {
-            result = groupPages(pagesToSign).join(', ');
-        } else if (pagesWithSeal.length <= totalPages / 2) {
-            result = groupPages(pagesToSign).join(', ');
-        } else if (pagesWithSeal.length >= totalPages / 2) {
-            result = `All pages except ${groupPages(excludedPages).join(', ')}`;
-        }
+      if (pagesWithSeal.length === Number(totalPages)) {
+        result = 'All pages';
+      } else if (excludedPages.length <= totalPages / 2) {
+        result = `All pages except ${groupPages(excludedPages).join(', ')}`;
+      } else if (excludedPages.length >= totalPages / 2) {
+        result = groupPages(pagesToSign).join(', ');
+      } else if (pagesWithSeal.length <= totalPages / 2) {
+        result = groupPages(pagesToSign).join(', ');
+      } else if (pagesWithSeal.length >= totalPages / 2) {
+        result = `All pages except ${groupPages(excludedPages).join(', ')}`;
+      }
     } else {
-        result = `No seals added`;
+      result = `No seals added`;
     }
 
     if (result.length > 36) {
-        return showAllPages ? result : `${result.slice(0, 36)}...`;
+      return showAllPages ? result : `${result.slice(0, 36)}...`;
     }
     return result;
   };
 
   //Mine code
-// const getPagesToSign = (totalPages, pagesToSign) => {
-//   const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
-//   const excludedPages = allPages.filter(page => !pagesToSign.includes(page));
-//   const pagesWithSeal = [...new Set(dragArray.map(item => item.pageNo))];
-//   console.log({allPages});
-//   console.log({excludedPages});
-//   if (dragArray.length !== 0) {
-//     if (pagesWithSeal.length === Number(totalPages)) {
-//       return 'All pages';
-//     } else if (excludedPages.length <= totalPages / 2) {
-//       return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//         // if (showAllPages) {
-//             // return groupPages(pagesToSign).join(', ');
-//         // } else {
-//             // return `${groupPages(pagesToSign).slice(0, 4).join(', ')}...`;
-//         // }
-//     } else if (excludedPages.length >= totalPages / 2) {
-//       return groupPages(pagesToSign).join(', ');
-//     } else if (pagesWithSeal.length <= totalPages / 2) {
-//       return groupPages(pagesToSign).join(', ');
-//         // if (showAllPages) {
-//             // return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//         // } else {
-//             // return `All pages except ${groupPages(excludedPages).slice(0, 4).join(', ')}...`;
-//         // }
-//     } else if (pagesWithSeal.length >= totalPages / 2) {
-//       return `All pages except ${groupPages(excludedPages).join(', ')}`;
-//     }
-//   } else {
-//     return `No seals added`;
-//   }
-// };
+  // const getPagesToSign = (totalPages, pagesToSign) => {
+  //   const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  //   const excludedPages = allPages.filter(page => !pagesToSign.includes(page));
+  //   const pagesWithSeal = [...new Set(dragArray.map(item => item.pageNo))];
+  //   console.log({allPages});
+  //   console.log({excludedPages});
+  //   if (dragArray.length !== 0) {
+  //     if (pagesWithSeal.length === Number(totalPages)) {
+  //       return 'All pages';
+  //     } else if (excludedPages.length <= totalPages / 2) {
+  //       return `All pages except ${groupPages(excludedPages).join(', ')}`;
+  //         // if (showAllPages) {
+  //             // return groupPages(pagesToSign).join(', ');
+  //         // } else {
+  //             // return `${groupPages(pagesToSign).slice(0, 4).join(', ')}...`;
+  //         // }
+  //     } else if (excludedPages.length >= totalPages / 2) {
+  //       return groupPages(pagesToSign).join(', ');
+  //     } else if (pagesWithSeal.length <= totalPages / 2) {
+  //       return groupPages(pagesToSign).join(', ');
+  //         // if (showAllPages) {
+  //             // return `All pages except ${groupPages(excludedPages).join(', ')}`;
+  //         // } else {
+  //             // return `All pages except ${groupPages(excludedPages).slice(0, 4).join(', ')}...`;
+  //         // }
+  //     } else if (pagesWithSeal.length >= totalPages / 2) {
+  //       return `All pages except ${groupPages(excludedPages).join(', ')}`;
+  //     }
+  //   } else {
+  //     return `No seals added`;
+  //   }
+  // };
 
   const toggleModal = () => {
     setModalOpen(!modalOpen);
@@ -5197,7 +5320,7 @@ const Preview = (props) => {
   };
 
   const toggleShowAllPages = () => {
-  setShowAllPages(!showAllPages);
+    setShowAllPages(!showAllPages);
   };
 
   const handleBadgeClick = (badgeId) => {
@@ -5208,7 +5331,7 @@ const Preview = (props) => {
 
     // Remove cooling state after timeout
     setTimeout(() => {
-        setCooling(prev => ({ ...prev, [badgeId]: false }));
+      setCooling(prev => ({ ...prev, [badgeId]: false }));
     }, 750);
   };
 
@@ -5220,27 +5343,27 @@ const Preview = (props) => {
     let end = pages[0];
 
     for (let i = 1; i < pages.length; i++) {
-        if (pages[i] === end + 1) {
-            end = pages[i];
+      if (pages[i] === end + 1) {
+        end = pages[i];
+      } else {
+        if (start === end) {
+          ranges.push(`${start}`);
+        } else if (end - start === 1) {
+          ranges.push(`${start}`, `${end}`);
         } else {
-            if (start === end) {
-                ranges.push(`${start}`);
-            } else if (end - start === 1) {
-                ranges.push(`${start}`, `${end}`);
-            } else {
-                ranges.push(`${start}-${end}`);
-            }
-            start = pages[i];
-            end = pages[i];
+          ranges.push(`${start}-${end}`);
         }
+        start = pages[i];
+        end = pages[i];
+      }
     }
 
     if (start === end) {
-        ranges.push(`${start}`);
+      ranges.push(`${start}`);
     } else if (end - start === 1) {
-        ranges.push(`${start}`, `${end}`);
+      ranges.push(`${start}`, `${end}`);
     } else {
-        ranges.push(`${start}-${end}`);
+      ranges.push(`${start}-${end}`);
     }
 
     return ranges;
@@ -5251,27 +5374,28 @@ const Preview = (props) => {
     const allPages = Array.from({ length: totalPages }, (_, i) => i + 1);
     const excludedPages = allPages.filter(page => !pagesToSign.includes(page));
     const pagesWithSeal = [...new Set(dragArray.map(item => item.pageNo))];
-    
+
     let result;
 
     if (dragArray.length !== 0) {
-        if (pagesWithSeal.length === Number(totalPages)) {
-            result = 'All pages';
-        } else if (excludedPages.length <= totalPages / 2) {
-            result = `All pages except ${groupPages(excludedPages).join(', ')}`;
-        } else if (excludedPages.length >= totalPages / 2) {
-            result = groupPages(pagesToSign).join(', ');
-        } else if (pagesWithSeal.length <= totalPages / 2) {
-            result = groupPages(pagesToSign).join(', ');
-        } else if (pagesWithSeal.length >= totalPages / 2) {
-            result = `All pages except ${groupPages(excludedPages).join(', ')}`;
-        }
+      if (pagesWithSeal.length === Number(totalPages)) {
+        result = 'All pages';
+      } else if (excludedPages.length <= totalPages / 2) {
+        result = `All pages except ${groupPages(excludedPages).join(', ')}`;
+      } else if (excludedPages.length >= totalPages / 2) {
+        result = groupPages(pagesToSign).join(', ');
+      } else if (pagesWithSeal.length <= totalPages / 2) {
+        result = groupPages(pagesToSign).join(', ');
+      } else if (pagesWithSeal.length >= totalPages / 2) {
+        result = `All pages except ${groupPages(excludedPages).join(', ')}`;
+      }
     } else {
-        result = `No seals added`;
+      result = `No seals added`;
     }
 
     return result.length > 36;
   };
+
 
   return (
     <div id="mainDiv" style={{ overflow: overflow }}>
@@ -5329,6 +5453,47 @@ const Preview = (props) => {
             Comments
             <i style={{ marginLeft: "10px" }} className="fa fa-comment-o"></i>
           </Button>
+
+          <b
+            id="custDocumentName"
+            style={{
+              // padding: "0% 0% 0% 0%",
+              paddingLeft: "10px",
+              color: "black",
+              fontSize: "13px",
+              display: "none",
+            }}
+          >Document Title: </b>
+          <input
+            id="documentTitleId"
+            className="docTitle"
+            placeholder="Enter Document Title"
+            name="custDocName"
+            onChange={docuName}
+            maxLength={30}
+            required={true}
+            style={{ display: "none" }}
+          />
+
+          <b
+            style={{
+              // padding: "0% 0% 0% 0%",
+              paddingLeft: "10px",
+              color: "black",
+              fontSize: "13px",
+              display: "none"
+            }} id="endDateLabel">Sign By: </b>
+          <input
+            id="enddateId"
+            className="signerDate"
+            type="date"
+            value={endDate}
+            min={min}
+            name="endDate"
+            onChange={finalDate}
+            style={{ display: "none" }}
+          />
+
           <Button
             style={{
               fontSize: "12px",
@@ -5411,10 +5576,46 @@ const Preview = (props) => {
                 TopUp
               </Button>
             </div>
-
-            {/* <div className="counter" style={{ color: "black" }}>
-              Seals Added: <span className="animated" style={{ color: "blue" }}>{dragArray.length}</span>
-            </div> */}
+            {/* <div className="items-content-1"> */}
+            {/* <div>
+          <b 
+          id="custDocumentName" 
+          style={{
+            // padding: "0% 0% 0% 0%",
+            paddingLeft: "10px",
+            color: "black",
+            fontSize: "13px",
+          }}
+          >Document Title : </b>
+          <input
+            id="documentTitleId"
+            className="docTitle"
+            placeholder="Enter Document Title"
+            name="custDocName"
+            // onChange={this.setCustomDocName.bind(this)}
+            maxLength={30}
+            required={true}
+          />
+          </div> */}
+            {/* <div> */}
+            {/* <b
+              style={{
+                // padding: "0% 0% 0% 0%",
+                paddingLeft: "10px",
+                color: "black",
+                fontSize: "13px",
+              }} >Sign By : </b>
+              <input
+              id="enddateId"
+              className="signerDate"
+              type="date"
+              // value={this.state.endDate}
+              // min={this.state.min}
+              name="endDate"
+              // onChange={this.finalDate.bind(this)}
+              /> */}
+            {/* </div> */}
+            {/* </div> */}
 
             <div id="docdiv0">
               <div
@@ -5424,8 +5625,8 @@ const Preview = (props) => {
                 <b>Document title:</b>&nbsp;
                 {customDocName}{" "}
               </div>
-            {/* </div> */}
-            {/* <div id="docdiv1"> */}
+              {/* </div> */}
+              {/* <div id="docdiv1"> */}
               <div
                 id="documntsender"
                 style={{ display: "none" }}
@@ -5433,8 +5634,8 @@ const Preview = (props) => {
                 <b>Sender:</b>&nbsp;
                 {senderName}{" "}
               </div>
-            {/* </div> */}
-            {/* <div id="docdiv2"> */}
+              {/* </div> */}
+              {/* <div id="docdiv2"> */}
               <div
                 id="documntsender1"
                 style={{ display: "none" }}
@@ -5449,12 +5650,12 @@ const Preview = (props) => {
             <div className="items-content-1" id="assignedSealInfo" style={{ display: "none", borderRadius: "10px" }}>
               <div className="item-text" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "15px", marginRight: "34px" }}>
                 <span className="" style={{ fontSize: "14px" }}>
-                Your signature will appear on {dragArray.length} {dragArray.length <= 1 ? " page" : " pages"}
+                  Your signature will appear on {dragArray.length} {dragArray.length <= 1 ? " page" : " pages"}
                 </span>
                 <InfoOutlined onClick={toggleModal} title="more info" style={{ fontSize: "large", cursor: "pointer" }} />
               </div>
             </div>
-            
+
             <div className="items-content-1" id="signPageSelectDiv">
               <div className="item-text">
                 <span className="" style={{ marginRight: "5px" }}>
@@ -5496,13 +5697,13 @@ const Preview = (props) => {
                   <div className="item-text" style={{ display: 'contents' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginRight: '28px' }}>
                       <Badge
-                      color="primary"
-                      id="customPage"
-                      name="signPage"
-                      onClick={() => rangeInput("P")}
-                    >Custom pages</Badge>
-                      <div 
-                      style={{ marginTop: "5px", display: "flex"}}
+                        color="primary"
+                        id="customPage"
+                        name="signPage"
+                        onClick={() => rangeInput("P")}
+                      >Custom pages</Badge>
+                      <div
+                        style={{ marginTop: "5px", display: "flex" }}
                       >
                         <input
                           className="range-field"
@@ -5550,7 +5751,7 @@ const Preview = (props) => {
                 <span className="">SELECT SIGNATURE MODE</span>
               </div>
               <div className="">
-                <div className="radio-container" style={{ marginLeft: "25px"}}>
+                <div className="radio-container" style={{ marginLeft: "25px" }}>
                   <div className="radio-items" id="signMode">
                     <label htmlFor="electronicModeRadio">
                       <input
@@ -5578,7 +5779,7 @@ const Preview = (props) => {
                     </label>
                   </div>
                 </div>
-                <div className="radio-container" style={{ marginLeft: "25px"}}>
+                <div className="radio-container" style={{ marginLeft: "25px" }}>
                   <div className="radio-items" id="signMode">
                     <label htmlFor="otpSignModeRadio">
                       <input
@@ -5666,30 +5867,25 @@ const Preview = (props) => {
             </div>
             <div className="submit-details" id="submitBtn">
 
-            <button 
-            style={{display:"none"}} id="declineButton"
-                  className="upload-button"
-                  onClick={submitDeclineComments}
-                >
-                  <span>DECLINE</span>
-                </button>&nbsp;&nbsp;
-                {/* </div>
+              <button
+                style={{ display: "none" }} id="declineButton"
+                className="upload-button"
+                onClick={submitDeclineComments}
+              >
+                <span>DECLINE</span>
+              </button>&nbsp;&nbsp;
+              {/* </div>
                 <div className="submit-details"> */}
 
               <button className="upload-button" onClick={onOpenFirstModal}>
                 <span>SUBMIT &#8594;</span>
               </button>
             </div>
-
-            {/* <div id="note">
-                <p id="p1">
-                  Note: Stamp position may overlap on the contents after
-                </p>
-                <p id="p2">
-                  signing. Please verify and adjust the signing position as
-                </p>
-                <p id="p3">required.</p>
-              </div> */}
+            <div className="submit-details" id="initiateBtn" style={{ display: "none" }}>
+              <button className="upload-button" onClick={custDocNameCheck}>
+                <span> Initiate Signing &#8594;</span>
+              </button>
+            </div>
 
             <Modal
               className="modal-container"
@@ -6075,58 +6271,58 @@ const Preview = (props) => {
                 </Row>
               </div>
             </Modal>
-            <Modal 
-            open={modalOpen1} onClose={toggleModal1}
-            className="modal-container"
-            center={true}
-            closeOnOverlayClick={false}
-            styles={{ width: "40%"}}
+            <Modal
+              open={modalOpen1} onClose={toggleModal1}
+              className="modal-container"
+              center={true}
+              closeOnOverlayClick={false}
+              styles={{ width: "40%" }}
             >
-              <div className="modal-head-1" style={{ width: "100%"}}>
+              <div className="modal-head-1" style={{ width: "100%" }}>
                 <span style={{ color: "#c79807" }}>Signature Summary</span>
               </div>
               <div className="para-text">
                 <div style={{ padding: '10px' }}>
-                    <p><strong>Total pages:</strong> {reportData.totalPages}</p>
-                    <p><strong>Signature will appear in:</strong> {reportData.numSigns}{reportData.numSigns <= 1 ? " place" : " places"}</p>
-                    <p>
-                        <strong>Pages selected for signing:</strong> {getPagesToSign(reportData.totalPages, reportData.pagesToSign)}
-                        {shouldShowToggle(reportData.totalPages, reportData.pagesToSign) && (
-                            <span
-                                style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', marginLeft: '5px' }}
-                                onClick={toggleShowAllPages}
-                            >
-                                {showAllPages ? 'Show less' : 'Show more'}
-                            </span>
-                        )}
-                    </p>
+                  <p><strong>Total pages:</strong> {reportData.totalPages}</p>
+                  <p><strong>Signature will appear in:</strong> {reportData.numSigns}{reportData.numSigns <= 1 ? " place" : " places"}</p>
+                  <p>
+                    <strong>Pages selected for signing:</strong> {getPagesToSign(reportData.totalPages, reportData.pagesToSign)}
+                    {shouldShowToggle(reportData.totalPages, reportData.pagesToSign) && (
+                      <span
+                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', marginLeft: '5px' }}
+                        onClick={toggleShowAllPages}
+                      >
+                        {showAllPages ? 'Show less' : 'Show more'}
+                      </span>
+                    )}
+                  </p>
                 </div>
               </div>
             </Modal>
-            <Modal 
-            open={modalOpen} onClose={toggleModal}
-            className="modal-container"
-            center={true}
-            closeOnOverlayClick={false}
+            <Modal
+              open={modalOpen} onClose={toggleModal}
+              className="modal-container"
+              center={true}
+              closeOnOverlayClick={false}
             >
-              <div className="modal-head-1" style={{ width: "100%"}}>
+              <div className="modal-head-1" style={{ width: "100%" }}>
                 <span style={{ color: "#c79807" }}>Signature Summary</span>
               </div>
               <div className="para-text">
                 <div style={{ padding: '10px' }}>
-                    <p><strong>Total pages:</strong> {reportData.totalPages}</p>
-                    <p><strong>Signature will appear in:</strong> {reportData.numSigns}{reportData.numSigns <= 1 ? " place" : " places"}</p>
-                    <p>
-                        <strong>Pages selected for signing:</strong> {getPagesToSign(reportData.totalPages, reportData.pagesToSign)}
-                        {shouldShowToggle(reportData.totalPages, reportData.pagesToSign) && (
-                            <span
-                                style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', marginLeft: '5px' }}
-                                onClick={toggleShowAllPages}
-                            >
-                                {showAllPages ? 'Show less' : 'Show more'}
-                            </span>
-                        )}
-                    </p>
+                  <p><strong>Total pages:</strong> {reportData.totalPages}</p>
+                  <p><strong>Signature will appear in:</strong> {reportData.numSigns}{reportData.numSigns <= 1 ? " place" : " places"}</p>
+                  <p>
+                    <strong>Pages selected for signing:</strong> {getPagesToSign(reportData.totalPages, reportData.pagesToSign)}
+                    {shouldShowToggle(reportData.totalPages, reportData.pagesToSign) && (
+                      <span
+                        style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', marginLeft: '5px' }}
+                        onClick={toggleShowAllPages}
+                      >
+                        {showAllPages ? 'Show less' : 'Show more'}
+                      </span>
+                    )}
+                  </p>
                 </div>
               </div>
             </Modal>

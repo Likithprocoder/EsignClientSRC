@@ -36,20 +36,20 @@ export default class BulkSigningSummary extends React.Component {
   }
 
   getBulkSigningDetails = (rowData) => {
-    this.setState({ loaded: false});
+    this.setState({ loaded: false });
     // console.log(rowData);
     let bulkSigningInfoArr = [];
     let body = {};
     //If rowdata is empty it will make a summary call
     if (rowData == "") {
-        body = {
-            "authToken": sessionStorage.getItem("authToken")
-        };
+      body = {
+        "authToken": sessionStorage.getItem("authToken")
+      };
     } else { //this will fetching bulkSigningInfo details
-        body = {
-            "authToken": sessionStorage.getItem("authToken"),
-            "batchNo": rowData.batchNo,
-        };
+      body = {
+        "authToken": sessionStorage.getItem("authToken"),
+        "batchNo": rowData.batchNo,
+      };
     }
 
     // var body = {
@@ -58,61 +58,162 @@ export default class BulkSigningSummary extends React.Component {
     // };
     // this.setState({ loaded: false })
     fetch(URL.getbulkSigningdetails, {
-    // fetch(URL.subscribedPlanDetails, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+      // fetch(URL.subscribedPlanDetails, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
     }).then((response) => {
-        return response.json()
+      return response.json()
     }).then((responseJson) => {
-        // console.log(responseJson);
-        if (responseJson.status === "SUCCESS") {
+      // console.log(responseJson);
+      if (responseJson.status === "SUCCESS") {
         // if (true) {
-            bulkSigningInfoArr = responseJson.bulkSigningInfo;
-            //For showing bulk summary records
-            if (this.state.showSubListTable) {
-            //     bulkSigningInfoArr = [
-            //         // {"signerName":"Harshith","emailId":"harshith.hv97@gmail.com","mobileNo":"6361579075","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726924"},
-            //         // {"signerName":"Suman","emailId":"sumanmog@gmail.com","mobileNo":"6361631234","status":1,"signedOn":"15-03-2024","docId":"8JSNDOC1707975726920"},
-            //         {"signerName":"Lavanya","emailId":"lavanyapriya@gmail.com","mobileNo":"6374899434","status":0,"signedOn":"-","docId":"8JSNDOC1707975726924"},
-            //         {"signerName":"Suman","emailId":"sumanchowdary@gmail.com","mobileNo":"6361631230","status":1,"signedOn":"11-03-2024","docId":"8JSNDOC1707975726920"},
-            //         {"signerName":"Likith","emailId":"likithm@gmail.com","mobileNo":"6362222222","status":1,"signedOn":"10-03-2024","docId":"8JSNDOC1707975726920"},
-            //         {"signerName":"Abhijeet","emailId":"abhijeet@gmail.com","mobileNo":"6374111114","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726920"},
-            //         {"signerName":"Hema","emailId":"heman@gmail.com","mobileNo":"6374444444","status":1,"signedOn":"05-03-2024","docId":"8JSNDOC1707975726920"},
-            //     ]
-            this.setState({ bulkSigningInfo: bulkSigningInfoArr});
-            } else {//For showing bulk signing info table records
-            //     bulkSigningInfoArr =  
-            //     [ 
-            //         {"batchNo":"1670939161111","Status":1,"totalSignersCount":"10","completedSignersCount":"10","uploadedOn":"2024-03-20","fileName":"Rental Agreement.pdf"}, 
-            //         {"batchNo":"1670939161222","Status":0,"totalSignersCount":"20","completedSignersCount":"10","uploadedOn":"2024-03-17","fileName":"Employee Details.pdf"}, 
-            //         {"batchNo":"1670939161333","Status":0,"totalSignersCount":"30","completedSignersCount":"0","uploadedOn":"2024-03-12","fileName":"Task_Details.pdf"}, 
-            //         {"batchNo":"1670939161444","Status":0,"totalSignersCount":"5","completedSignersCount":"4","uploadedOn":"2024-03-05","fileName":"BC Template.pdf"}, 
-            //         {"batchNo":"1670939161555","Status":1,"totalSignersCount":"2","completedSignersCount":"2","uploadedOn":"2024-03-05","fileName":"Rental Agreement.pdf"}, 
-            //         {"batchNo":"1670939161666","Status":0,"totalSignersCount":"1","completedSignersCount":"0","uploadedOn":"2024-03-01","fileName":"Application.pdf"}, 
-            //     ]
-            this.setState({ bulkSigningSummary: bulkSigningInfoArr});
-            }
-            this.setState({ loaded: true });
-        } else {
-                this.setState({ loaded: true });
-                if (responseJson.statusDetails === "Session Expired") {
-                  sessionStorage.clear();
+        bulkSigningInfoArr = responseJson.bulkSigningInfo;
+        //For showing bulk summary records
+        if (this.state.showSubListTable) {
+          //     bulkSigningInfoArr = [
+          //         // {"signerName":"Harshith","emailId":"harshith.hv97@gmail.com","mobileNo":"6361579075","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726924"},
+          //         // {"signerName":"Suman","emailId":"sumanmog@gmail.com","mobileNo":"6361631234","status":1,"signedOn":"15-03-2024","docId":"8JSNDOC1707975726920"},
+          //         {"signerName":"Lavanya","emailId":"lavanyapriya@gmail.com","mobileNo":"6374899434","status":0,"signedOn":"-","docId":"8JSNDOC1707975726924"},
+          //         {"signerName":"Suman","emailId":"sumanchowdary@gmail.com","mobileNo":"6361631230","status":1,"signedOn":"11-03-2024","docId":"8JSNDOC1707975726920"},
+          //         {"signerName":"Likith","emailId":"likithm@gmail.com","mobileNo":"6362222222","status":1,"signedOn":"10-03-2024","docId":"8JSNDOC1707975726920"},
+          //         {"signerName":"Abhijeet","emailId":"abhijeet@gmail.com","mobileNo":"6374111114","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726920"},
+          //         {"signerName":"Hema","emailId":"heman@gmail.com","mobileNo":"6374444444","status":1,"signedOn":"05-03-2024","docId":"8JSNDOC1707975726920"},
+          //     ]
+          this.setState({ bulkSigningInfo: bulkSigningInfoArr });
+        } else {//For showing bulk signing info table records
+          //     bulkSigningInfoArr =  
+          //     [ 
+          //         {"batchNo":"1670939161111","Status":1,"totalSignersCount":"10","completedSignersCount":"10","uploadedOn":"2024-03-20","fileName":"Rental Agreement.pdf"}, 
+          //         {"batchNo":"1670939161222","Status":0,"totalSignersCount":"20","completedSignersCount":"10","uploadedOn":"2024-03-17","fileName":"Employee Details.pdf"}, 
+          //         {"batchNo":"1670939161333","Status":0,"totalSignersCount":"30","completedSignersCount":"0","uploadedOn":"2024-03-12","fileName":"Task_Details.pdf"}, 
+          //         {"batchNo":"1670939161444","Status":0,"totalSignersCount":"5","completedSignersCount":"4","uploadedOn":"2024-03-05","fileName":"BC Template.pdf"}, 
+          //         {"batchNo":"1670939161555","Status":1,"totalSignersCount":"2","completedSignersCount":"2","uploadedOn":"2024-03-05","fileName":"Rental Agreement.pdf"}, 
+          //         {"batchNo":"1670939161666","Status":0,"totalSignersCount":"1","completedSignersCount":"0","uploadedOn":"2024-03-01","fileName":"Application.pdf"}, 
+          //     ]
+          this.setState({ bulkSigningSummary: bulkSigningInfoArr });
+        }
+        this.setState({ loaded: true });
+      } else {
+        this.setState({ loaded: true });
+        if (responseJson.statusDetails === "Session Expired") {
+          sessionStorage.clear();
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { },
+              },
+            ],
+          });
+          this.props.history.push("/login");
+        }
+        else {
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { },
+              },
+            ],
+          });
+        }
+      }
+    })
+      .catch((e) => {
+        this.setState({ loaded: true });
+        alert(e);
+      });
+  };
+
+  //-----------------View File--------------------
+  viewStoredFile = (e) => {
+    // console.log(e);
+    let pdfurl =
+      URL.viewStoredFile +
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken")) +
+      "&docID=" +
+      //   btoa(e.DOC_ID);
+      this.setState({ fileUrl: pdfurl });
+    //   this.setState({ fileName: e.DOC_NAME });
+    // console.log(pdfurl);
+    this.setState({ shown: true })
+  };
+
+  //----------------send reminder-----------------
+  sendReminder(data) {
+    console.log(data);
+    // var unSignedCount = 0;
+    // var unSigned = "" + data.PENDING_LIST + "";
+    // var unSignedList = unSigned.split(",");
+    // unSignedCount = unSignedList.length;
+    var msg = "";
+    // "Reminder will be sent to signer(" + data.signerEmail + ")?";
+    // var signMsg;
+    // if (unSignedCount == 1) {
+    //   signMsg = "signer";
+    // } else {
+    //   signMsg = "signers";
+    // }
+    // if (unSigned === "undefined" || data.IS_OWNER == 1) {
+    msg = (
+      <div>
+        {/* <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p> */}
+        <Row id="sendReminderAlert">
+          <p>
+            {"Reminder will be sent to signer(" + data.signerEmail + ")"}
+          </p>
+        </Row>
+      </div>
+    );
+    // }
+
+    confirmAlert({
+      title: "Send Reminder",
+      message: msg,
+      buttons: [
+        {
+          label: "Confirm",
+          className: "confirmBtn",
+          onClick: () => {
+            var body = {
+              authToken: sessionStorage.getItem("authToken"),
+              docId: data.docId,
+              refNo: data.batchNo,
+              //   userId: data.USER_ID,
+            };
+            fetch(URL.sendReminder, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => {
+                return response.json();
+              })
+              .then((responseJson) => {
+                if (responseJson.status === "SUCCESS") {
                   confirmAlert({
                     message: responseJson.statusDetails,
                     buttons: [
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => { },
+                        onClick: () => {
+                          window.location.reload(false);
+                        },
                       },
                     ],
                   });
-                  this.props.history.push("/login");
-                } 
-                else {
+                } else {
                   confirmAlert({
                     message: responseJson.statusDetails,
                     buttons: [
@@ -124,140 +225,39 @@ export default class BulkSigningSummary extends React.Component {
                     ],
                   });
                 }
-              }
-            })
-            .catch((e) => {
-              this.setState({ loaded: true });
-              alert(e);
-            });
-  };
+              });
+          },
+        },
+        {
+          label: "Cancel",
+          className: "cancelBtn",
+          onClick: () => { },
+        },
+      ],
+    });
+  }
 
-    //-----------------View File--------------------
-    viewStoredFile = (e) => {
-        // console.log(e);
-        let pdfurl =
-          URL.viewStoredFile +
-          "?at=" +
-          btoa(sessionStorage.getItem("authToken")) +
-          "&docID=" +
-        //   btoa(e.DOC_ID);
-          this.setState({ fileUrl: pdfurl });
-        //   this.setState({ fileName: e.DOC_NAME });
-          // console.log(pdfurl);
-          this.setState({ shown: true})
-      };
+  //------------File Download----------------------
+  fileDownload(data) {
+    console.log(data);
+    var DocId = data.docId;
+    window.location.href =
+      URL.downloadStoredFile +
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken"))
+      +
+      "&docID=" +
+      btoa(DocId);
+  }
 
-    //----------------send reminder-----------------
-    sendReminder(data) {
-        console.log(data);
-        // var unSignedCount = 0;
-        // var unSigned = "" + data.PENDING_LIST + "";
-        // var unSignedList = unSigned.split(",");
-        // unSignedCount = unSignedList.length;
-        var msg = "";
-        // "Reminder will be sent to signer(" + data.signerEmail + ")?";
-        // var signMsg;
-        // if (unSignedCount == 1) {
-        //   signMsg = "signer";
-        // } else {
-        //   signMsg = "signers";
-        // }
-        // if (unSigned === "undefined" || data.IS_OWNER == 1) {
-          msg = (
-            <div>
-              {/* <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p> */}
-              <Row id="sendReminderAlert">
-                <p>
-                  {"Reminder will be sent to signer(" + data.signerEmail + ")"}
-                </p>
-              </Row>
-            </div>
-          );
-        // }
-    
-        confirmAlert({
-          title: "Send Reminder",
-          message: msg,
-          buttons: [
-            {
-              label: "Confirm",
-              className: "confirmBtn",
-              onClick: () => {
-                var body = {
-                  authToken: sessionStorage.getItem("authToken"),
-                  docId: data.docId,
-                  refNo: data.batchNo,
-                //   userId: data.USER_ID,
-                };
-                fetch(URL.sendReminder, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(body),
-                })
-                  .then((response) => {
-                    return response.json();
-                  })
-                  .then((responseJson) => {
-                    if (responseJson.status === "SUCCESS") {
-                      confirmAlert({
-                        message: responseJson.statusDetails,
-                        buttons: [
-                          {
-                            label: "OK",
-                            className: "confirmBtn",
-                            onClick: () => {
-                              window.location.reload(false);
-                            },
-                          },
-                        ],
-                      });
-                    } else {
-                      confirmAlert({
-                        message: responseJson.statusDetails,
-                        buttons: [
-                          {
-                            label: "OK",
-                            className: "confirmBtn",
-                            onClick: () => {},
-                          },
-                        ],
-                      });
-                    }
-                  });
-              },
-            },
-            {
-              label: "Cancel",
-              className: "cancelBtn",
-              onClick: () => {},
-            },
-          ],
-        });
-    }
-
-    //------------File Download----------------------
-    fileDownload(data) {
-        console.log(data);
-        var DocId = data.docId;
-        window.location.href =
-          URL.downloadStoredFile +
-          "?at=" +
-          btoa(sessionStorage.getItem("authToken"))
-           +
-          "&docID=" +
-          btoa(DocId);
-    }
-
-    toggleSubListTable = (data) => {
-        this.setState({ loaded: false });
-        this.setState({ batchNo: data.batchNo});
-        this.getBulkSigningDetails(data);
-        this.setState(prevState => ({
-            showSubListTable: !prevState.showSubListTable
-        }));
-    }
+  toggleSubListTable = (data) => {
+    this.setState({ loaded: false });
+    this.setState({ batchNo: data.batchNo });
+    this.getBulkSigningDetails(data);
+    this.setState(prevState => ({
+      showSubListTable: !prevState.showSubListTable
+    }));
+  }
 
   render() {
     const { bulkSigningInfo, bulkSigningSummary } = this.state;
@@ -270,30 +270,30 @@ export default class BulkSigningSummary extends React.Component {
         title: "",
         field: "",
         cellStyle: {
-        //   width: "0px",
-        //   padding: "0px",
-        //   paddingRight: "0%",
-        //   paddingLeft: "1%",
-        //   textAlign: "center",
+          //   width: "0px",
+          //   padding: "0px",
+          //   paddingRight: "0%",
+          //   paddingLeft: "1%",
+          //   textAlign: "center",
         },
         render: (rowData) => {
-            console.log(rowData);
-            if (rowData.pendingCount == 0) {
-              return (
-                <i
-                  className="fa fa-check"
-                  style={{ color: "green", fontSize: "25px", padding: "0px" }}
-                ></i>
-              );
-            } else {
-              return (
-                <i
-                  class="fa fa-clock-o"
-                  style={{ fontSize: "20px", padding: "0px" }}
-                ></i>
-              );
-            }
-          },
+          console.log(rowData);
+          if (rowData.pendingCount == 0) {
+            return (
+              <i
+                className="fa fa-check"
+                style={{ color: "green", fontSize: "25px", padding: "0px" }}
+              ></i>
+            );
+          } else {
+            return (
+              <i
+                class="fa fa-clock-o"
+                style={{ fontSize: "20px", padding: "0px" }}
+              ></i>
+            );
+          }
+        },
       },
       {
         title: "File Name",
@@ -302,13 +302,13 @@ export default class BulkSigningSummary extends React.Component {
         cellStyle: {
           width: "40%",
           padding: "0px",
-        //   paddingLeft: "15%",
-        //   fontSize: "15px",
+          //   paddingLeft: "15%",
+          //   fontSize: "15px",
         },
         render: (rowdata) => {
-            let filePath = rowdata.filePath;
-            let fileName = filePath.split("@");
-            return fileName[1];
+          let filePath = rowdata.filePath;
+          let fileName = filePath.split("@");
+          return fileName[1];
         }
       },
       {
@@ -332,9 +332,9 @@ export default class BulkSigningSummary extends React.Component {
         },
 
         render: (rowdata) => {
-            let dateTimeFully = rowdata.requestedOn;
-            let dateTime = dateTimeFully.split(".");
-            return dateTime[0];
+          let dateTimeFully = rowdata.requestedOn;
+          let dateTime = dateTimeFully.split(".");
+          return dateTime[0];
         }
       },
       {
@@ -353,18 +353,18 @@ export default class BulkSigningSummary extends React.Component {
           width: "7%",
         },
         render: (rowdata) => {
-            let statusText;
-            let statusClass;
-            let pendingCount = rowdata.pendingCount;
-            // console.log(pendingCount);
-            if (pendingCount == 0) {
-                statusText = "Completed";
-                statusClass = "completed";
-            } else {
-                statusText = "Pending("+pendingCount+")";
-                statusClass = "pending";
-            }             
-            return <span class={statusClass}>{statusText}</span>;
+          let statusText;
+          let statusClass;
+          let pendingCount = rowdata.pendingCount;
+          // console.log(pendingCount);
+          if (pendingCount == 0) {
+            statusText = "Completed";
+            statusClass = "completed";
+          } else {
+            statusText = "Pending(" + pendingCount + ")";
+            statusClass = "pending";
+          }
+          return <span class={statusClass}>{statusText}</span>;
         }
       },
       {
@@ -374,16 +374,16 @@ export default class BulkSigningSummary extends React.Component {
           width: "15%",
         },
         render: (rowData) => (
-            <div>
-                <button
-                    id='moreDetails'
-                    className='paddingClass moreDetails btn btn-link'
-                    data-batchno={JSON.stringify(rowData)}
-                    onClick={() => this.toggleSubListTable(rowData)}
-                >
-                    More Details
-                </button>
-            </div>
+          <div>
+            <button
+              id='moreDetails'
+              className='paddingClass moreDetails btn btn-link'
+              data-batchno={JSON.stringify(rowData)}
+              onClick={() => this.toggleSubListTable(rowData)}
+            >
+              More Details
+            </button>
+          </div>
         )
       },
     ];
@@ -399,107 +399,107 @@ export default class BulkSigningSummary extends React.Component {
     };
 
     const subTableColumns = [
-        {
-          title: "",
-          field: "",
-          cellStyle: {
-            width: "0px",
-            padding: "0px",
-            // paddingRight: "0%",
+      {
+        title: "",
+        field: "",
+        cellStyle: {
+          width: "0px",
+          padding: "0px",
+          // paddingRight: "0%",
           //   paddingLeft: "1%",
           //   textAlign: "center",
-          },
         },
-        {
-          title: "Signer Name",
-          field: "signerName",
-          type: "string",
-          cellStyle: {
-            width: "26%",
-            padding: "0px",
-          },
+      },
+      {
+        title: "Signer Name",
+        field: "signerName",
+        type: "string",
+        cellStyle: {
+          width: "26%",
+          padding: "0px",
         },
-        {
-          title: "Email ID",
-          field: "signerEmail",
-          type: "string",
-  
-          cellStyle: {
-            width: "26%",
-            paddingLeft: "2px",
-          },
+      },
+      {
+        title: "Email ID",
+        field: "signerEmail",
+        type: "string",
+
+        cellStyle: {
+          width: "26%",
+          paddingLeft: "2px",
         },
-        {
-          title: "Mobile No.",
-          field: "signerMobile",
-          cellStyle: {
-            width: "14%",
-            paddingLeft: "2px",
-          },
+      },
+      {
+        title: "Mobile No.",
+        field: "signerMobile",
+        cellStyle: {
+          width: "14%",
+          paddingLeft: "2px",
         },
-        {
-          title: "Status",
-          field: "status",
-          cellStyle: {
-            paddingLeft: "2px",
-            width: "7%",
-          },
-          render: function (data, type, rowdata) {
-            // console.log(data);
-            let statusText;
-            let statusClass;
-    
-            switch (data.status) {
-                case 0:
-                    statusText = "Pending";
-                    statusClass = "pending";
-                    // document.getElementById("accessAlarmIcon").style.display = "";
-                    break;
-                case 1:
-                    statusText = "Signed";
-                    statusClass = "completed";
-                    // document.getElementById("accessAlarmIcon").style.display = "none";
-                    break;
-                default:
-                  statusText = "Expired";
-                  statusClass = "expired";
-            }
-            return <span class={statusClass}>{statusText}</span>;
+      },
+      {
+        title: "Status",
+        field: "status",
+        cellStyle: {
+          paddingLeft: "2px",
+          width: "7%",
+        },
+        render: function (data, type, rowdata) {
+          // console.log(data);
+          let statusText;
+          let statusClass;
+
+          switch (data.status) {
+            case 0:
+              statusText = "Pending";
+              statusClass = "pending";
+              // document.getElementById("accessAlarmIcon").style.display = "";
+              break;
+            case 1:
+              statusText = "Signed";
+              statusClass = "completed";
+              // document.getElementById("accessAlarmIcon").style.display = "none";
+              break;
+            default:
+              statusText = "Expired";
+              statusClass = "expired";
           }
+          return <span class={statusClass}>{statusText}</span>;
+        }
+      },
+      {
+        title: "Signed On",
+        field: "signedOn",
+        cellStyle: {
+          paddingLeft: "2px",
+          width: "20%",
         },
-        {
-          title: "Signed On",
-          field: "signedOn",
-          cellStyle: {
-            paddingLeft: "2px",
-            width: "20%",
-          },
-          // cellStyle: (rowData) => ({
-          //   paddingLeft: rowData === null ? "44px" : "2px",
-          //   width: "20%",
-          //   // textAlign: rowData === null ? "center" : "left"
-          // }),
-          // cellStyle: rowData => {
-          //   console.log("rowData:", rowData);
-          //   return {
-          //     // paddingLeft: "2px",
-          //     width: "20%",
-          //     paddingLeft: rowData !== null ? "2px" : "44px",
-          //     textAlign: rowData === null ? "center" : "left"
-          //   };
-          // },
-          // cellStyle: rowdata =>({
-          //   paddingLeft: "2px",
-          //   width: "20%",
-          //   paddingLeft: rowdata.signedOn === null ? "44px" : "0px"
-          // }),
-            render: (rowdata) => {
-              // console.log(rowdata);
-              let dateTimeFully = rowdata.signedOn;
-              let dateTime = dateTimeFully.split(".");
-              return (rowdata.signedOn !== "null")?dateTime[0] : "-";
-            } 
-        },
+        // cellStyle: (rowData) => ({
+        //   paddingLeft: rowData === null ? "44px" : "2px",
+        //   width: "20%",
+        //   // textAlign: rowData === null ? "center" : "left"
+        // }),
+        // cellStyle: rowData => {
+        //   console.log("rowData:", rowData);
+        //   return {
+        //     // paddingLeft: "2px",
+        //     width: "20%",
+        //     paddingLeft: rowData !== null ? "2px" : "44px",
+        //     textAlign: rowData === null ? "center" : "left"
+        //   };
+        // },
+        // cellStyle: rowdata =>({
+        //   paddingLeft: "2px",
+        //   width: "20%",
+        //   paddingLeft: rowdata.signedOn === null ? "44px" : "0px"
+        // }),
+        render: (rowdata) => {
+          // console.log(rowdata);
+          let dateTimeFully = rowdata.signedOn;
+          let dateTime = dateTimeFully.split(".");
+          return (rowdata.signedOn !== "null") ? dateTime[0] : "-";
+        }
+      },
     ];
 
     // Apply custom sorting to table data
@@ -508,29 +508,29 @@ export default class BulkSigningSummary extends React.Component {
     return (
       <div>
         <Loader
-        loaded={this.state.loaded}
-        lines={13}
-        radius={20}
-        corners={1}
-        rotate={0}
-        direction={1}
-        color="#000"
-        speed={1}
-        trail={60}
-        shadow={false}
-        hwaccel={false}
-        className="spinner loader"
-        zIndex={2e9}
-        top="50%"
-        left="50%"
-        scale={1.0}
-        loadedClassName="loadedContent"
-      />
-        {this.state.showSubListTable && <div style={{ marginBottom: "10px"}}>
-            <Button  title="back" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.toggleSubListTable}>
-                <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey"}}>&larr;</div>
-            </Button>
-            <span style={{ float: "right"}}><b>Batch No. :</b> &nbsp; {this.state.batchNo}</span>
+          loaded={this.state.loaded}
+          lines={13}
+          radius={20}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#000"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner loader"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        />
+        {this.state.showSubListTable && <div style={{ marginBottom: "10px" }}>
+          <Button title="back" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.toggleSubListTable}>
+            <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
+          </Button>
+          <span style={{ float: "right" }}><b>Batch No. :</b> &nbsp; {this.state.batchNo}</span>
         </div>}
         {!this.state.showSubListTable && <MaterialTable
           columns={columns}
@@ -735,9 +735,9 @@ export default class BulkSigningSummary extends React.Component {
             pageSizeOptions: [10, 15, 20],
           }}
           actions={[
-            (rowData) => {
+            (rowData) => {              
                 // console.log(rowData);
-                if (rowData.status === 0) {
+                if (rowData.status === 0) {                  
                   return {
                       icon: () => <AccessAlarm style={{ color: "#ffc107" }} />,
                       id: "accessAlarmIcon",
@@ -746,7 +746,7 @@ export default class BulkSigningSummary extends React.Component {
                       isFreeAction: false,
                       hidden: true,
                   };
-              } else if (rowData.status === 1) {
+              } else if (rowData.status === 1) {                
                   return {
                       icon: () => <ArrowDownward />,
                       tooltip: "Download",
@@ -765,7 +765,7 @@ export default class BulkSigningSummary extends React.Component {
                       hidden: true,
                   };
               }
-            },
+            }
           ]}
           components={{
             //---------Overriding the Toolbar Component and customised-----------

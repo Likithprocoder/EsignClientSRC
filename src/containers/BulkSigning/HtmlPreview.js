@@ -5,6 +5,7 @@ import { URL } from '../URLConstant';
 import { confirmAlert } from 'react-confirm-alert';
 import '../AdminTemplateApproval/AdminApr.css';
 var jsPDF = require("jspdf");
+var Loader = require('react-loader');
 const pdfjsforOnDrag = require("pdfjs-dist");
 pdfjsforOnDrag.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.js`;
 
@@ -60,8 +61,10 @@ function HtmlPreview(props) {
     const [fileName, setFileName] = useState("");
     const [width, setWidth] = useState("");
     const [height, setHeight] = useState("");
-    const  [csvFileRefNo, setCsvFileRefNo] = useState("");
-    const  [fileRefNo, setFileRefNo] = useState("");
+    const [csvFileRefNo, setCsvFileRefNo] = useState("");
+    const [fileRefNo, setFileRefNo] = useState("");
+    const [loader, setLoader] = useState(false);
+
 
     // to store 
     // const [allowModalToRender, setAllowModalToRender] = useState({});
@@ -82,6 +85,7 @@ function HtmlPreview(props) {
         setHtmlKeys(props.location.state.additionalColumValues);
         setCsvFile(props.location.state.csvFile);
         setConvertedCSVData(props.location.state.convertedCSVData);
+
         // logic to create the analyzed data.
         for (let key in props.location.state.htmlKeys) {
             let keyWitoutCurly = (props.location.state.htmlKeys[key]).substring(10, (props.location.state.htmlKeys[key]).length - 2)
@@ -92,23 +96,16 @@ function HtmlPreview(props) {
                     break;
                 }
             }
-            if (allow) {
-                setAnalyzedDataTrue(oldValue => ([
-                    ...oldValue,
-                    { "key": props.location.state.htmlKeys[key], "value": true }
-                ]))
-            }
-            else {
-                setAnalyzedDataTrue(oldValue => ([
-                    ...oldValue,
-                    { "key": props.location.state.htmlKeys[key], "value": false }
-                ]))
-            }
+            setAnalyzedDataTrue(oldValue => ([
+                ...oldValue,
+                { "key": props.location.state.htmlKeys[key], "value": allow ? true : false }
+            ]));
+
             setFinalDataToServer(oldValue => ({
                 ...oldValue,
                 [props.location.state.htmlKeys[key]]: {
                     label: keyWitoutCurly, placeHolder: `Enter The ${keyWitoutCurly} Here`, inputDescription:
-                        keyWitoutCurly, type: "", minLength: "", maxLength: "",
+                        keyWitoutCurly, inputDataType: "", minLength: "", maxLength: "",
                     minRange: "", maxRange: "", inputField: keyWitoutCurly, isMandatory:
                         0, customValidation: "", SearchAbleKey: 0,
                     autofill: 0, dataFromApp: 0, editable: 0, AppValue: ""
@@ -119,6 +116,7 @@ function HtmlPreview(props) {
 
     // use effect for fetch calls
     useEffect(() => {
+        setLoader(false);
         const options = {
             method: "POST",
             headers: {
@@ -132,6 +130,7 @@ function HtmlPreview(props) {
             .then(response => (response.json()))
             .then(data => {
                 if (data.status === "success") {
+                    setLoader(true);
                     setValidationKey(data.data);
                 }
                 else if (data.statusDetails === "Session Expired") {
@@ -145,8 +144,9 @@ function HtmlPreview(props) {
                                     props.history.push("/login");
                                 },
                             },
-                        ],
+                        ], closeOnClickOutside: false
                     });
+                    setLoader(true);
                 }
                 else {
                     confirmAlert({
@@ -156,10 +156,10 @@ function HtmlPreview(props) {
                                 label: "OK",
                                 className: "confirmBtn"
                             },
-                        ],
+                        ], closeOnClickOutside: false
                     });
+                    setLoader(true);
                 }
-
             })
             .catch(error => {
                 confirmAlert({
@@ -169,10 +169,12 @@ function HtmlPreview(props) {
                             label: "OK",
                             className: "confirmBtn",
                         },
-                    ],
+                    ], closeOnClickOutside: false
                 });
+                setLoader(true);
             })
 
+        setLoader(false);
         // fetch call to get the list of application keys..
         const option = {
             method: "POST",
@@ -187,6 +189,7 @@ function HtmlPreview(props) {
             .then(response => (response.json()))
             .then(data => {
                 if (data.status === "SUCCESS") {
+                    setLoader(true);
                     setSysSerKeys(data.userAvailableData);
                 }
                 else if (data.statusDetails === "Session Expired") {
@@ -200,8 +203,9 @@ function HtmlPreview(props) {
                                     props.history.push("/login");
                                 },
                             },
-                        ],
+                        ], closeOnClickOutside: false
                     });
+                    setLoader(true);
                 }
                 else {
                     confirmAlert({
@@ -211,10 +215,10 @@ function HtmlPreview(props) {
                                 label: "OK",
                                 className: "confirmBtn"
                             },
-                        ],
+                        ], closeOnClickOutside: false
                     });
+                    setLoader(true);
                 }
-
             })
             .catch(error => {
                 confirmAlert({
@@ -224,8 +228,9 @@ function HtmlPreview(props) {
                             label: "OK",
                             className: "confirmBtn",
                         },
-                    ],
+                    ], closeOnClickOutside: false
                 });
+                setLoader(true);
             })
     }, [])
 
@@ -320,7 +325,7 @@ function HtmlPreview(props) {
                     ...finlDataToServer,
                     [key]: {
                         label: keyWithOutCurly, placeHolder: `Enter The ${keyWithOutCurly} Here`, inputDescription:
-                            "", type: "", minLength: "", maxLength: "",
+                            "", inputDataType: "", minLength: "", maxLength: "",
                         minRange: "", maxRange: "", inputField: keyWithOutCurly, isMandatory:
                             0, customValidation: "", SearchAbleKey: 0,
                         autofill: 1, dataFromApp: 1, editable: 0,
@@ -334,7 +339,7 @@ function HtmlPreview(props) {
                     ...finlDataToServer,
                     [key]: {
                         label: keyWithOutCurly, placeHolder: `Enter The ${keyWithOutCurly} Here`, inputDescription:
-                            "", type: "", minLength: "", maxLength: "",
+                            "", inputDataType: "", minLength: "", maxLength: "",
                         minRange: "", maxRange: "", inputField: keyWithOutCurly, isMandatory:
                             0, customValidation: "", SearchAbleKey: 0,
                         autofill: 0, dataFromApp: 0, editable: 0,
@@ -463,7 +468,7 @@ function HtmlPreview(props) {
                 [key]: {
                     ...finlDataToServer[key],
                     "label": document.getElementById(key + "label").value, "placeHolder": placeHolder,
-                    "inputDescription": document.getElementById(key + "inputDescription").value, "type":
+                    "inputDescription": document.getElementById(key + "inputDescription").value, "inputDataType":
                         document.getElementById(key + "dataType").value, "minLength": minLength, "maxLength":
                         maxLength, "minRange": minRange, "maxRange": maxRange, "inputField": keyWitoutCurly, "isMandatory":
                         isMandatoryYesOrNo, "customValidation": customValidation, "SearchAbleKey": searchAbleKey,
@@ -682,7 +687,6 @@ function HtmlPreview(props) {
 
     // to final proceed with data
     const finalProccedWithJson = (event) => {
-
         let finlDataToServerArray = [];
         for (let key in analyzedDataTrue) {
             let finlDataToServerJSON = finlDataToServer[analyzedDataTrue[key].key];
@@ -724,6 +728,7 @@ function HtmlPreview(props) {
         data.append("inputDetails", JSON.stringify(validationData));
         data.append("csvFile", csvFile);
         data.append("file", htmlFile);
+        setLoader(false);
         const options = {
             method: "POST",
             headers: {
@@ -736,6 +741,7 @@ function HtmlPreview(props) {
             .then(data => {
                 console.log(data);
                 if (data.status === "SUCCESS") {
+                    setLoader(true);
                     setPDFFile(data.PDFValue);
                     setCsvFileRefNo(data.csvFileRefNo);
                     setFileRefNo(data.fileRefNo);
@@ -767,6 +773,7 @@ function HtmlPreview(props) {
                             },
                         ],
                     });
+                    setLoader(true);
                 }
                 else {
                     confirmAlert({
@@ -778,6 +785,7 @@ function HtmlPreview(props) {
                             },
                         ],
                     });
+                    setLoader(true);
                 }
             })
             .catch(error => {
@@ -789,8 +797,9 @@ function HtmlPreview(props) {
                             label: "OK",
                             className: "confirmBtn",
                         },
-                    ],
+                    ], closeOnClickOutside: false
                 });
+                setLoader(true);
             })
     }
 
@@ -801,35 +810,35 @@ function HtmlPreview(props) {
         // storing individual bytes of binary data..
         const uint8Array = new Uint8Array(data.length);
         for (let i = 0; i < data.length; i++) {
-          uint8Array[i] = data.charCodeAt(i);
+            uint8Array[i] = data.charCodeAt(i);
         }
         const blob = new Blob([uint8Array], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
         console.log(url);
         var file = new File([blob], `${fileName.split(".")[0]}.pdf`, {
-          type: "application/pdf",
-          lastModified: new Date(),
+            type: "application/pdf",
+            lastModified: new Date(),
         });
-    
+
         let localPages = null; // Declare local variable for pages
         let equalPageDimensions1 = true;
         let width1 = 0;
         let height1 = 0;
-    
+
         try {
             const pdf = await pdfjsforOnDrag.getDocument(url).promise;
-    
+
             let promises = [];
-        
+
             // Fetch dimensions for each page
             for (let i = 1; i <= pdf.numPages; i++) {
                 promises.push(pdf.getPage(i).then(page => {
-                    if ( i == 1 ) {
+                    if (i == 1) {
                         width1 = page.getViewport({ scale: 1 }).width;
                         height1 = page.getViewport({ scale: 1 }).height;
                         setWidth(page.getViewport({ scale: 1 }).width);
                         setHeight(page.getViewport({ scale: 1 }).height);
-                    } 
+                    }
                     return {
                         pageNumber: i,
                         width: page.getViewport({ scale: 1 }).width,
@@ -837,18 +846,18 @@ function HtmlPreview(props) {
                     };
                 }));
             }
-    
+
             // Resolve all promises
             const pages = await Promise.all(promises);
             localPages = pages; // Assign pages to local variable
-    
+
             // Store page dimensions in state or use as needed
             setPageDimensions(pages);
-    
+
             // Iterate through the array and compare dimensions
             for (let i = 1; i < pages.length; i++) {
                 if (pages.length != 1) {
-                    if (pages[i].width !== pages[0].width || 
+                    if (pages[i].width !== pages[0].width ||
                         pages[i].height !== pages[0].height) {
                         equalPageDimensions1 = false;
                         setEqualPageDimensions(false);
@@ -859,7 +868,7 @@ function HtmlPreview(props) {
         } catch (error) {
             console.error("Error fetching PDF dimensions:", error);
         }
-    
+
         file.preview = window.URL.createObjectURL(new File([blob], `${fileName.split(".")[0]}.pdf`, {
             type: "application/pdf",
             lastModified: new Date(),
@@ -875,20 +884,39 @@ function HtmlPreview(props) {
             fileRefNo: fileRefNo1,
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
-          };
-          console.log({filedata});
-          props.history.push({
-            pathname: "/multiPplSignPreview",
-            // pathname: "/preview",
+        };
+        console.log({ filedata });
+        props.history.push({
+            // pathname: "/multiPplSignPreview",
+            pathname: "/preview",
             frompath: "/htmlPreview",
             state: {
-              details: filedata,
+                details: filedata,
             },
-          });
+        });
     }
 
     return (
         <>
+            <Loader
+                loaded={loader}
+                lines={13}
+                radius={20}
+                corners={1}
+                rotate={0}
+                direction={1}
+                color="#000"
+                speed={1}
+                trail={60}
+                shadow={false}
+                hwaccel={false}
+                className="spinner loader"
+                zIndex={2e9}
+                top="50%"
+                left="50%"
+                scale={1.0}
+                loadedClassName="loadedContent"
+            />
             <div className='o1'>
                 <div className='o2'>
                     <div className='greyBackGroud scrollbar'>
@@ -908,10 +936,14 @@ function HtmlPreview(props) {
                                 <span>Fields From CSV File</span>
                             </div>
                             <div className='formcontroller'>
+                                {
+                                    console.log(analyzedDataTrue)
+
+                                }
                                 <form key="HTMLKEYSFORM">
                                     {
                                         analyzedDataTrue.map((data, index) => (
-                                            <>
+                                            <React.Fragment key={index}>
                                                 <div key={data.key} className='oneLabelBox' style={{ marginBottom: "0px" }}>
                                                     <div className='form-Montroll' >
                                                         <input type='text' disabled={true} value={(data.key).substring(10, (data.key).length - 2)} id={index} className='input-Montroll' />
@@ -933,7 +965,7 @@ function HtmlPreview(props) {
                                                             </> : <></>
                                                     }
                                                 </div>
-                                            </>
+                                            </React.Fragment>
                                         ))
                                     }
                                 </form>
@@ -948,7 +980,7 @@ function HtmlPreview(props) {
             {
                 allowmodal && (
                     <div className="custom-modal">
-                        <div className="modal-content">
+                        <div className="CustomModal-content">
                             <span className="close" onClick={closeTheModal}>&times;</span>
                             {
                                 editableField()
