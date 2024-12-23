@@ -297,8 +297,6 @@ function NewTemplate(props) {
         // Detect if the device is mobile based on the user agent string
         const checkIsMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         setIsMobile(checkIsMobile);
-        console.log(props);
-
         // from template PDF preview page.
         if (props.location.frompath === "/draftTemplates" || props.location.frompath === "/templatePdfPreview" || props.location.frompath === "/bulkSigningPdfPreview") {
             let url = null;
@@ -529,7 +527,7 @@ function NewTemplate(props) {
                             setModeOfSignature(responsedata.modeOfSignature);
                             setCustomFieldData(responsedata.customFeildInputs);
                             setFileAttahments(responsedata.templateAttachmentList);
-                        }else{
+                        } else {
                             setFlag(false);
                             setEncodeBatchNdSequence(props.location.state.encodeBatchNdSequence);
                         }
@@ -941,12 +939,34 @@ function NewTemplate(props) {
                             ], closeOnClickOutside: false,
                         });
                     } else {
-                        confirmAlertFunction(responsedata.statusDetails);
+                        confirmAlert({
+                            message: responsedata.statusDetails,
+                            buttons: [
+                                {
+                                    label: "OK",
+                                    className: "confirmBtn",
+                                    onClick: () => {
+                                        props.history.push("/login");
+                                    },
+                                },
+                            ], closeOnClickOutside: false,
+                        });
                     }
                 })
                 .catch((error) => {
                     console.log(error);
-                    confirmAlertFunction(`SomeThing Went Wrong PLease Try Again`);
+                    confirmAlert({
+                        message: 'Technical issues! Please try again later.',
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/login");
+                                },
+                            },
+                        ], closeOnClickOutside: false,
+                    });
                 });
             setAllowLoader(true);
         }
@@ -1382,10 +1402,6 @@ function NewTemplate(props) {
     /*------------------------Template Input form-------------------------------------*/
     // when ever any value changes for template inputs..
     const inputFieldOnchange = (e, FieldId, datatype) => {
-        console.log(datatype);
-
-        console.log();
-
         e.preventDefault();
         const container = document.getElementById('ScrollBarX');
         const element = document.getElementById(FieldId);
@@ -2074,12 +2090,9 @@ function NewTemplate(props) {
             .then((response) => response.json())
             .then((responsedata) => {
                 if (responsedata.status === "SUCCESS") {
-                    e.preventDefault();
-                    setAllowLoader(true);
                     confirmAlertFunction(responsedata.statusDetails);
-                    e.preventDefault();
-                } else if (responsedata.statusDetails === "Session Expired!!") {
                     setAllowLoader(true);
+                } else if (responsedata.statusDetails === "Session Expired!!") {
                     confirmAlert({
                         message: responsedata.statusDetails,
                         buttons: [
@@ -2103,21 +2116,22 @@ function NewTemplate(props) {
                                 className: "confirmBtn",
                                 onClick: () => {
                                     document.getElementById(`${responsedata.fieldLabel}cusFrmInptField`).focus();
+                                    setAllowLoader(true);
                                 },
                             },
                         ], closeOnClickOutside: false,
                     });
-                    setAllowLoader(true);
                     return;
                 }
                 else {
                     confirmAlertFunction(responsedata.statusDetails);
+                    setAllowLoader(true);
                 }
             })
             .catch((error) => {
                 confirmAlertFunction(`SomeThing Went Wrong PLease Try Again!`);
+                setAllowLoader(true);
             });
-        setAllowLoader(true);
     };
     /*------------------------save draft -------------------------------------*/
 
@@ -3731,10 +3745,6 @@ function NewTemplate(props) {
         if (!flag) {
             state.encodeBatchNdSequence = encodeBatchNdSequence;
         }
-        console.log(state);
-        console.log(toPathName);
-        console.log(fromPath);
-
         props.history.push({
             pathname: toPathName,
             frompath: fromPath,
@@ -4139,62 +4149,6 @@ function NewTemplate(props) {
         webcamRef.current.srcObject = null;
     };
 
-    // useEffect(() => {
-    //     let width = "";
-    //     let height = "";
-    //     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    //         const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    //         const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    //         width = Math.round(screenWidth * 0.85);
-    //         height = Math.round(screenHeight * 0.5);
-    //     }
-    //     else {
-    //         width = Math.round(window.innerWidth * 0.5);
-    //         height = Math.round(window.innerHeight * 0.75);
-    //     };
-    //     setScreenSize({
-    //         width: width,
-    //         height: height
-    //     });
-    //     if (cameraOpen && webcamRef.current) {
-    //         console.log(facingMode);
-    //         // Initialize the webcam after the element is available
-    //         // window.Webcam.set({
-    //         //     width: width,
-    //         //     height: height,
-    //         //     dest_width: 1280, // setting of resolution
-    //         //     dest_height: 720, // setting of resolution
-    //         //     image_format: 'jpeg', // Change to 'jpeg' if you prefer JPEG
-    //         //     jpeg_quality: 100, // Use if format is 'jpeg'
-    //         //     force_flash: false, // disable flash fallback
-    //         // });
-    //         // window.Webcam.attach(webcamRef.current, function (err) {
-    //         //     if (err) {
-    //         //         console.error('Webcam attach error:', err);
-    //         //     }
-    //         // });
-    //     }
-
-    //     return () => {
-    //         if (cameraOpen) {
-    //             // window.Webcam.reset();
-    //         };
-    //     };
-    // }, [cameraOpen]);
-
-    // const capturePhoto = (event) => {
-    //     event.preventDefault();
-    //     window.Webcam.snap((data_uri) => {
-    //         if (data_uri) {
-    //             console.log(data_uri);
-    //             setCaptureData(data_uri);
-    //             window.Webcam.reset(); // after capturing the photo reseting the webcam();
-    //         } else {
-    //             console.error('Failed to capture photo, data_uri is null');
-    //         };
-    //     });
-    // };
-
     //closing camera
     const closeCamera = (e) => {
         setAllowLoader(false);
@@ -4258,12 +4212,6 @@ function NewTemplate(props) {
     };
     const handleCropComplete = () => {
         if (captureData) {
-            // const ctx = canvas.getContext('2d');
-            // ctx.drawImage(webcamRef.current, 0, 0, canvas.width, canvas.height);
-            // const dataUri = canvas.toDataURL('image/jpeg', 1.0);
-            // console.log(dataUri);
-            // setCaptureData(dataUri);
-
             const image = new Image();
             image.src = captureData;
             const canvas = document.createElement('canvas');
@@ -4501,9 +4449,6 @@ function NewTemplate(props) {
     };
     /*------------------------Camera sesction--------------------------------------*/
 
-    const camera = useRef(null);
-    const [image, setImage] = useState(null);
-
     return (
         <>
             <ToastContainer></ToastContainer>
@@ -4568,9 +4513,6 @@ function NewTemplate(props) {
                         <div className="FormCss ">
                             <h6 className=" form-montrol1 ">Fill the document details</h6>
                             <form>
-                                {
-                                    console.log(templateInputs)
-                                }
                                 {(templateInputs.length !== 0)
                                     ? templateInputs.map((posts, index) => (
                                         //below disabled attribute in style tag is used to.

@@ -1112,6 +1112,9 @@ const Preview = (props) => {
       document.getElementById("endDateLabel").style.display = "";
       document.getElementById("enddateId").style.display = "";
       document.getElementById("signersComments").style.display = "none";
+      document.getElementById("otpSignModeRadio").style.display = "none";
+      document.getElementById("otpsigningtext").style.display = "none";
+      document.getElementById("handSignContainer").style.display = "none";
     } else {
       props.history.push("/");
     }
@@ -1415,7 +1418,10 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = ""; //
           document.getElementById("clientdownload").style.display = "none";
           document.getElementById("generateOtpMode").style.display = "none";
-          document.getElementById("submitBtn").style.display = "";
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          } else {
+            document.getElementById("submitBtn").style.display = "";
+          }
           setTandcHeader("Aadhaar eSign");
 
           document.getElementById("aadhaarModeRadio").checked = true;
@@ -1423,7 +1429,10 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = "";
           document.getElementById("clientdownload").style.display = "none";
           document.getElementById("generateOtpMode").style.display = "none";
-          document.getElementById("submitBtn").style.display = "";
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          } else {
+            document.getElementById("submitBtn").style.display = "";
+          }
 
           setTandcHeader("Electronic Sign");
           setIsInsufficientUnits(false);
@@ -1432,7 +1441,10 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = "";
           document.getElementById("clientdownload").style.display = "";
           document.getElementById("generateOtpMode").style.display = "none";
-          document.getElementById("submitBtn").style.display = "";
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          } else {
+            document.getElementById("submitBtn").style.display = "";
+          }
           var units = parseInt(sessionStorage.getItem("units"), 10);
           setTandcHeader("Self Token Sign");
           setIsInsufficientUnits(false);
@@ -4337,7 +4349,11 @@ const Preview = (props) => {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
-        document.getElementById("submitBtn").style.display = "";
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          document.getElementById("handSignContainer").style.display = "none";
+        } else {
+          document.getElementById("submitBtn").style.display = "";
+        }
 
         setTandcHeader("Electronic Sign");
         setIsInsufficientUnits(false);
@@ -4345,13 +4361,21 @@ const Preview = (props) => {
         document.getElementById("handSignContainer").style.display = ""; //
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
-        document.getElementById("submitBtn").style.display = "";
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          document.getElementById("handSignContainer").style.display = "none";
+        } else {
+          document.getElementById("submitBtn").style.display = "";
+        }
         setTandcHeader("Aadhaar eSign");
       } else if (e.target.value === "3") {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "";
         document.getElementById("generateOtpMode").style.display = "none";
-        document.getElementById("submitBtn").style.display = "";
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          document.getElementById("handSignContainer").style.display = "none";
+        } else {
+          document.getElementById("submitBtn").style.display = "";
+        }
 
         setTandcHeader("Self Token Sign");
         var units = parseInt(sessionStorage.getItem("units"), 10);
@@ -5751,7 +5775,7 @@ const Preview = (props) => {
                 <span className="">SELECT SIGNATURE MODE</span>
               </div>
               <div className="">
-                <div className="radio-container" style={{ marginLeft: "25px" }}>
+                <div className="radio-container" id="hideOTPBulkSigning" style={{ marginLeft: "25px" }}>
                   <div className="radio-items" id="signMode">
                     <label htmlFor="electronicModeRadio">
                       <input
@@ -5779,7 +5803,7 @@ const Preview = (props) => {
                     </label>
                   </div>
                 </div>
-                <div className="radio-container" style={{ marginLeft: "25px" }}>
+                <div className="radio-container" style={{ marginLeft: (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") ? "-45px" : "25px" }}>
                   <div className="radio-items" id="signMode">
                     <label htmlFor="otpSignModeRadio">
                       <input

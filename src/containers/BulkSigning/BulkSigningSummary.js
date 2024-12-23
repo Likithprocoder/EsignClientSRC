@@ -37,7 +37,6 @@ export default class BulkSigningSummary extends React.Component {
 
   getBulkSigningDetails = (rowData) => {
     this.setState({ loaded: false });
-    // console.log(rowData);
     let bulkSigningInfoArr = [];
     let body = {};
     //If rowdata is empty it will make a summary call
@@ -51,12 +50,6 @@ export default class BulkSigningSummary extends React.Component {
         "batchNo": rowData.batchNo,
       };
     }
-
-    // var body = {
-    //     "authToken": sessionStorage.getItem("authToken"),
-    //     "loginname": "usr78"
-    // };
-    // this.setState({ loaded: false })
     fetch(URL.getbulkSigningdetails, {
       // fetch(URL.subscribedPlanDetails, {
       method: 'POST',
@@ -69,30 +62,11 @@ export default class BulkSigningSummary extends React.Component {
     }).then((responseJson) => {
       // console.log(responseJson);
       if (responseJson.status === "SUCCESS") {
-        // if (true) {
         bulkSigningInfoArr = responseJson.bulkSigningInfo;
         //For showing bulk summary records
         if (this.state.showSubListTable) {
-          //     bulkSigningInfoArr = [
-          //         // {"signerName":"Harshith","emailId":"harshith.hv97@gmail.com","mobileNo":"6361579075","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726924"},
-          //         // {"signerName":"Suman","emailId":"sumanmog@gmail.com","mobileNo":"6361631234","status":1,"signedOn":"15-03-2024","docId":"8JSNDOC1707975726920"},
-          //         {"signerName":"Lavanya","emailId":"lavanyapriya@gmail.com","mobileNo":"6374899434","status":0,"signedOn":"-","docId":"8JSNDOC1707975726924"},
-          //         {"signerName":"Suman","emailId":"sumanchowdary@gmail.com","mobileNo":"6361631230","status":1,"signedOn":"11-03-2024","docId":"8JSNDOC1707975726920"},
-          //         {"signerName":"Likith","emailId":"likithm@gmail.com","mobileNo":"6362222222","status":1,"signedOn":"10-03-2024","docId":"8JSNDOC1707975726920"},
-          //         {"signerName":"Abhijeet","emailId":"abhijeet@gmail.com","mobileNo":"6374111114","status":1,"signedOn":"20-03-2024","docId":"8JSNDOC1707975726920"},
-          //         {"signerName":"Hema","emailId":"heman@gmail.com","mobileNo":"6374444444","status":1,"signedOn":"05-03-2024","docId":"8JSNDOC1707975726920"},
-          //     ]
           this.setState({ bulkSigningInfo: bulkSigningInfoArr });
         } else {//For showing bulk signing info table records
-          //     bulkSigningInfoArr =  
-          //     [ 
-          //         {"batchNo":"1670939161111","Status":1,"totalSignersCount":"10","completedSignersCount":"10","uploadedOn":"2024-03-20","fileName":"Rental Agreement.pdf"}, 
-          //         {"batchNo":"1670939161222","Status":0,"totalSignersCount":"20","completedSignersCount":"10","uploadedOn":"2024-03-17","fileName":"Employee Details.pdf"}, 
-          //         {"batchNo":"1670939161333","Status":0,"totalSignersCount":"30","completedSignersCount":"0","uploadedOn":"2024-03-12","fileName":"Task_Details.pdf"}, 
-          //         {"batchNo":"1670939161444","Status":0,"totalSignersCount":"5","completedSignersCount":"4","uploadedOn":"2024-03-05","fileName":"BC Template.pdf"}, 
-          //         {"batchNo":"1670939161555","Status":1,"totalSignersCount":"2","completedSignersCount":"2","uploadedOn":"2024-03-05","fileName":"Rental Agreement.pdf"}, 
-          //         {"batchNo":"1670939161666","Status":0,"totalSignersCount":"1","completedSignersCount":"0","uploadedOn":"2024-03-01","fileName":"Application.pdf"}, 
-          //     ]
           this.setState({ bulkSigningSummary: bulkSigningInfoArr });
         }
         this.setState({ loaded: true });
@@ -134,22 +108,17 @@ export default class BulkSigningSummary extends React.Component {
 
   //-----------------View File--------------------
   viewStoredFile = (e) => {
-    // console.log(e);
     let pdfurl =
       URL.viewStoredFile +
       "?at=" +
       btoa(sessionStorage.getItem("authToken")) +
       "&docID=" +
-      //   btoa(e.DOC_ID);
       this.setState({ fileUrl: pdfurl });
-    //   this.setState({ fileName: e.DOC_NAME });
-    // console.log(pdfurl);
     this.setState({ shown: true })
   };
 
   //----------------send reminder-----------------
   sendReminder(data) {
-    console.log(data);
     // var unSignedCount = 0;
     // var unSigned = "" + data.PENDING_LIST + "";
     // var unSignedList = unSigned.split(",");
@@ -744,7 +713,7 @@ export default class BulkSigningSummary extends React.Component {
                       tooltip: "Send Reminder",
                       onClick: (event, rowData) => this.sendReminder(rowData),
                       isFreeAction: false,
-                      hidden: true,
+                      hidden: false,
                   };
               } else if (rowData.status === 1) {                
                   return {

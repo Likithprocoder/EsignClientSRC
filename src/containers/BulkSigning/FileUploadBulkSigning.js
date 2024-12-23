@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Dropzone from "react-dropzone";
 import './BulkSigningCss.css'
 import { confirmAlert } from 'react-confirm-alert';
-import { URL } from '../URLConstant';
+import { URL as routeURl } from '../URLConstant';
 import UserDetailValidation from "../Templates/UserDetailValidation";
+import { bool } from "prop-types";
 var Loader = require("react-loader");
 var jsPDF = require("jspdf");
 const pdfjsforOnDrag = require("pdfjs-dist");
@@ -59,7 +60,7 @@ function UploadFileFrBulkSigning(props) {
         if (filesAreUploaded === 2) {
             document.getElementById('create-job').disabled = false;
             document.getElementById('create-job').style.cursor = "pointer";
-            validateCSV();
+            validateIsItCSV();
         }
 
     }, [filesAreUploaded]);
@@ -115,13 +116,92 @@ function UploadFileFrBulkSigning(props) {
                 }
             }
         }
-                
+
         for (let keyzz in headerAndValues) {
             let obj = { [keyzz]: headerAndValues[keyzz] };
             data.push(obj);
         }
         return data;
     }
+
+    // To validate the CSV file and prepare the data in required format..
+    const validateCSVData = (csvDataiBulk) => {
+        const csvDatas = csvDataiBulk.split('\n');
+        let formattedCSVData = {};
+        // Firt three headers to be manditory..
+        if (csvDatas.length === 0) {
+            confirmAlertFunction("The uploaded file contains empty data, please add data(s) and re-upload!");
+            return false;
+        }
+        else {
+            let numberOfColumns = 0;
+            let isEmpty = null;
+            const headers = csvDatas[0].replace(/\r/g, '').split(',');
+            if (!csvHeaders.includes(headers[0]) || !csvHeaders.includes(headers[1]) || !csvHeaders.includes(headers[2])) {
+                confirmAlertFunction("The uploaded CSV contains incorrect headers, please follow the standards, or download the default CSV from the link provided below!");
+                return false;
+            } else {
+                // Take a count of number of headers.
+                // Ignore the first three mandatory columns.           
+                for (let headerIndx = 0; headerIndx < headers.length; headerIndx++) {
+                    if (headers[headerIndx].trim() === '') {
+                        confirmAlertFunction('Please remove the empty columns and rows, and try re-uploading again!');
+                        return false;
+                    } else {
+                        numberOfColumns++;
+                        formattedCSVData[headers[headerIndx].trim()] = []
+                    }
+                };
+
+                for (let rowIndex = 1; rowIndex < csvDatas.length; rowIndex++) {
+                    let eachRowData = csvDatas[rowIndex].replace(/\r/g, '').split(',');
+                    let isAllEmpty = eachRowData.filter((data) => data.trim() !== ''
+                    );
+                    if (isAllEmpty.length !== 0) {
+                        // equal number of rows or greater then the number of columns counted..
+                        if (!(eachRowData.length === numberOfColumns)) {
+                            confirmAlertFunction('Uploaded CSV file contains invalid data. Please check and retry again!');
+                            return false;
+                        } else {
+                            for (let columnHeadrIndx = 0; columnHeadrIndx < headers.length; columnHeadrIndx++) {
+                                let data = eachRowData[columnHeadrIndx];
+                                if (data.trim() === '') {
+                                    confirmAlertFunction(`The uploaded CSV file contains empty data.`);
+                                    return false;
+                                } else {
+                                    if (columnHeadrIndx === 1) {
+                                        let result = UserDetailValidation(data.trim(), "Mobile Number");
+                                        if (!result || result === "isNotANumber") {
+                                            confirmAlertFunction(`The uploaded CSV file contains invalid mobile number.`);
+                                            return false;
+                                        } else {
+                                            formattedCSVData[headers[columnHeadrIndx]] = [...formattedCSVData[headers[columnHeadrIndx]], data.trim()]
+                                        }
+                                    }
+                                    else if (columnHeadrIndx === 2) {
+                                        let result = UserDetailValidation(data.trim(), "emailID");
+                                        if (!result) {
+                                            confirmAlertFunction(`The uploaded CSV file contains invalid emailId.`);
+                                            return false;
+                                        } else {
+                                            formattedCSVData[headers[columnHeadrIndx]] = [...formattedCSVData[headers[columnHeadrIndx]], data.trim()]
+                                        }
+                                    } else {
+                                        // add the data..
+                                        formattedCSVData[headers[columnHeadrIndx]] = [...formattedCSVData[headers[columnHeadrIndx]], data.trim()]
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        };
+        return formattedCSVData;
+    };
+
 
     // to collect the csv file droped.
     const CsvFileDrop = (event) => {
@@ -134,72 +214,11 @@ function UploadFileFrBulkSigning(props) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
-                const csvData = parseCSV(text);
-                setConvertedCSVData(csvData);
-                console.log(csvData);
+                const validateAndUptedRsnse = validateCSVData(text);
+                console.log(validateAndUptedRsnse);
                 
-                if (csvData.length === 0) {
-                    confirmAlertFunction("The uploaded file contains empty data, please add data(s) and re-upload!");
-                    return;
-                } else {
-                    // logic to check weather csv file contains all manditory columns and there respective values..
-                    // and perform furthur operations..
-                    // console.log(csvData);
-                    for (let index = 0; index <= 2; index++) {
-                        let jsonObj = csvData[index];
-                        // converts an json onbject to an json Array.
-                        // validating manditory column name
-                        // console.log(jsonObj);
-                        if (!csvHeaders.includes(Object.keys(jsonObj)[0])) {
-                            // console.log(Object.keys(jsonObj)[0]);
-                            confirmAlertFunction("The uploaded file contains incorrect headers. The CSV header should be as specified!");
-                            return;
-                        }
-
-                        // to limit the validation of 2 column only..
-                        // validating empty check 
-                        if (index <= 2) {
-                            for (let keysz in jsonObj[Object.keys(jsonObj)[0]]) {                                
-                                if (jsonObj[Object.keys(jsonObj)[0]][keysz] === "" && index <= 1) {
-                                    confirmAlertFunction("The file should not contain any empty values for columns 'Signer Name And Mobile Number'. Please fill and re-upload!");
-                                    return;
-                                }
-                                else {
-                                    if (index === 1) {
-                                        let result = UserDetailValidation(jsonObj[Object.keys(jsonObj)[0]][keysz], "Mobile Number");
-                                        if (!result || result === "isNotANumber") {
-                                            confirmAlertFunction(`The uploaded CSV file contains invalid mobile number.`);
-                                            return;
-                                        }
-                                    }
-                                    else if (index === 2 && jsonObj[Object.keys(jsonObj)[0]][keysz] !== "") {
-                                        let result = UserDetailValidation(jsonObj[Object.keys(jsonObj)[0]][keysz], "emailID");
-                                        if (!result) {
-                                            confirmAlertFunction(`The uploaded CSV file contains invalid emailId.`);
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // to store the additional header values from the csv..
-                    for (let index2 = 3; index2 <= csvData.length - 1; index2++) {
-                        let columnName = "";
-                        // by default the last column value in a row ends with 
-                        // \r to remove the \r if() executed..
-                        if ((Object.keys(csvData[index2])[0]).includes("\r")) {
-                            columnName = (Object.keys(csvData[index2])[0]).split("\r")[0];
-                        } else {
-                            columnName = Object.keys(csvData[index2])[0];
-                        }
-                        setAdditionalColumValues(oldvalue => ([
-                            ...oldvalue,
-                            columnName
-                        ]));
-                    }
-
+                if (validateAndUptedRsnse !== false) {
+                    setConvertedCSVData(validateAndUptedRsnse);
                     // storing csv file.
                     setToBeSignedCSV(file);
                     // storing cause the name can be displayed..
@@ -210,7 +229,6 @@ function UploadFileFrBulkSigning(props) {
                             fileSize: oriFileSize
                         }
                     });
-
                     // to avoid the increment `filesAreUploaded` Variable.. 
                     // when both the files are uploaded..
                     if (filesAreUploaded !== 2) {
@@ -219,7 +237,6 @@ function UploadFileFrBulkSigning(props) {
                             filesAreUploaded + 1
                         );
                     }
-
                 }
             };
             reader.readAsText(file);
@@ -315,7 +332,7 @@ function UploadFileFrBulkSigning(props) {
 
     // to validate the CSV file uploaded, to check weather the CSV file contains only 3 columns
     // if the PDF file is uploaded.
-    const validateCSV = () => {
+    const validateIsItCSV = () => {
         if (uploadedFileName.html_pdfFile.fileType === "application/pdf") {
             if (convertedCSVData.length > 3) {
                 setUploadedFileName({
@@ -360,10 +377,9 @@ function UploadFileFrBulkSigning(props) {
                 },
                 body: data
             }
-            fetch(URL.uploadBulkSignFile, options)
+            fetch(routeURl.uploadBulkSignFile, options)
                 .then(response => (response.json()))
                 .then(data => {
-                    console.log(data);
                     if (data.status === "SUCCESS") {
                         setPDFFile(data.PDFValue);
                         setCsvFileRefNo(data.csvFileRefNo);
@@ -394,7 +410,7 @@ function UploadFileFrBulkSigning(props) {
                                         props.history.push("/login");
                                     },
                                 },
-                            ],closeOnClickOutside: false,
+                            ], closeOnClickOutside: false,
                         });
                     }
                     else {
@@ -405,7 +421,7 @@ function UploadFileFrBulkSigning(props) {
                                     label: "OK",
                                     className: "confirmBtn"
                                 },
-                            ],closeOnClickOutside: false,
+                            ], closeOnClickOutside: false,
                         });
                     }
 
@@ -419,7 +435,7 @@ function UploadFileFrBulkSigning(props) {
                                 label: "OK",
                                 className: "confirmBtn",
                             },
-                        ],closeOnClickOutside: false,
+                        ], closeOnClickOutside: false,
                     });
                 })
         }
@@ -436,7 +452,6 @@ function UploadFileFrBulkSigning(props) {
         }
         const blob = new Blob([uint8Array], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
-        console.log(url);
         var file = new File([blob], `${fileName.split(".")[0]}.pdf`, {
             type: "application/pdf",
             lastModified: new Date(),
@@ -507,7 +522,6 @@ function UploadFileFrBulkSigning(props) {
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
         };
-        console.log({ filedata });
         props.history.push({
             pathname: "/preview",
             // pathname: "/multiPplSignPreview",
@@ -601,6 +615,30 @@ function UploadFileFrBulkSigning(props) {
                 >
                     <span>Send for signing &#8594;</span>
                 </button>
+            </div>
+            <div style={{ textAlign: "center" }}>
+                <button className="btn btn-link" onClick={() => {
+                    // Default column headers
+                    const headers = ["Signer Name", "Mobile No", "Email Id"];
+
+                    // Create CSV content with only headers
+                    const csvContent = headers.join(',') + '\n';
+
+                    // Create a Blob from the CSV content
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+                    // Create a temporary <a> element to trigger the download
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'bulkSigningUpload.csv';
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Clean up the temporary URL and element
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }} href=" ">Download the sample CSV file!</button>
             </div>
         </>
     )

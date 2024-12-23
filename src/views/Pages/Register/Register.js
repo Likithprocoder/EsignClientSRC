@@ -10,7 +10,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Dropdown, 
+  Dropdown,
   DropdownToggle,
   Row,
 } from "reactstrap";
@@ -92,15 +92,15 @@ class Register extends Component {
       referenceNo: "",
       mobileNo: "",
       email: "",
-      unregisteredDocId:"",
-      referalName:"",
+      unregisteredDocId: "",
+      referalName: "",
     };
   }
 
   componentWillMount() {
     const awsTransactionID = this.getCookieValue('AWSTransactionID');
     // console.log('AWSTransactionID:', awsTransactionID);
-    this.setState({ awsTransactionID: awsTransactionID});
+    this.setState({ awsTransactionID: awsTransactionID });
 
     // Retrieve the 'errorDetails' cookie
     if (awsTransactionID == null) {
@@ -147,7 +147,7 @@ class Register extends Component {
 
     this.generateSecretKey();
   };
-  
+
 
   generateSecretKey = async () => {
     try {
@@ -219,18 +219,18 @@ class Register extends Component {
   componentDidMount() {
     this.generateRSAKeyPair();
     // console.log(this.state.awsTransactionID);
-    const queryParams = new URLSearchParams(window.location.search);
-    const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
-    const email = queryParams.has("email") ? queryParams.get("email") : undefined;
-    const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
-    const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
- // Set state only if values are present and not empty
-    this.setState({
-      moble: mobileNo ? mobileNo : "", // Set only if mobileNo exists
-      email: email ? email : "",         // Set only if email exists
-      unregisteredDocId:unregisteredDocId ? unregisteredDocId : "",
-      referalName:referalName ? referalName :"",
-    });
+    //     const queryParams = new URLSearchParams(window.location.search);
+    //     const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
+    //     const email = queryParams.has("email") ? queryParams.get("email") : undefined;
+    //     const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
+    //     const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
+    //  // Set state only if values are present and not empty
+    //     this.setState({
+    //       moble: mobileNo ? mobileNo : "", // Set only if mobileNo exists
+    //       email: email ? email : "",         // Set only if email exists
+    //       unregisteredDocId:unregisteredDocId ? unregisteredDocId : "",
+    //       referalName:referalName ? referalName :"",
+    //     });
     if (this.state.awsTransactionID != null) {
       // Now delete the cookie
       this.deleteCookie('AWSTransactionID');
@@ -246,23 +246,38 @@ class Register extends Component {
     });
     this.getCaptchaCode();
 
+    //in case the assigned signer is not a registered user then we need to fetch the parameters
+    if (pathURL.includes("?mobileNo")) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
+      const email = queryParams.has("email") ? queryParams.get("email") : undefined;
+      const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
+      const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
+
+      this.setState({
+        moble: mobileNo ? atob(mobileNo) : "", // Set only if mobileNo exists
+        email: email ? atob(email) : "", // Set only if email exists
+        unregisteredDocId: atob(unregisteredDocId) ? unregisteredDocId : "",
+        referalName: atob(referalName) ? referalName : "",
+      })
+    }
     //to fetch the tokenValue which is provided by the aws marketplace which contains the plan details
-    if (pathURL.includes("?")) {
+    else if (pathURL.includes("?")) {
       let awsRedirection = pathURL.split("?")[1];
       let tokenValue = awsRedirection.split("=")[1];
       this.resolveCustomer(tokenValue);
     }
- 
+
 
     const token = document.cookie
-  .split('; ')
-  .find(row => row.startsWith('x-amzn-marketplace-token'))
-  ?.split('=')[1];
+      .split('; ')
+      .find(row => row.startsWith('x-amzn-marketplace-token'))
+      ?.split('=')[1];
 
-fetch(window.location.href)
-  .then(response => {
-    console.log("location.hrefToken:",response.headers.get('x-amzn-marketplace-token'));
-  });
+    fetch(window.location.href)
+      .then(response => {
+        console.log("location.hrefToken:", response.headers.get('x-amzn-marketplace-token'));
+      });
 
   }
 
@@ -438,10 +453,10 @@ fetch(window.location.href)
     try {
       // Generate a random salt
       const salt = crypto.getRandomValues(new Uint8Array(16));
-  
+
       // Generate a random IV
       const iv = crypto.getRandomValues(new Uint8Array(16));
-  
+
       // Derive a key using PBKDF2
       const importedSecretKey = await crypto.subtle.importKey(
         "raw",
@@ -450,7 +465,7 @@ fetch(window.location.href)
         false,
         ["deriveKey"]
       );
-  
+
       const derivedKey = await crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
@@ -463,7 +478,7 @@ fetch(window.location.href)
         true,
         ["encrypt"]
       );
-  
+
       // Encrypt the JSON string using AES with CBC mode
       const encryptedTextBuffer = await crypto.subtle.encrypt(
         {
@@ -473,16 +488,16 @@ fetch(window.location.href)
         derivedKey,
         new TextEncoder().encode(json)
       );
-  
+
       // Combine salt, IV, and ciphertext
       const combinedDataBuffer = new Uint8Array([
         ...salt,
         ...iv,
         ...new Uint8Array(encryptedTextBuffer),
       ]);
-  
+
       // console.log("combinedDataBuffer:", combinedDataBuffer);
-  
+
       // Encode the combined data to Base64
       const combinedData = btoa(
         String.fromCharCode.apply(null, combinedDataBuffer)
@@ -493,7 +508,7 @@ fetch(window.location.href)
       return null;
     }
   };
-  
+
 
   register = async () => {
     if (this.state.OTPValidtaionstatus == "N") {
@@ -557,12 +572,12 @@ fetch(window.location.href)
                             };
                             // Conditionally add `unregisteredDocId` if it has a value
                             if (this.state.unregisteredDocId) {
-                             json.unregisteredDocId = this.state.unregisteredDocId;
+                              json.docId = this.state.unregisteredDocId;
                               }
 
                             // Conditionally add `referalName` if it has a value
                             if (this.state.referalName) {
-                            json.referalName = this.state.referalName;
+                              json.referalName = this.state.referalName;
                             }
 
                             if (this.state.awsTransactionID !== null) {
@@ -842,12 +857,12 @@ fetch(window.location.href)
     try {
       // Decode the Base64 string to get the combined data
       const combinedDataBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
-  
+
       // Extract the salt, IV, and ciphertext
       const salt = combinedDataBuffer.slice(0, 16); // First 16 bytes
       const iv = combinedDataBuffer.slice(16, 32); // Next 16 bytes
       const ciphertext = combinedDataBuffer.slice(32); // Remaining bytes
-  
+
       // Derive the key using PBKDF2
       const importedSecretKey = await crypto.subtle.importKey(
         "raw",
@@ -856,7 +871,7 @@ fetch(window.location.href)
         false,
         ["deriveKey"]
       );
-  
+
       const derivedKey = await crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
@@ -869,7 +884,7 @@ fetch(window.location.href)
         true,
         ["decrypt"]
       );
-  
+
       // Decrypt the ciphertext
       const decryptedBuffer = await crypto.subtle.decrypt(
         {
@@ -879,7 +894,7 @@ fetch(window.location.href)
         derivedKey,
         ciphertext
       );
-  
+
       // Decode the decrypted buffer back into a string
       const decryptedText = new TextDecoder().decode(decryptedBuffer);
       return decryptedText;
@@ -1710,12 +1725,12 @@ fetch(window.location.href)
 
 
   render() {
-     // Destructure state here inside the render method
-     const { moble, email } = this.state;
+    // Destructure state here inside the render method
+    const { moble, email } = this.state;
     return (
       <div className="app flex-row align-items-center">
         <Notifications />
-        
+
         <Loader
           loaded={this.state.loaded}
           lines={13}
@@ -1735,7 +1750,7 @@ fetch(window.location.href)
           scale={1.0}
           loadedClassName="loadedContent"
         />
-        
+
         <Container>
           <div className="isign-logo">
             <img style={{ height: "100%" }} src={mySignLogo}></img>
@@ -1743,7 +1758,7 @@ fetch(window.location.href)
           <Row className="justify-content-center">
             <Col md="11" lg="22" xl="7">
               <Card id="cardBody" className="mx-5">
-                <CardBody className="p-3" style={{backgroundColor:Object.keys(this.state.errorJson).length === 0 ? "#fff" : "antiquewhite"}}>
+                <CardBody className="p-3" style={{ backgroundColor: Object.keys(this.state.errorJson).length === 0 ? "#fff" : "antiquewhite" }}>
                   {(this.state.backToRegister) && (<Button id="backToReg" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.goBackToRegister}>
                     <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
                   </Button>)}
@@ -1758,10 +1773,10 @@ fetch(window.location.href)
                           </InputGroupText>
                           {/* Fixed Dropdown for Country Code */}
                           <Dropdown isOpen={false}>
-                              <DropdownToggle caret disabled>
-                                +91
-                              </DropdownToggle>
-                            </Dropdown>
+                            <DropdownToggle caret disabled>
+                              +91
+                            </DropdownToggle>
+                          </Dropdown>
                         </InputGroupAddon>
                         <Input
                           id="mobile"
@@ -2215,17 +2230,17 @@ fetch(window.location.href)
                       </p>
                     </div>
                   </Form> : <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
-                      <i
-                        className="fa fa-exclamation-triangle"
-                        aria-hidden="true"
-                        style={{
-                          color: "#f86c6b",
-                          fontSize: "1.5em", // Adjust size based on the p tag font size
-                          marginRight: "12px" // Adds spacing between icon and text
-                        }}
-                      ></i>
-                      <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p>
-                    </div>}
+                    <i
+                      className="fa fa-exclamation-triangle"
+                      aria-hidden="true"
+                      style={{
+                        color: "#f86c6b",
+                        fontSize: "1.5em", // Adjust size based on the p tag font size
+                        marginRight: "12px" // Adds spacing between icon and text
+                      }}
+                    ></i>
+                    <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p>
+                  </div>}
                 </CardBody>
               </Card>
             </Col>{" "}

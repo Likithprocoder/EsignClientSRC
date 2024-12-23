@@ -97,9 +97,9 @@ class DefaultTemplates extends Component {
   }
 
   // push page based on the templateCode..
-  clickfun = (templateCode, templateName) => {
+  clickfun = (templateCode, templateName) => {    
     this.props.history.push({
-      pathname: "/template",
+      pathname: "/templateEditing",
       frompath: "/templates",
       state: {
         templateCode: templateCode,

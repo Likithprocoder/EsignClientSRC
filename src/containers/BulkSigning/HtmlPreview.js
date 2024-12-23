@@ -82,6 +82,8 @@ function HtmlPreview(props) {
             setAllowHtmlFile(true);
         }
         setCsvKeys(props.location.state.htmlKeys);
+        console.log(props.location.state.additionalColumValues);
+        
         setHtmlKeys(props.location.state.additionalColumValues);
         setCsvFile(props.location.state.csvFile);
         setConvertedCSVData(props.location.state.convertedCSVData);
@@ -291,7 +293,7 @@ function HtmlPreview(props) {
             document.getElementById(key + "maxRange1").hidden = false;
             document.getElementById(key + "minRange").type = "number";
             document.getElementById(key + "maxRange").type = "number";
-            document.getElementById(key + "placeHolder").value = `Enter The ${key} here`;
+            document.getElementById(key + "placeHolder").value = `Enter The ${key.split("{{")[1].split("}}")[0].split(".")[1]} here`;
         }
         else {
             document.getElementById(key + "placeHolder1").hidden = false;
@@ -299,7 +301,7 @@ function HtmlPreview(props) {
             document.getElementById(key + "minLength1").hidden = false;
             document.getElementById(key + "minRange1").hidden = true;
             document.getElementById(key + "maxRange1").hidden = true;
-            document.getElementById(key + "placeHolder").value = `Enter The ${key} here`;
+            document.getElementById(key + "placeHolder").value = `Enter The ${key.split("{{")[1].split("}}")[0].split(".")[1]} here`;
         }
     }
 
@@ -558,8 +560,8 @@ function HtmlPreview(props) {
                             </div>
                         </>
                 }
-                <div id="PARENTDIVINPT" hidden={intailData.editable === 0 ? true : false} key={htmlKey} className='Divo3Css scrollbarx'>
-                    <div className='inputHolderCss'>
+                <div id="PARENTDIVINPT" hidden={intailData.editable === 0 ? true : false} key={htmlKey} className='Divo3Css'>
+                    <div className='htmlPrivwSrllBar inputHolderCss'>
                         <div className='Divo5Css'>
                             <div className='InputName'>
                                 <span>Label Name <span id="mandatoryRed">*</span>: </span>
@@ -739,7 +741,6 @@ function HtmlPreview(props) {
         fetch(URL.uploadBulkSignFile, options)
             .then(response => (response.json()))
             .then(data => {
-                console.log(data);
                 if (data.status === "SUCCESS") {
                     setLoader(true);
                     setPDFFile(data.PDFValue);
@@ -814,7 +815,6 @@ function HtmlPreview(props) {
         }
         const blob = new Blob([uint8Array], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
-        console.log(url);
         var file = new File([blob], `${fileName.split(".")[0]}.pdf`, {
             type: "application/pdf",
             lastModified: new Date(),
@@ -885,7 +885,6 @@ function HtmlPreview(props) {
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
         };
-        console.log({ filedata });
         props.history.push({
             // pathname: "/multiPplSignPreview",
             pathname: "/preview",
@@ -936,11 +935,11 @@ function HtmlPreview(props) {
                                 <span>Fields From CSV File</span>
                             </div>
                             <div className='formcontroller'>
-                                {
-                                    console.log(analyzedDataTrue)
-
-                                }
                                 <form key="HTMLKEYSFORM">
+                                    {
+                                        console.log(analyzedDataTrue)
+                                        
+                                    }
                                     {
                                         analyzedDataTrue.map((data, index) => (
                                             <React.Fragment key={index}>
@@ -980,7 +979,7 @@ function HtmlPreview(props) {
             {
                 allowmodal && (
                     <div className="custom-modal">
-                        <div className="CustomModal-content">
+                        <div className="CustomModal-content ">
                             <span className="close" onClick={closeTheModal}>&times;</span>
                             {
                                 editableField()

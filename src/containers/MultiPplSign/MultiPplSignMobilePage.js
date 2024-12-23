@@ -938,7 +938,7 @@ export default class MultiPplSignMobilePage extends React.Component {
           </div>
         </div>
         {console.log(this.state.accesskey)}
-        <form ref={this.formRef} style={{ display: "none" }} id="BKDocSigning" name="BKDocSigning" method="POST" action="http://localhost:8090/MYSIGN/INAPP/mpsCreateJobsV2">
+        <form ref={this.formRef} style={{ display: "none" }} id="BKDocSigning" name="BKDocSigning" method="POST" action={URL.inAPPAPI}>
         {console.log(this.state.accesskey)}
           <input type="hidden" name="signingDetails" id="signingDetails" value={`{ "refNo": "${this.state.accesskey}"}`} />
         </form>

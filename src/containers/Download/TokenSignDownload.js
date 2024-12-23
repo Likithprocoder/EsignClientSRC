@@ -57,10 +57,10 @@ export default class TokenSignDownload extends React.Component {
       pageList: [],
       pageDimensions: "",
       equalPageDimensions: true,
-      emailId:"",
-      mobileNo:"",
-      referalName:"",
-      unregisteredDocId:""
+      emailId: "",
+      mobileNo: "",
+      referalName: "",
+      unregisteredDocId: ""
 
     };
   }
@@ -70,20 +70,20 @@ export default class TokenSignDownload extends React.Component {
     console.log(this.props.location.state);
     console.log(this.props.location.state.details);
 
-  // -----------------resgister user-------
-        
-  if (this.props.location.state.details.hasOwnProperty("referalName")) {
-    this.setState({
-      referalName:this.props.location.state.details.referalName,
-      mobileNo:this.props.location.state.details.mobileNo,
-      emailId:this.props.location.state.details.emailId,
-      unregisteredDocId:this.props.location.state.details.docId
-    })
-     //document.getElementById("registerUser").style.display = "";
-    
-  }
+    // -----------------resgister user-------
 
- // ----------------end of register user----------------
+    if (this.props.location.state.details.hasOwnProperty("referalName")) {
+      this.setState({
+        referalName: this.props.location.state.details.referalName,
+        mobileNo: this.props.location.state.details.mobileNo,
+        emailId: this.props.location.state.details.emailId,
+        unregisteredDocId: this.props.location.state.details.docId
+      })
+      //document.getElementById("registerUser").style.display = "";
+
+    }
+
+    // ----------------end of register user----------------
     if (sessionStorage.hasOwnProperty("sealMsg")) {
       sessionStorage.setItem("sealMsg", "");
     }
@@ -111,10 +111,10 @@ export default class TokenSignDownload extends React.Component {
   }
 
   componentDidMount() {
-if(this.state.referalName){
+    if (this.state.referalName) {
 
-  document.getElementById("registerUser").style.display = "";
-}
+      document.getElementById("registerUser").style.display = "";
+    }
     // if (this.state.mode === "3") {
     //     this.setState({ Msg: "DSC Token Signing Successful" })
     // }
@@ -126,7 +126,7 @@ if(this.state.referalName){
       sessionStorage.getItem("externalSigner") === "true"
     ) {
       if (sessionStorage.getItem("userId") === "0") {
-    
+
         var username = sessionStorage.getItem("username");
         var email = sessionStorage.getItem("email");
         this.setState({
@@ -469,51 +469,51 @@ if(this.state.referalName){
   async getstoredFilefrmTempDetails(getDocDetailsData) {
     let data = getDocDetailsData;
     let dataToGetSignCoordinateDetails = {
-        docId: this.state.docId,
-        authToken: sessionStorage.getItem("authToken"),
+      docId: this.state.docId,
+      authToken: sessionStorage.getItem("authToken"),
     };
 
     try {
-        const response = await fetch(URL.getstoredFilefrmTempDetails, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+      const response = await fetch(URL.getstoredFilefrmTempDetails, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-        const responseJson = await response.json();
-        if (responseJson.status === "SUCCESS") {
-            document.getElementById("discardOptionsdiv").style.display = "none";
+      const responseJson = await response.json();
+      if (responseJson.status === "SUCCESS") {
+        document.getElementById("discardOptionsdiv").style.display = "none";
 
-            if (responseJson.statusDetails.includes("Cancelled")) {
-                toast.error(responseJson.statusDetails, { autoClose: 1000 });
-                this.sleep(50000);
-                this.props.history.push("/inbox");
-            } else if (responseJson.statusDetails.includes("Updated")) {
-                await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
-                await this.createFile(this.state.txnrefNo, 0);
-            } else {
-                toast.success(responseJson.statusDetails, { autoClose: 1000 });
-                this.setState({
-                    msg: "The signed document can be downloaded from this page, or from the Inbox later.",
-                });
-            }
+        if (responseJson.statusDetails.includes("Cancelled")) {
+          toast.error(responseJson.statusDetails, { autoClose: 1000 });
+          this.sleep(50000);
+          this.props.history.push("/inbox");
+        } else if (responseJson.statusDetails.includes("Updated")) {
+          await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
+          await this.createFile(this.state.txnrefNo, 0);
         } else {
-            confirmAlert({
-                message: responseJson.statusDetails,
-                buttons: [
-                    {
-                        label: "OK",
-                        className: "confirmBtn",
-                        onClick: () => {},
-                    },
-                ],
-            });
+          toast.success(responseJson.statusDetails, { autoClose: 1000 });
+          this.setState({
+            msg: "The signed document can be downloaded from this page, or from the Inbox later.",
+          });
         }
+      } else {
+        confirmAlert({
+          message: responseJson.statusDetails,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { },
+            },
+          ],
+        });
+      }
     } catch (error) {
-        this.setState({ loaded: true });
-        alert(error);
+      this.setState({ loaded: true });
+      alert(error);
     }
   }
 
@@ -528,33 +528,33 @@ if(this.state.referalName){
       body: JSON.stringify(data),
     })
     const responseJson = await response.json();
-    if (responseJson.status == "SUCCESS"){
-          this.setState({
-            loaded: true,
-            signMode: responseJson.signMode,
-            signInfo: responseJson.signInfo,
-            signCoordinates: responseJson.signCoordinates,
-            // signCoordinates: JSON.parse(responseJson.signCoordinates),
-            signPage: responseJson.signPage,
-            pageList: responseJson.pageList,
-          });
-        } else {
-          this.setState({ openOTPModal: false });
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/");
-                },
-              },
-            ],
-          });
-          //alert(responseJson.statusDetails)
-          this.setState({ loaded: true });
-        }
+    if (responseJson.status == "SUCCESS") {
+      this.setState({
+        loaded: true,
+        signMode: responseJson.signMode,
+        signInfo: responseJson.signInfo,
+        signCoordinates: responseJson.signCoordinates,
+        // signCoordinates: JSON.parse(responseJson.signCoordinates),
+        signPage: responseJson.signPage,
+        pageList: responseJson.pageList,
+      });
+    } else {
+      this.setState({ openOTPModal: false });
+      confirmAlert({
+        message: responseJson.statusDetails,
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {
+              this.props.history.push("/");
+            },
+          },
+        ],
+      });
+      //alert(responseJson.statusDetails)
+      this.setState({ loaded: true });
+    }
   }
 
   //downloading PDF file
@@ -575,62 +575,62 @@ if(this.state.referalName){
   async createFile(txnrefNo, signedStatus) {
     let response = await fetch(
       URL.downloadfromtemp +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&txnrefNo=" +
-        btoa(txnrefNo) +
-        "&signedStatus=" +
-        signedStatus
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken")) +
+      "&txnrefNo=" +
+      btoa(txnrefNo) +
+      "&signedStatus=" +
+      signedStatus
     );
     let data = await response.blob();
-      let arrayBuffer = await this.blobToArrayBuffer(data);
+    let arrayBuffer = await this.blobToArrayBuffer(data);
     let testResponse = this.test(arrayBuffer);
   }
 
   async blobToArrayBuffer(blob) {
     return new Promise((resolve, reject) => {
-        let reader = new FileReader();
-        reader.onload = function () {
-            resolve(reader.result);
-        };
-        reader.onerror = function (error) {
-            reject(error);
-        };
-        reader.readAsArrayBuffer(blob);
+      let reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+      reader.readAsArrayBuffer(blob);
     });
-}
+  }
 
   //routing to preview page
   async test(data) {
-    const loadingTask = pdfjs.getDocument({data});
+    const loadingTask = pdfjs.getDocument({ data });
     const pdf = await loadingTask.promise;
-            const numPages = pdf.numPages;
-            const pageDimensionsArr = [];
-            let equalPageDimensionsValue = true;
-            for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-              const page = await pdf.getPage(pageNumber);
-              const viewport = page.getViewport({ scale: 1 });
+    const numPages = pdf.numPages;
+    const pageDimensionsArr = [];
+    let equalPageDimensionsValue = true;
+    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1 });
 
-              pageDimensionsArr.push({
-                  pageNumber: pageNumber,
-                  width: viewport.width,
-                  height: viewport.height,
-              });
-          }
-          this.setState({ pageDimensions: pageDimensionsArr });
+      pageDimensionsArr.push({
+        pageNumber: pageNumber,
+        width: viewport.width,
+        height: viewport.height,
+      });
+    }
+    this.setState({ pageDimensions: pageDimensionsArr });
 
-          // Iterate through the array and compare dimensions
-          for (let i = 1; i < pageDimensionsArr.length; i++) {
-            if (pageDimensionsArr.length != 1) {
+    // Iterate through the array and compare dimensions
+    for (let i = 1; i < pageDimensionsArr.length; i++) {
+      if (pageDimensionsArr.length != 1) {
 
-              if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width || 
-                pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
-                  equalPageDimensionsValue = false;
-                  this.setState({ equalPageDimensions: false});
-                  break;
-              }
-            }
-          }
+        if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width ||
+          pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
+          equalPageDimensionsValue = false;
+          this.setState({ equalPageDimensions: false });
+          break;
+        }
+      }
+    }
 
     let metadata = {
       type: "application/pdf",
@@ -666,32 +666,22 @@ if(this.state.referalName){
     });
   }
 
-  // registerUser = () => {
-  //     let windowFeatures = "popup";
-  //     var win = window.open(
-  //       URL.registerUser,
-  //       windowFeatures
-  //     );
-  //   };
-
-
   registerUser = () => {
     let windowFeatures = "popup";
-  
+
     // Data to send
     const mobileNo = this.state.mobileNo;
     const email = this.state.emailId;
-    const referalName= this.state.referalName;
-    const unregisteredDocId=this.state.unregisteredDocId;
+    const referalName = this.state.referalName;
+    const unregisteredDocId = this.state.unregisteredDocId;
     // Build the URL with query parameters
     //const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}`;
-    const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}&referalName=${encodeURIComponent(referalName)}&docId=${encodeURIComponent(unregisteredDocId)}`;
-
-  
+    const registerURL = `${URL.registerUser}?mobileNo=${btoa(mobileNo)}&email=${btoa(email)}&referalName=${btoa(referalName)}&docId=${btoa(unregisteredDocId)}`;
     // Open the new window with the modified URL
     var win = window.open(registerURL, windowFeatures);
+    this.props.history.push('/login');
   };
-  
+
 
   render() {
     let fileName = this.state.fileName;
@@ -699,21 +689,23 @@ if(this.state.referalName){
       <div>
         <ToastContainer></ToastContainer>
         <div className="login-main-container">
-        <div 
-       
-          className="consenteSignLink"
-          id="registerUser"
-          style={{ display: "none" }}
-          onClick={this.consenteSignLink}
-        >
-          <p>
-          <a title="register" href="" onClick={this.registerUser}>
-            Click here
-          </a>{" "}
-          to signup for DocuExec account.
-          </p>
-            
-            
+          <div
+
+            className="consenteSignLink"
+            id="registerUser"
+            style={{ display: "none" }}
+            onClick={this.consenteSignLink}
+          >
+            <p>
+              <a title="register" href="" onClick={this.registerUser}>
+                Click here
+              </a>{" "}
+              <span className="blink">
+                to signup for DocuExec account.
+              </span>
+            </p>
+
+
           </div>
           <div className="" id="discardOptionsdiv" style={{ display: "none" }}>
             {/* <nav class="" id="performActionnavid" aria-label="breadcrumb">
@@ -752,7 +744,7 @@ if(this.state.referalName){
               "&docID=" +
               btoa(this.state.docId)
             }
-            filename = {fileName}
+            filename={fileName}
           />
           <div style={{ marginTop: "1%", textAlign: "center" }}>
             <h5 id="multipplMsg">{this.state.msg}</h5>

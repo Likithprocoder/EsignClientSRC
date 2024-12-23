@@ -273,15 +273,13 @@ class DisplayPdf1 extends Component {
     // document.getElementsByClassName("PDFDOC")[0].src = url + "#zoom=100";
   }
 
-  pushToPriview = async (height, width) => {
+  pushToPriview = (height, width) => {
     // this.onDrop(this.state.files1);
     // await delay(1000);
 
     // Ensure files1 is an array with a File object
     // const filesArray = [this.state.files1];
     if (this.state.flag) {
-      this.onDrop(this.state.files1);
-      await delay(1000);
       let data = {
         files: this.state.files1,
         height: height,

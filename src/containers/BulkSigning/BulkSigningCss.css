@@ -87,3 +87,19 @@
     border-radius: 15px;
     cursor: default;
 }
+
+.htmlPrivwSrllBar {
+    overflow: overlay;
+    height: 220px;
+}
+
+.htmlPrivwSrllBar::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.htmlPrivwSrllBar::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
