@@ -81,9 +81,9 @@ function HtmlPreview(props) {
             setHtmlContent(text);
             setAllowHtmlFile(true);
         }
-        setCsvKeys(props.location.state.htmlKeys);
         console.log(props.location.state.additionalColumValues);
         
+        setCsvKeys(props.location.state.htmlKeys);
         setHtmlKeys(props.location.state.additionalColumValues);
         setCsvFile(props.location.state.csvFile);
         setConvertedCSVData(props.location.state.convertedCSVData);

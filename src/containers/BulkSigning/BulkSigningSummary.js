@@ -713,7 +713,7 @@ export default class BulkSigningSummary extends React.Component {
                       tooltip: "Send Reminder",
                       onClick: (event, rowData) => this.sendReminder(rowData),
                       isFreeAction: false,
-                      hidden: false,
+                      hidden: true,
                   };
               } else if (rowData.status === 1) {                
                   return {

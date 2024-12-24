@@ -149,7 +149,14 @@ function UploadFileFrBulkSigning(props) {
                         return false;
                     } else {
                         numberOfColumns++;
-                        formattedCSVData[headers[headerIndx].trim()] = []
+                        formattedCSVData[headers[headerIndx].trim()] = [];
+                        if (headerIndx > 2) {
+
+                            setAdditionalColumValues(oldvalue => ([
+                                ...oldvalue,
+                                headers[headerIndx].trim()]
+                            ));
+                        }
                     }
                 };
 
@@ -216,7 +223,7 @@ function UploadFileFrBulkSigning(props) {
                 const text = e.target.result;
                 const validateAndUptedRsnse = validateCSVData(text);
                 console.log(validateAndUptedRsnse);
-                
+
                 if (validateAndUptedRsnse !== false) {
                     setConvertedCSVData(validateAndUptedRsnse);
                     // storing csv file.
@@ -347,7 +354,7 @@ function UploadFileFrBulkSigning(props) {
 
     // final signing procced
     const proceedForSigning = () => {
-        if (uploadedFileName.html_pdfFile.fileType === "text/html") {
+        if (uploadedFileName.html_pdfFile.fileType === "text/html") {            
             props.history.push({
                 pathname: "/htmlPreview",
                 frompath: "/bulkSigningUpload",
