@@ -168,6 +168,8 @@ const Preview = (props) => {
   const [showAllPages, setShowAllPages] = useState(false);
   const [cooling, setCooling] = useState({});
   const [showSignaturePages, setShowSignaturePage] = useState(false);
+  const [signingComments, setSigningComments] = useState("");
+  const [signingSubject, setSigningSubject] = useState("");
 
   //-------Page change event...geting TotalPages, currentPage-----
   const handlePageChange = (event) => {
@@ -1108,6 +1110,10 @@ const Preview = (props) => {
       document.getElementById("submitBtn").style.display = "none";
       document.getElementById("initiateBtn").style.display = "";
       document.getElementById("custDocumentName").style.display = "";
+      document.getElementById("custSenderComments").style.display = "";
+      document.getElementById("documentCommentsId").style.display = "";
+      document.getElementById("documentSubjectId").style.display = "";
+      document.getElementById("custDocumentSubject").style.display = "";
       document.getElementById("documentTitleId").style.display = "";
       document.getElementById("endDateLabel").style.display = "";
       document.getElementById("enddateId").style.display = "";
@@ -2236,9 +2242,32 @@ const Preview = (props) => {
             className: "confirmBtn",
             onClick: () => { },
           },
-        ],
+        ], closeOnClickOutside: false
       });
-    } else {
+    } else if (signingComments == "") {
+      confirmAlert({
+        message: "Please provide the signer comments",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => { },
+          },
+        ], closeOnClickOutside: false
+      });
+    } else if (signingSubject == "") {
+      confirmAlert({
+        message: "Please provide the email subject",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => { },
+          },
+        ], closeOnClickOutside: false
+      });
+    }
+    else {
       let selectedOptionValue = sessionStorage.getItem("selectedOption");
       if (selectedOptionValue == null) {
         sessionStorage.setItem("selectedOption", selectedOption);
@@ -3331,6 +3360,8 @@ const Preview = (props) => {
               signPage: signPg,
               pages: pgList,
             }],
+            senderComments: signingComments,
+            subject: signingSubject
           },
         };
 
@@ -5031,7 +5062,6 @@ const Preview = (props) => {
     let regName = new RegExp(/^[a-zA-Z0-9\-.@'#_/ ]*$/);
     const name = e.target.name;
     const value = e.target.value;
-    console.log(value);
     if (name === "custDocName") {
       ////console.log("helllo"+name);
       let encodedName = encodeURI(e.target.value);
@@ -5041,6 +5071,28 @@ const Preview = (props) => {
       } else {
         if (regName.test(e.target.value)) {
           setCustomDocName(value);
+        } else {
+          return false;
+        }
+      }
+    } else if (name === "custDocComments") { // For Comments
+      let encodedName = encodeURI(e.target.value);
+      if (encodedName.length > 254) {
+        alert("Document title should be of within 255 characters");
+      } else {
+        if (regName.test(e.target.value)) {
+          setSigningComments(value);
+        } else {
+          return false;
+        }
+      }
+    } else { // For Comments
+      let encodedName = encodeURI(e.target.value);
+      if (encodedName.length > 99) {
+        alert("Document title should be of within 100 characters");
+      } else {
+        if (regName.test(e.target.value)) {
+          setSigningSubject(value);
         } else {
           return false;
         }
@@ -5500,6 +5552,32 @@ const Preview = (props) => {
           />
 
           <b
+            id="custSenderComments"
+            style={{
+              // padding: "0% 0% 0% 0%",
+              paddingLeft: "10px",
+              color: "black",
+              fontSize: "13px",
+              display: "none"
+            }}
+          >Sender Comments: </b>
+          <input
+            id="documentCommentsId"
+            className="docTitle"
+            placeholder="Maximun 255 characters allowed."
+            name="custDocComments"
+            onChange={docuName}
+            maxLength={255}
+            required={true}
+            style={{
+              display: "none", width: "500px",
+              fontSize: "12px",
+              borderRadius: "3px",
+              marginLeft: "5px"
+            }}
+          />
+          <br />
+          <b
             style={{
               // padding: "0% 0% 0% 0%",
               paddingLeft: "10px",
@@ -5516,6 +5594,34 @@ const Preview = (props) => {
             name="endDate"
             onChange={finalDate}
             style={{ display: "none" }}
+          />
+
+          <b
+            id="custDocumentSubject"
+            style={{
+              // padding: "0% 0% 0% 0%",
+              paddingLeft: "10px",
+              color: "black",
+              fontSize: "13px",
+              display: "none",
+
+            }}
+          >Subject: </b>
+          <input
+            id="documentSubjectId"
+            className="docTitle"
+            placeholder="Enter the email subject (Max 100 characters)"
+            name="custDocSubject"
+            onChange={docuName}
+            maxLength={100}
+            required={true}
+            style={{
+              display: "none",
+              width: "400px",
+              fontSize: "12px",
+              borderRadius: "3px",
+              marginLeft: "5px"
+            }}
           />
 
           <Button
