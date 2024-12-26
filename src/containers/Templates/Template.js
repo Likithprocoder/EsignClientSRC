@@ -944,10 +944,7 @@ function NewTemplate(props) {
                             buttons: [
                                 {
                                     label: "OK",
-                                    className: "confirmBtn",
-                                    onClick: () => {
-                                        props.history.push("/login");
-                                    },
+                                    className: "confirmBtn"
                                 },
                             ], closeOnClickOutside: false,
                         });
@@ -4471,7 +4468,7 @@ function NewTemplate(props) {
                 scale={1.0}
                 loadedClassName="loadedContent"
             />
-            <div className="temdescCss" >
+            <div className="temdescCss" style={{marginBottom: (props?.location?.pathname === "/template") ? "0px" : "10px"}} >
                 <div className="temdesContentCssTemplate" style={{ width: "50%" }}>
                     <Tooltip
                         target="tempdesc"

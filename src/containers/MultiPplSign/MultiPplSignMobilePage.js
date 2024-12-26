@@ -39,6 +39,7 @@ export default class MultiPplSignMobilePage extends React.Component {
       openOTPModal: false,
       openOTPModalBS: false,
       mobNo: "",
+      emailId: "",
       mobileotpvalue: "",
       accesskey: "",
       mobotpref: "",
@@ -444,6 +445,7 @@ export default class MultiPplSignMobilePage extends React.Component {
       ele[val - 2].focus();
     }
   }
+  maskText = (text, maskCount, maskChar = "*") => maskChar.repeat(Math.min(maskCount, text.length)) + text.slice(maskCount);
   generateotp = (obj) => {
     this.setState({ loaded: false });
 
@@ -490,6 +492,7 @@ export default class MultiPplSignMobilePage extends React.Component {
           if (this.state.pathURL.includes("bulksigning=")) {
             document.getElementById("mobOtpGroup").style.display = "";
             document.getElementById("mobilemsg").style.display = "";
+            document.getElementById("emialemsg").style.display = "";
             document.getElementById("mpssubmit").style.display = "";
 
             if (responseJson.hasOwnProperty('mobileNum')) {
@@ -497,6 +500,7 @@ export default class MultiPplSignMobilePage extends React.Component {
                 loaded: true,
                 mobotpref: responseJson.mobRefNo,
                 mobNo: responseJson.mobileNum.replace(/\d(?=\d{4})/g, "*"),
+                emailId: this.maskText(responseJson.emailID, 5),
                 mobileNum: responseJson.mobileNum,
               });
             } else {
@@ -684,7 +688,7 @@ export default class MultiPplSignMobilePage extends React.Component {
                           id="entermobileotp"
                           style={{ marginTop: "0.3rem" }}
                         >
-                          Mobile OTP:  &nbsp;&nbsp;&nbsp;
+                         OTP:  &nbsp;&nbsp;&nbsp;
                         </label>
                         <Input
                           type="text"
@@ -706,9 +710,16 @@ export default class MultiPplSignMobilePage extends React.Component {
                   </div>
                 </div>
                 <br />
-                <span id="mobilemsg">
-                  OTP Sent to Mobile No. :{this.state.mobNo}.
-                </span>
+                <div style={{ marginBottom: "4%" }}>
+                  <span id="mobilemsg" >
+                    OTP Sent to Mobile No. :{this.state.mobNo}.
+                  </span>
+                </div>
+                <div>
+                  <span id="emialemsg">
+                    OTP Sent to email ID. :{this.state.emailId}.
+                  </span>
+                </div>
                 <div
                   className="agree-div"
                   style={{ textAlign: "-webkit-center" }}

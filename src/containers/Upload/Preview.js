@@ -151,7 +151,6 @@ const Preview = (props) => {
   const [draftRefNumber, setDraftRefNumber] = useState("");
   const [fromTemplatePage, setFromTemplatePage] = useState("");
   const [shown, setShown] = useState(false);
-  const [endDate, setEndDate] = useState("");
   const [endDateTime, setEndDateTime] = useState("");
   const [startDate, setStartDate] = useState("");
   const [min, setMin] = useState("");
@@ -1100,23 +1099,18 @@ const Preview = (props) => {
         setDocId(props?.location?.state?.details?.docId);
         sessionStorage.setItem("externalSigner", true);
       }
-    } else if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
-      console.log(props);
-      setSEDate();
+    } else if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
       let today = new Date().toISOString().split("T")[0];
       setMin(today);
       setCsvFileRefNo(props?.location?.state?.details?.csvFileRefNo);
       setFileRefNo(props?.location?.state?.details?.fileRefNo);
+      setCustomDocName(props?.location?.state?.details?.signDetails?.docuTitle);
+      setStartDate(props?.location?.state?.details?.signDetails?.startDate);
+      setEndDateTime(props?.location?.state?.details?.signDetails?.signBy);
+      setSigningComments(props?.location?.state?.details?.signDetails?.signerComments);
+      setSigningSubject(props?.location?.state?.details?.signDetails?.emailSubject);
       document.getElementById("submitBtn").style.display = "none";
       document.getElementById("initiateBtn").style.display = "";
-      document.getElementById("custDocumentName").style.display = "";
-      document.getElementById("custSenderComments").style.display = "";
-      document.getElementById("documentCommentsId").style.display = "";
-      document.getElementById("documentSubjectId").style.display = "";
-      document.getElementById("custDocumentSubject").style.display = "";
-      document.getElementById("documentTitleId").style.display = "";
-      document.getElementById("endDateLabel").style.display = "";
-      document.getElementById("enddateId").style.display = "";
       document.getElementById("signersComments").style.display = "none";
       document.getElementById("otpSignModeRadio").style.display = "none";
       document.getElementById("otpsigningtext").style.display = "none";
@@ -1424,7 +1418,7 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = ""; //
           document.getElementById("clientdownload").style.display = "none";
           document.getElementById("generateOtpMode").style.display = "none";
-          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           } else {
             document.getElementById("submitBtn").style.display = "";
           }
@@ -1435,7 +1429,7 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = "";
           document.getElementById("clientdownload").style.display = "none";
           document.getElementById("generateOtpMode").style.display = "none";
-          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           } else {
             document.getElementById("submitBtn").style.display = "";
           }
@@ -1447,7 +1441,7 @@ const Preview = (props) => {
           document.getElementById("handSignContainer").style.display = "";
           document.getElementById("clientdownload").style.display = "";
           document.getElementById("generateOtpMode").style.display = "none";
-          if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+          if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           } else {
             document.getElementById("submitBtn").style.display = "";
           }
@@ -2222,9 +2216,23 @@ const Preview = (props) => {
   };
 
   const custDocNameCheck = () => {
-    if (customDocName == "") {
+    let selectedOptionValue = sessionStorage.getItem("selectedOption");
+    if (selectedOptionValue == null) {
+      sessionStorage.setItem("selectedOption", selectedOption);
+    }
+
+    setSelectedOptionArray(
+      selectedOptionArray.filter(function (item, index, inputArray) {
+        return inputArray.indexOf(item) == index;
+      })
+    );
+
+    let result = false;
+    if (dragArray.length != 0) {
+      result = stampingPosition();
+    } else {
       confirmAlert({
-        message: "Please provide the document title",
+        message: "Please add the seal to proceed",
         buttons: [
           {
             label: "OK",
@@ -2233,84 +2241,23 @@ const Preview = (props) => {
           },
         ],
       });
-    } else if (endDate == "") {
-      confirmAlert({
-        message: "Please provide the end date",
-        buttons: [
-          {
-            label: "OK",
-            className: "confirmBtn",
-            onClick: () => { },
-          },
-        ], closeOnClickOutside: false
-      });
-    } else if (signingComments == "") {
-      confirmAlert({
-        message: "Please provide the signer comments",
-        buttons: [
-          {
-            label: "OK",
-            className: "confirmBtn",
-            onClick: () => { },
-          },
-        ], closeOnClickOutside: false
-      });
-    } else if (signingSubject == "") {
-      confirmAlert({
-        message: "Please provide the email subject",
-        buttons: [
-          {
-            label: "OK",
-            className: "confirmBtn",
-            onClick: () => { },
-          },
-        ], closeOnClickOutside: false
-      });
+      return;
     }
-    else {
-      let selectedOptionValue = sessionStorage.getItem("selectedOption");
-      if (selectedOptionValue == null) {
-        sessionStorage.setItem("selectedOption", selectedOption);
-      }
-
-      setSelectedOptionArray(
-        selectedOptionArray.filter(function (item, index, inputArray) {
-          return inputArray.indexOf(item) == index;
-        })
-      );
-
-      let result = false;
-      if (dragArray.length != 0) {
-        result = stampingPosition();
-      } else {
-        confirmAlert({
-          message: "Please add the seal to proceed",
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => { },
-            },
-          ],
-        });
-        return;
-      }
-      console.log(result);
-      if (result == true) {
-        confirmAlert({
-          message: "Please verify and place the signing position on the document",
-          buttons: [
-            {
-              label: "OK",
-              className: "confirmBtn",
-              onClick: () => { },
-            },
-          ],
-        });
-        return;
-      } else {
-        submit();
-      }
+    console.log(result);
+    if (result == true) {
+      confirmAlert({
+        message: "Please verify and place the signing position on the document",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => { },
+          },
+        ],
+      });
+      return;
+    } else {
+      submit();
     }
   }
 
@@ -3338,7 +3285,7 @@ const Preview = (props) => {
       }
 
       let obj = {};
-      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
         let loginname = sessionStorage.getItem("username");
         obj = {
           //****starts here
@@ -3361,7 +3308,7 @@ const Preview = (props) => {
               pages: pgList,
             }],
             senderComments: signingComments,
-            subject: signingSubject
+            emailSubject: signingSubject
           },
         };
 
@@ -4380,7 +4327,7 @@ const Preview = (props) => {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
-        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           document.getElementById("handSignContainer").style.display = "none";
         } else {
           document.getElementById("submitBtn").style.display = "";
@@ -4392,7 +4339,7 @@ const Preview = (props) => {
         document.getElementById("handSignContainer").style.display = ""; //
         document.getElementById("clientdownload").style.display = "none";
         document.getElementById("generateOtpMode").style.display = "none";
-        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           document.getElementById("handSignContainer").style.display = "none";
         } else {
           document.getElementById("submitBtn").style.display = "";
@@ -4402,7 +4349,7 @@ const Preview = (props) => {
         document.getElementById("handSignContainer").style.display = "";
         document.getElementById("clientdownload").style.display = "";
         document.getElementById("generateOtpMode").style.display = "none";
-        if (frompath === "/htmlPreview" || frompath === "/bulkSigning") {
+        if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
           document.getElementById("handSignContainer").style.display = "none";
         } else {
           document.getElementById("submitBtn").style.display = "";
@@ -4963,9 +4910,23 @@ const Preview = (props) => {
             flexWrap: "wrap",
           }}
         >
-          <div style={{ flex: "0 0 auto" }}>
-            {props?.location?.state?.details?.files?.name}
-          </div>
+          <button
+            style={{
+              backgroundColor: "#357edd",
+              border: "none",
+              borderRadius: "4px",
+              color: "#ffffff",
+              cursor: "pointer",
+              padding: "8px",
+              flex: "0 0 auto",
+              marginTop: "5px",
+            }}
+            onClick={hideSidebarToggler}
+          >
+            Back
+          </button>
+
+
           <div
             style={{
               alignItems: "center",
@@ -4985,22 +4946,10 @@ const Preview = (props) => {
               <GoToNextPageButton />
             </div>
           </div>
+          <div style={{ flex: "0 0 auto" }}>
+            {props?.location?.state?.details?.files?.name}
+          </div>
 
-          <button
-            style={{
-              backgroundColor: "#357edd",
-              border: "none",
-              borderRadius: "4px",
-              color: "#ffffff",
-              cursor: "pointer",
-              padding: "8px",
-              flex: "0 0 auto",
-              marginTop: "5px",
-            }}
-            onClick={hideSidebarToggler}
-          >
-            Back
-          </button>
         </div>
 
         <div
@@ -5019,13 +4968,6 @@ const Preview = (props) => {
         </div>
       </div>
     );
-  };
-
-  const finalDate = (e) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    console.log(value);
-    setEndDate(value);
   };
 
   const setSEDate = () => {
@@ -5049,7 +4991,6 @@ const Preview = (props) => {
     setStartDate(`${d.getFullYear()}-${d.getMonth() + 1
       }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`);
     setEndDateTime(endDateValue + " " + "23:59:59");
-    setEndDate(endDateValue);
     // this.setState({
     //   startDate: `${d.getFullYear()}-${
     //     d.getMonth() + 1
@@ -5057,48 +4998,6 @@ const Preview = (props) => {
     //   endDate: endDateValue,
     // });
   }
-
-  const docuName = (e) => {
-    let regName = new RegExp(/^[a-zA-Z0-9\-.@'#_/ ]*$/);
-    const name = e.target.name;
-    const value = e.target.value;
-    if (name === "custDocName") {
-      ////console.log("helllo"+name);
-      let encodedName = encodeURI(e.target.value);
-      ////console.log("helllo" + encodedName.length);
-      if (encodedName.length > 29) {
-        alert("Document title should be of within 30 characters");
-      } else {
-        if (regName.test(e.target.value)) {
-          setCustomDocName(value);
-        } else {
-          return false;
-        }
-      }
-    } else if (name === "custDocComments") { // For Comments
-      let encodedName = encodeURI(e.target.value);
-      if (encodedName.length > 254) {
-        alert("Document title should be of within 255 characters");
-      } else {
-        if (regName.test(e.target.value)) {
-          setSigningComments(value);
-        } else {
-          return false;
-        }
-      }
-    } else { // For Comments
-      let encodedName = encodeURI(e.target.value);
-      if (encodedName.length > 99) {
-        alert("Document title should be of within 100 characters");
-      } else {
-        if (regName.test(e.target.value)) {
-          setSigningSubject(value);
-        } else {
-          return false;
-        }
-      }
-    }
-  };
 
   const getTooltipMessageForFullScreen = () => {
     return "Full preview";
@@ -5529,101 +5428,6 @@ const Preview = (props) => {
             Comments
             <i style={{ marginLeft: "10px" }} className="fa fa-comment-o"></i>
           </Button>
-
-          <b
-            id="custDocumentName"
-            style={{
-              // padding: "0% 0% 0% 0%",
-              paddingLeft: "10px",
-              color: "black",
-              fontSize: "13px",
-              display: "none",
-            }}
-          >Document Title: </b>
-          <input
-            id="documentTitleId"
-            className="docTitle"
-            placeholder="Enter Document Title"
-            name="custDocName"
-            onChange={docuName}
-            maxLength={30}
-            required={true}
-            style={{ display: "none" }}
-          />
-
-          <b
-            id="custSenderComments"
-            style={{
-              // padding: "0% 0% 0% 0%",
-              paddingLeft: "10px",
-              color: "black",
-              fontSize: "13px",
-              display: "none"
-            }}
-          >Sender Comments: </b>
-          <input
-            id="documentCommentsId"
-            className="docTitle"
-            placeholder="Maximun 255 characters allowed."
-            name="custDocComments"
-            onChange={docuName}
-            maxLength={255}
-            required={true}
-            style={{
-              display: "none", width: "500px",
-              fontSize: "12px",
-              borderRadius: "3px",
-              marginLeft: "5px"
-            }}
-          />
-          <br />
-          <b
-            style={{
-              // padding: "0% 0% 0% 0%",
-              paddingLeft: "10px",
-              color: "black",
-              fontSize: "13px",
-              display: "none"
-            }} id="endDateLabel">Sign By: </b>
-          <input
-            id="enddateId"
-            className="signerDate"
-            type="date"
-            value={endDate}
-            min={min}
-            name="endDate"
-            onChange={finalDate}
-            style={{ display: "none" }}
-          />
-
-          <b
-            id="custDocumentSubject"
-            style={{
-              // padding: "0% 0% 0% 0%",
-              paddingLeft: "10px",
-              color: "black",
-              fontSize: "13px",
-              display: "none",
-
-            }}
-          >Subject: </b>
-          <input
-            id="documentSubjectId"
-            className="docTitle"
-            placeholder="Enter the email subject (Max 100 characters)"
-            name="custDocSubject"
-            onChange={docuName}
-            maxLength={100}
-            required={true}
-            style={{
-              display: "none",
-              width: "400px",
-              fontSize: "12px",
-              borderRadius: "3px",
-              marginLeft: "5px"
-            }}
-          />
-
           <Button
             style={{
               fontSize: "12px",
@@ -5637,7 +5441,7 @@ const Preview = (props) => {
                   "externalSigner"
                 ) && props?.location?.state?.details?.externalSigner
                   ? "20rem"
-                  : "21rem",
+                  : "58rem",
             }}
             id="viewModal"
             onClick={() => setShown(true)}
@@ -5909,7 +5713,7 @@ const Preview = (props) => {
                     </label>
                   </div>
                 </div>
-                <div className="radio-container" style={{ marginLeft: (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") ? "-45px" : "25px" }}>
+                <div className="radio-container" style={{ marginLeft: (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") ? "-45px" : "25px" }}>
                   <div className="radio-items" id="signMode">
                     <label htmlFor="otpSignModeRadio">
                       <input
@@ -6354,10 +6158,32 @@ const Preview = (props) => {
                   <span id="TCParagraph">{TandC}</span>
                 </div>
               </div>
-              <div className="agree-div">
-                <button className="aggree-button" onClick={submit}>
-                  <span>I AGREE WITH ALL TERMS AND CONDITIONS &#8594; </span>
-                </button>
+              <div className="agree-div" style={{ display: "inline-flex", width: "100%" }}>
+                <div className="TNDCCHECKBOX" style={{ width: "60%", paddingTop: "1%", display: "inline-flex" }}>
+                  <div style={{ paddingRight: "1%", paddingTop: "1%" }}>
+                    <input onClick={e => {
+                      if (e.target.checked) {
+                        document.getElementById('FnlSignBTN').disabled = false;
+                        document.getElementById('FnlSignBTN').style.cursor = "pointer";
+                        document.getElementById('FnlSignBTN').style.backgroundColor = "#1DD1A1";
+                        document.getElementById('FnlSignBTN').title = "Proceed with signing"
+                      } else {
+                        document.getElementById('FnlSignBTN').disabled = true;
+                        document.getElementById('FnlSignBTN').style.cursor = "no-drop";
+                        document.getElementById('FnlSignBTN').style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                        document.getElementById('FnlSignBTN').title = "Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
+                      }
+                    }} type="checkbox"></input>
+                  </div>
+                  <div style={{ paddingTop: "3px", fontSize: "14px", fontWeight: "bold" }}
+                  >I have read and agree to the above terms and conditions.
+                  </div>
+                </div>
+                <div className="PROEDBTN" style={{ width: "40%" }}>
+                  <button id="FnlSignBTN" title="Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding." disabled={true} style={{ width: "100%", cursor: "no-drop", backgroundColor: "rgba(96, 218, 185, 0.78)" }} className="aggree-button" onClick={submit}>
+                    <span>Proceed &#8594; </span>
+                  </button>
+                </div>
               </div>
             </Modal>
 

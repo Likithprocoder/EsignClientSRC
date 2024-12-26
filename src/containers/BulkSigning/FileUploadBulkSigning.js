@@ -53,6 +53,16 @@ function UploadFileFrBulkSigning(props) {
     const [height, setHeight] = useState("");
     const [csvFileRefNo, setCsvFileRefNo] = useState("");
     const [fileRefNo, setFileRefNo] = useState("");
+    const [notifyDataModal, setNotifyDataModal] = useState(false);
+    const [signDetails, setSignDetails] = useState({
+        emailSubject: "",
+        signerComments: "Please review and sign the document",
+        docuTitle: "",
+        signBy: "",
+        startDate: ""
+    });
+    const [endDateTime, setEndDateTime] = useState("");
+    const [allowLoader, setAllowLoader] = useState(true);
 
     useEffect(() => {
         document.getElementById('create-job').disabled = true;
@@ -61,10 +71,34 @@ function UploadFileFrBulkSigning(props) {
             document.getElementById('create-job').disabled = false;
             document.getElementById('create-job').style.cursor = "pointer";
             validateIsItCSV();
+            setSEDate();
         }
-
     }, [filesAreUploaded]);
 
+    // to display the default enddate as sign by date..
+    const setSEDate = () => {
+        let d = new Date();
+        let e = new Date();
+        e.setDate(e.getDate() + 15);
+        let endDateValue = "";
+        //date format yyyy-mm-dd
+        if (e.getDate() < 10 && e.getMonth() < 10) {
+            endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-0${e.getDate()}`;
+        } else if (e.getDate() < 10 && e.getMonth() > 9) {
+            endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-0${e.getDate()}`;
+        } else if (e.getDate() > 9 && e.getMonth() < 10) {
+            endDateValue = `${e.getFullYear()}-0${e.getMonth() + 1}-${e.getDate()}`;
+        } else {
+            endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
+        }
+        setEndDateTime(endDateValue + " " + "23:59:59");
+        setSignDetails({
+            ...signDetails,
+            signBy: endDateValue,
+            startDate: `${d.getFullYear()}-${d.getMonth() + 1
+                }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`
+        });
+    }
 
     // one consent confirmAlert that is used allover.
     const confirmAlertFunction = (message) => {
@@ -78,50 +112,6 @@ function UploadFileFrBulkSigning(props) {
             ],
             closeOnClickOutside: false, // Set to false to prevent closing on click outside
         });
-    }
-
-    // to read the passed csv data and convert to json array..
-    function parseCSV(csv) {
-        const lines = csv.split('\n');
-        const headersWithSpace = lines[0].split(',');
-        const headers = [];
-        const headerAndValues = {};
-        for (let key in headersWithSpace) {
-            if ((headersWithSpace[key]).includes("\r")) {
-                headers.push(headersWithSpace[key].split("\r")[0].trim());
-            } else {
-                headers.push(headersWithSpace[key].trim());
-            }
-        }
-
-        for (let key in headers) {
-            headerAndValues[headers[key]] = [];
-        }
-
-        const data = [];
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].split(',');
-            if (line.length === headers.length) {
-                for (let j = 0; j < headers.length; j++) {
-                    let valuesArray = [];
-                    for (let keysz in headerAndValues[headers[j]]) {
-                        valuesArray.push(headerAndValues[headers[j]][keysz].trim());
-                    }
-                    if ((line[j]).includes("\r")) {
-                        valuesArray.push(line[j].split("\r")[0].trim());
-                    } else {
-                        valuesArray.push(line[j].trim());
-                    }
-                    headerAndValues[headers[j]] = valuesArray;
-                }
-            }
-        }
-
-        for (let keyzz in headerAndValues) {
-            let obj = { [keyzz]: headerAndValues[keyzz] };
-            data.push(obj);
-        }
-        return data;
     }
 
     // To validate the CSV file and prepare the data in required format..
@@ -221,9 +211,7 @@ function UploadFileFrBulkSigning(props) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
-                const validateAndUptedRsnse = validateCSVData(text);
-                console.log(validateAndUptedRsnse);
-
+                const validateAndUptedRsnse = validateCSVData(text);                
                 if (validateAndUptedRsnse !== false) {
                     setConvertedCSVData(validateAndUptedRsnse);
                     // storing csv file.
@@ -285,6 +273,7 @@ function UploadFileFrBulkSigning(props) {
     const htmlPDfFileDrop = (event) => {
         let file = event[0];
         setToBeSignedDoc(file);
+        setFileName(file.name);        
         if (file.type === "application/pdf" || file.type === "text/html") {
             let origFileName = (file.name).split('.')[0];
             let oriFileSize = file.size / 1000;
@@ -339,9 +328,9 @@ function UploadFileFrBulkSigning(props) {
 
     // to validate the CSV file uploaded, to check weather the CSV file contains only 3 columns
     // if the PDF file is uploaded.
-    const validateIsItCSV = () => {
-        if (uploadedFileName.html_pdfFile.fileType === "application/pdf") {
-            if (convertedCSVData.length > 3) {
+    const validateIsItCSV = () => {        
+        if (uploadedFileName.html_pdfFile.fileType === "application/pdf") {            
+            if (Object.keys(convertedCSVData).length > 3) {
                 setUploadedFileName({
                     ...uploadedFileName,
                     csvfile: {}
@@ -352,103 +341,134 @@ function UploadFileFrBulkSigning(props) {
         }
     }
 
+    // Modal to collect the signers notification details (Comments, Subject, etc).
+
+
+
     // final signing procced
     const proceedForSigning = () => {
-        if (uploadedFileName.html_pdfFile.fileType === "text/html") {            
-            props.history.push({
-                pathname: "/htmlPreview",
-                frompath: "/bulkSigningUpload",
-                state: {
-                    htmlFile: toBeSignedDoc,
-                    htmlKeys: htmlKeys,
-                    additionalColumValues: additionalColumValues,
-                    csvFile: toBeSignedCSV,
-                    convertedCSVData: convertedCSVData
+        setAllowLoader(false);
+        // Mandatory fields check..
+        if (signDetails.docuTitle.trim() === "" || signDetails.signBy.trim() === "") {
+            confirmAlert({
+                message: 'Please fill all the neccessary fields!',
+                buttons: [
+                    {
+                        label: "OK",
+                        className: "confirmBtn"
+                    },
+                ], closeOnClickOutside: false,
+            });
+            setAllowLoader(true);
+            return;
+        } else {
+            if (uploadedFileName.html_pdfFile.fileType === "text/html") {
+                // In a state 'signDetails', we will replace the signBy date before pushing to further pages..
+                // The primary purpose of replacing the 'signBy' date from fromat1 to format2, because server accepts
+                // format2.
+                let signDetailsLocalVarble = signDetails;
+                signDetailsLocalVarble = { ...signDetailsLocalVarble, "signBy": endDateTime };
+                setAllowLoader(true);
+                props.history.push({
+                    pathname: "/htmlPreview",
+                    frompath: "/bulkSigningUpload",
+                    state: {
+                        htmlFile: toBeSignedDoc,
+                        htmlKeys: htmlKeys,
+                        additionalColumValues: additionalColumValues,
+                        csvFile: toBeSignedCSV,
+                        convertedCSVData: convertedCSVData,
+                        signDetails: signDetailsLocalVarble
+                    }
+                });
+            }
+            else {
+                let validationData = {
+                    authToken: sessionStorage.getItem("authToken"),
+                    userIP: sessionStorage.getItem("userIP")
                 }
-            })
-        }
-        else {
-            let validationData = {
-                authToken: sessionStorage.getItem("authToken"),
-                userIP: sessionStorage.getItem("userIP")
-            }
-            let data = new FormData();
-            data.append("inputDetails", JSON.stringify(validationData));
-            data.append("csvFile", toBeSignedCSV);
-            data.append("file", toBeSignedDoc);
+                let data = new FormData();
+                data.append("inputDetails", JSON.stringify(validationData));
+                data.append("csvFile", toBeSignedCSV);
+                data.append("file", toBeSignedDoc);
 
-            const options = {
-                method: "POST",
-                headers: {
-                    enctype: "multipart/form-data"
-                },
-                body: data
-            }
-            fetch(routeURl.uploadBulkSignFile, options)
-                .then(response => (response.json()))
-                .then(data => {
-                    if (data.status === "SUCCESS") {
-                        setPDFFile(data.PDFValue);
-                        setCsvFileRefNo(data.csvFileRefNo);
-                        setFileRefNo(data.fileRefNo);
-                        confirmAlert({
-                            message: data.statusDetails,
-                            buttons: [
-                                {
-                                    label: "OK",
-                                    className: "confirmBtn",
-                                    onClick: () => {
-                                        createPDF(data.PDFValue, data.csvFileRefNo, data.fileRefNo);
+                const options = {
+                    method: "POST",
+                    headers: {
+                        enctype: "multipart/form-data"
+                    },
+                    body: data
+                }
+                fetch(routeURl.uploadBulkSignFile, options)
+                    .then(response => (response.json()))
+                    .then(data => {
+                        if (data.status === "SUCCESS") {
+                            setPDFFile(data.PDFValue);
+                            setCsvFileRefNo(data.csvFileRefNo);
+                            setFileRefNo(data.fileRefNo);
+                            confirmAlert({
+                                message: data.statusDetails,
+                                buttons: [
+                                    {
+                                        label: "OK",
+                                        className: "confirmBtn",
+                                        onClick: () => {
+                                            createPDF(data.PDFValue, data.csvFileRefNo, data.fileRefNo);
+                                        }
                                     }
-                                }
-                            ],
-                            closeOnClickOutside: false, // Set to false to prevent closing on click outside
-                        });
+                                ],
+                                closeOnClickOutside: false, // Set to false to prevent closing on click outside
+                            });
+                            setAllowLoader(true);
+                        }
+                        else if (data.statusDetails === "Session Expired!!") {
+                            confirmAlert({
+                                message: data.statusDetails,
+                                buttons: [
+                                    {
+                                        label: "OK",
+                                        className: "confirmBtn",
+                                        onClick: () => {
+                                            props.history.push("/login");
+                                        },
+                                    },
+                                ], closeOnClickOutside: false,
+                            });
+                        }
+                        else {
+                            confirmAlert({
+                                message: data.statusDetails,
+                                buttons: [
+                                    {
+                                        label: "OK",
+                                        className: "confirmBtn"
+                                    },
+                                ], closeOnClickOutside: false,
+                            });
+                            setAllowLoader(true);
+                        }
 
-                    }
-                    else if (data.statusDetails === "Session Expired!!") {
+                    })
+                    .catch(error => {
+                        console.log(error);
                         confirmAlert({
-                            message: data.statusDetails,
+                            message: `Something went wrong. please try again!`,
                             buttons: [
                                 {
                                     label: "OK",
                                     className: "confirmBtn",
-                                    onClick: () => {
-                                        props.history.push("/login");
-                                    },
                                 },
                             ], closeOnClickOutside: false,
                         });
-                    }
-                    else {
-                        confirmAlert({
-                            message: data.statusDetails,
-                            buttons: [
-                                {
-                                    label: "OK",
-                                    className: "confirmBtn"
-                                },
-                            ], closeOnClickOutside: false,
-                        });
-                    }
-
-                })
-                .catch(error => {
-                    console.log(error);
-                    confirmAlert({
-                        message: `Something went wrong. please try again!`,
-                        buttons: [
-                            {
-                                label: "OK",
-                                className: "confirmBtn",
-                            },
-                        ], closeOnClickOutside: false,
-                    });
-                })
+                        setAllowLoader(true);
+                    })
+            }
         }
+
     }
 
     const createPDF = async (pdfValue, csvFileRefNo1, fileRefNo1) => {
+        setAllowLoader(false);
         const base64String = pdfValue;
         // convert base64 string to original binary data..
         let data = atob(base64String);
@@ -510,6 +530,7 @@ function UploadFileFrBulkSigning(props) {
                 }
             }
         } catch (error) {
+            setAllowLoader(true);
             console.error("Error fetching PDF dimensions:", error);
         }
 
@@ -520,6 +541,11 @@ function UploadFileFrBulkSigning(props) {
         setFiles1(file);
         setFileUrl(file.preview);
 
+        // In a state 'signDetails', we will replace the signBy date before pushing to further pages..
+        // The primary purpose of replacing the 'signBy' date from fromat1 to format2, because server accepts
+        // format2.
+        let signDetailsLocalVarble = signDetails;
+        signDetailsLocalVarble = { ...signDetailsLocalVarble, "signBy": endDateTime };
         let filedata = {
             files: file,
             height: height1,
@@ -528,11 +554,11 @@ function UploadFileFrBulkSigning(props) {
             fileRefNo: fileRefNo1,
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
-        };
+            signDetails: signDetailsLocalVarble
+        };        
         props.history.push({
             pathname: "/preview",
-            // pathname: "/multiPplSignPreview",
-            frompath: "/htmlPreview",
+            frompath: "/bulkSigningUpload",
             state: {
                 details: filedata,
             },
@@ -542,7 +568,7 @@ function UploadFileFrBulkSigning(props) {
     return (
         <>
             <Loader
-                loaded={true}
+                loaded={allowLoader}
                 lines={13}
                 radius={20}
                 corners={1}
@@ -618,9 +644,9 @@ function UploadFileFrBulkSigning(props) {
                 <button
                     className="upload-button container"
                     id="create-job"
-                    onClick={e => proceedForSigning(e)}
+                    onClick={e => setNotifyDataModal(true)}
                 >
-                    <span>Send for signing &#8594;</span>
+                    <span>Proceed &#8594;</span>
                 </button>
             </div>
             <div style={{ textAlign: "center" }}>
@@ -647,6 +673,89 @@ function UploadFileFrBulkSigning(props) {
                     URL.revokeObjectURL(url);
                 }} href=" ">Download the sample CSV file!</button>
             </div>
+            {
+                notifyDataModal && (
+                    <div className="custom-modal">
+                        <div className="CustomModal-content">
+                            <span className="close" onClick={e => setNotifyDataModal(false)}>&times;</span>
+                            <div>
+                                <div className="DetailsHeading">
+                                    <span>Please provide the details below</span>
+                                </div>
+                                <div style={{ width: "100%", border: "1px solid deepskyblue", padding: "2%", borderRadius: "3%", marginBottom: "1%" }}>
+                                    <div style={{ display: "inline-flex", width: "100%", marginBottom: "2%" }}>
+                                        <div style={{ width: "25%", paddingTop: "1%" }}>
+                                            <span> Sign by<span id="mandatoryRed">*</span>: </span>
+                                        </div>
+                                        <div style={{ width: "75%" }}>
+                                            <input defaultValue={signDetails.signBy} onChange={e => {
+                                                setSignDetails({
+                                                    ...signDetails,
+                                                    signBy: e.target.value.trim()
+                                                })
+                                            }} className="inputCss" type="date" />
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "inline-flex", width: "100%", marginBottom: "2%" }}>
+                                        <div style={{ width: "25%", paddingTop: "1%" }}>
+                                            <span>  Document title<span id="mandatoryRed">*</span>: </span>
+                                        </div>
+                                        <div style={{ width: "75%" }}>
+                                            <input className="inputCss" onChange={e => {
+                                                setSignDetails({
+                                                    ...signDetails,
+                                                    docuTitle: e.target.value.trim()
+                                                })
+                                            }}
+                                                placeholder="Enter the title" type="text" />
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "inline-flex", width: "100%" }}>
+                                        <div style={{ width: "25%", paddingTop: "1%" }}>
+                                            Email subject
+                                        </div>
+                                        <div style={{ width: "75%" }}>
+                                            <textarea 
+                                            maxLength={100}
+                                                onChange={e => {
+                                                    setSignDetails({
+                                                        ...signDetails,
+                                                        emailSubject: e.target.value.trim()
+                                                    })
+                                                }}
+                                                className="inputCss" style={{ height: "70px" }} placeholder="Enter the email subject" />
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: "end", fontSize: "10px" }}><span>(Max of 100 characters)</span> </div>
+                                    <div style={{ display: "inline-flex", width: "100%" }}>
+                                        <div style={{ width: "25%", paddingTop: "1%" }}>
+                                            Owner comments
+                                        </div>
+                                        <div style={{ width: "75%" }}>
+                                            <textarea maxLength={255} defaultValue={signDetails.signerComments} onChange={e => {
+                                                setSignDetails({
+                                                    ...signDetails,
+                                                    signerComments: e.target.value.trim()
+                                                })
+                                            }} className="inputCss" style={{ height: "90px" }} placeholder="Document comments please" />
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: "end", fontSize: "10px" }}><span>(Max of 255 characters)</span> </div>
+
+                                </div>
+                                <div>
+                                    <button
+                                        className="upload-button container"
+                                        onClick={e => proceedForSigning(e)}
+                                    >
+                                        <span>Send for signing &#8594;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
         </>
     )
 }

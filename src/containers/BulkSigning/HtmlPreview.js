@@ -805,6 +805,7 @@ function HtmlPreview(props) {
     }
 
     const createPDF = async (pdfValue, csvFileRefNo1, fileRefNo1) => {
+        setLoader(false);
         const base64String = pdfValue;
         // convert base64 string to original binary data..
         let data = atob(base64String);
@@ -867,6 +868,7 @@ function HtmlPreview(props) {
             }
         } catch (error) {
             console.error("Error fetching PDF dimensions:", error);
+            setLoader(true);
         }
 
         file.preview = window.URL.createObjectURL(new File([blob], `${fileName.split(".")[0]}.pdf`, {
@@ -884,6 +886,7 @@ function HtmlPreview(props) {
             fileRefNo: fileRefNo1,
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
+            signDetails:  props.location.state.signDetails
         };
         props.history.push({
             // pathname: "/multiPplSignPreview",
@@ -979,7 +982,7 @@ function HtmlPreview(props) {
             {
                 allowmodal && (
                     <div className="custom-modal">
-                        <div className="CustomModal-content ">
+                        <div className="CustomModal-content">
                             <span className="close" onClick={closeTheModal}>&times;</span>
                             {
                                 editableField()

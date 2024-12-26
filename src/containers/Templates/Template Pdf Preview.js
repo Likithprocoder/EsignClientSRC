@@ -401,9 +401,7 @@ class DisplayPdf1 extends Component {
           <input type="file" name="file" id="fileInput" />
           <input type="hidden" name="signingDetails" id="signingDetails" value={`{"refNo": "${this.state.encodeBatchNdSequence}"}`} />
         </form>
-        {/* <div style={{ display: "flex", flexDirection: "column",}}> */}
-        <div className="proceedback">
-          {/* <div> */}
+        <div className="proceedback" style={{marginBottom: (!this.props.location.state.flag) ? "0px" : "7px"}}>
           <button
             style={{ marginRight: "10px" }}
             type="button"
@@ -412,9 +410,6 @@ class DisplayPdf1 extends Component {
           >
             Edit Form Details
           </button>
-          {/* </div> */}
-
-          {/* <div className="proceedCssv"> */}
           <button
             type="button"
             onClick={(e) => this.onDrop()}
@@ -424,12 +419,12 @@ class DisplayPdf1 extends Component {
           </button>
         </div>
 
-        <div className="parent-div" id="parent-div">
+        <div style={{backgroundColor:"#F5F4D0"}} className="parent-div" id="parent-div">
           <div
             className="rpv-core__viewer"
             style={{
               display: 'flex',
-              height: '100%',
+              height: '100%'
             }}
           >
             <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.10.377/build/pdf.worker.min.js">

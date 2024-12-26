@@ -246,7 +246,6 @@ export default class BulkSigningSummary extends React.Component {
           //   textAlign: "center",
         },
         render: (rowData) => {
-          console.log(rowData);
           if (rowData.pendingCount == 0) {
             return (
               <i

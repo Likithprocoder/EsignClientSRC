@@ -55,6 +55,7 @@
     height: -webkit-fit-content;
     height: -moz-fit-content;
     height: fit-content;
+    background-color: #F5F4D0;
   }
   .contentCss {
     width: 100%;
@@ -92,8 +93,8 @@
     padding: 2px;
     width: 100%;
     height: fit-content;
-    margin-bottom: 10px;
     border-radius: 5px;
+    background-color: #F5F4D0;
   }
 
   .saveDraftCss {
@@ -196,6 +197,7 @@
     width: 100%;
     height: fit-content;
     display: flex;
+    background-color: #F5F4D0;
   }
 
   .contentCss {
@@ -242,9 +244,9 @@
     padding: 2px;
     width: 100%;
     height: fit-content;
-    margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
+    background-color: #F5F4D0;
   }
 
   .saveDraftCss {
@@ -598,10 +600,9 @@
 
 
 .proceedback {
-  margin-bottom: 7px;
   display: flex;
-  /* text-align: left; */
   padding-left: 59%;
+  background-color: #F5F4D0;
 }
 
 .primarybutton {
