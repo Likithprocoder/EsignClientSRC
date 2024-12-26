@@ -11,8 +11,8 @@ const HOST = "http://localhost:8090/MYSIGN/";
 var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
-// const HOST = "http://10.10.40.43:8090/MYSIGN/";
-// var paymenturl = "http://10.10.40.43:8095/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "http://10.10.40.57:8090/MYSIGN/";
+// var paymenturl = "http://10.10.40.57:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
   "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";

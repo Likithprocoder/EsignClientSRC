@@ -68,7 +68,7 @@ export default class Download extends React.Component {
 
     // + "&unRegemailId=" + unRegemailId + "&referalName" + referalName + "&unRegmobileNo" + unRegmobileNo
 
-    let fileName = parsed.filename;    
+    let fileName = parsed.filename;
     if (parsed.unRegemailId !== "") {
       this.setState({
         referalName: parsed.referalName,
@@ -682,7 +682,7 @@ export default class Download extends React.Component {
   }
 
   registerUser = () => {
-      
+
     let windowFeatures = "popup";
 
     // Data to send
@@ -711,11 +711,12 @@ export default class Download extends React.Component {
         >
           <p>
             <a title="register" href="" onClick={this.registerUser}>
-              Click here
-            </a>{" "}
-            <span className="blink">
+              <span className="blink">
+                Click here
                 to signup for DocuExec account.
               </span>
+            </a>{" "}
+
           </p>
         </div>
         <div class="" id="discardOptionsdiv" style={{ display: "none" }}>

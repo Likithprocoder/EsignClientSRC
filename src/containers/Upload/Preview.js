@@ -303,7 +303,11 @@ const Preview = (props) => {
           setExternalSignCurrentPageNum(parseInt(signPage));
         }
 
-        document.getElementById("declineButton").style.display = "";
+        if (sessionStorage.getItem("declineSigning") == "false") {
+          document.getElementById("declineButton").style.display = "none";
+        } else {
+          document.getElementById("declineButton").style.display = "";
+        }
 
         document.getElementById("documntsender0").style.display = "";
         document.getElementById("documntsender").style.display = "";
@@ -3296,6 +3300,7 @@ const Preview = (props) => {
           fileRefNo: fileRefNo,
           csvFileRefNo: csvFileRefNo,
           signingDetails: {
+            declineSign: false,
             customDocName: customDocName,
             endDate: endDateTime,
             signersInfo: [{
@@ -3566,7 +3571,6 @@ const Preview = (props) => {
             // props.history.push('/')
           });
       }
-      console.log({ obj });
     } else {
       confirmAlert({
         message: "Sorry, your browser does'nt support for preview",
@@ -6161,26 +6165,33 @@ const Preview = (props) => {
               <div className="agree-div" style={{ display: "inline-flex", width: "100%" }}>
                 <div className="TNDCCHECKBOX" style={{ width: "60%", paddingTop: "1%", display: "inline-flex" }}>
                   <div style={{ paddingRight: "1%", paddingTop: "1%" }}>
-                    <input onClick={e => {
-                      if (e.target.checked) {
-                        document.getElementById('FnlSignBTN').disabled = false;
-                        document.getElementById('FnlSignBTN').style.cursor = "pointer";
-                        document.getElementById('FnlSignBTN').style.backgroundColor = "#1DD1A1";
-                        document.getElementById('FnlSignBTN').title = "Proceed with signing"
-                      } else {
-                        document.getElementById('FnlSignBTN').disabled = true;
-                        document.getElementById('FnlSignBTN').style.cursor = "no-drop";
-                        document.getElementById('FnlSignBTN').style.backgroundColor = "rgba(96, 218, 185, 0.78)";
-                        document.getElementById('FnlSignBTN').title = "Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
-                      }
-                    }} type="checkbox"></input>
-                  </div>
-                  <div style={{ paddingTop: "3px", fontSize: "14px", fontWeight: "bold" }}
-                  >I have read and agree to the above terms and conditions.
+                    <label htmlFor="TandCID">
+                      <input onClick={e => {
+                        if (e.target.checked) {
+                          document.getElementById('FnlSignBTN').style.cursor = "pointer";
+                          document.getElementById('FnlSignBTN').style.backgroundColor = "#1DD1A1";
+                          document.getElementById('FnlSignBTN').title = "Proceed with signing"
+                        } else {
+                          document.getElementById('FnlSignBTN').style.cursor = "no-drop";
+                          document.getElementById('FnlSignBTN').style.backgroundColor = "rgba(96, 218, 185, 0.78)";
+                          document.getElementById('FnlSignBTN').title = "Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
+                        }
+                      }} type="checkbox" id="TandCID"></input>
+                      <span className="label">I have read and agree to the above terms and conditions.</span>
+                    </label>
                   </div>
                 </div>
                 <div className="PROEDBTN" style={{ width: "40%" }}>
-                  <button id="FnlSignBTN" title="Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding." disabled={true} style={{ width: "100%", cursor: "no-drop", backgroundColor: "rgba(96, 218, 185, 0.78)" }} className="aggree-button" onClick={submit}>
+                  <button id="FnlSignBTN" title="Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
+                    style={{ width: "100%", cursor: "no-drop", backgroundColor: "rgba(96, 218, 185, 0.78)" }}
+                    className="aggree-button" onClick={e => {
+                      if (document.getElementById('TandCID').checked) {
+                        submit();
+                      } else {
+                        alert('Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding.');
+                      }
+
+                    }}>
                     <span>Proceed &#8594; </span>
                   </button>
                 </div>

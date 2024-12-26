@@ -679,7 +679,7 @@ export default class TokenSignDownload extends React.Component {
     const registerURL = `${URL.registerUser}?mobileNo=${btoa(mobileNo)}&email=${btoa(email)}&referalName=${btoa(referalName)}&docId=${btoa(unregisteredDocId)}`;
     // Open the new window with the modified URL
     var win = window.open(registerURL, windowFeatures);
-    this.props.history.push('/login');
+    // this.props.history.push('/login');
   };
 
 
@@ -698,11 +698,12 @@ export default class TokenSignDownload extends React.Component {
           >
             <p>
               <a title="register" href="" onClick={this.registerUser}>
-                Click here
+                <span className="blink">
+                  Click here
+                  to signup for DocuExec account.
+                </span>
               </a>{" "}
-              <span className="blink">
-                to signup for DocuExec account.
-              </span>
+
             </p>
 
 

@@ -55,7 +55,7 @@ function UploadFileFrBulkSigning(props) {
     const [fileRefNo, setFileRefNo] = useState("");
     const [notifyDataModal, setNotifyDataModal] = useState(false);
     const [signDetails, setSignDetails] = useState({
-        emailSubject: "",
+        emailSubject: "DocuExec: Notification for Digital Signing",
         signerComments: "Please review and sign the document",
         docuTitle: "",
         signBy: "",
@@ -211,7 +211,7 @@ function UploadFileFrBulkSigning(props) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
-                const validateAndUptedRsnse = validateCSVData(text);                
+                const validateAndUptedRsnse = validateCSVData(text);
                 if (validateAndUptedRsnse !== false) {
                     setConvertedCSVData(validateAndUptedRsnse);
                     // storing csv file.
@@ -273,7 +273,7 @@ function UploadFileFrBulkSigning(props) {
     const htmlPDfFileDrop = (event) => {
         let file = event[0];
         setToBeSignedDoc(file);
-        setFileName(file.name);        
+        setFileName(file.name);
         if (file.type === "application/pdf" || file.type === "text/html") {
             let origFileName = (file.name).split('.')[0];
             let oriFileSize = file.size / 1000;
@@ -328,8 +328,8 @@ function UploadFileFrBulkSigning(props) {
 
     // to validate the CSV file uploaded, to check weather the CSV file contains only 3 columns
     // if the PDF file is uploaded.
-    const validateIsItCSV = () => {        
-        if (uploadedFileName.html_pdfFile.fileType === "application/pdf") {            
+    const validateIsItCSV = () => {
+        if (uploadedFileName.html_pdfFile.fileType === "application/pdf") {
             if (Object.keys(convertedCSVData).length > 3) {
                 setUploadedFileName({
                     ...uploadedFileName,
@@ -555,7 +555,7 @@ function UploadFileFrBulkSigning(props) {
             pageDimensions: localPages,
             equalPageDimensions: equalPageDimensions1,
             signDetails: signDetailsLocalVarble
-        };        
+        };
         props.history.push({
             pathname: "/preview",
             frompath: "/bulkSigningUpload",
@@ -676,11 +676,11 @@ function UploadFileFrBulkSigning(props) {
             {
                 notifyDataModal && (
                     <div className="custom-modal">
-                        <div className="CustomModal-content">
+                        <div className="CustomModal-contentBLKSIGN">
                             <span className="close" onClick={e => setNotifyDataModal(false)}>&times;</span>
                             <div>
                                 <div className="DetailsHeading">
-                                    <span>Please provide the details below</span>
+                                    <span>Please provide the signing details for email notification</span>
                                 </div>
                                 <div style={{ width: "100%", border: "1px solid deepskyblue", padding: "2%", borderRadius: "3%", marginBottom: "1%" }}>
                                     <div style={{ display: "inline-flex", width: "100%", marginBottom: "2%" }}>
@@ -701,7 +701,7 @@ function UploadFileFrBulkSigning(props) {
                                             <span>  Document title<span id="mandatoryRed">*</span>: </span>
                                         </div>
                                         <div style={{ width: "75%" }}>
-                                            <input className="inputCss" onChange={e => {
+                                            <input maxLength={30} className="inputCss" onChange={e => {
                                                 setSignDetails({
                                                     ...signDetails,
                                                     docuTitle: e.target.value.trim()
@@ -715,8 +715,9 @@ function UploadFileFrBulkSigning(props) {
                                             Email subject
                                         </div>
                                         <div style={{ width: "75%" }}>
-                                            <textarea 
-                                            maxLength={100}
+                                            <textarea
+                                                defaultValue={signDetails.emailSubject}
+                                                maxLength={100}
                                                 onChange={e => {
                                                     setSignDetails({
                                                         ...signDetails,

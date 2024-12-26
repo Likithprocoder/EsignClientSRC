@@ -286,6 +286,12 @@ export default class MultiPplSignMobilePage extends React.Component {
               JSON.stringify(responseJson.signerListDetails)
               // responseJson.signerListDetails
             );
+            // Parse the additionalData JSON string
+            if (responseJson?.additionalData) {
+              const additionalData = JSON?.parse(responseJson?.additionalData);
+              sessionStorage.setItem('declineSigning', additionalData.declineSigning);
+            }
+
             //   this.createFile(responseJson.fileName);
             //changed for encryption
             this.createFile(responseJson.docId);
@@ -667,7 +673,7 @@ export default class MultiPplSignMobilePage extends React.Component {
               <Modal
                 className="modal-container"
                 open={this.state.openOTPModalBS}
-                onClose={this.onCloseOTPModal}
+                // onClose={this.onCloseOTPModal}
                 center={true}
                 closeOnOverlayClick={false}
               >
@@ -688,7 +694,7 @@ export default class MultiPplSignMobilePage extends React.Component {
                           id="entermobileotp"
                           style={{ marginTop: "0.3rem" }}
                         >
-                         OTP:  &nbsp;&nbsp;&nbsp;
+                          OTP:  &nbsp;&nbsp;&nbsp;
                         </label>
                         <Input
                           type="text"
@@ -948,9 +954,7 @@ export default class MultiPplSignMobilePage extends React.Component {
             </div>
           </div>
         </div>
-        {console.log(this.state.accesskey)}
         <form ref={this.formRef} style={{ display: "none" }} id="BKDocSigning" name="BKDocSigning" method="POST" action={URL.inAPPAPI}>
-        {console.log(this.state.accesskey)}
           <input type="hidden" name="signingDetails" id="signingDetails" value={`{ "refNo": "${this.state.accesskey}"}`} />
         </form>
       </div>
