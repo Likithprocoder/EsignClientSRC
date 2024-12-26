@@ -160,7 +160,8 @@ let URL = {
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
   getApplicationKeys: HOST + "getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
-  registerUser:"/register"
+  registerUser:"/register",
+  exportSignerStatusReport:HOST + "exportSignerStatusReport",
 };
 
 module.exports = { URL };

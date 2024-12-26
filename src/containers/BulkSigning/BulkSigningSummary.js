@@ -12,7 +12,12 @@ import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import { Row } from "reactstrap";
 import AccessAlarm from "@material-ui/icons/AccessAlarm";
 import { Delete, MoreVert, MoreHoriz, BorderColor } from "@material-ui/icons";
+import IconButton from "@material-ui/core/IconButton";
+import GetApp from "@material-ui/icons/GetApp";
+
 var Loader = require("react-loader");
+
+
 
 export default class BulkSigningSummary extends React.Component {
   constructor(props) {
@@ -227,6 +232,43 @@ export default class BulkSigningSummary extends React.Component {
       showSubListTable: !prevState.showSubListTable
     }));
   }
+
+//fetch call to export signer status report
+  //  exportToCSV = (e) => {
+  //   e.preventDefault()
+  //   const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
+  //   window.location.href = url;
+    
+  // };
+  exportToCSV = async (e) => {
+    e.preventDefault();
+    const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
+
+    try {
+      // Show a loading indicator
+      this.setState({ loaded: false });
+
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+
+
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `SignerStatusReport_${this.state.batchNo}.csv`;
+      link.click();
+
+      // Hide the loading indicator
+      this.setState({ loaded: true });
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+
+      // Hide the loading indicator and show error
+      this.setState({ loaded: true });
+    }
+  };
+
 
   render() {
     const { bulkSigningInfo, bulkSigningSummary } = this.state;
@@ -738,17 +780,33 @@ export default class BulkSigningSummary extends React.Component {
           components={{
             //---------Overriding the Toolbar Component and customised-----------
             Toolbar: (props) => (
+            
               <div
                 style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   backgroundColor: "#e8eaf5",
-                  height: "35px",
-                  fontSize: "6px",
+                  padding: "8px 16px",
+                  height: "65px"
                 }}
               >
+                {/* Original Toolbar (search box, etc.) */}
                 <MTableToolbar {...props} />
+
+                {/* Export Button */}
+                <IconButton
+                  onClick={(e) => this.exportToCSV(e)}
+                  style={{ color: "black" }}
+                  title="Export"
+                >
+                  <GetApp />
+                </IconButton>
               </div>
+
             ),
-          }}
+          }
+          }
         ></MaterialTable>}
       </div>
     );
