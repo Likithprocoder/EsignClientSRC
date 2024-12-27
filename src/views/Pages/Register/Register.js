@@ -87,13 +87,13 @@ class Register extends Component {
       errorJson: {},
       publicKey: "",
       privateKey: "",
-
       secretKey: "",
       referenceNo: "",
       mobileNo: "",
       email: "",
       unregisteredDocId: "",
       referalName: "",
+      unregisteredMessage: "Complete the registeration to link the signed document to your account for future use.",
     };
   }
 
@@ -248,6 +248,7 @@ class Register extends Component {
 
     //in case the assigned signer is not a registered user then we need to fetch the parameters
     if (pathURL.includes("?mobileNo")) {
+      document.getElementById("unregisteredMessage").style.display = "";
       const queryParams = new URLSearchParams(window.location.search);
       const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
       const email = queryParams.has("email") ? queryParams.get("email") : undefined;
@@ -573,7 +574,7 @@ class Register extends Component {
                             // Conditionally add `unregisteredDocId` if it has a value
                             if (this.state.unregisteredDocId) {
                               json.docId = this.state.unregisteredDocId;
-                              }
+                            }
 
                             // Conditionally add `referalName` if it has a value
                             if (this.state.referalName) {
@@ -1752,6 +1753,17 @@ class Register extends Component {
         />
 
         <Container>
+          <div id="unregisteredMessage" style={{ display: "none" }}>
+            <span className="blink"
+
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+              {this.state.unregisteredMessage}
+            </span>
+          </div>
           <div className="isign-logo">
             <img style={{ height: "100%" }} src={mySignLogo}></img>
           </div>

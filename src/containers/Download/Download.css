@@ -79,7 +79,7 @@
 
 .blink {
     animation: blinker 1s linear infinite;
-    color: green;
+    color: darkblue;
     font-family: sans-serif;
   }
   

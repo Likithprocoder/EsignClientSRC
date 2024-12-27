@@ -6177,7 +6177,7 @@ const Preview = (props) => {
                           document.getElementById('FnlSignBTN').title = "Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
                         }
                       }} type="checkbox" id="TandCID"></input>
-                      <span className="label">I have read and agree to the above terms and conditions.</span>
+                      <span style={{fontSize:"15px"}} className="label">I have read and agree to the above terms and conditions.</span>
                     </label>
                   </div>
                 </div>

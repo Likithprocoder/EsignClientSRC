@@ -233,12 +233,12 @@ export default class BulkSigningSummary extends React.Component {
     }));
   }
 
-//fetch call to export signer status report
+  //fetch call to export signer status report
   //  exportToCSV = (e) => {
   //   e.preventDefault()
   //   const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
   //   window.location.href = url;
-    
+
   // };
   exportToCSV = async (e) => {
     e.preventDefault();
@@ -745,42 +745,42 @@ export default class BulkSigningSummary extends React.Component {
             pageSizeOptions: [10, 15, 20],
           }}
           actions={[
-            (rowData) => {              
-                // console.log(rowData);
-                if (rowData.status === 0) {                  
-                  return {
-                      icon: () => <AccessAlarm style={{ color: "#ffc107" }} />,
-                      id: "accessAlarmIcon",
-                      tooltip: "Send Reminder",
-                      onClick: (event, rowData) => this.sendReminder(rowData),
-                      isFreeAction: false,
-                      hidden: true,
-                  };
-              } else if (rowData.status === 1) {                
-                  return {
-                      icon: () => <ArrowDownward />,
-                      tooltip: "Download",
-                      onClick: (event, rowData) => this.fileDownload(rowData),
-                      isFreeAction: false,
-                      hidden: false,
-                  };
+            (rowData) => {
+              // console.log(rowData);
+              if (rowData.status === 0) {
+                return {
+                  icon: () => <AccessAlarm style={{ color: "#ffc107" }} />,
+                  id: "accessAlarmIcon",
+                  tooltip: "Send Reminder",
+                  onClick: (event, rowData) => this.sendReminder(rowData),
+                  isFreeAction: false,
+                  hidden: true,
+                };
+              } else if (rowData.status === 1) {
+                return {
+                  icon: () => <ArrowDownward />,
+                  tooltip: "Download",
+                  onClick: (event, rowData) => this.fileDownload(rowData),
+                  isFreeAction: false,
+                  hidden: false,
+                };
               } else if (rowData.status === -1) {
-                  return {
-                      // Define your action for status -1 here
-                      // Example:
-                      icon: () => "",
-                      tooltip: "",
-                      // onClick: (event, rowData) => this.cancelAction(rowData),
-                      isFreeAction: false,
-                      hidden: true,
-                  };
+                return {
+                  // Define your action for status -1 here
+                  // Example:
+                  icon: () => "",
+                  tooltip: "",
+                  // onClick: (event, rowData) => this.cancelAction(rowData),
+                  isFreeAction: false,
+                  hidden: true,
+                };
               }
             }
           ]}
           components={{
             //---------Overriding the Toolbar Component and customised-----------
             Toolbar: (props) => (
-            
+
               <div
                 style={{
                   display: "flex",
@@ -793,15 +793,7 @@ export default class BulkSigningSummary extends React.Component {
               >
                 {/* Original Toolbar (search box, etc.) */}
                 <MTableToolbar {...props} />
-
-                {/* Export Button */}
-                <IconButton
-                  onClick={(e) => this.exportToCSV(e)}
-                  style={{ color: "black" }}
-                  title="Export"
-                >
-                  <GetApp />
-                </IconButton>
+                <Button title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
               </div>
 
             ),
