@@ -542,7 +542,20 @@ export default class MultiPplSignMobilePage extends React.Component {
             sessionStorage.clear();
             this.setState({ loaded: true, openOTPModal: false });
             this.props.history.push("/login");
-          } else {
+          } else if (responseJson.statusDetails === "Please Ignore this signing request, as the document is currently undergoing revision. We will notify you once the revisions are complete.") {
+            this.setState({ loaded: true, openOTPModalBS: false });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push("/"); },
+                },
+              ], closeOnClickOutside: false
+            });             
+          }
+          else {
             this.setState({ loaded: true, openOTPModal: false });
             confirmAlert({
               message: responseJson.statusDetails,
@@ -552,7 +565,7 @@ export default class MultiPplSignMobilePage extends React.Component {
                   className: "confirmBtn",
                   onClick: () => { },
                 },
-              ],
+              ], closeOnClickOutside: false
             });
             // alert(responseJson.statusDetails);
             this.props.history.push("/login");
@@ -563,8 +576,8 @@ export default class MultiPplSignMobilePage extends React.Component {
         this.setState({ loaded: true });
         alert(e);
       });
-    //  }
   };
+  
   setInput = (e) => {
     let regNum = new RegExp(/^[0-9]*$/);
 

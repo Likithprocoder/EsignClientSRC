@@ -105,10 +105,10 @@
 
 .CustomModal-contentBLKSIGN {
     background-color: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 16px;
     max-width: 60%;
-    max-height: 80%;
+    max-height: 85%;
     overflow: auto;
     position: relative;
     width: 60%;
@@ -138,5 +138,4 @@
 
 .DetailsHeading{
     font-size: 16px;
-    font-weight: bold;
 }

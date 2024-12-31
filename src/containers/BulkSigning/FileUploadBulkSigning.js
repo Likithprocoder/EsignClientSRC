@@ -55,14 +55,17 @@ function UploadFileFrBulkSigning(props) {
     const [fileRefNo, setFileRefNo] = useState("");
     const [notifyDataModal, setNotifyDataModal] = useState(false);
     const [signDetails, setSignDetails] = useState({
-        emailSubject: "DocuExec: Notification for Digital Signing",
+        emailSubject: "Notification for Digital Signing",
         signerComments: "Please review and sign the document",
         docuTitle: "",
         signBy: "",
         startDate: ""
     });
     const [endDateTime, setEndDateTime] = useState("");
+
     const [allowLoader, setAllowLoader] = useState(true);
+
+    const [signersCount, setSignersCount] = useState(0);
 
     useEffect(() => {
         document.getElementById('create-job').disabled = true;
@@ -166,6 +169,7 @@ function UploadFileFrBulkSigning(props) {
                                     confirmAlertFunction(`The uploaded CSV file contains empty data.`);
                                     return false;
                                 } else {
+                                    setSignersCount(signersCount + 1);
                                     if (columnHeadrIndx === 1) {
                                         let result = UserDetailValidation(data.trim(), "Mobile Number");
                                         if (!result || result === "isNotANumber") {
@@ -744,6 +748,7 @@ function UploadFileFrBulkSigning(props) {
                                     <div style={{ textAlign: "end", fontSize: "10px" }}><span>(Max of 255 characters)</span> </div>
 
                                 </div>
+                                <div style={{ marginBottom: "4px" }}>Note: Total signers count is {<b style={{ fontWeight: "bold" }}>{signersCount}</b>}</div>
                                 <div>
                                     <button
                                         className="upload-button container"
