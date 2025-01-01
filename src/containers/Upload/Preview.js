@@ -241,7 +241,7 @@ const Preview = (props) => {
 
   useEffect(() => {
     var data = props?.location?.state?.details;
-
+    // setSigneruserId(props?.location?.state?.details?.userId);
     setTimeleft(30);//For OTP signing 
     toggleDiv();
 
@@ -329,7 +329,9 @@ const Preview = (props) => {
         document.getElementById("otpsigningtext").style.display = "none";
         document.getElementById("selftokentext").style.display = "";
         document.getElementById("balanceContainer").style.display = "none";
-        if (signeruserId === "0") {
+   
+
+        if (data.userId === "0") {
           if (data.signMode === "3") {
             document.getElementById("generateaccesscodeBtn").style.display = "";
             document.getElementById("accesscodemsg1").style.display = "";
@@ -1078,6 +1080,8 @@ const Preview = (props) => {
       setUsername(props?.location?.state?.details?.username);
       setSigneremail(props?.location?.state?.details?.email);
       setSigneruserId(props?.location?.state?.details?.userId);
+
+      console.log(props?.location?.state?.details?.userId)
       setSignerMobileNumber(props?.location?.state?.details?.mobileNo);
       setOwnerloginName(props?.location?.state?.details?.ownerloginName);
       setCustomDocName(props?.location?.state?.details?.customDocName || sessionStorage.getItem("customDocName"));
@@ -4400,7 +4404,6 @@ const Preview = (props) => {
       username: username,
       email: signeremail,
       // userId: signeruserId,
-      email: signeremail,
       docrefNo: docrefNo,
     };
     fetch(URL.unlockdscdocument, {
@@ -4437,8 +4440,7 @@ const Preview = (props) => {
       signMode: selectedMode,
       username: username,
       email: signeremail,
-      // userId: signeruserId,
-      email: signeremail,
+      userId: signeruserId,
       mobileNo: signerMobileNumber,
     };
     fetch(URL.generatedscaccesscode, {
@@ -6177,7 +6179,7 @@ const Preview = (props) => {
                           document.getElementById('FnlSignBTN').title = "Please tick the checkbox to confirm that you have read and agreed to the terms and conditions before proceeding."
                         }
                       }} type="checkbox" id="TandCID"></input>
-                      <span style={{fontSize:"15px"}} className="label">I have read and agree to the above terms and conditions.</span>
+                      <span style={{ fontSize: "15px" }} className="label">I have read and agree to the above terms and conditions.</span>
                     </label>
                   </div>
                 </div>
