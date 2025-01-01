@@ -101,7 +101,7 @@ class EditProfile extends Component {
   }
 
   setInput = (e) => {
-    let regName = new RegExp(/^[A-Za-z0-9_ ]*$/);
+    let regName = new RegExp(/^[A-Za-z_ ]*$/);
     let regPassword = new RegExp(/^[A-Za-z0-9!.@#\$%\^&_ ]*$/);
     let regNum = new RegExp(/^[0-9]*$/);
     let value = e.target.value;
