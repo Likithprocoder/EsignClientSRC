@@ -162,14 +162,14 @@ function UploadFileFrBulkSigning(props) {
                         if (!(eachRowData.length === numberOfColumns)) {
                             confirmAlertFunction('Uploaded CSV file contains invalid data. Please check and retry again!');
                             return false;
-                        } else {
+                        } else {                            
+                            setSignersCount(prevCount => prevCount + 1); // Increment count by 1
                             for (let columnHeadrIndx = 0; columnHeadrIndx < headers.length; columnHeadrIndx++) {
                                 let data = eachRowData[columnHeadrIndx];
                                 if (data.trim() === '') {
                                     confirmAlertFunction(`The uploaded CSV file contains empty data.`);
                                     return false;
                                 } else {
-                                    setSignersCount(signersCount + 1);
                                     if (columnHeadrIndx === 1) {
                                         let result = UserDetailValidation(data.trim(), "Mobile Number");
                                         if (!result || result === "isNotANumber") {
