@@ -162,7 +162,7 @@ function UploadFileFrBulkSigning(props) {
                         if (!(eachRowData.length === numberOfColumns)) {
                             confirmAlertFunction('Uploaded CSV file contains invalid data. Please check and retry again!');
                             return false;
-                        } else {                            
+                        } else {
                             setSignersCount(prevCount => prevCount + 1); // Increment count by 1
                             for (let columnHeadrIndx = 0; columnHeadrIndx < headers.length; columnHeadrIndx++) {
                                 let data = eachRowData[columnHeadrIndx];
@@ -206,6 +206,7 @@ function UploadFileFrBulkSigning(props) {
 
     // to collect the csv file droped.
     const CsvFileDrop = (event) => {
+        setSignersCount(0);
         let file = event[0];
         if (file.type === "text/csv") {
             let origFileName = (file.name).split('.')[0];

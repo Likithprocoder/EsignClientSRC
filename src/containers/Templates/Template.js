@@ -210,6 +210,8 @@ function NewTemplate(props) {
 
     const [cropedSize, setCropedSize] = useState(null);
 
+    const [noEditableFields, setNoEditableFields] = useState(true);
+
     // holds the name of the blockName on which we currently we work.
     const [intFld, setIntFld] = useState({
         intFldKey: "",
@@ -542,6 +544,7 @@ function NewTemplate(props) {
                         setFromPath(props.location.pathname);
                         setTemplateForRendering(props.location.state.templateAttachments);
                         setToPathName(props.location.state.toPathName);
+                        setNoEditableFields(props.location.state.noEditableFields)
                         setAllowLoader(true);
                         setRenderFromOtherPage(true);
                     }
@@ -1026,6 +1029,10 @@ function NewTemplate(props) {
                         ...oldvalue,
                         [input1]: pst
                     }));
+                }
+                // Iterate over all inputs, if non of the fields are editable, mark a flag to true, which will be used in furthue pages.
+                if (pst.hasOwnProperty("editable") && pst["editable"] == 1) {
+                    setNoEditableFields(false);
                 }
             });
 
@@ -3725,6 +3732,12 @@ function NewTemplate(props) {
     // Page is pushed to TempaltePDF priview page with user data's..
     const furthurproceed = () => {
         setAllowLoader(true);
+        let allowFlag = null;
+        if (props?.location?.pathname === "/template") {
+            allowFlag = noEditableFields;
+        } else {
+            allowFlag = false;
+        }
         let state = {
             userDetails: List,
             templateCode: templateCode,
@@ -3736,7 +3749,8 @@ function NewTemplate(props) {
             reptBlckOfInputs: reptBlckOfInputs,
             flag: flag,
             frompath: fromPath,
-            pathname: toPathName
+            pathname: toPathName,
+            noEditableFields: allowFlag
         };
         // if the HTML edit is performed for Bulk Signing..
         if (!flag) {
@@ -4468,7 +4482,7 @@ function NewTemplate(props) {
                 scale={1.0}
                 loadedClassName="loadedContent"
             />
-            <div className="temdescCss" style={{marginBottom: (props?.location?.pathname === "/template") ? "0px" : "10px"}} >
+            <div className="temdescCss" style={{ marginBottom: (props?.location?.pathname === "/template") ? "0px" : "10px" }} >
                 <div className="temdesContentCssTemplate" style={{ width: "50%" }}>
                     <Tooltip
                         target="tempdesc"

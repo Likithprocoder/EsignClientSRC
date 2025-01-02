@@ -165,7 +165,8 @@ class DisplayPdf1 extends Component {
                     reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
                     repeatAbleBlck: this.props.location.state.repeatAbleBlck,
                     flag: this.props.location.state.flag,
-                    toPathName: this.props.location.pathname
+                    toPathName: this.props.location.pathname,
+                    noEditableFields: this.props.location.state.noEditableFields
                   };
                   if (!this.props.location.state.flag) {
                     stateCntnt.encodeBatchNdSequence = this.state.encodeBatchNdSequence;
@@ -292,6 +293,7 @@ class DisplayPdf1 extends Component {
         temptDrftRefFromServer: this.state.temptDrftRefFromServer,
         pageDimensions: this.state.pageDimensions,
         equalPageDimensions: this.state.equalPageDimensions,
+
       };
 
       // console.log(data);
@@ -361,7 +363,8 @@ class DisplayPdf1 extends Component {
       repeatAbleBlck: this.props.location.state.repeatAbleBlck,
       reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
       flag: this.props.location.state.flag,
-      toPathName: this.props.location.pathname
+      toPathName: this.props.location.pathname,
+      noEditableFields: this.props.location.state.noEditableFields
     };
     if (!this.props.location.state.flag) {
       state.encodeBatchNdSequence = this.state.encodeBatchNdSequence;
@@ -401,8 +404,9 @@ class DisplayPdf1 extends Component {
           <input type="file" name="file" id="fileInput" />
           <input type="hidden" name="signingDetails" id="signingDetails" value={`{"refNo": "${this.state.encodeBatchNdSequence}"}`} />
         </form>
-        <div className="proceedback" style={{marginBottom: (!this.props.location.state.flag) ? "0px" : "7px"}}>
+        <div className="proceedback" style={{ marginBottom: (!this.props.location.state.flag) ? "0px" : "7px" }}>
           <button
+            hidden={this.props.location.state.noEditableFields}
             style={{ marginRight: "10px" }}
             type="button"
             onClick={(e) => this.oldPage()}
@@ -419,7 +423,7 @@ class DisplayPdf1 extends Component {
           </button>
         </div>
 
-        <div style={{backgroundColor:"#F5F4D0"}} className="parent-div" id="parent-div">
+        <div style={{ backgroundColor: "#F5F4D0" }} className="parent-div" id="parent-div">
           <div
             className="rpv-core__viewer"
             style={{
