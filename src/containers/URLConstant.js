@@ -1,14 +1,14 @@
 
-const HOST = "/MYSIGN/";
-var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "/MYSIGN/";
+// var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
 
 const { UpdateRounded } = require("@material-ui/icons");
 
 // const HOST = "https://uat.docuexec.com/MYSIGN/";
 // var paymenturl = "https://uat.docuexec.com/PAYMENTSIMULATOR/getunitscalltesting";
 
-// const HOST = "http://localhost:8090/MYSIGN/";
-// var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
+const HOST = "http://localhost:8090/MYSIGN/";
+var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
 // const HOST = "http://10.10.40.57:8090/MYSIGN/";
@@ -136,32 +136,33 @@ let URL = {
   getCorpMemberRequests: HOST + "getCorpMemberRequests",
   approveCorpMemberRequests: HOST + "approveCorpMemberRequests",
   addCorpMember: HOST + "addCorpMember",
-  checkVoucherCodeAvailability: HOST+"checkUsrDefinedVchrCode",
-  declineSigning: HOST+ "declineSigning",
-  fetchAddressBook: HOST+ "fetchAddressBook",
-  insertToAddressBook:HOST+"insertToAddressBook",
-  removeFromAddressBook:HOST+"removeFromAddressBook",
-  modifyAddressBook:HOST+"modifyAddressBook",
-  uploadDocument:HOST+"uploadDocument",
-  fetchDesignationBonus:HOST+"getDesignationBonus",
-  insertDesignationBonus:HOST+"createDesignationBonus",
-  UpdateDesignationBonus:HOST+"updateDesignationBonus",
-  upddateDesignationStatus:HOST+"updateDesignationBonus/status",
-  uploadEmployees: HOST+"uploadEmployees",
-  getCorpEmpMappingList: HOST+"getCorpEmpMappingList",
-  getCorpEmployee: HOST+"getCorpEmployee",
-  deleteCorpEmpMapping: HOST+"deleteCorpEmpMapping",
-  updateCorpEmpMapping: HOST+"updateCorpEmpMapping",
-  deleteUserFromCorpGroup:HOST+"deleteUserFromCorpGroup",
-  getKey: HOST+"getkey",
-  uploadBulkSignFile: HOST+"uploadBulkSignFile",
-  getbulkSigningdetails: HOST+"getbulkSigningdetails",
-  uploadBulkSigndetails: HOST +"uploadBulkSigndetails",
+  checkVoucherCodeAvailability: HOST + "checkUsrDefinedVchrCode",
+  declineSigning: HOST + "declineSigning",
+  fetchAddressBook: HOST + "fetchAddressBook",
+  insertToAddressBook: HOST + "insertToAddressBook",
+  removeFromAddressBook: HOST + "removeFromAddressBook",
+  modifyAddressBook: HOST + "modifyAddressBook",
+  uploadDocument: HOST + "uploadDocument",
+  fetchDesignationBonus: HOST + "getDesignationBonus",
+  insertDesignationBonus: HOST + "createDesignationBonus",
+  UpdateDesignationBonus: HOST + "updateDesignationBonus",
+  upddateDesignationStatus: HOST + "updateDesignationBonus/status",
+  uploadEmployees: HOST + "uploadEmployees",
+  getCorpEmpMappingList: HOST + "getCorpEmpMappingList",
+  getCorpEmployee: HOST + "getCorpEmployee",
+  deleteCorpEmpMapping: HOST + "deleteCorpEmpMapping",
+  updateCorpEmpMapping: HOST + "updateCorpEmpMapping",
+  deleteUserFromCorpGroup: HOST + "deleteUserFromCorpGroup",
+  getKey: HOST + "getkey",
+  uploadBulkSignFile: HOST + "uploadBulkSignFile",
+  getbulkSigningdetails: HOST + "getbulkSigningdetails",
+  uploadBulkSigndetails: HOST + "uploadBulkSigndetails",
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
   getApplicationKeys: HOST + "getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
-  registerUser:"/register",
-  exportSignerStatusReport:HOST + "exportSignerStatusReport",
+  registerUser: "/register",
+  exportSignerStatusReport: HOST + "exportSignerStatusReport",
+  notifyBulkSigners: HOST + "/notifyBulkSigners"
 };
 
 module.exports = { URL };

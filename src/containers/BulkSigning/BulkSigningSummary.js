@@ -124,46 +124,23 @@ export default class BulkSigningSummary extends React.Component {
 
   //----------------send reminder-----------------
   sendReminder(data) {
-    // var unSignedCount = 0;
-    // var unSigned = "" + data.PENDING_LIST + "";
-    // var unSignedList = unSigned.split(",");
-    // unSignedCount = unSignedList.length;
-    var msg = "";
-    // "Reminder will be sent to signer(" + data.signerEmail + ")?";
-    // var signMsg;
-    // if (unSignedCount == 1) {
-    //   signMsg = "signer";
-    // } else {
-    //   signMsg = "signers";
-    // }
-    // if (unSigned === "undefined" || data.IS_OWNER == 1) {
-    msg = (
-      <div>
-        {/* <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p> */}
-        <Row id="sendReminderAlert">
-          <p>
-            {"Reminder will be sent to signer(" + data.signerEmail + ")"}
-          </p>
-        </Row>
-      </div>
-    );
-    // }
-
+    console.log(data);
+    
     confirmAlert({
       title: "Send Reminder",
-      message: msg,
+      message: '',
       buttons: [
         {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            this.setState({ loaded: false });
             var body = {
               authToken: sessionStorage.getItem("authToken"),
-              docId: data.docId,
-              refNo: data.batchNo,
-              //   userId: data.USER_ID,
+              batchNumber: data.batchNo,
+              sequenceNumber: data.sequenceNumber
             };
-            fetch(URL.sendReminder, {
+            fetch(URL.notifyBulkSigners, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -182,32 +159,57 @@ export default class BulkSigningSummary extends React.Component {
                         label: "OK",
                         className: "confirmBtn",
                         onClick: () => {
-                          window.location.reload(false);
-                        },
+                          this.setState({ loaded: true });
+                        }
                       },
-                    ],
+                    ], closeOnClickOutside: false
                   });
-                } else {
+                }
+                else if (responseJson.statusDetails === "Session Expired!!") {
                   confirmAlert({
                     message: responseJson.statusDetails,
                     buttons: [
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => { },
+                        onClick: () => { this.props.history.push('/login') }
                       },
-                    ],
+                    ], closeOnClickOutside: false
                   });
                 }
+                else {
+                  this.setState({ loaded: true });
+                  confirmAlert({
+                    message: responseJson.statusDetails,
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { this.props.history.push('/') }
+                      },
+                    ], closeOnClickOutside: false
+                  });
+                }
+              }).catch((e) => {
+                this.setState({ loaded: true });
+                confirmAlert({
+                  message: 'Technical issues! Please try later.',
+                  buttons: [
+                    {
+                      label: "OK",
+                      className: "confirmBtn",
+                      onClick: () => { this.props.history.push('/') }
+                    },
+                  ], closeOnClickOutside: false
+                });
               });
           },
         },
         {
           label: "Cancel",
-          className: "cancelBtn",
-          onClick: () => { },
+          className: "cancelBtn"
         },
-      ],
+      ], closeOnClickOutside: false
     });
   }
 
@@ -754,7 +756,7 @@ export default class BulkSigningSummary extends React.Component {
                   tooltip: "Send Reminder",
                   onClick: (event, rowData) => this.sendReminder(rowData),
                   isFreeAction: false,
-                  hidden: true,
+                  hidden: false,
                 };
               } else if (rowData.status === 1) {
                 return {
