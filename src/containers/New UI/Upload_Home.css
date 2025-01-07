@@ -1,0 +1,445 @@
+@media screen and (max-width: 800px) {
+    .UploadBody {
+        width: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .fileUploadParent {
+        height: 230px;
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .fileUploadParent .drag-drop {
+        background-color: #ffffff;
+        border: 2.58px dashed;
+        border-color: #2e6ee3;
+        border-radius: 26.9px;
+        box-shadow: 3.59px 3.59px 17.93px 3.59px #2e6ee31a;
+        height: 100%;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .CardBody {
+        height: 100px;
+        position: relative;
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .group {
+        background: linear-gradient(135deg, #5be1eb, #5f8ced);
+        height: 88px;
+        left: 0;
+        top: 0;
+        width: 145px;
+        margin-right: 6%;
+    }
+
+    .img {
+        background: linear-gradient(135deg, rgb(241 152 49), rgb(247 116 116));
+        height: 88px;
+        left: 0;
+        top: 120px;
+        width: 145px;
+    }
+
+    .SignByMeDicParnt {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #2e63da80;
+        border-radius: 8.71px;
+        font-size: 15px;
+        font-family: none;
+        color: white;
+        font-weight: 700;
+        height: 35px;
+    }
+
+    .SigningButtons {
+        width: 100%;
+        display: inline-flex;
+        margin-top: 5%;
+
+    }
+
+    .signIcon {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 38px;
+        opacity: 0.5;
+    }
+}
+
+@media screen and (min-width: 800px) {
+    .UploadBody {
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .fileUploadParent {
+        height: 230px;
+        position: relative;
+        width: 75%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .fileUploadParent .drag-drop {
+        background-color: #ffffff;
+        border: 2.58px dashed;
+        border-color: #2e6ee3;
+        border-radius: 26.9px;
+        box-shadow: 3.59px 3.59px 17.93px 3.59px #2e6ee31a;
+        height: 100%;
+        left: 0;
+        top: 0;
+        width: 50%;
+        display: inline-flex;
+    }
+
+    .CardBody {
+        height: 230px;
+        position: relative;
+        width: 25%;
+    }
+
+    .group {
+        background: linear-gradient(135deg, #5be1eb, #5f8ced);
+        height: 110px;
+        left: 0;
+        top: 0;
+        width: 210px;
+        margin-bottom: 3%;
+    }
+
+    .img {
+        background: linear-gradient(135deg, rgb(241 152 49), rgb(247 116 116));
+        height: 110px;
+        left: 0;
+        top: 120px;
+        width: 210px;
+    }
+
+    .SignByMeDicParnt {
+        width: 45%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #2e63da80;
+        border-radius: 8.71px;
+        font-size: 15px;
+        font-family: none;
+        color: white;
+        font-weight: 700;
+        height: 35px;
+    }
+
+    .SigningButtons {
+        width: 76%;
+        display: inline-flex;
+        margin-top: 2%;
+
+    }
+
+    .signIcon {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 56px;
+        opacity: 0.5;
+    }
+}
+
+/** Drag Drop Section*/
+.fileUploadParent .drag-drop-your-PDF {
+    color: #000000;
+    font-family: "Lato", Helvetica;
+    font-size: 18px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.uploadBtn {
+    background-color: #2e63da;
+    border-radius: 11.87px;
+    color: white;
+    font-family: "Lato", Helvetica;
+    font-size: 12px;
+    padding: 4.42px 20.18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: white;
+}
+
+.uploadPara {
+    color: #9e9b9b;
+    font-family: "Lato", Helvetica;
+    font-size: 10px;
+    text-align: center;
+    padding: 6%;
+}
+
+.fileUploadParent .overlap-group {
+    height: 32px;
+    position: relative;
+}
+
+.fileUploadParent .photo-camera {
+    height: 20px;
+    left: 2px;
+    position: absolute;
+    top: 2px;
+    width: 20px;
+}
+
+.fileUploadParent .x {
+    height: 25px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 25px;
+}
+
+.fileUploadParent .overlap-group-wrapper {
+    height: 32px;
+    left: 495px;
+    position: absolute;
+    top: 244px;
+    width: 32px;
+}
+
+.DriveDIV {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding-top: 18%;
+}
+
+.gDriveImg {
+    height: 27px;
+    width: 27px;
+}
+
+.dropInfo {
+    height: 100%;
+    padding: 1%;
+    width: 70%;
+}
+
+.dropInfoAferDrop {
+    height: 100%;
+    padding: 1%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-family: "Lato", Helvetica;
+    flex-direction: column;
+}
+
+.upldImg {
+    justify-content: center;
+    display: flex;
+    height: 35%;
+}
+
+.image {
+    height: 50px;
+    width: 90px;
+}
+
+.or {
+    color: #000000;
+    font-family: "Lato", Helvetica;
+    font-size: 18px;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    height: 10%;
+}
+
+.UplPDFImgBtn {
+    display: flex;
+    justify-content: center;
+    height: 17%;
+}
+
+.UPLPDFIMGBTN {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.UPLTXTPARADIV {
+    display: flex;
+    justify-content: center;
+    height: 24%;
+}
+
+.CameraClickUpld {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding-top: 20%;
+    padding-left: 4%;
+
+}
+
+.DrgDrpTxt {
+    justify-content: center;
+    display: flex;
+    height: 12%;
+}
+
+/** Drag Drop Section*/
+
+/* Top Up Cards*/
+
+/* style.css */
+.signature-card {
+    /* Gradient effect */
+    color: white;
+    border-radius: 2%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1%;
+    display: flex;
+}
+
+.AvailableSign {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 27%;
+    font-family: cursive;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 11px;
+}
+
+.topUpBtn {
+    height: 70%;
+    font-size: 10px;
+    letter-spacing: 1px;
+    width: 70%;
+    border-radius: 5%;
+    border: none;
+    background-color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topUpBtn:hover {
+    transform: scale(1.1);
+}
+
+.unitsDetails {
+    width: 70%;
+    height: 100%;
+}
+
+.NoOfUnitsParent {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 33%;
+}
+
+.NoOfUnitsChild {
+    color: black;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.topUpBtnParnt {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25%;
+}
+
+/* Top Up Cards*/
+
+/* Sign by me - send for signing btns*/
+.SignByme {
+    width: 50%;
+    display: inline-flex;
+    justify-content: end;
+    align-items: center;
+    padding-right: 1%;
+}
+
+.personAndLayer {
+    height: 24px;
+    width: 24px;
+}
+
+.SndFrSgning {
+    width: 50%;
+    display: inline-flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.SignByMeDicParnt:hover {
+    transform: scale(1.08);
+}
+
+
+/* Sign by me - send for signing btns*/
+
+/* Info after file drop */
+.PDFImage {
+    height: 100%;
+    width: 100%;
+}
+
+.UpldFleName {
+    height: 15%;
+    font-weight: 500;
+    font-size: 16px;
+    font-family: auto;
+}
+
+.trashIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+}
+
+.UpdSucsMesage {
+    height: 15%;
+    font-size: 20px;
+    width: 100%;
+    font-family: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Info after file drop */

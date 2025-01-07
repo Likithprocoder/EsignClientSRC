@@ -248,8 +248,7 @@ export default class DocUpload extends React.Component {
               ],
             });
             return null;
-          }
-
+          }          
           this.setState({
             files: files,
             isdisable: false,

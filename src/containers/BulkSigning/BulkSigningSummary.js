@@ -124,11 +124,9 @@ export default class BulkSigningSummary extends React.Component {
 
   //----------------send reminder-----------------
   sendReminder(data) {
-    console.log(data);
-    
     confirmAlert({
-      title: "Send Reminder",
-      message: '',
+      title: "",
+      message: `The signing reminder notification will be sent to the signer, ${data.signerName}.`,
       buttons: [
         {
           label: "Confirm",
@@ -270,6 +268,109 @@ export default class BulkSigningSummary extends React.Component {
       this.setState({ loaded: true });
     }
   };
+
+  sendBulkReminder = (e) => {
+    // Logic to take a count of number of unSigned users count.
+    let unSigndCunt = this.state.bulkSigningInfo.filter((data) => (data.status === 0));
+    let batchNumber = this.state.bulkSigningInfo[0]["batchNo"];
+    if (unSigndCunt.length > 0) {
+      confirmAlert({
+        title: "",
+        message: `The signing reminder notification will be sent to ${unSigndCunt.length} unsigned signers.`,
+        buttons: [
+          {
+            label: "Confirm",
+            className: "confirmBtn",
+            onClick: () => {
+              this.setState({ loaded: false });
+              var body = {
+                authToken: sessionStorage.getItem("authToken"),
+                batchNumber: batchNumber
+              };
+              fetch(URL.notifyBulkSigners, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              })
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJson) => {
+                  if (responseJson.status === "SUCCESS") {
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            this.setState({ loaded: true });
+                          }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                  else if (responseJson.statusDetails === "Session Expired!!") {
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => { this.props.history.push('/login') }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                  else {
+                    this.setState({ loaded: true });
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => { this.props.history.push('/') }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                }).catch((e) => {
+                  this.setState({ loaded: true });
+                  confirmAlert({
+                    message: 'Technical issues! Please try later.',
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { this.props.history.push('/') }
+                      },
+                    ], closeOnClickOutside: false
+                  });
+                });
+            },
+          },
+          {
+            label: "Cancel",
+            className: "cancelBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    } else {
+      confirmAlert({
+        message: 'Signings completed!',
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    }
+
+  }
 
 
   render() {
@@ -795,7 +896,10 @@ export default class BulkSigningSummary extends React.Component {
               >
                 {/* Original Toolbar (search box, etc.) */}
                 <MTableToolbar {...props} />
-                <Button title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
+                <div>
+                  <Button style={{ color: "white" }} onClick={(e) => this.sendBulkReminder(e)} title="Signing reminder notification" color="warning"   >Reminder</Button>
+                  <Button style={{ marginLeft: "10px" }} title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
+                </div>
               </div>
 
             ),
