@@ -4,7 +4,7 @@ import { confirmAlert } from "react-confirm-alert";
 import "./Upload_Home.css";
 import pdfImage from 'D:/Git Projects/docuExec-client/src/views/Icons/PDF.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileSignature, faIdCard } from '@fortawesome/free-solid-svg-icons';
+import { faFileSignature, faIdCard, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { URL } from "../URLConstant";
 var Loader = require("react-loader");
 const pdfjs = require("pdfjs-dist");
@@ -34,6 +34,21 @@ function Upload_Home(props) {
     const [inQueueData, setInQueueData] = useState({});
 
     const [subPlnDscrpton, setSubPlnDscrpton] = useState("");
+
+    const [curentIndex, setCurntIndex] = useState(0);
+
+    const [subscriptionLst, setSubscriptionLst] = useState([]);
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    const subscriptionListColor = ["linear-gradient(296deg,rgb(247, 103, 79) 0%,rgb(255, 192.78, 42.15) 100%)", "linear-gradient(296deg,rgb(174, 32, 233) 0%,rgb(241, 66, 158) 100%)"
+        , "linear-gradient(296deg,rgb(44.94, 83.3, 1.11) 0%,rgb(132, 178, 63) 100%)", "linear-gradient(296deg,rgb(4.51, 56.5, 150.45) 0%,rgb(13.42, 168.29, 251.6) 100%)"
+    ];
+
+    const subcritinLstClrCheckMark = [{ "urlAndId": "paint0_linear_1_19408", "stopColor": "#F7674F", "stopColorTwo": "#FAC137" },
+    { "urlAndId": "paint0_linear_25_4230", "stopColor": "#AE20E9", "stopColorTwo": "#F1429E" },
+    { "urlAndId": "paint0_linear_25_4250", "stopColor": "#2D5301", "stopColorTwo": "#84B23F" },
+    { "urlAndId": "paint0_linear_25_4270", "stopColor": "#053896", "stopColorTwo": "#0DA8FC" }]
 
     // User esign units call
     // User subscription call
@@ -66,6 +81,8 @@ function Upload_Home(props) {
                     await subscriptionCall(wallInfoData);
                     // Getflag call
                     await getFlags(wallInfoData);
+                    // Subscription list call
+                    await subscriptionList();
                     setLoader(true);
                 } else {
                     if (responseJson.statusDetails === "Session Expired!!") {
@@ -106,6 +123,25 @@ function Upload_Home(props) {
                     ], closeOnClickOutside: false
                 });
             });
+
+        // Define a media query for mobile screens
+        const mediaQuery = window.matchMedia("(max-width: 800px)");
+
+        // Update the state based on the media query
+        const handleMediaQueryChange = (event) => {
+            setIsMobile(event.matches);
+        };
+
+        // Initial check
+        setIsMobile(mediaQuery.matches);
+
+        // Add an event listener to listen for changes
+        mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            mediaQuery.removeEventListener("change", handleMediaQueryChange);
+        };
     }, []);
 
     // User subscription call
@@ -210,7 +246,7 @@ function Upload_Home(props) {
                     if (responseJson.consenteSign === "true") {
                         sessionStorage.setItem("consentFlag", responseJson.consentFlag);
                         if (responseJson.consentFlag === "N") {
-                            document.getElementById("consenteSignLink").style.display = "";
+                            // document.getElementById("consenteSignLink").style.display = "";
                         }
                     }
                 } else {
@@ -253,6 +289,42 @@ function Upload_Home(props) {
                 });
             });
     };
+
+    const subscriptionList = () => {
+        var subListReqData = {
+            username: "",
+        };
+        fetch(URL.getSubscriptionLists, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subListReqData),
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((responseJson) => {
+                if (responseJson.status === "SUCCESS") {
+                    setSubscriptionLst(responseJson.list);
+                } else {
+                    console.log('Failed to load subscription list');
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+                setLoader(true);
+                confirmAlert({
+                    message: 'Technical issues, Please try again later!',
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn"
+                        }
+                    ], closeOnClickOutside: false
+                });
+            });
+    }
 
     // one consent confirmAlert that is used allover.
     const confirmAlertFunction = (message) => {
@@ -530,6 +602,104 @@ function Upload_Home(props) {
         }
     }
 
+    // Subscription in queue check.
+    const checkSubscrptonInQueue = (planData) => {
+        let requestBody = {
+            authToken: sessionStorage.getItem("authToken"),
+            loginname: sessionStorage.getItem("username")
+        };
+        fetch(URL.checkinQueuePlan, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((responseJson) => {
+                if (responseJson.status == "SUCCESS") {
+                    setLoader(true);
+                    let data = {
+                        paymentType: "SUBM",
+                        planID: planData.planId,
+                        units: ""
+                    };
+                    props.history.push({
+                        pathname: "/qrcode",
+                        frompath: "/subscriptions",
+                        state: {
+                            details: data
+                        },
+                    });
+                } else {
+                    confirmAlert({
+                        message: responseJson.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => { setLoader(true) }
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                }
+            })
+            .catch(e => (e) => {
+                console.log(e);
+                setLoader(true);
+                confirmAlert({
+                    message: 'Technical issues, Please try again later!',
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn"
+                        }
+                    ], closeOnClickOutside: false
+                });
+            });
+    };
+
+    // A common function, which will decide the index value from the variable 'subscriptionListColor', which 
+    // is used to add color for subscription list
+    const decideIndex = (Index) => {
+        // Convert input to a number for comparison
+        const numericValue = parseFloat(Index / 4);
+        // Check if value is an integer
+        if (Number.isInteger(numericValue)) {
+            return 0;
+        }
+        // Check if the value ends with .25
+        else if ((numericValue * 100) % 100 === 25) {
+            return 1;
+        }
+        // Check if the value ends with .5
+        else if ((numericValue * 100) % 100 === 50) {
+            return 2
+        }
+        // Check if the value ends with .75
+        else {
+            return 3;
+        }
+    };
+
+    // To scroll the subscription list to next/previous set, on click of 'viewMore' and'viewLess' button.
+    const viewToNxtLst = (scrollID) => {
+        const container = document.getElementById('subListParent');
+        const element = document.getElementById(scrollID);
+        const containerRect = container.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        const scrollLeft = container.scrollLeft;
+        container.scroll({
+            left: elementRect.left - containerRect.left + scrollLeft,
+            behavior: 'smooth'
+        });
+        // Storing the scroll Index, in usestate..
+        // The logic to scroll the subscription list, to next/previous the below state is used.
+        setCurntIndex(scrollID);
+    };
+
     return (
         <>
             <Loader
@@ -552,6 +722,7 @@ function Upload_Home(props) {
                 loadedClassName="loadedContent"
             />
             <div className="UploadBody">
+
                 <div className="fileUploadParent">
                     <Dropzone
                         type="file"
@@ -581,7 +752,7 @@ function Upload_Home(props) {
                                             </div>
                                             <div className="DrgDrpTxt">
                                                 <p className="drag-drop-your-PDF">
-                                                    Drag &amp; Drop your&nbsp;&nbsp;PDF file here
+                                                    Drag &amp; Drop your&nbsp;PDF file here
                                                 </p>
                                             </div>
 
@@ -653,9 +824,9 @@ function Upload_Home(props) {
                                 <span>Available Signatures</span>
                             </div>
                             <div className="NoOfUnitsParent" >
-                                <span className="NoOfUnitsChild" >{actvePlanData["noSigns"]}</span>
+                                <span className="NoOfUnitsChild" >{actvePlanData["noSigns"] ? actvePlanData["noSigns"] : 0}</span>
                             </div>
-                            <div className="AvailableSign" style={{ height: "10%", fontSize: "8px" }}><span>{subPlnDscrpton}</span></div>
+                            <div className="AvailableSign" style={{ height: "10%", fontSize: "10px" }}><span>{subPlnDscrpton}</span></div>
                             <div className="topUpBtnParnt" >
                                 <button onClick={e => {
                                     props.history.push("/payments/subscriptions")
@@ -729,8 +900,91 @@ function Upload_Home(props) {
                     </div>
                 </div>
             </div>
+            <div>
+                <div className="SubscribeHeadParent" >
+                    <div className="topUpPlanParnt" >
+                        <span className="subscriptinHead" >Top-Up Plans</span>
+                    </div>
+                    <div className="moreOrLessBtnPrnt" >
+                        <div hidden={curentIndex === 0} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst(curentIndex - (isMobile ? 2 : 4))}>
+                            <div className="chevronRight" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <FontAwesomeIcon icon={faChevronLeft} />
+                            </div>
+                            <div>
+                                &nbsp;&nbsp;View Less
+                            </div>
+                        </div>
+                        <div hidden={curentIndex === (subscriptionLst.length - (isMobile ? 2 : 4))} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst(curentIndex + (isMobile ? 2 : 4))}>
+                            <div>
+                                View More&nbsp;&nbsp;
+                            </div>
+                            <div className="chevronRight" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </div>
+                        </div>
 
-
+                    </div>
+                </div>
+                <div id="subListParent" >
+                    {
+                        subscriptionLst.length !== 0 && (
+                            subscriptionLst.map((data, index) => (
+                                <div key={data.planId} id={index} className="subTypNameParent" >
+                                    <div style={{ height: "12%" }}>  <span className="subTypName" >{data.descrip}</span></div>
+                                    <div className="priceAndSigns" style={{ height: "30%", background: (subscriptionListColor[decideIndex(index)]) }}>
+                                        <div className="price" >&#8377;{data.amount}</div>
+                                        <div className="planDuraton" >For {data.noOfDays} Days</div>
+                                    </div>
+                                    <div style={{ height: "37%" }}>
+                                        <div className="NumbrOfSgns" >
+                                            <div className="NumbrOfSgnsChld1" >
+                                                <svg width="18" height="18" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.934204" y="0.255615" width="7.85943" height="7.85943" rx="3.92972" fill={`url(#${subcritinLstClrCheckMark[decideIndex(index)]["urlAndId"]})`} />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3.58638 5.61653L2.20677 4.28111C2.01789 4.09828 2.02873 3.80902 2.23089 3.6382C2.43304 3.46738 2.75288 3.47721 2.94175 3.66001L4.00593 4.69009L5.69038 3.26672C5.70552 3.2539 5.72136 3.24216 5.73772 3.23137L6.52985 2.56203C6.73201 2.39121 7.05187 2.40104 7.24072 2.58387C7.4296 2.76667 7.41872 3.05595 7.2166 3.22677L4.79723 5.27116L4.79464 5.26866L3.95775 5.97585L3.58638 5.61653Z" fill="white" />
+                                                    <defs>
+                                                        <linearGradient id={subcritinLstClrCheckMark[decideIndex(index)]["urlAndId"]} x1="8.18852" y1="8.11505" x2="2.48092" y2="6.96789" gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color={subcritinLstClrCheckMark[decideIndex(index)]["stopColor"]} />
+                                                            <stop offset="1" stop-color={subcritinLstClrCheckMark[decideIndex(index)]["stopColorTwo"]} />
+                                                        </linearGradient>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                            <div className="NumbrOfSgnsChld2">
+                                                <span>{data.signs} Eletronic signs</span>
+                                            </div>
+                                        </div>
+                                        <div className="NumbrOfSgns" >
+                                            <div className="NumbrOfSgnsChld1" >
+                                                <svg width="18" height="18" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect x="0.934204" y="0.255615" width="7.85943" height="7.85943" rx="3.92972" fill={`url(#${subcritinLstClrCheckMark[decideIndex(index)]["urlAndId"]})`} />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3.58638 5.61653L2.20677 4.28111C2.01789 4.09828 2.02873 3.80902 2.23089 3.6382C2.43304 3.46738 2.75288 3.47721 2.94175 3.66001L4.00593 4.69009L5.69038 3.26672C5.70552 3.2539 5.72136 3.24216 5.73772 3.23137L6.52985 2.56203C6.73201 2.39121 7.05187 2.40104 7.24072 2.58387C7.4296 2.76667 7.41872 3.05595 7.2166 3.22677L4.79723 5.27116L4.79464 5.26866L3.95775 5.97585L3.58638 5.61653Z" fill="white" />
+                                                    <defs>
+                                                        <linearGradient id={subcritinLstClrCheckMark[decideIndex(index)]["urlAndId"]} x1="8.18852" y1="8.11505" x2="2.48092" y2="6.96789" gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color={subcritinLstClrCheckMark[decideIndex(index)]["stopColor"]} />
+                                                            <stop offset="1" stop-color={subcritinLstClrCheckMark[decideIndex(index)]["stopColorTwo"]} />
+                                                        </linearGradient>
+                                                    </defs>
+                                                </svg>
+                                            </div>
+                                            <div className="NumbrOfSgnsChld2" >
+                                                <span>{data.storage} Strorage</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="getStartdPrnt"  >
+                                        <div className="getStarted" onClick={e => {
+                                            // fetch amount and planId, and passing to a method, which checks, is user has any plan in queue.
+                                            // If yes, dont allow next page, if not allow.
+                                            setLoader(false);
+                                            checkSubscrptonInQueue(data);
+                                        }} style={{ background: (subscriptionListColor[decideIndex(index)]) }}>Get Started</div>
+                                    </div>
+                                </div>
+                            ))
+                        )
+                    }
+                </div>
+            </div>
         </>
     )
 }

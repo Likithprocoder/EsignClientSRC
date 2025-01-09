@@ -21,29 +21,29 @@ class Subscription extends Component {
   }
 
   componentWillMount() {
-if (sessionStorage.getItem("consenteSign") === "true") {
-  if (sessionStorage.getItem("consentFlag") === "N") {
-    // this.onOpenFirstModel();
-  } else {
-    this.setState({ loadSubscriptionComponent: true });
+    if (sessionStorage.getItem("consenteSign") === "true") {
+      if (sessionStorage.getItem("consentFlag") === "N") {
+        // this.onOpenFirstModel();
+      } else {
+        this.setState({ loadSubscriptionComponent: true });
+      }
+    } else {
+      this.setState({ loadSubscriptionComponent: true });
+    }
   }
-} else {
-  this.setState({ loadSubscriptionComponent: true });
-}
-  }
-  
+
   componentDidMount() {
     if (this.state.loadSubscriptionComponent) {
-      
+
     } else {
       if (this.state.isConsentdisable) {
-   
+
         let element = document.getElementById("submitConsentbutton");
         element.style.backgroundColor = "rgba(96, 218, 185, 0.78)";
         element.style.cursor = "no-drop";
       }
     }
-   
+
     var body = {
       username: "",
     };
@@ -92,9 +92,9 @@ if (sessionStorage.getItem("consenteSign") === "true") {
     let value = e.target.value;
 
     let filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
-    
+
     // if (/^\d{10}$/.test(filteredValue)) {
-      this.setState({ couponValue: filteredValue });
+    this.setState({ couponValue: filteredValue });
     // }
   }
 
@@ -137,7 +137,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -168,16 +168,16 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                   <br />
                 </p>
                 <div className="purchaseBtn">
-                <button
-                  className="aggree-button"
-                  value={el.planId || ""}
-                  name="planID"
-                  onClick={this.custUnitstoQrCode.bind(this, i)}
-                  id="buyBtn"
+                  <button
+                    className="aggree-button"
+                    value={el.planId || ""}
+                    name="planID"
+                    onClick={this.custUnitstoQrCode.bind(this, i)}
+                    id="buyBtn"
                   // name={el.planId}
-                >
-                  <span>Subscribe </span>
-                </button>
+                  >
+                    <span>Subscribe </span>
+                  </button>
                 </div>
               </CardBody>
             </Card>
@@ -264,7 +264,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => {},
+                onClick: () => { },
               },
             ],
           });
@@ -278,114 +278,114 @@ if (sessionStorage.getItem("consenteSign") === "true") {
   };
 
   subscribeVoucher = () => {
-  
+
     if (this.state.couponValue) {
-    if (/^[a-zA-Z0-9]{10}$/.test(this.state.couponValue)) {
+      if (/^[a-zA-Z0-9]{10}$/.test(this.state.couponValue)) {
 
-    let data = {
-      voucherCode: this.state.couponValue,
-      authToken: sessionStorage.getItem("authToken"),
-    }
-
-    // this.setState({ loaded: false });
-    fetch(URL.subscribeVoucher, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((responseJson) => {
-        if (responseJson.status == "SUCCESS") {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
-          this.setState({ couponValue: ""});
-        } else {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
-          });
+        let data = {
+          voucherCode: this.state.couponValue,
+          authToken: sessionStorage.getItem("authToken"),
         }
-      });
+
+        // this.setState({ loaded: false });
+        fetch(URL.subscribeVoucher, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJson) => {
+            if (responseJson.status == "SUCCESS") {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                  },
+                ],
+              });
+              this.setState({ couponValue: "" });
+            } else {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                  },
+                ],
+              });
+            }
+          });
+      } else {
+        confirmAlert({
+          message: "Invalid voucher code",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { },
+            },
+          ],
+        });
+      }
     } else {
       confirmAlert({
-        message: "Invalid voucher code",
+        message: "Enter the voucher code to proceed",
         buttons: [
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
     }
-  } else {
-    confirmAlert({
-      message: "Enter the voucher code to proceed",
-      buttons: [
-        {
-          label: "OK",
-          className: "confirmBtn",
-          onClick: () => {},
-        },
-      ],
-    });
   }
-  } 
 
   render() {
-     if (this.state.loadSubscriptionComponent) {
-    return (
-      <div>
-        <Row className="align-items-center">
-        <div className="col-11 col-sm-4 col-md-3">
+    if (this.state.loadSubscriptionComponent) {
+      return (
+        <div>
+          <Row className="align-items-center">
+            <div className="col-11 col-sm-4 col-md-3">
               {/* <Col xs="11" sm="4" md="4"> */}
-                <Card style={{
-                  height: "235px",
-                  width: "250px",
-                }}>
-                  <CardHeader>
-                    <div id="discriptionspan" style={{ color: "#c79807" }}>
-                      <b>Redeem Voucher</b>
-                      <br />
-                    </div>
-                  </CardHeader>
-                  <CardBody style={{ margin: "5px"}}>
+              <Card style={{
+                height: "235px",
+                width: "250px",
+              }}>
+                <CardHeader>
+                  <div id="discriptionspan" style={{ color: "#c79807" }}>
+                    <b>Redeem Voucher</b>
+                    <br />
+                  </div>
+                </CardHeader>
+                <CardBody style={{ margin: "5px" }}>
 
                   <Row id="redeemcodemodalrow">
-                  <div style={{ marginLeft: "10px"}}>
-                    Enter voucher code to redeem
-                    <br/>
-                    <span style={{ fontSize: "12px", color: "darkgrey" }}>Note: Voucher codes are case sensitive</span>
-                  </div>
+                    <div style={{ marginLeft: "10px" }}>
+                      Enter voucher code to redeem
+                      <br />
+                      <span style={{ fontSize: "12px", color: "darkgrey" }}>Note: Voucher codes are case sensitive</span>
+                    </div>
                     {/* <InputGroup className="mb-3"> */}
                     <InputGroupAddon addonType="prepend" style={{ margin: "10px 10px 12px 10px" }}>
-                        <InputGroupText
-                          style={{ backgroundColor: "#f0f3f5" }}
-                        >
-                          <i
-                            className="fa fa-ticket"
-                            aria-hidden="true"
-                            style={{ fontSize: "large" }}
-                          ></i>
-                        </InputGroupText>
+                      <InputGroupText
+                        style={{ backgroundColor: "#f0f3f5" }}
+                      >
+                        <i
+                          className="fa fa-ticket"
+                          aria-hidden="true"
+                          style={{ fontSize: "large" }}
+                        ></i>
+                      </InputGroupText>
                       <Input
                         type="text"
                         id="redeemVoucherCode"
@@ -398,7 +398,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                         value={this.state.couponValue}
                         autoComplete="off"
                       />
-                      </InputGroupAddon>
+                    </InputGroupAddon>
                     {/* </InputGroup> */}
                     <div className="voucherBtn">
                       <button
@@ -407,24 +407,24 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                         // name="planID"
                         onClick={this.subscribeVoucher}
                         id="redeemBtn"
-                        // name={el.planId}
+                      // name={el.planId}
                       >
                         <span>Redeem</span>
                       </button>
                     </div>
                   </Row>
-                  </CardBody>
-                </Card>
+                </CardBody>
+              </Card>
               {/* </Col> */}
             </div>
-          {/* <br></br> */}
-          {/* <div className="align-items-center"> */}
+            {/* <br></br> */}
+            {/* <div className="align-items-center"> */}
             {this.createUI()}
-          {/* </div> */}
-        </Row>
-      </div>
-    );
-     } else {
+            {/* </div> */}
+          </Row>
+        </div>
+      );
+    } else {
       return (
         <div>
           <Loader
@@ -453,7 +453,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
               id="viewaftersigning"
               style={{ height: "100%" }}
             > */}
-              {/* <embed
+            {/* <embed
                 title="PDF preview"
                 type="application/pdf"
                 src={
@@ -464,41 +464,41 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                 width="100%"
                 height="100%"
               /> */}
-              {/* <br id="1" />
+            {/* <br id="1" />
               <br id="2" /> */}
-              <PDF1
-                /* title="PDF preview"
-                ref="iframe"
-                type="application/pdf" */
-                url={
-                  URL.viewConsentFile +
-                  "?at=" +
-                  btoa(sessionStorage.getItem("authToken"))
-                }
-                /* width="100%"
-                height="100%"
-                hidden */
-              />
-              <div style={{marginTop: "20px"}}>
-            <input
-              type="checkbox"
-              name="acceptance"
-              id="consentSigningCheckbox"
-              onChange={this.onConsentChecked}
-            ></input>
-            <label id="consentSigningLable" style={{ fontSize: "16px" }}>
-              &nbsp; I agree with all the terms and conditions of DocuExec
-            </label>
-          </div>
+            <PDF1
+              /* title="PDF preview"
+              ref="iframe"
+              type="application/pdf" */
+              url={
+                URL.viewConsentFile +
+                "?at=" +
+                btoa(sessionStorage.getItem("authToken"))
+              }
+            /* width="100%"
+            height="100%"
+            hidden */
+            />
+            <div style={{ marginTop: "20px" }}>
+              <input
+                type="checkbox"
+                name="acceptance"
+                id="consentSigningCheckbox"
+                onChange={this.onConsentChecked}
+              ></input>
+              <label id="consentSigningLable" style={{ fontSize: "16px" }}>
+                &nbsp; I agree with all the terms and conditions of DocuExec
+              </label>
             </div>
+          </div>
           {/* </div> */}
 
-            {/* <div
+          {/* <div
               className="embedtag-container"
               id="viewaftersigning"
               style={{ height: "100%" }}
             > */}
-              {/* <embed
+          {/* <embed
                 title="PDF preview"
                 type="application/pdf"
                 src={
@@ -524,7 +524,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
                 height="100%"
                 hidden
               ></iframe> */}
-            {/* </div> */}
+          {/* </div> */}
           {/* </div> */}
           {/* <br></br> */}
           {/* <div>
@@ -552,7 +552,7 @@ if (sessionStorage.getItem("consenteSign") === "true") {
           </div>
         </div>
       );
-              }
+    }
   }
 }
 export default Subscription;

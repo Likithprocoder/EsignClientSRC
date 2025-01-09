@@ -7,10 +7,8 @@
 
     .fileUploadParent {
         height: 230px;
-        position: relative;
         width: 100%;
         display: flex;
-        justify-content: center;
     }
 
     .fileUploadParent .drag-drop {
@@ -34,20 +32,18 @@
     }
 
     .group {
-        background: linear-gradient(135deg, #5be1eb, #5f8ced);
+        background: linear-gradient(105deg, rgb(75 231 249 / 99%), rgb(82, 79, 255));
         height: 88px;
-        left: 0;
-        top: 0;
-        width: 145px;
+        width: 50%;
         margin-right: 6%;
+        border-radius: 12.511px;
     }
 
     .img {
-        background: linear-gradient(135deg, rgb(241 152 49), rgb(247 116 116));
+        background: linear-gradient(89deg, rgb(255, 138, 45), rgb(255, 64, 110));
         height: 88px;
-        left: 0;
-        top: 120px;
-        width: 145px;
+        width: 50%;
+        border-radius: 12.511px;
     }
 
     .SignByMeDicParnt {
@@ -79,6 +75,102 @@
         font-size: 38px;
         opacity: 0.5;
     }
+
+
+    .subTypNameParent {
+        width: 50%;
+        height: 174px;
+        font-family: 'Poppins-SemiBold', Helvetica;
+        background-color: #ffffff;
+        border-radius: 5.31px;
+        box-shadow: 0px 3.71px 18.55px 4.64px #6d6d6d40;
+        margin-right: 2%;
+    }
+
+    .subTypName {
+        color: #222222cc;
+        font-size: 12px;
+        padding-left: 6%;
+        font-weight: 600;
+    }
+
+    .NumbrOfSgnsChld2 {
+        font-family: 'Poppins-SemiBold', Helvetica;
+        font-weight: 500;
+        color: #222222cc;
+        letter-spacing: 1px;
+        font-size: 12px;
+    }
+
+    .planDuraton {
+        font-family: 'Roboto Condensed-SemiBold', Helvetica;
+        padding-left: 8%;
+        color: white;
+        font-size: 12px;
+    }
+
+    .getStarted {
+        border-radius: 13.29px;
+        font-size: 14px;
+        width: 60%;
+        height: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-family: 'Poppins-SemiBold', Helvetica;
+        font-weight: 600;
+    }
+
+    .price {
+        font-family: 'Roboto Condensed-SemiBold', Helvetica;
+        height: 70%;
+        display: flex;
+        align-items: center;
+        padding-left: 8%;
+        color: white;
+        font-size: 26px;
+    }
+
+    .topUpPlanParnt {
+        width: 40%;
+    }
+
+    .moreOrLessBtnPrnt {
+        width: 60%;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+
+
+    .viewMoreAdLessBtn {
+        padding: 2%;
+        border-radius: 6.86px;
+        background-color: #2e63da;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        font-family: 'Lato-Bold', Helvetica;
+        display: flex;
+        cursor: pointer;
+        margin: 3px 3px;
+    }
+
+    .subscriptinHead {
+        color: #262686;
+        font-weight: 700;
+        font-family: 'Lato-Bold', Helvetica;
+        font-size: 20px;
+        white-space: nowrap;
+
+    }
+
+    .SubscribeHeadParent {
+        margin: 7% 0% 1% 0%;
+        display: flex;
+    }
+
 }
 
 @media screen and (min-width: 800px) {
@@ -89,10 +181,10 @@
 
     .fileUploadParent {
         height: 230px;
-        position: relative;
         width: 75%;
         display: flex;
         justify-content: center;
+        margin-left: 12%;
     }
 
     .fileUploadParent .drag-drop {
@@ -104,7 +196,7 @@
         height: 100%;
         left: 0;
         top: 0;
-        width: 50%;
+        width: 60%;
         display: inline-flex;
     }
 
@@ -115,20 +207,18 @@
     }
 
     .group {
-        background: linear-gradient(135deg, #5be1eb, #5f8ced);
+        background: linear-gradient(105deg, rgb(75 231 249 / 99%), rgb(82, 79, 255));
         height: 110px;
-        left: 0;
-        top: 0;
         width: 210px;
         margin-bottom: 3%;
+        border-radius: 12.511px;
     }
 
     .img {
-        background: linear-gradient(135deg, rgb(241 152 49), rgb(247 116 116));
+        background: linear-gradient(89deg, rgb(255, 138, 45), rgb(255, 64, 110));
         height: 110px;
-        left: 0;
-        top: 120px;
         width: 210px;
+        border-radius: 12.511px;
     }
 
     .SignByMeDicParnt {
@@ -146,7 +236,7 @@
     }
 
     .SigningButtons {
-        width: 76%;
+        width: 90%;
         display: inline-flex;
         margin-top: 2%;
 
@@ -160,6 +250,103 @@
         font-size: 56px;
         opacity: 0.5;
     }
+
+
+    .subTypNameParent {
+        width: 23%;
+        height: 230px;
+        font-family: 'Poppins-SemiBold', Helvetica;
+        background-color: #ffffff;
+        border-radius: 5.31px;
+        box-shadow: 0px 3.71px 18.55px 4.64px #6d6d6d40;
+        margin-right: 2%;
+        scrollbar-width: none;
+    }
+
+    .subTypName {
+        color: #222222cc;
+        font-size: 17px;
+        padding-left: 6%;
+        font-weight: 600;
+    }
+
+    .NumbrOfSgnsChld2 {
+        font-family: 'Poppins-SemiBold', Helvetica;
+        font-weight: 500;
+        color: #222222cc;
+        letter-spacing: 1px;
+        font-size: 14px;
+    }
+
+    .planDuraton {
+        font-family: 'Roboto Condensed-SemiBold', Helvetica;
+        padding-left: 8%;
+        color: white;
+        font-size: 14px;
+    }
+
+    .getStarted {
+        border-radius: 13.29px;
+        font-size: 15px;
+        width: 60%;
+        height: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-family: 'Poppins-SemiBold', Helvetica;
+        font-weight: 600;
+    }
+
+    .price {
+        font-family: 'Roboto Condensed-SemiBold', Helvetica;
+        height: 70%;
+        display: flex;
+        align-items: center;
+        padding-left: 8%;
+        color: white;
+        font-size: 34px;
+    }
+
+    .topUpPlanParnt {
+        width: 50%;
+    }
+
+    .moreOrLessBtnPrnt {
+        width: 50%;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        padding-right: 1.5%;
+    }
+
+    .viewMoreAdLessBtn {
+        padding: 2%;
+        border-radius: 6.86px;
+        background-color: #2e63da;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Lato-Bold', Helvetica;
+        display: flex;
+        cursor: pointer;
+        margin: 3px 3px;
+    }
+
+    .subscriptinHead {
+        color: #262686;
+        font-weight: 700;
+        font-family: 'Lato-Bold', Helvetica;
+        font-size: 22px;
+        white-space: nowrap;
+
+    }
+
+    .SubscribeHeadParent {
+        margin: 2% 0% 1% 0%;
+        display: flex;
+    }
+
 }
 
 /** Drag Drop Section*/
@@ -182,6 +369,7 @@
     align-items: center;
     justify-content: center;
     border-color: white;
+    border: none;
 }
 
 .uploadPara {
@@ -249,7 +437,6 @@
     justify-content: center;
     align-items: center;
     font-weight: 500;
-    font-family: "Lato", Helvetica;
     flex-direction: column;
 }
 
@@ -273,6 +460,7 @@
     display: flex;
     justify-content: center;
     height: 10%;
+    margin-bottom: 3%;
 }
 
 .UplPDFImgBtn {
@@ -282,7 +470,7 @@
 }
 
 .UPLPDFIMGBTN {
-    width: 50%;
+    width: 60%;
     display: flex;
     justify-content: center;
 }
@@ -316,9 +504,7 @@
 
 /* style.css */
 .signature-card {
-    /* Gradient effect */
     color: white;
-    border-radius: 2%;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 1%;
@@ -331,8 +517,8 @@
     justify-content: center;
     align-items: center;
     height: 27%;
-    font-family: cursive;
-    font-weight: 600;
+    font-family: 'Lato-Bold', Helvetica;
+    font-weight: 800;
     letter-spacing: 1px;
     font-size: 11px;
 }
@@ -370,7 +556,7 @@
 
 .NoOfUnitsChild {
     color: black;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
 }
 
@@ -443,3 +629,67 @@
 }
 
 /* Info after file drop */
+
+/* Subscription plan details */
+
+#subListParent {
+    display: -webkit-inline-box;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.priceAndSigns {
+    /* background: linear-gradient(296deg,
+            rgb(247, 103, 79) 0%,
+            rgb(255, 192.78, 42.15) 100%); */
+    border-radius: 0px 41.22px 41.22px 0px;
+    width: 90%;
+    padding: 4%;
+}
+
+
+
+
+
+
+.NumbrOfSgns {
+    display: flex;
+    width: 100%;
+    height: 50%;
+    align-items: center;
+}
+
+.NumbrOfSgnsChld1 {
+    width: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+
+
+
+.getStarted:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.getStartdPrnt {
+    height: 21%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+/* Subscription plan details */
+
+/* View more and less button */
+
+.viewMoreAdLessBtn:hover .chevronRight {
+    transform: scale(1.4);
+}
