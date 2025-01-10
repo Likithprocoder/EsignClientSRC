@@ -49,3 +49,7 @@
     padding-top: 5px;
     width: 50%;
 }
+
+.styles_overlay__CLSq- {
+    z-index: 10;
+}

@@ -32,14 +32,9 @@ class KYCStatus extends React.Component {
     };
   }
 
-  // componentWillMount() {
-  //   var body = {
-  //     authToken: sessionStorage.getItem("authToken"),
-  //   };
-  // }
   componentDidMount() {
-    // this.setState({ loaded: false });
 
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       authToken: sessionStorage.getItem("authToken")
     };
@@ -48,6 +43,7 @@ class KYCStatus extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -146,13 +142,13 @@ class KYCStatus extends React.Component {
   };
   getAdharDetails() {
     document.getElementById("UserDetail").style.display = "";
-    var body = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    var body = {};
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.KYCDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })

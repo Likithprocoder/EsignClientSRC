@@ -369,8 +369,8 @@ export default class Inbox extends React.Component {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               selfsign: data.SELF_SIGN,
@@ -381,6 +381,7 @@ export default class Inbox extends React.Component {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })

@@ -1,0 +1,18 @@
+.download-btn {
+    background: none;
+    color: #20a8d8;;
+    border: none;
+    cursor: pointer;           
+    font-size: inherit;
+    padding: 0;
+}
+
+.download-btn:hover {
+    color: #167495;
+    text-decoration: underline;
+}
+
+.download-btn:focus {
+    outline: none;            /* Remove default focus outline */
+    text-decoration: underline;    /* Remove underline on focus */
+}

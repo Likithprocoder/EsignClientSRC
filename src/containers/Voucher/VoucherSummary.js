@@ -54,17 +54,14 @@ export default class TxnDetails extends React.Component {
     }
 
     componentDidMount() {
-        var body = {
-            "authToken": sessionStorage.getItem("authToken")
-        };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         this.setState({ loaded: false })
         fetch(URL.getVoucherSummary, {
-            // fetch(URL.getUnitsHistory, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify(body)
         }).then((response) => {
             return response.json()
         }).then((responseJson) => {
@@ -157,13 +154,14 @@ export default class TxnDetails extends React.Component {
         })
             .then((e) => {
                 $('#listtable').on("click", ".voucherCodesInfo", (e) => {
+                    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                     const options = {
                         method: "POST",
                         headers: {
-                            "Content-type": "application/json"
+                            "Content-type": "application/json",
+                            'Authorization': `Bearer ${jsonWebToken}`
                         },
                         body: JSON.stringify({
-                            authToken: sessionStorage.getItem("authToken"),
                             voucherID: $(e.currentTarget).data("voucherid").voucherID + "",
                         })
                     }
@@ -253,13 +251,14 @@ export default class TxnDetails extends React.Component {
             })
             .then((e) => {
                 $('#listtable').on("click", ".moreDetails", (e) => {
+                    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                     const options = {
                         method: "POST",
                         headers: {
-                            "Content-type": "application/json"
+                            "Content-type": "application/json",
+                            'Authorization': `Bearer ${jsonWebToken}`
                         },
                         body: JSON.stringify({
-                            authToken: sessionStorage.getItem("authToken"),
                             voucherID: $(e.currentTarget).data("voucherid").voucherID + ""
                         })
                     }

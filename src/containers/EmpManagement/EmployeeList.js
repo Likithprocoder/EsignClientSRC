@@ -44,6 +44,16 @@ class EmployeeList extends Component {
                     ),
                 },
                 {
+                    title: 'Registration',
+                    dataIndex: 'registration',
+                    key: 'regis',
+                    render: (text, record) => (
+                        <span>
+                            {record.registered === 1 ? 'Completed' : record.registered === 0 ? 'Pending' : 'Deleted'}
+                        </span>
+                    ),
+                },
+                {
                     title: 'Action',
                     dataIndex: '',
                     key: 'x',
@@ -80,7 +90,7 @@ class EmployeeList extends Component {
 
                         <Tooltip title="Edit details" color={'rgba(0, 0, 0, 0.54)'}>
                             {/* <EditOutlined onClick={() => this.handle(record)} /> */}
-                            <MenuOutlined   onClick={() => this.handle(record)} />
+                            <MenuOutlined onClick={() => this.handle(record)} />
                         </Tooltip>
                     ),
                 },
@@ -100,7 +110,8 @@ class EmployeeList extends Component {
             readOnly: false,
             editMode: 0,
             inputColor: "lightgrey",
-            isEmpDisable: false
+            isEmpDisable: false,
+            corporateID: ""
         };
         this.inputRef = React.createRef();
     }
@@ -110,21 +121,19 @@ class EmployeeList extends Component {
     }
 
     fetchEmployeeList = () => {
-        var body = {
-            authToken: sessionStorage.getItem("authToken"),
-        };
         this.setState({ loaded: false });
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         fetch(URL.getCorpEmpMappingList, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
-            body: JSON.stringify(body),
         })
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson.status === "SUCCESS") {
-                    this.setState({ loaded: true, info: responseJson.corpEmpSummary.filter(emp => emp.empStatus !== "2") });
+                    this.setState({ loaded: true, info: responseJson.corpEmpSummary.filter(emp => emp.empStatus !== "2"), corporateID: responseJson.corporateID });
                 } else {
                     this.setState({ loaded: true });
                     if (responseJson.statusDetails === "Session Expired!!") {
@@ -151,10 +160,12 @@ class EmployeeList extends Component {
     }
 
     updateCorpEmployee = (options) => {
+        this.setState({ loaded: false });
         fetch(URL.updateCorpEmpMapping, options)
             .then(response => (response.json()))
             .then(data => {
                 if (data.status === "SUCCESS") {
+                    this.setState({ loaded: true });
                     if (data.statusDetails == "Employee removed successfully") {
                         this.setState({ contactModal: false });
                     }
@@ -212,21 +223,24 @@ class EmployeeList extends Component {
     }
 
     handle = (record) => {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
-                empId: record.id.empId
+                empId: record.id.empId,
+                corpID: this.state.corporateID
             })
         }
-
+        this.setState({ loaded: false });
         fetch(URL.getCorpEmployee, options)
             .then(response => response.json())
             .then(data => {
                 if (data.status === "SUCCESS") {
+                    this.setState({ loaded: true });
                     this.setState({
                         empMoreDetail: data.corpEmployee,
                         contactModal: true,
@@ -240,10 +254,11 @@ class EmployeeList extends Component {
                     if (record.empStatus === "0") {
                         this.setState({ isEmpDisable: true });
                     } else {
-                        this.setState({ isEmpDisable: false});
+                        this.setState({ isEmpDisable: false });
                     }
 
                 } else if (data.statusDetails === "Session Expired") {
+                    this.setState({ loaded: true });
                     confirmAlert({
                         message: data.statusDetails,
                         buttons: [
@@ -283,32 +298,34 @@ class EmployeeList extends Component {
 
     deleteEmpById = () => {
         confirmAlert({
-          message: `Are you sure you want to delete the selected employee with EMP ID: ${this.state.empId}?`,
-          buttons: [
-              {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-        const options = {
-              method: "POST",
-              headers: {
-                  "Content-type": "application/json"
-              },
-              body: JSON.stringify({
-                  authToken: sessionStorage.getItem("authToken"),
-                  empId: this.state.empId,
-                  updatedStatus: "2"
-              })
-          }
-          this.updateCorpEmployee(options);
-      },
-  },
-  {
-      label: "Cancel",
-      className: "confirmBtn",
-      onClick: () => {},
-  },
-  ],
+            message: `Are you sure you want to delete the selected employee with EMP ID: ${this.state.empId}?`,
+            buttons: [
+                {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                        const options = {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
+                            },
+                            body: JSON.stringify({
+                                empId: this.state.empId,
+                                updatedStatus: "2",
+                                corpID: this.state.corporateID
+                            })
+                        }
+                        this.updateCorpEmployee(options);
+                    },
+                },
+                {
+                    label: "Cancel",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                },
+            ],
         });
     }
 
@@ -320,28 +337,30 @@ class EmployeeList extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
-          const options = {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+                        const options = {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
+                            },
+                            body: JSON.stringify({
+                                empId: empId,
+                                updatedStatus: status,
+                                corpID: this.state.corporateID
+                            })
+                        }
+                        this.updateCorpEmployee(options);
+                    },
                 },
-                body: JSON.stringify({
-                    authToken: sessionStorage.getItem("authToken"),
-                    empId: empId,
-                    updatedStatus: status
-                })
-            }
-            this.updateCorpEmployee(options);
-        },
-    },
-    {
-        label: "Cancel",
-        className: "confirmBtn",
-        onClick: () => {},
-    },
-    ],
-          });
-    }   
+                {
+                    label: "Cancel",
+                    className: "confirmBtn",
+                    onClick: () => { },
+                },
+            ],
+        });
+    }
 
     addOrEditContact = (e) => {
         e.preventDefault();
@@ -349,11 +368,11 @@ class EmployeeList extends Component {
         let mobile = document.getElementById("contactMobile").value.trim();
         let email = document.getElementById("contactEmail").value.trim();
         let designation = document.getElementById("contactDesig").value.trim();
-    
+
         // validation
         const mobileRegex = /^[6-9]\d{9}$/;
         const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[a-zA-Z]{2,6}$/;
-    
+
         if (name === "" || name.length == 0) {
             alert("Please enter contact name");
             return false;
@@ -386,9 +405,9 @@ class EmployeeList extends Component {
             });
             return;
         }
-    
+
         let disaplayMessage = "Employee details are modified, Do you want to save?";
-    
+
         confirmAlert({
             message: disaplayMessage,
             buttons: [
@@ -396,20 +415,22 @@ class EmployeeList extends Component {
                     label: "OK",
                     className: "confirmBtn",
                     onClick: () => {
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         let body = {
-                            authToken: sessionStorage.getItem("authToken"),
                             empId: this.state.empId,
                             updatedInfo: {
                                 "updname": name, "updemailId": email, "updmobileNo": mobile, "upddesignation": designation
-                            }
+                            },
+                            corpID: this.state.corporateID
                         };
                         const url = URL.updateCorpEmpMapping;
-    
+
                         this.setState({ loaded: false });
                         fetch(url, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify(body),
                         })
@@ -426,6 +447,14 @@ class EmployeeList extends Component {
                                                 className: "confirmBtn",
                                                 onClick: () => {
                                                     this.setState({ contactModal: false });
+
+                                                    this.setState({ editMode: 0 });
+                                                    this.setState({ readOnly: false });
+                                                    this.setState({ inputColor: "lightgrey" });
+                                                    document.getElementById("submitEmp").style.display = "none";
+                                                    document.getElementById("cancelEmp").style.display = "none";
+                                                    document.getElementById("editEmp").style.display = "";
+                                                    document.getElementById("deleteEmp").style.display = "";
                                                     this.fetchEmployeeList();
                                                 },
                                             },
@@ -449,7 +478,7 @@ class EmployeeList extends Component {
                                                 },
                                             ],
                                         });
-    
+
                                         this.setState({ loaded: true });
                                     }
                                 }
@@ -468,7 +497,7 @@ class EmployeeList extends Component {
             ],
         });
     };
-    
+
 
     onCloseContactModal = (e) => {
         e.preventDefault()
@@ -514,11 +543,11 @@ class EmployeeList extends Component {
     };
 
 
-    openUploadPage= (e) => {
+    openUploadPage = (e) => {
         e.preventDefault();
         this.props.history.push("/uploadEmpDetails")
     }
-    
+
     render() {
         const { columns } = this.state;
 
@@ -547,7 +576,7 @@ class EmployeeList extends Component {
                 />
 
 
-                <div style={{ display: "flex", marginBottom: "12px", alignItems: "center", justifyContent: "space-between", float: "right"}}>
+                <div style={{ display: "flex", marginBottom: "12px", alignItems: "center", justifyContent: "space-between", float: "right" }}>
                     {/* <div id='tempGroupListCss'>
 
                         <span>Allocate bonus credits based on each designation level.</span>

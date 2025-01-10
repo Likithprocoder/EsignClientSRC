@@ -38,7 +38,6 @@ export default class TemplateList extends React.Component {
       listOfTemplates: [],
       rowData: "",
       fileName: "",
-      authToken: "",
     };
   }
 
@@ -48,16 +47,14 @@ export default class TemplateList extends React.Component {
 
   //------------------fetching templates for admin api--------------
   getTemplatesToAdmin = () => {
-    var inputTogetTempList = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.getTemplateListForAdmin, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(inputTogetTempList),
     })
       .then((response) => {
         return response.json();
@@ -122,17 +119,18 @@ export default class TemplateList extends React.Component {
           className: "confirmBtn",
           onClick: () => {
             var inputTogetTempList = {
-              authToken: sessionStorage.getItem("authToken"),
               userIP: sessionStorage.getItem("userIP"),
               tempCode: templateCode,
               tempName: templateName,
               status: status,
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             this.setState({ loaded: false });
             fetch(URL.updateTemplate, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(inputTogetTempList),
             })

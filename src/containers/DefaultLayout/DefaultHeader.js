@@ -22,14 +22,13 @@ class DefaultHeader extends Component {
 
     if (
       sessionStorage.getItem("roleID") == 3
-   
     ) {
       return (
         <DropdownItem onClick={(e) => this.props.onLogout(e)}>
           <i className="fa fa-lock"></i> Logout
         </DropdownItem>
       );
-    }else{
+    } else if (sessionStorage.getItem("roleID") == 6) {
       return (
         <>
           <DropdownItem header tag="div" className="text-center">
@@ -39,6 +38,33 @@ class DefaultHeader extends Component {
             <i className="fa fa-user"></i> Profile
           </DropdownItem>
           <DropdownItem divider />
+          <DropdownItem onClick={(e) => this.props.onAPIIntegrationsPage(e)}>
+            <i className="fa fa-key"></i> API Integrations
+          </DropdownItem>
+          <DropdownItem divider />
+          <DropdownItem onClick={(e) => this.props.onDelete(e)}>
+            <i class="fa fa-user-times"></i> Delete Account
+          </DropdownItem>
+          <DropdownItem divider />
+          <DropdownItem onClick={(e) => this.props.onLogout(e)}>
+            <i className="fa fa-lock"></i> Logout
+          </DropdownItem>
+        </>
+      );
+    } else{
+      return (
+        <>
+          <DropdownItem header tag="div" className="text-center">
+            <strong>Settings</strong>
+          </DropdownItem>
+          <DropdownItem onClick={(e) => this.props.onProfilePage(e)}>
+            <i className="fa fa-user"></i> Profile
+          </DropdownItem>
+          <DropdownItem divider />
+          {/* <DropdownItem onClick={(e) => this.props.onAPIIntegrationsPage(e)}>
+            <i className="fa fa-key"></i> API Integrations
+          </DropdownItem>
+          <DropdownItem divider /> */}
           <DropdownItem onClick={(e) => this.props.onDelete(e)}>
             <i class="fa fa-user-times"></i> Delete Account
           </DropdownItem>

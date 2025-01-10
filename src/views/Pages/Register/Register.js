@@ -10,8 +10,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Dropdown,
-  DropdownToggle,
+  Dropdown, DropdownToggle,
   Row,
 } from "reactstrap";
 import Notifications, { notify } from "react-notify-toast";
@@ -1785,7 +1784,7 @@ class Register extends Component {
                           </InputGroupText>
                           {/* Fixed Dropdown for Country Code */}
                           <Dropdown isOpen={false}>
-                            <DropdownToggle caret disabled>
+                            <DropdownToggle caret disabled style={{ zIndex: "0" }}>
                               +91
                             </DropdownToggle>
                           </Dropdown>

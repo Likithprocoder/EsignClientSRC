@@ -82,6 +82,84 @@ export default class ApplicationInbox extends React.Component {
   }
 
   componentDidMount() {
+
+    // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+    // If corporate is disabled then redirect to the old page.
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: JSON.stringify({
+        corpId: sessionStorage.getItem("corpId")
+      })
+    }
+
+    fetch(URL.getCorpDetails, options)
+      .then(response => (response.json()))
+      .then(data => {
+        if (data.status === "SUCCESS") {
+          if (data.details[0]["status"] === 0) {
+            confirmAlert({
+              message: "Your corporate is currently disabled. Please contact your administrator!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    this.props.history.push("/");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          };
+        }
+        else if (data.statusDetails === "Session Expired") {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/login");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+        else {
+          confirmAlert({
+            message: data.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  this.props.history.push("/");
+                },
+              },
+            ], closeOnClickOutside: false
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        confirmAlert({
+          message: `Something went wrong. please try again!`,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+            },
+          ], closeOnClickOutside: false
+        });
+        this.props.location.push('/login');
+      });
+
+
     // this.getInbocDocDetails();
     this.getEmailValidation();
     this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
@@ -89,10 +167,9 @@ export default class ApplicationInbox extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
-      }),
+      body: JSON.stringify({}),
     })
       .then((response) => {
         return response.json();
@@ -100,91 +177,95 @@ export default class ApplicationInbox extends React.Component {
       .then((responseJson) => {
 
         if (responseJson.status == "SUCCESS") {
-          this.setState({ GroupNameAndCode: responseJson.details });
-          this.setState({ FirstGroupAndCode: responseJson.details[0] })
-          let today = new Date();
-          let firstDay = new Date();
-          firstDay.setDate(1)
-          let dd = String(today.getDate()).padStart(2, '0');
-          let firstDate = String(firstDay.getDate()).padStart(2, '0');
-          let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-          let yyyy = today.getFullYear();
-          let toDate = yyyy + '-' + mm + '-' + dd
-          let fromDate = yyyy + '-' + mm + '-' + firstDate;
-          let startDate = document.getElementById("fromDateContainer").defaultValue = fromDate;
-          let endDate = document.getElementById("toDateContainer").defaultValue = toDate;
-          let subGroup = "";
-          let grp_code = responseJson.details[0].code;
-          let gro_name = responseJson.details[0].name;
-          fetch(URL.getTempsForThatGroupCode, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              authToken: sessionStorage.getItem("authToken"),
-              grpCode: grp_code
-            }),
-          })
-            .then((response) => {
-              return response.json();
+          // To perform any operation there should be atleast one group present.
+          // If no group is present then dont allow to perform any operation.
+          if (responseJson.details.length != 0) {
+            this.setState({ GroupNameAndCode: responseJson.details });
+            this.setState({ FirstGroupAndCode: responseJson.details[0] })
+            let today = new Date();
+            let firstDay = new Date();
+            firstDay.setDate(1)
+            let dd = String(today.getDate()).padStart(2, '0');
+            let firstDate = String(firstDay.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let yyyy = today.getFullYear();
+            let toDate = yyyy + '-' + mm + '-' + dd
+            let fromDate = yyyy + '-' + mm + '-' + firstDate;
+            let startDate = document.getElementById("fromDateContainer").defaultValue = fromDate;
+            let endDate = document.getElementById("toDateContainer").defaultValue = toDate;
+            let subGroup = "";
+            let grp_code = responseJson.details[0].code;
+            let gro_name = responseJson.details[0].name;
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+            fetch(URL.getTempsForThatGroupCode, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
+              },
+              body: JSON.stringify({
+                grpCode: grp_code
+              }),
             })
-            .then((responseJson) => {
-              if (responseJson.status == "success") {
-                if (responseJson.data.length !== 0) {
-                  this.setState({
-                    TemplateBasedOnTempCode: responseJson.data,
-                    templateCode: responseJson.data[0].code,
-                    templateName: responseJson.data[0].name
-                  })
-                  this.getInbocDocDetails(grp_code, subGroup, startDate, endDate, responseJson.data[0].code, "");
-                } else {
-                  this.setState({
-                    TemplateBasedOnTempCode: []
-                  })
+              .then((response) => {
+                return response.json();
+              })
+              .then((responseJson) => {
+                if (responseJson.status == "success") {
+                  if (responseJson.data.length !== 0) {
+                    this.setState({
+                      TemplateBasedOnTempCode: responseJson.data,
+                      templateCode: responseJson.data[0].code,
+                      templateName: responseJson.data[0].name
+                    })
+                    this.getInbocDocDetails(grp_code, subGroup, startDate, endDate, responseJson.data[0].code, "");
+                  } else {
+                    this.setState({
+                      TemplateBasedOnTempCode: []
+                    })
+                    confirmAlert({
+                      message: `No templates are avialable under the group '${gro_name}!'`,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            this.props.history.push("/applications");
+                          },
+                        },
+                      ],
+                    });
+                    return;
+                  }
+                }
+                else if (responseJson.statusDetails == "Session Expired") {
                   confirmAlert({
-                    message: `No templates are avialable under the group '${gro_name}!'`,
+                    message: "Session Expired!",
                     buttons: [
                       {
                         label: "OK",
                         className: "confirmBtn",
                         onClick: () => {
-                          this.props.history.push("/applications");
+                          this.props.history.push("/");
                         },
                       },
                     ],
                   });
-                  return;
                 }
-              }
-              else if (responseJson.statusDetails == "Session Expired") {
-                confirmAlert({
-                  message: "Session Expired!",
-                  buttons: [
-                    {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => {
-                        this.props.history.push("/");
+                else {
+                  confirmAlert({
+                    message: responseJson.statusDetail,
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { },
                       },
-                    },
-                  ],
-                });
-              }
-              else {
-                confirmAlert({
-                  message: responseJson.statusDetail,
-                  buttons: [
-                    {
-                      label: "OK",
-                      className: "confirmBtn",
-                      onClick: () => { },
-                    },
-                  ],
-                });
-              }
-            })
-
+                    ],
+                  });
+                }
+              })
+          };
         }
         else if (responseJson.statusDetails == "Session Expired") {
           confirmAlert({
@@ -224,7 +305,6 @@ export default class ApplicationInbox extends React.Component {
     if (searchValue != "") {
       // alert("search value is present")
       body = {
-        authToken: sessionStorage.getItem("authToken"),
         groupCode: groupCode,
         subGroup: subGroup,
         startDate: startDate,
@@ -235,7 +315,6 @@ export default class ApplicationInbox extends React.Component {
     }
     else {
       body = {
-        authToken: sessionStorage.getItem("authToken"),
         groupCode: groupCode,
         subGroup: subGroup,
         startDate: startDate,
@@ -243,11 +322,13 @@ export default class ApplicationInbox extends React.Component {
         templateCode: templateCode
       };
     }
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.getTemplateApplnList, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -318,12 +399,16 @@ export default class ApplicationInbox extends React.Component {
   };
 
   async createFileforSigningasSender(filename, docID) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
       URL.downloadStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(docID)
+      "?docID=" +
+      btoa(docID),
+      {
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
+      }
     );
     let data = await response.blob();
     let testResponse = await this.routetoPreviewPage(data);
@@ -370,12 +455,16 @@ export default class ApplicationInbox extends React.Component {
   //downloading PDF file
   async createFile(doc) {
     let rowData = doc;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
       URL.viewStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(doc.DOC_ID)
+      "?docID=" +
+      btoa(doc.DOC_ID),
+      {
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
+      }
     );
     let data = await response.blob();
     let testResponse = await this.test(data, doc.DOC_NAME, doc.DOC_ID);
@@ -506,11 +595,12 @@ export default class ApplicationInbox extends React.Component {
 
   //--API Call For getting the Template Validations from server-----------
   getEmailValidation = () => {
-    var authToken = "?authToken=" + sessionStorage.getItem("authToken");
-    fetch(URL.getEmailTemplateValidation + authToken, {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    fetch(URL.getEmailTemplateValidation, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
     })
       .then((response) => {
@@ -704,16 +794,17 @@ export default class ApplicationInbox extends React.Component {
         var obj = {
           toEmails: emailArrayTo,
           ccEmails: emailArrayCc,
-          authToken: sessionStorage.getItem("authToken"),
           eSub: this.state.subject,
           eBody: this.state.ebody,
           docId: this.state.documentId,
           userIP: sessionStorage.getItem("userIP"),
         };
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         fetch(URL.sendEmail, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${jsonWebToken}`
           },
           body: JSON.stringify(obj),
         })
@@ -776,28 +867,61 @@ export default class ApplicationInbox extends React.Component {
   };
 
   //-----------------View File--------------------
-  viewStoredFile = (e) => {
-    let pdfurl =
-      URL.viewStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(e.DOC_ID);
-    var win = window.open();
-    win.document.write("<title>" + e.DOC_NAME + "</title>");
-    win.document.write(
-      '<embed title="PDF preview" type="application/pdf"  src= ' +
-      pdfurl +
-      ' width="100%" height="100%" />'
-    );
+  // viewStoredFile = (e) => {
+  //   let pdfurl =
+  //     URL.viewStoredFile +
+  //     "?docID=" +
+  //     btoa(e.DOC_ID);
+  //   var win = window.open();
+  //   win.document.write("<title>" + e.DOC_NAME + "</title>");
+  //   win.document.write(
+  //     '<embed title="PDF preview" type="application/pdf"  src= ' +
+  //     pdfurl +
+  //     ' width="100%" height="100%" />'
+  //   );
+  // };
+
+  viewStoredFile = async (e) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    let docId = btoa(e.DOC_ID);
+    let pdfurl = URL.viewStoredFile + "?docID=" + docId;
+
+    try {
+      let response = await fetch(pdfurl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+
+      let blob = await response.blob();
+      let blobUrl = window.URL.createObjectURL(blob);
+
+      var win = window.open();
+      win.document.write("<title>" + e.DOC_NAME + "</title>");
+      win.document.write(
+        '<embed title="PDF preview" type="application/pdf" src="' +
+        blobUrl +
+        '" width="100%" height="100%" />'
+      );
+    } catch (error) {
+      console.error("Failed to fetch file:", error);
+      // Optionally, handle error accordingly
+    }
   };
 
   ExportTemplate = (e, docID) => {
-    let authAndDocid = "?at=" + btoa(sessionStorage.getItem("authToken")) + "&docID=" + btoa(docID.DOC_ID)
+    let authAndDocid = "?docID=" + btoa(docID.DOC_ID)
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getTempForCsv + authAndDocid, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
     })
       .then((response) => {
@@ -852,63 +976,76 @@ export default class ApplicationInbox extends React.Component {
   }
 
   downLoadCsvFile = (event) => {
-    let group = this.state.FirstGroupAndCode.code;
-    let subGroup = this.state.FirstGroupAndCode.name;
-    let startDate = document.getElementById("fromDateContainer").value;
-    let endDate = document.getElementById("toDateContainer").value;
-    let templateCode = this.state.templateCode;
-    let templateName = this.state.templateName;
-    let detailsForCsvDownload =
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&startDate=" +
-      btoa(startDate) +
-      "&endDate=" +
-      btoa(endDate) +
-      "&group=" +
-      btoa(group) +
-      "&subGroup=" +
-      "" +
-      "&templateCode=" +
-      btoa(templateCode) +
-      "&templateName=" +
-      btoa(templateName);
-    fetch(URL.getTempDetForMultiCsv + detailsForCsvDownload, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.status === 404) {
-          confirmAlert({
-            message: "No Documents are present!",
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  window.location.reload(false);
-                },
-              },
-            ],
-          });
-        } else {
-          return response.blob();
-        }
-      })
-      .then((blob) => {
-        const href = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = href;
-        link.setAttribute("download", `${this.state.templateName}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((e) => {
-        this.setState({ loaded: true });
+    // check if the date is selected.   
+    if (document.getElementById("toDateContainer").value === "" || document.getElementById("fromDateContainer").value === "") {
+      confirmAlert({
+        message: "Select the date range before downloading!",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
       });
+    } else {
+      let group = this.state.FirstGroupAndCode.code;
+      let subGroup = this.state.FirstGroupAndCode.name;
+      let startDate = document.getElementById("fromDateContainer").value;
+      let endDate = document.getElementById("toDateContainer").value;
+      let templateCode = this.state.templateCode;
+      let templateName = this.state.templateName;
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      let detailsForCsvDownload =
+        "?startDate=" +
+        btoa(startDate) +
+        "&endDate=" +
+        btoa(endDate) +
+        "&group=" +
+        btoa(group) +
+        "&subGroup=" +
+        "" +
+        "&templateCode=" +
+        btoa(templateCode) +
+        "&templateName=" +
+        btoa(templateName);
+      fetch(URL.getTempDetForMultiCsv + detailsForCsvDownload, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+      })
+        .then((response) => {
+          if (response.status === 404) {
+            confirmAlert({
+              message: "No Documents are present!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    window.location.reload(false);
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          } else {
+            return response.blob();
+          }
+        })
+        .then((blob) => {
+          const href = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = href;
+          link.setAttribute("download", `${this.state.templateName}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch((e) => {
+          this.setState({ loaded: true });
+        });
+    }
   };
 
   //-----------------Cancel Job--------------------
@@ -949,15 +1086,16 @@ export default class ApplicationInbox extends React.Component {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               userId: data.USER_ID,
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.cancelSigningJob, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1038,15 +1176,16 @@ export default class ApplicationInbox extends React.Component {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               userId: data.USER_ID,
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.sendReminder, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1143,17 +1282,18 @@ export default class ApplicationInbox extends React.Component {
           className: "confirmBtn",
           onClick: () => {
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.DOC_ID,
               refNo: data.REF_NO,
               selfsign: data.SELF_SIGN,
               userIP: sessionStorage.getItem("userIP"),
               username: sessionStorage.getItem("username"),
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             fetch(URL.deleteStoredFile, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -1197,17 +1337,43 @@ export default class ApplicationInbox extends React.Component {
       ],
     });
   };
-  //------------File Download----------------------
-  fileDownload(data) {
-    var data = data;
-    var DocId = data.DOC_ID;
-    window.location.href =
-      URL.downloadStoredFile +
-      "?at=" +
-      btoa(sessionStorage.getItem("authToken")) +
-      "&docID=" +
-      btoa(DocId);
-  }
+
+  fileDownload = async (data) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    let DocId = data.DOC_ID;
+    let url = URL.downloadStoredFileV2 + "?docID=" + btoa(DocId);
+  
+    try {
+      let response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+
+      let blob = await response.blob();
+      let blobUrl = window.URL.createObjectURL(blob); // Use window.URL.createObjectURL
+
+      // Create a temporary anchor element to download the file
+      let a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = data.DOC_NAME; // Assuming DOC_NAME contains the file name
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up and revoke the object URL
+      window.URL.revokeObjectURL(blobUrl); // Use window.URL.revokeObjectURL
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      // Optionally, handle error accordingly
+    }
+  };
+
   //-----------Step Progress Bar SignersInfo-------
   signersInfo(signerList, isSignedList) {
     var signerArray = signerList.split(",");
@@ -1319,13 +1485,14 @@ export default class ApplicationInbox extends React.Component {
 
   commentDetails(e) {
     var obj = {
-      authToken: sessionStorage.getItem("authToken"),
       docId: e.DOC_ID,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getSignerComments, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -1448,13 +1615,14 @@ export default class ApplicationInbox extends React.Component {
     });
     let startDate = document.getElementById("fromDateContainer").value;
     let endDate = document.getElementById("toDateContainer").value;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getTempsForThatGroupCode, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
         grpCode: grp_code,
       }),
     })
@@ -1536,12 +1704,24 @@ export default class ApplicationInbox extends React.Component {
 
 
   searchKeyBasedFiltering = (event) => {
-    let startDate = document.getElementById("fromDateContainer").value;
-    let endDate = document.getElementById("toDateContainer").value;
-    let groupCode = this.state.FirstGroupAndCode.code;
-    let templateCode = this.state.templateCode;
-    let searchValue = document.getElementById("searchValue").value;
-    this.getInbocDocDetails(groupCode, "", startDate, endDate, templateCode, searchValue);
+    if (document.getElementById("toDateContainer").value === "" || document.getElementById("fromDateContainer").value === "") {
+      confirmAlert({
+        message: "Select the date range before proceeding!",
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    } else {
+      let startDate = document.getElementById("fromDateContainer").value;
+      let endDate = document.getElementById("toDateContainer").value;
+      let groupCode = this.state.FirstGroupAndCode.code;
+      let templateCode = this.state.templateCode;
+      let searchValue = document.getElementById("searchValue").value;
+      this.getInbocDocDetails(groupCode, "", startDate, endDate, templateCode, searchValue);
+    }
   }
 
   // getCustomFields API to fetch the customfield Inputs..
@@ -1550,14 +1730,15 @@ export default class ApplicationInbox extends React.Component {
       loaded: false
     })
     var obj = {
-      authToken: sessionStorage.getItem("authToken"),
       docID: docID.DOC_ID,
       templateCode: this.state.templateCode
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getCustomFields, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })
@@ -1797,14 +1978,15 @@ export default class ApplicationInbox extends React.Component {
     })
 
     var obj = {
-      authToken: sessionStorage.getItem("authToken"),
       docID: this.state.rowData.DOC_ID,
       customFields: dataArrayToServer
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.updateCustomFields, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(obj),
     })

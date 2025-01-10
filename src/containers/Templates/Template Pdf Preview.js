@@ -87,10 +87,10 @@ class DisplayPdf1 extends Component {
     let additionalData = {};
     let reptData = { "reptDataToSveDraft": this.props.location.state.reptDataToSveDraft, "repeatAbleBlock": this.props.location.state.repeatAbleBlck };
     additionalData["repeatAbleBolckData"] = JSON.stringify(reptData);
-
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (this.props.location.state.flag) {
       bodyData = {
-        authToken: sessionStorage.getItem("authToken"),
+
         templateCode: tempCode,
         templateData: templateData,
         templateAttachments: this.props.location.state.templateAttachments,
@@ -111,7 +111,8 @@ class DisplayPdf1 extends Component {
     const options = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(bodyData)
     };
@@ -274,7 +275,7 @@ class DisplayPdf1 extends Component {
     // document.getElementsByClassName("PDFDOC")[0].src = url + "#zoom=100";
   }
 
-  pushToPriview = (height, width) => {
+  pushToPriview = (height, width, docId) => {
     // this.onDrop(this.state.files1);
     // await delay(1000);
 
@@ -293,6 +294,7 @@ class DisplayPdf1 extends Component {
         temptDrftRefFromServer: this.state.temptDrftRefFromServer,
         pageDimensions: this.state.pageDimensions,
         equalPageDimensions: this.state.equalPageDimensions,
+        docId: docId
 
       };
 
@@ -319,7 +321,7 @@ class DisplayPdf1 extends Component {
   };
 
   // used to get height and width of the pdf..
-  onDrop = () => {
+  onDrop = (docId) => {
     var file = this.state.files1;
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -334,12 +336,12 @@ class DisplayPdf1 extends Component {
               a.getPage(1).then(
                 function (b) {
                   var viewport = b.getViewport({ scale: 1 });
-                  this.setState({ loaded: true });
+                  this.setState({ allowToRotate: true });
                   this.setState({
                     height: viewport.height,
                     width: viewport.width,
                   });
-                  this.pushToPriview(viewport.height, viewport.width);
+                  this.pushToPriview(viewport.height, viewport.width, docId);
                 }.bind(this)
               );
             }.bind(this)
@@ -348,6 +350,73 @@ class DisplayPdf1 extends Component {
       }
     }.bind(this);
     reader.readAsArrayBuffer(file);
+  }
+
+  next = () => {
+    this.setState({
+      allowToRotate: false,
+    });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
+      loginname: sessionStorage.getItem("username"),
+      userIP: sessionStorage.getItem("userIP"),
+      docType: "PDF",
+    };
+    let data1 = new FormData();
+    console.log(this.state.files1);
+    data1.append("file", this.state.files1);
+    data1.append("inputDetails", JSON.stringify(body));
+
+    fetch(URLConstant.uploadDocument, {
+      method: "POST",
+      headers: {
+        enctype: "multipart/form-data",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: data1,
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.status === "SUCCESS") {
+          this.setState({ docId: responseJson.docID });
+          this.onDrop(responseJson.docID);
+          this.setState({
+            allowToRotate: true,
+          });
+        } else {
+          if (responseJson.statusDetails === "Session Expired!!") {
+            sessionStorage.clear();
+            this.setState({
+              allowToRotate: true,
+            }); confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push("/login") },
+                },
+              ], closeOnClickOutside: false
+            });
+          } else {
+            this.setState({ allowToRotate: true });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+        }
+      })
+      .catch(e => {
+        this.setState({ allowToRotate: true });
+        alert(e);
+      });
   }
 
   // push to old page with the data recieved..
@@ -416,7 +485,7 @@ class DisplayPdf1 extends Component {
           </button>
           <button
             type="button"
-            onClick={(e) => this.onDrop()}
+            onClick={(e) => this.next()}
             className=" btn btn-success rounded-pill btn btn-secondary "
           >
             Proceed With Signing

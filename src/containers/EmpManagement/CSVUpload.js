@@ -44,14 +44,19 @@ export default class CSVUpload extends React.Component {
   uploadCSVCall() {
     this.setState({ loaded: false });
     let obj = {
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
+      corpId: sessionStorage.getItem("corpId"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const formData = new FormData();
     formData.append("file", this.state.files[0]);
     formData.append("inputDetails", JSON.stringify(obj));
     fetch(URL.uploadEmployees, {
       method: "POST",
+      headers: {
+        enctype: "multipart/form-data",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
       body: formData,
     })
       .then((response) => {

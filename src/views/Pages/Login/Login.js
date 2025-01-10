@@ -461,12 +461,15 @@ class Login extends Component {
               let isAuthenticated = true;
               sessionStorage.setItem("isAuthenticated", isAuthenticated);
               this.setState({ loaded: true });
-              sessionStorage.setItem("authToken", responseJson.authToken);
+              //sessionStorage.setItem("authToken", responseJson.authToken);
+              sessionStorage.setItem("jsonWebToken", responseJson.jsonWebToken);
               sessionStorage.setItem("username", responseJson.name);
               sessionStorage.setItem("firstName", responseJson.firstName);
               sessionStorage.setItem("roleID", responseJson.roleId);
               const menus = JSON.stringify(responseJson.menu);
               sessionStorage.setItem("items", menus);
+              sessionStorage.setItem("actionExists", true);
+              sessionStorage.setItem("corpId", responseJson.corporateID);
               this.props.history.push("/");
             } else {
               this.setState({ loaded: true });
@@ -939,46 +942,7 @@ class Login extends Component {
       timerEvent = null; // Set timerEvent to null after clearing it
     }
   };
-
-  // // resend otp counter
-
-  // resendOtpTimer = () => {
-  //    document.getElementById("resendOtpbtn").style.display = "none";
-  //    document.getElementById("timer").style.display = "";
-  //   var timeleft = 30;
-  //   var downloadTimer = setInterval(function () {
-  //     //console.log(timeleft);
-  //     if (timeleft < 0) {
-  //       clearInterval(downloadTimer);
-  //       document.getElementById("resendOtpbtn").style.display = "";
-  //       document.getElementById("timer").style.display = "none";
-  //     } else {
-  //       document.getElementById("timer").innerHTML =
-  //         "Resend OTP in " + timeleft+" Secs";
-  //     }
-  //     timeleft -= 1;
-  //   }, 1000);
-  // };
-  // resend otp counter
-  // resendOtpTimer = () => {
-  //   this.setState({ timeleft: 30 });
-  //   document.getElementById("resendOtpbtn").style.display = "none";
-  //   document.getElementById("timer").style.display = "";
-
-  //   var timeleft = this.state.timeleft;
-  //   timerEvent = setInterval(function () {
-  //     if (timeleft < 0) {
-  //       clearInterval(timerEvent);
-  //       document.getElementById("resendOtpbtn").style.display = "";
-  //       document.getElementById("timer").style.display = "none";
-  //     } else {
-  //       document.getElementById("timer").innerHTML =
-  //         "Resend OTP in " + timeleft + " Secs";
-  //     }
-  //     timeleft -= 1;
-  //   }, 1000);
-  // };
-
+  
   render() {
     return (
       <div className="app flex-row align-items-center" id="loginAppBlock">

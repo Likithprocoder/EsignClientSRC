@@ -74,7 +74,6 @@ const UploadedTemplate = React.lazy(() => import("./containers/AdminUploadTempla
 const addOrViewTempGroup = React.lazy(() => import("./containers/AccessControl/TempGroupAddOrView"));
 const addEndUsrToTempGrp = React.lazy(() => import("./containers/AccessControl/AddEndUsrToTempGrp"));
 const viewTempGroupUsers = React.lazy(() => import("./containers/AccessControl/ViewTempGroupUsers"));
-const createTempGroup = React.lazy(() => import("./containers/AccessControl/CreateTempGroup"))
 // const Test = React.lazy(() => import('./containers/Test/test'))
 const VoucherUsageInfo = React.lazy(() => import("./containers/Voucher/VoucherDetial"));
 const getVoucherSummary = React.lazy(() => import("./containers/Voucher/VoucherSummary"));
@@ -84,8 +83,17 @@ const AddressBook = React.lazy(() => import("./containers/AddressBook/AddressBoo
 const AddressBookGroups = React.lazy(() => import("./containers/AddressBook/GroupManagement"));
 const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUsers"));
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
+const PendingActionInbox = React.lazy(() => import("./containers/PendingActions/PendingActionInbox"));
+const ApiKeyList = React.lazy(() => import("./containers/Profile/ApiKeyList"));
+const APIIntegrations = React.lazy(() => import("./containers/Profile/APIIntegrations"));
+// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
+const UserFeedback = React.lazy(() => import("./containers/Feebback/UserFeedback"));
+const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUserFeedbackList"));
+const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
+
+
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
-const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const EmployeeList = React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
 const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
 const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
 const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
@@ -232,11 +240,6 @@ const routes = [
     component: viewTempGroupUsers
   },
   {
-    path: "/createTemptgroup",
-    name: "Create Template Group",
-    component: createTempGroup
-  },
-  {
     path: "/voucherUsageInfo",
     name: "Voucher Usage Info",
     component: VoucherUsageInfo
@@ -271,18 +274,23 @@ const routes = [
   {
     path: "/addUsersToGroup",
     name: "Add Users To Groups",
-    component: AddUsersToGroup 
+    component: AddUsersToGroup
+  },
+  {
+    path: "/pendingSignsInbox",
+    name: "Pending Signatures",
+    component: PendingActionInbox
   },
   {
     path: "/designationBonus",
     name: "Designation Bonus Management",
-    component: DesignationBonus 
+    component: DesignationBonus
   },
-  
+
   {
     path: "/uploadEmpDetails",
     name: "Upload Emp Details",
-    component: CSVUpload 
+    component: CSVUpload
   },
 
   {
@@ -309,7 +317,32 @@ const routes = [
     path: "/bulkSigningSummary",
     name: "Bulk Signing Summary",
     component: BulkSigningSummary
-  },
+  }, 
+  {
 
+    path: "/getApiKeyList",
+    name: "Api key List",
+    component: ApiKeyList
+  },
+  {
+    path: "/apiIntegrationsPage",
+    name: "API Integrations",
+    component: APIIntegrations
+  },
+  {
+    path: "/userFeedback",
+    name: "DocuExec Feedback",
+    component: UserFeedback
+  },
+  {
+    path: "/docuExecFeedback",
+    name: "List of Users Feedback",
+    component: ViewUserFeedback
+  },
+  {
+    path: "/viewUserFeedback",
+    name: "User Feedback",
+    component: userFeedackView
+  }
 ];
 export default routes;

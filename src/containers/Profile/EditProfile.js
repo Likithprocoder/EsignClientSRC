@@ -46,6 +46,7 @@ class EditProfile extends Component {
   }
 
   componentWillMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       authToken: sessionStorage.getItem("authToken"),
     };
@@ -54,6 +55,7 @@ class EditProfile extends Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -167,7 +169,6 @@ class EditProfile extends Component {
     // let json1 = {
     //   loginname: this.state.loginname,
     //   username: this.state.username,
-    //   authToken: sessionStorage.getItem("authToken"),
     //   mobile: this.state.mobile,
     //   email: this.state.email.toLowerCase(),
     //   // password: btoa(this.state.password),
@@ -235,6 +236,7 @@ class EditProfile extends Component {
   };
   editProfileCall = async (data) => {
     let json = data;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let myColor = {
       color: yellow,
     };
@@ -247,6 +249,7 @@ class EditProfile extends Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(dataToserver),
     })
@@ -364,7 +367,6 @@ class EditProfile extends Component {
     //   optnType: "USREDE",
     //   // emailId: this.state.email,
     //   // loginname: this.state.loginname,
-    //   authToken: sessionStorage.getItem("authToken"),
     // };
     this.setState({ optnType: "USREDE" });
   };
@@ -434,6 +436,7 @@ class EditProfile extends Component {
 
   userUpdateAPI = async () => {
     let editJsondata;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // email update json
     if (this.state.optnType == "USREDE") {
       editJsondata = {
@@ -539,6 +542,7 @@ class EditProfile extends Component {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(dataToserver),
             })

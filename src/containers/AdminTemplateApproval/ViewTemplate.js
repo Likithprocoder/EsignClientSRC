@@ -51,18 +51,19 @@ function ViewTemplate(props) {
 
   // stores the input inside the repeatAble blocks.
   const [inputInReptBlck, setInputInReptBlck] = useState({});
-  
+
   //to store the list of repeatable tags 
   const [repetAble, setRepeatAbleTags] = useState(0);
 
   useEffect(() => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const options = {
       method: "POST",
       headers: {
-        "Content-Type": "appliaction/json"
+        "Content-Type": "appliaction/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
         templateCode: props.location.state.templateCode
       })
     }
@@ -140,43 +141,43 @@ function ViewTemplate(props) {
               // iterate the tables and fetch there ID's.
               let keysArray = findInputKeys(data);
               let filteredData = keysArray.map(data => data.split("{{")[1].split("}}")[0].split(".")[1]);
-              
+
               for (let key in tableExists) {
                 if (!isNaN(key)) {
-                    // Step 2: Create a regular expression to match the content inside <repeatTag>
-                    const repeatTagRegex = /<!--<repeatTag>-->([\s\S]*?)<!--<\/repeatTag>-->/g;
-                    // Step 3: Use the matchAll method to find all matches
-                    const matches = [...tableExists[key].outerHTML.matchAll(repeatTagRegex)];
-                    // get all the contents inside the commented repeatTag.
-                    const contentArray = matches.map(match => match[1].trim());
-                    // comparing the data 
-                    if (contentArray.length !== 0 && data.trim().replace(/\s+/g, '') === (contentArray[0].trim()).replace(/\s+/g, '')) {
-                        let replaceingTable = tableExists[key].outerHTML;
-                        let table = tableExists[key];
-                        const nodes = Array.from(table.querySelector("tbody").childNodes);
-                        let insideRepeatTag = false;
-                        nodes.forEach(node => {
-                            if (node.nodeType === Node.COMMENT_NODE && node.nodeValue.trim() === '<repeatTag>') {
-                                insideRepeatTag = true;
-                            } else if (node.nodeType === Node.COMMENT_NODE && node.nodeValue.trim() === '</repeatTag>') {
-                                insideRepeatTag = false;
-                            } else if (insideRepeatTag && node.nodeType === Node.ELEMENT_NODE && node.tagName === 'TR') {
-                                node.setAttribute("style", `${node.getAttribute('style')}; background-color: #ddecf9; border-radius:5px`);
-                            }
-                        });
-                        modifiedHTML = modifiedHTML.replace(replaceingTable, table.outerHTML);
-                    };
+                  // Step 2: Create a regular expression to match the content inside <repeatTag>
+                  const repeatTagRegex = /<!--<repeatTag>-->([\s\S]*?)<!--<\/repeatTag>-->/g;
+                  // Step 3: Use the matchAll method to find all matches
+                  const matches = [...tableExists[key].outerHTML.matchAll(repeatTagRegex)];
+                  // get all the contents inside the commented repeatTag.
+                  const contentArray = matches.map(match => match[1].trim());
+                  // comparing the data 
+                  if (contentArray.length !== 0 && data.trim().replace(/\s+/g, '') === (contentArray[0].trim()).replace(/\s+/g, '')) {
+                    let replaceingTable = tableExists[key].outerHTML;
+                    let table = tableExists[key];
+                    const nodes = Array.from(table.querySelector("tbody").childNodes);
+                    let insideRepeatTag = false;
+                    nodes.forEach(node => {
+                      if (node.nodeType === Node.COMMENT_NODE && node.nodeValue.trim() === '<repeatTag>') {
+                        insideRepeatTag = true;
+                      } else if (node.nodeType === Node.COMMENT_NODE && node.nodeValue.trim() === '</repeatTag>') {
+                        insideRepeatTag = false;
+                      } else if (insideRepeatTag && node.nodeType === Node.ELEMENT_NODE && node.tagName === 'TR') {
+                        node.setAttribute("style", `${node.getAttribute('style')}; background-color: #ddecf9; border-radius:5px`);
+                      }
+                    });
+                    modifiedHTML = modifiedHTML.replace(replaceingTable, table.outerHTML);
+                  };
                 };
-            };inputsInsideReptBlck[`Repeatable content ${Number(index) + 1}`] = filteredData;    // assigning the keys array inputsInsideReptBlck.. 
+              }; inputsInsideReptBlck[`Repeatable content ${Number(index) + 1}`] = filteredData;    // assigning the keys array inputsInsideReptBlck.. 
             }
             else { // else it is content from repeat Tag element.
               let keysArray = findInputKeys(data.outerHTML);
               let filteredData = keysArray.map(data => data.split("{{")[1].split("}}")[0].split(".")[1]);
               let editedRepeatTag = JSON.parse(JSON.stringify(repeatTags[count].outerHTML)); // deep copying 
               editedRepeatTag = editedRepeatTag.replace('<repeattag>', '<div title="Repetable Block!" style="background-color: #ddecf9; border-radius: 5px;">'); // styles changes for end user to display.
-              editedRepeatTag = editedRepeatTag.replace('</repeattag>', (`@@repeatTag${Number(index) + 1}@@`).trim() + '</div>'); 
+              editedRepeatTag = editedRepeatTag.replace('</repeattag>', (`@@repeatTag${Number(index) + 1}@@`).trim() + '</div>');
               modifiedHTML = modifiedHTML.replace(`${repeatTags[count].outerHTML}`, editedRepeatTag);
-              if (keysArray.length !== 0) { 
+              if (keysArray.length !== 0) {
                 inputsInsideReptBlck[`Repeatable content ${Number(index) + 1}`] = filteredData; // assigning the repeatAble block inputs.
               };
               count++;
@@ -278,7 +279,7 @@ function ViewTemplate(props) {
                 label: "OK",
                 className: "confirmBtn",
               },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
           });
         }
       })
@@ -291,7 +292,7 @@ function ViewTemplate(props) {
               label: "OK",
               className: "confirmBtn",
             },
-          ],closeOnClickOutside: false
+          ], closeOnClickOutside: false
         });
       })
   }, [])
@@ -363,7 +364,7 @@ function ViewTemplate(props) {
               return;
             },
           },
-        ],closeOnClickOutside: false
+        ], closeOnClickOutside: false
       });
     }
     else {
@@ -499,7 +500,7 @@ function ViewTemplate(props) {
               label: "OK",
               className: "confirmBtn"
             }
-          ],closeOnClickOutside: false
+          ], closeOnClickOutside: false
         });
         return;
       }
@@ -513,14 +514,15 @@ function ViewTemplate(props) {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             setAllowloader(false);
             const options = {
               method: "POST",
               headers: {
-                "Content-Type": "appiaction/json"
+                "Content-Type": "appiaction/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 templateCode: props.location.state.templateCode,
                 comment: "",
                 userIP: sessionStorage.getItem("userIP"),
@@ -543,7 +545,7 @@ function ViewTemplate(props) {
                             props.history.push("/getTempToApprove");
                           },
                         },
-                      ],closeOnClickOutside: false
+                      ], closeOnClickOutside: false
                     });
                   } else if (data.statusDetails === "Session Expired") {
                     setAllowloader(true);
@@ -557,7 +559,7 @@ function ViewTemplate(props) {
                             props.history.push("/login");
                           },
                         },
-                      ],closeOnClickOutside: false
+                      ], closeOnClickOutside: false
                     });
                   }
                   else {
@@ -569,7 +571,7 @@ function ViewTemplate(props) {
                           label: "OK",
                           className: "confirmBtn",
                         },
-                      ],closeOnClickOutside: false
+                      ], closeOnClickOutside: false
                     });
                   }
                 }))
@@ -583,7 +585,7 @@ function ViewTemplate(props) {
                       label: "OK",
                       className: "confirmBtn",
                     },
-                  ],closeOnClickOutside: false
+                  ], closeOnClickOutside: false
                 });
               })
             setAllowloader(true);
@@ -597,7 +599,7 @@ function ViewTemplate(props) {
             return;
           },
         },
-      ],closeOnClickOutside: false
+      ], closeOnClickOutside: false
     });
     // }
   }
@@ -609,13 +611,14 @@ function ViewTemplate(props) {
       e.preventDefault();
       alert('Kindly provide comments on the reason for rejection.');
     } else {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       const options = {
         method: "POST",
         headers: {
-          "Content-Type": "appiaction/json"
+          "Content-Type": "appiaction/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify({
-          authToken: sessionStorage.getItem("authToken"),
           templateCode: props.location.state.templateCode,
           comment: comments,
           userIP: sessionStorage.getItem("userIP"),
@@ -637,7 +640,7 @@ function ViewTemplate(props) {
                       props.history.push("/getTempToApprove");
                     },
                   },
-                ],closeOnClickOutside: false
+                ], closeOnClickOutside: false
               });
             } else if (data.statusDetails === "Session Expired") {
               confirmAlert({
@@ -650,7 +653,7 @@ function ViewTemplate(props) {
                       props.history.push("/login");
                     },
                   },
-                ],closeOnClickOutside: false
+                ], closeOnClickOutside: false
               });
             }
             else {
@@ -661,7 +664,7 @@ function ViewTemplate(props) {
                     label: "OK",
                     className: "confirmBtn",
                   },
-                ],closeOnClickOutside: false
+                ], closeOnClickOutside: false
               });
             }
           }))
@@ -1419,27 +1422,27 @@ function ViewTemplate(props) {
             {
               //Select option dropdown
               selectDropdown.length !== 0 ? < >
-              <div className='part2Css'>
+                <div className='part2Css'>
 
-                <h6 className='form-montrol1z '>Dropdown</h6>
-                {
-                  selectDropdown.map((posts, index) => (
-                    <div key={index} className='oneLabelBox'>
-                      <div className='form-Montroll'>
-                        <input disabled={true} name={posts} id={posts} value={posts} className='input-Montroll' />
-                      </div>
-                      <div className='editFields'>
-                        <div className='editcss'>
-                          <button type='button' className='proceedbtnxCss' onClick={e => openModelForSelectDrpDwn(e, posts)}>Details</button>
+                  <h6 className='form-montrol1z '>Dropdown</h6>
+                  {
+                    selectDropdown.map((posts, index) => (
+                      <div key={index} className='oneLabelBox'>
+                        <div className='form-Montroll'>
+                          <input disabled={true} name={posts} id={posts} value={posts} className='input-Montroll' />
                         </div>
-                        <div className='tickMarkcss'>
-                          <span id={`${posts}SelectDropDown`}></span>
+                        <div className='editFields'>
+                          <div className='editcss'>
+                            <button type='button' className='proceedbtnxCss' onClick={e => openModelForSelectDrpDwn(e, posts)}>Details</button>
+                          </div>
+                          <div className='tickMarkcss'>
+                            <span id={`${posts}SelectDropDown`}></span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                }
-              </div>
+                    ))
+                  }
+                </div>
               </> : <></>
             }
             {
