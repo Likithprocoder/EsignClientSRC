@@ -3504,6 +3504,7 @@ const Preview = (props) => {
         }
 
         // console.log("authToken: "+authToken);
+        let obj = {};
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
             let loginname = sessionStorage.getItem("username");
@@ -3535,6 +3536,7 @@ const Preview = (props) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify(obj)
             })

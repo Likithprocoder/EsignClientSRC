@@ -1,6 +1,6 @@
 
-const HOST = "/MYSIGN/";
-var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "/MYSIGN/";
+// var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
 
 const { UpdateRounded } = require("@material-ui/icons");
 
@@ -11,8 +11,8 @@ const { UpdateRounded } = require("@material-ui/icons");
 // var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
-// const HOST = "http://10.10.40.57:8090/MYSIGN/";
-// var paymenturl = "http://10.10.40.57:8095/PAYMENTSIMULATOR/getunitscalltesting";
+const HOST = "http://10.10.40.50:8090/MYSIGN/";
+var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
 
@@ -170,14 +170,14 @@ let URL = {
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
   fetchAccessToken: HOST + "fetchAccessToken",
   getKey: HOST + "getkey",
-  uploadBulkSignFile: HOST + "uploadBulkSignFile",
-  getbulkSigningdetails: HOST + "getbulkSigningdetails",
-  uploadBulkSigndetails: HOST + "uploadBulkSigndetails",
+  uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",///
+  getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
+  uploadBulkSigndetails: HOST + "V2/uploadBulkSigndetails",
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
-  getApplicationKeys: HOST + "getApplicationKeys",
-  fetchInputFieldsData: HOST + "fetchInputFieldsData",
+  getApplicationKeys: HOST + "V2/getApplicationKeys",
+  fetchInputFieldsData: HOST + "V2/fetchInputFieldsData",
   registerUser: "/register",
-  exportSignerStatusReport: HOST + "exportSignerStatusReport",
+  exportSignerStatusReport: HOST + "V2/exportSignerStatusReport",
 };
 
 module.exports = { URL };

@@ -44,14 +44,13 @@ export default class BulkSigningSummary extends React.Component {
     this.setState({ loaded: false });
     let bulkSigningInfoArr = [];
     let body = {};
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     //If rowdata is empty it will make a summary call
     if (rowData == "") {
       body = {
-        "authToken": sessionStorage.getItem("authToken")
       };
     } else { //this will fetching bulkSigningInfo details
       body = {
-        "authToken": sessionStorage.getItem("authToken"),
         "batchNo": rowData.batchNo,
       };
     }
@@ -59,7 +58,8 @@ export default class BulkSigningSummary extends React.Component {
       // fetch(URL.subscribedPlanDetails, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body)
     }).then((response) => {
@@ -157,8 +157,8 @@ export default class BulkSigningSummary extends React.Component {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               docId: data.docId,
               refNo: data.batchNo,
               //   userId: data.USER_ID,
@@ -167,6 +167,7 @@ export default class BulkSigningSummary extends React.Component {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -242,14 +243,16 @@ export default class BulkSigningSummary extends React.Component {
   // };
   exportToCSV = async (e) => {
     e.preventDefault();
-    const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
-
+    const url = `${URL.exportSignerStatusReport}?batchNumber=${this.state.batchNo}`;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     try {
       // Show a loading indicator
       this.setState({ loaded: false });
 
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'GET',  headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
       });
 
 

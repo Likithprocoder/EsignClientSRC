@@ -396,11 +396,12 @@ function UploadFileFrBulkSigning(props) {
                 data.append("inputDetails", JSON.stringify(validationData));
                 data.append("csvFile", toBeSignedCSV);
                 data.append("file", toBeSignedDoc);
-
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 const options = {
                     method: "POST",
                     headers: {
-                        enctype: "multipart/form-data"
+                        enctype: "multipart/form-data",
+                        'Authorization': `Bearer ${jsonWebToken}`
                     },
                     body: data
                 }

@@ -312,7 +312,6 @@ function NewTemplate(props) {
             } else {
                 url = URL.getTemplateInputs;
                 body = {
-                    authToken: sessionStorage.getItem("authToken"),
                     templateCode: props.location.state.templateCode,
                 };
             };
