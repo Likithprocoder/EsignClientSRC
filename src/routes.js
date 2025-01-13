@@ -92,7 +92,11 @@ const ViewUserFeedback = React.lazy(() => import("./containers/Feebback/ViewUser
 const userFeedackView = React.lazy(() => import("./containers/Feebback/UserFeedbackView"));
 const BulkRegistationSummary= React.lazy(() => import("./containers/BulkRegistration/BulkRegistationSummary"));
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
-const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const EmployeeList = React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
+const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
+const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
+// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/docUpload", name: "Sign Document", component: DocUpload },
@@ -179,7 +183,8 @@ const routes = [
     component: ApplicationInbox,
   },
   { path: "/templates", name: "Templates", component: DefaultTemplate },
-  { path: "/template", name: "Template", component: Template },
+  //{ path: "/template", name: "Template", component: Template },
+  { path: "/templateEditing", name: "Template", component: Template },
   {
     path: "/templatePdfPreview",
     name: " Template Pdf Preview",
@@ -263,23 +268,23 @@ const routes = [
   {
     path: "/addUsersToGroup",
     name: "Add Users To Groups",
-    component: AddUsersToGroup 
+    component: AddUsersToGroup
   },
-    {
+  {
     path: "/pendingSignsInbox",
     name: "Pending Signatures",
-    component: PendingActionInbox 
+    component: PendingActionInbox
   },
   {
     path: "/designationBonus",
     name: "Designation Bonus Management",
-    component: DesignationBonus 
+    component: DesignationBonus
   },
-  
+
   {
     path: "/uploadEmpDetails",
     name: "Upload Emp Details",
-    component: CSVUpload 
+    component: CSVUpload
   },
 
   {
@@ -293,6 +298,22 @@ const routes = [
     component: extFrmCorp
   },
   {
+    path: "/bulkSigningUpload",
+    name: "Bulk Signing",
+    component: FileUploadBulkSigning
+  },
+  {
+    path: "/htmlPreview",
+    name: "HTML Preview",
+    component: HtmlPreview
+  },
+  {
+    path: "/bulkSigningSummary",
+    name: "Bulk Signing Summary",
+    component: BulkSigningSummary
+  }, 
+  {
+
     path: "/getApiKeyList",
     name: "Api key List",
     component: ApiKeyList
@@ -302,7 +323,7 @@ const routes = [
     name: "API Integrations",
     component: APIIntegrations
   },
-    {
+  {
     path: "/userFeedback",
     name: "DocuExec Feedback",
     component: UserFeedback

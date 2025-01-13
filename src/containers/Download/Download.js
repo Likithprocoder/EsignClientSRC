@@ -46,6 +46,10 @@ export default class Download extends React.Component {
       actualFileName: "",
       height: null,
       width: null,
+      emailId: "",
+      mobileNo: "",
+      referalName: "",
+      unregisteredDocId: "",
       blobUrl: null,
     };
   }
@@ -63,7 +67,17 @@ export default class Download extends React.Component {
       parsed[kv[0]] = kv[1];
     }
 
+    // + "&unRegemailId=" + unRegemailId + "&referalName" + referalName + "&unRegmobileNo" + unRegmobileNo
+
     let fileName = parsed.filename;
+    if (parsed.unRegemailId !== "") {
+      this.setState({
+        referalName: parsed.referalName,
+        mobileNo: parsed.unRegmobileNo,
+        emailId: parsed.unRegemailId,
+        unregisteredDocId: parsed.docid
+      });
+    }
     // console.log(fileName);
     // let initialFileName = fileName.split("@")[1];
     // let finalfileName = initialFileName.split("_")[0] + ".pdf";
@@ -86,8 +100,12 @@ export default class Download extends React.Component {
   }
 
   componentDidMount() {
+
+    if (this.state.referalName !== "") {
+      document.getElementById("registerUser").style.display = "";
+    }
     //document.getElementById("downloadEsign-btn").click()
-     toast.success("Aadhaar eSign Success", { autoClose: 1000 });
+    toast.success("Aadhaar eSign Success", { autoClose: 1000 });
     // toast.success("Aadhaar eSign Success");
     if (
       sessionStorage.getItem("externalSigner") != null &&
@@ -208,7 +226,7 @@ export default class Download extends React.Component {
       let kv = qp_list[i].split("=");
       parsed[kv[0]] = kv[1];
     }
-   
+
   }
 
   setInput = (e) => {
@@ -305,94 +323,94 @@ export default class Download extends React.Component {
       //   this.state.loginname.length !== 0 &&
       //   this.state.loginname.trim() !== ""
       // ) {
+      if (
+        this.state.password.length !== 0 &&
+        this.state.password.trim() !== ""
+      ) {
         if (
-          this.state.password.length !== 0 &&
-          this.state.password.trim() !== ""
+          this.state.repassword.length !== 0 &&
+          this.state.repassword.trim() !== ""
         ) {
-          if (
-            this.state.repassword.length !== 0 &&
-            this.state.repassword.trim() !== ""
-          ) {
-            if (this.state.password === this.state.repassword) {
-              if (
-                this.state.moble.length !== 0 &&
-                this.state.moble.length == 10 &&
-                this.state.moble.trim() !== ""
-              ) {
-                if (passwordLetters.test(this.state.password)) {
-                  let json = {
-                    loginname: btoa(this.state.loginname),
-                    username: btoa(this.state.username),
-                    email: btoa(this.state.email),
-                    password: btoa(this.state.password),
-                    mobile: btoa(this.state.moble),
-                    userIP: sessionStorage.getItem("userIP"),
-                    externalSigner: true,
-                    docId: sessionStorage.getItem("docId"),
-                  };
-                  this.setState({ loaded: false });
-                  fetch(URL.register, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(json),
+          if (this.state.password === this.state.repassword) {
+            if (
+              this.state.moble.length !== 0 &&
+              this.state.moble.length == 10 &&
+              this.state.moble.trim() !== ""
+            ) {
+              if (passwordLetters.test(this.state.password)) {
+                let json = {
+                  loginname: btoa(this.state.loginname),
+                  username: btoa(this.state.username),
+                  email: btoa(this.state.email),
+                  password: btoa(this.state.password),
+                  mobile: btoa(this.state.moble),
+                  userIP: sessionStorage.getItem("userIP"),
+                  externalSigner: true,
+                  docId: sessionStorage.getItem("docId"),
+                };
+                this.setState({ loaded: false });
+                fetch(URL.register, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(json),
+                })
+                  .then((response) => {
+                    return response.json();
                   })
-                    .then((response) => {
-                      return response.json();
-                    })
-                    .then((responseJson) => {
-                      response_data = responseJson;
-                      if (responseJson.status === "SUCCESS") {
-                        this.setState({ loaded: true });
-                        alert(responseJson.statusDetails);
-                        this.onCloseFirstModal();
-                        document.getElementById(
-                          "externalSignerRegCkBx"
-                        ).style.display = "none";
-                        sessionStorage.setItem("userId", "");
-                      } else {
-                        this.setState({ loaded: true });
-                        alert(responseJson.statusDetails);
-                      }
-                    })
-                    .catch((e) => {
+                  .then((responseJson) => {
+                    response_data = responseJson;
+                    if (responseJson.status === "SUCCESS") {
                       this.setState({ loaded: true });
-                      // notify.show(e, "custom", 5000, myColor);
-                      alert(e);
-                    });
-                } else {
-                  document.getElementById("alertmsg").style.display = "";
-                  this.setState({
-                    alertMsg:
-                      "Password should contain atleast 1 Capital letter, 1 Small letter, 1 Numeric and 1 Special character",
+                      alert(responseJson.statusDetails);
+                      this.onCloseFirstModal();
+                      document.getElementById(
+                        "externalSignerRegCkBx"
+                      ).style.display = "none";
+                      sessionStorage.setItem("userId", "");
+                    } else {
+                      this.setState({ loaded: true });
+                      alert(responseJson.statusDetails);
+                    }
+                  })
+                  .catch((e) => {
+                    this.setState({ loaded: true });
+                    // notify.show(e, "custom", 5000, myColor);
+                    alert(e);
                   });
-                  setTimeout(this.continueExecution, 5000);
-                }
               } else {
                 document.getElementById("alertmsg").style.display = "";
                 this.setState({
-                  alertMsg: "Please enter valid mobile number!",
+                  alertMsg:
+                    "Password should contain atleast 1 Capital letter, 1 Small letter, 1 Numeric and 1 Special character",
                 });
                 setTimeout(this.continueExecution, 5000);
               }
             } else {
               document.getElementById("alertmsg").style.display = "";
               this.setState({
-                alertMsg: "Password and Confirm Password does not match!",
+                alertMsg: "Please enter valid mobile number!",
               });
               setTimeout(this.continueExecution, 5000);
             }
           } else {
             document.getElementById("alertmsg").style.display = "";
-            this.setState({ alertMsg: "Please repeat password!" });
+            this.setState({
+              alertMsg: "Password and Confirm Password does not match!",
+            });
             setTimeout(this.continueExecution, 5000);
           }
         } else {
           document.getElementById("alertmsg").style.display = "";
-          this.setState({ alertMsg: "Please enter your password!" });
+          this.setState({ alertMsg: "Please repeat password!" });
           setTimeout(this.continueExecution, 5000);
         }
+      } else {
+        document.getElementById("alertmsg").style.display = "";
+        this.setState({ alertMsg: "Please enter your password!" });
+        setTimeout(this.continueExecution, 5000);
+      }
       // } else {
       //   document.getElementById("alertmsg").style.display = "";
       //   this.setState({ alertMsg: "Please enter your Login name!" });
@@ -522,54 +540,54 @@ export default class Download extends React.Component {
       docId: this.state.docId,
   };
 
-  try {
-    const response = await fetch(URL.getstoredFilefrmTempDetails, {
+    try {
+      const response = await fetch(URL.getstoredFilefrmTempDetails, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(data),
-    });
+      });
 
-    const responseJson = await response.json();
-    // console.log({responseJson});
+      const responseJson = await response.json();
+      // console.log({responseJson});
 
-        if (responseJson.status === "SUCCESS") {
-          document.getElementById("discardOptionsdiv").style.display = "none";
-          if (responseJson.statusDetails.includes("Cancelled")) {
-            toast.error(responseJson.statusDetails, { autoClose: 1000 });
-            // toast.error(responseJson.statusDetails);
-            this.sleep(50000);
-            this.routeToInboxPage();
-          } else if (responseJson.statusDetails.includes("Updated")) { 
-            await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
-            // await this.createFile(this.state.txnrefNo, 0);
-            this.routeToPreviewPage();
-          } else {
-            toast.success(responseJson.statusDetails, { autoClose: 1000 });
-            // toast.success(responseJson.statusDetails);
-            this.setState({
-              msg: "The signed document can be downloaded from this page, or from the Inbox later.",
-            });
-          }
+      if (responseJson.status === "SUCCESS") {
+        document.getElementById("discardOptionsdiv").style.display = "none";
+        if (responseJson.statusDetails.includes("Cancelled")) {
+          toast.error(responseJson.statusDetails, { autoClose: 1000 });
+          // toast.error(responseJson.statusDetails);
+          this.sleep(50000);
+          this.routeToInboxPage();
+        } else if (responseJson.statusDetails.includes("Updated")) {
+          await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
+          // await this.createFile(this.state.txnrefNo, 0);
+          this.routeToPreviewPage();
         } else {
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {},
-              },
-            ],
+          toast.success(responseJson.statusDetails, { autoClose: 1000 });
+          // toast.success(responseJson.statusDetails);
+          this.setState({
+            msg: "The signed document can be downloaded from this page, or from the Inbox later.",
           });
         }
-      } catch(error) {
-        this.setState({ loaded: true });
-
-        alert(error);
+      } else {
+        confirmAlert({
+          message: responseJson.statusDetails,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { },
+            },
+          ],
+        });
       }
+    } catch (error) {
+      this.setState({ loaded: true });
+
+      alert(error);
+    }
   }
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
@@ -587,33 +605,33 @@ export default class Download extends React.Component {
     })
     const responseJson = await response.json();
     // console.log({responseJson});
-    if (responseJson.status == "SUCCESS"){
-          this.setState({
-            loaded: true,
-            signMode: responseJson.signMode,
-            signInfo: responseJson.signInfo,
-            signCoordinates: responseJson.signCoordinates,
-            // signCoordinates: JSON.parse(responseJson.signCoordinates),
-            signPage: responseJson.signPage,
-            pageList: responseJson.pageList,
-          });
-        } else {
-          this.setState({ openOTPModal: false });
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/");
-                },
-              },
-            ],
-          });
-          //alert(responseJson.statusDetails)
-          this.setState({ loaded: true });
-        }
+    if (responseJson.status == "SUCCESS") {
+      this.setState({
+        loaded: true,
+        signMode: responseJson.signMode,
+        signInfo: responseJson.signInfo,
+        signCoordinates: responseJson.signCoordinates,
+        // signCoordinates: JSON.parse(responseJson.signCoordinates),
+        signPage: responseJson.signPage,
+        pageList: responseJson.pageList,
+      });
+    } else {
+      this.setState({ openOTPModal: false });
+      confirmAlert({
+        message: responseJson.statusDetails,
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {
+              this.props.history.push("/");
+            },
+          },
+        ],
+      });
+      //alert(responseJson.statusDetails)
+      this.setState({ loaded: true });
+    }
   }
 
   // //chnaged for encryption
@@ -697,7 +715,6 @@ export default class Download extends React.Component {
         signPage: this.state.signPage,
         pageList: this.state.pageList
       }
-  
       let data1 = {
         // files: file1,
         docId: this.state.docId,
@@ -737,43 +754,48 @@ export default class Download extends React.Component {
       window.top.location.href = this.state.commonurl + "/inbox";
     }
   }
+
+  registerUser = () => {
+
+    let windowFeatures = "popup";
+
+    // Data to send
+    const mobileNo = this.state.mobileNo;
+    const email = this.state.emailId;
+    const referalName = this.state.referalName;
+    const unregisteredDocId = this.state.unregisteredDocId;
+    // Build the URL with query parameters
+    //const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}`;
+    const registerURL = `${URL.registerUser}?mobileNo=${btoa(mobileNo)}&email=${btoa(email)}&referalName=${btoa(referalName)}&docId=${btoa(unregisteredDocId)}`;
+    // Open the new window with the modified URL
+    var win = window.open(registerURL, windowFeatures);
+  };
+
   render() {
     const {blobUrl} = this.state;
     // Define the headers to include in the fetch request
     return (
       <div className="login-main-container">
-        <Loader
-          loaded={this.state.loaded}
-          lines={13}
-          radius={20}
-          corners={1}
-          rotate={0}
-          direction={1}
-          color="#000"
-          speed={1}
-          trail={60}
-          shadow={false}
-          hwaccel={false}
-          className="spinner loader"
-          zIndex={2e9}
-          top="50%"
-          left="50%"
-          scale={1.0}
-          loadedClassName="loadedContent"
-        />
-        <ToastContainer
-          position="top-right"
-          autoClose={1500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        ></ToastContainer>
+        <ToastContainer></ToastContainer>
+        <div
+          className="consenteSignLink"
+          id="registerUser"
+          style={{ display: "none" }}
+          onClick={this.consenteSignLink}
+        >
+          <p>
+            <a title="register" href="" onClick={this.registerUser}>
+              <span className="blink">
+              Click here to join DocuExec and link the signed document to your account.
+              </span>
+            </a>{" "}
 
+          </p>
+
+
+
+
+        </div>
         <div class="" id="discardOptionsdiv" style={{ display: "none" }}>
           {/* <nav class="" id="performActionnavid" aria-label="breadcrumb">
               <ol id="performActionBreadcrumbid" class="breadcrumb"> */}

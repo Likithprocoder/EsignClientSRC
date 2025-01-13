@@ -272,7 +272,7 @@ class EditProfile extends Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => { this.props.history.push("/profileDetails") }
+                onClick: () => { },
               },
             ], closeOnClickOutside: false
           });

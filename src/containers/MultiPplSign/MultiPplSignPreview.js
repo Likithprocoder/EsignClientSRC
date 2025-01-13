@@ -2092,6 +2092,8 @@ const MultiPplSignPreview = (props) => {
       preparingSignerInfo();
       let lastDate = props.location.state.details.endDate;
       let noOfSigns = props.location.state.details.noSigns;
+
+      console.log(signerInfoo);
       let InputsVal = {
         emailDetails: props.location.state.details.emailDetails,
         declineSigning:props.location.state.details.declineSigning,

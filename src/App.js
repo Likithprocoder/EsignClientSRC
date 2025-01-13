@@ -19,8 +19,9 @@ const DefaultLayout = React.lazy(() =>
 );
 
 
- const Login = React.lazy(() => import("./views/Pages/Login/Login"));
+const Login = React.lazy(() => import("./views/Pages/Login/Login"));
 const Register = React.lazy(() => import("./views/Pages/Register/Register"));
+const Template = React.lazy(() => import("./containers/Templates/Template"))
 
 // const ServerMaintainanceLogin = React.lazy(() =>
 //   import("./views/Pages/ServerMaintainance")
@@ -69,6 +70,7 @@ const MultiPplSignMobilePage = React.lazy(() =>
   import("./containers/MultiPplSign/MultiPplSignMobilePage")
 );
 
+const DisplayPdf = React.lazy(() => import("./containers/Templates/Template Pdf Preview"))
 
 
 
@@ -185,8 +187,22 @@ class App extends Component {
               name="Multi Ppl Sign Guest"
               render={(props) => <MultiPplSignMobilePage {...props} />}
             />
-         
-           
+
+            <Route
+              exact
+              path="/template"
+              name="template editing"
+              render={(props) => <Template {...props} />}
+            />
+
+            <Route
+              exact
+              path="/bulkSigningPdfPreview"
+              name="template PDF preview page"
+              render={(props) => <DisplayPdf {...props} />}
+            />
+
+
             {/* <Route
               exact
               path="/DemoVideoPage"

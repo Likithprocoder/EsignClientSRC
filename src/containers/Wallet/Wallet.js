@@ -284,6 +284,115 @@ export default class Wallet extends React.Component {
         alert(e);
       });
   };
+  submitOtp = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
+      loginname: btoa(sessionStorage.getItem("username")),
+      otp: btoa(this.state.otp),
+    };
+    fetch(URL.validateOtp, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.status === "SUCCESS") {
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {},
+              },
+            ],
+          });
+
+          sessionStorage.setItem("verifyMobile", responseJson.varifyMobile);
+          document.getElementById("verifyBtnContainer").style.display = "none";
+        } else {
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {},
+              },
+            ],
+          });
+          // alert(responseJson.statusDetails)
+        }
+      })
+      .catch((e) => {
+        confirmAlert({
+          message: e,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        //alert(e)
+      });
+  };
+
+  verifyMobile = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
+      authToken: sessionStorage.getItem("authToken"),
+    };
+    fetch(URL.getOtp, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.smsStatus === "SUCCESS") {
+          document.getElementById("verifyBtn").style.display = "none";
+          document.getElementById("otpRespContainer").style.display = "";
+        } else {
+          confirmAlert({
+            message: responseJson.otpStatusDescription,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {},
+              },
+            ],
+          });
+          // alert(responseJson.otpStatusDescription)
+        }
+      })
+      .catch((e) => {
+        confirmAlert({
+          message: "Please Sign or upload signature",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {},
+            },
+          ],
+        });
+        //alert(e)
+      });
+  };
 
   consenteSignLink = () => {
     this.props.history.push("/docUpload");

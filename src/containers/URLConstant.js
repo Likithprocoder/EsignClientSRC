@@ -7,13 +7,16 @@ const { UpdateRounded } = require("@material-ui/icons");
 // const HOST = "https://uat.docuexec.com/MYSIGN/";
 // var paymenturl = "https://uat.docuexec.com/PAYMENTSIMULATOR/getunitscalltesting";
 
-const HOST = "http://localhost:7090/MYSIGN/";
-var paymenturl = "http://localhost:7095/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "http://localhost:7090/MYSIGN/";
+// var paymenturl = "http://localhost:7095/PAYMENTSIMULATOR/getunitscalltesting";
 
+
+const HOST = "http://10.10.40.50:8090/MYSIGN/";
+var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
 
-  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
+  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
 
 
 // const rupeeIcon = '\&#x20B9';
@@ -165,8 +168,16 @@ let URL = {
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken:HOST+"fetchAccessToken",
-  getKey: HOST+"getkey"
+  fetchAccessToken: HOST + "fetchAccessToken",
+  getKey: HOST + "getkey",
+  uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",///
+  getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
+  uploadBulkSigndetails: HOST + "V2/uploadBulkSigndetails",
+  inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
+  getApplicationKeys: HOST + "V2/getApplicationKeys",
+  fetchInputFieldsData: HOST + "V2/fetchInputFieldsData",
+  registerUser: "/register",
+  exportSignerStatusReport: HOST + "V2/exportSignerStatusReport",
 };
 
 module.exports = { URL };

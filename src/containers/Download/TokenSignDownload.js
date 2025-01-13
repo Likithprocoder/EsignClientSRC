@@ -56,12 +56,68 @@ export default class TokenSignDownload extends React.Component {
       pageList: [],
       pageDimensions: "",
       equalPageDimensions: true,
+      emailId: "",
+      mobileNo: "",
+      referalName: "",
+      unregisteredDocId: "",
+
       isFinish: false,
       blobUrl: null,
     };
   }
 
   componentWillMount() {
+
+    // console.log(this.props);
+    // console.log(this.props.location.state.details.hasOwnProperty("referalName"));
+    // console.log(this.props.location.state);
+    // console.log(this.props.location.state.details);
+
+    // -----------------resgister user-------
+
+    if (this.props.location.state.details.hasOwnProperty("referalName")) {
+      this.setState({
+        referalName: this.props.location.state.details.referalName,
+        mobileNo: this.props.location.state.details.mobileNo,
+        emailId: this.props.location.state.details.emailId,
+        unregisteredDocId: this.props.location.state.details.docId
+      })
+      //document.getElementById("registerUser").style.display = "";
+
+    }
+
+
+
+    // ----------------end of register user----------------
+    if (sessionStorage.hasOwnProperty("sealMsg")) {
+      sessionStorage.setItem("sealMsg", "");
+    }
+    // if (this.props.location.frompath !== "" && this.props.location.frompath !== "/preview" && this.props.location.frompath !== "/docUpload" && this.props.location.frompath !== "/payments/esignTopup" && this.props.location.frompath !== "/payments/subscriptions") {
+    // if (this.props.location.frompath !== "" && this.props.location.frompath !== "/preview") {
+    //   this.props.history.push({ pathname: "/accountInfo" });
+    // }
+    this.setState({
+      mode: this.props.location.state.details.mode,
+      fileName: this.props.location.state.details.filename,
+      docId: this.props.location.state.details.docId,
+      txnrefNo: this.props.location.state.details.txnrefNo,
+      height: this.props.location.state.details.canvas_height,
+      width: this.props.location.state.details.canvas_width,
+      draftRefNumber: sessionStorage.getItem("draftRefNumber")
+    });
+
+    sessionStorage.removeItem("draftRefNumber");
+    if (this.props.location.state.details.mode === "3") {
+      this.setState({ Msg: "DSC Token Signing Successful" });
+    }
+    if (this.props.location.state.details.mode === "4") {
+      this.setState({ Msg: "OTP Signing Successful" });
+    }
+
+
+
+
+
     if (this.props.location.frompath !== "" && this.props.location.frompath === "/preview") {
       let fileName = this.props.location.state?.details?.filename;
       let actuFileName = "";
@@ -80,7 +136,7 @@ export default class TokenSignDownload extends React.Component {
         width: this.props.location.state.details.canvas_width,
         draftRefNumber: sessionStorage.getItem("draftRefNumber")
       });
-    } else if (this.props.location.frompath !== "" && this.props.location.frompath === "/pendingSignsInbox" ) {
+    } else if (this.props.location.frompath !== "" && this.props.location.frompath === "/pendingSignsInbox") {
       // console.log(this.props.location.state.details.docId);
       this.setState({
         docId: this.props.location.state.details.docId,
@@ -90,18 +146,15 @@ export default class TokenSignDownload extends React.Component {
     } else {
       this.props.history.push({ pathname: "/accountInfo" });
     }
-    sessionStorage.removeItem("draftRefNumber");
-    if (this.props.location.state.details.mode === "3") {
-      this.setState({ Msg: "DSC Token Signing Successful" });
-    }
-    if (this.props.location.state.details.mode === "4") {
-      this.setState({ Msg: "OTP Signing Successful" });
-    }
   }
 
   componentDidMount() {
-    // if (this.props.location.frompath !== "/pendingSignsInbox" ) {
-    //   toast.success(this.state.Msg, { autoClose: 1000 });
+    if (this.state.referalName) {
+
+      document.getElementById("registerUser").style.display = "";
+    }
+    // if (this.state.mode === "3") {
+    //     this.setState({ Msg: "DSC Token Signing Successful" })
     // }
 
     if (
@@ -109,6 +162,7 @@ export default class TokenSignDownload extends React.Component {
       sessionStorage.getItem("externalSigner") === "true"
     ) {
       if (sessionStorage.getItem("userId") === "0") {
+
         var username = sessionStorage.getItem("username");
         var email = sessionStorage.getItem("email");
         this.setState({
@@ -170,7 +224,7 @@ export default class TokenSignDownload extends React.Component {
 
       const contentType = response.headers.get('Content-Type');
       if (!contentType || !contentType.includes('application/pdf')) {
-      throw new Error('Expected a PDF document but received: ' + contentType);
+        throw new Error('Expected a PDF document but received: ' + contentType);
       }
 
       // Convert the response into a Blob
@@ -180,7 +234,7 @@ export default class TokenSignDownload extends React.Component {
         const blobUrl = window.URL.createObjectURL(blob);
         this.setState({ blobUrl });
         this.setState({ loaded: true });
-        if (this.props.location.frompath !== "/pendingSignsInbox" ) {
+        if (this.props.location.frompath !== "/pendingSignsInbox") {
           toast.success(this.state.Msg, { autoClose: 1000 });
         }
       } else {
@@ -510,61 +564,62 @@ export default class TokenSignDownload extends React.Component {
     let data = getDocDetailsData;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let dataToGetSignCoordinateDetails = {
-        docId: this.state.docId,
+      docId: this.state.docId,
     };
 
     try {
       this.setState({ loaded: false });
-        const response = await fetch(URL.getstoredFilefrmTempDetails, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${jsonWebToken}`
-            },
-            body: JSON.stringify(data),
-        });
+      const response = await fetch(URL.getstoredFilefrmTempDetails, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+        body: JSON.stringify(data),
+      });
 
-        const responseJson = await response.json();
-        if (responseJson.status === "SUCCESS") {
-            document.getElementById("discardOptionsdiv").style.display = "none";
+      const responseJson = await response.json();
+      if (responseJson.status === "SUCCESS") {
+        document.getElementById("discardOptionsdiv").style.display = "none";
 
-            if (responseJson.statusDetails.includes("Cancelled")) {
-                toast.error(responseJson.statusDetails, { autoClose: 1000 });
-                this.sleep(50000);
-                this.setState({ loaded: true });
-                this.props.history.push("/inbox");
-            } else if (responseJson.statusDetails.includes("Updated")) {
-                await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
-                await this.createFile(this.state.txnrefNo, 0);
-            } else {
-                toast.success(responseJson.statusDetails, { autoClose: 1000 });
-                this.setState({ loaded: true });
-                this.setState({
-                    msg: "The signed document can be downloaded from this page, or from the Inbox later.",
-                });
-            }
+        if (responseJson.statusDetails.includes("Cancelled")) {
+          toast.error(responseJson.statusDetails, { autoClose: 1000 });
+          this.sleep(50000);
+          this.setState({ loaded: true });
+          this.props.history.push("/inbox");
+        } else if (responseJson.statusDetails.includes("Updated")) {
+          await this.getSignCoordinateDetails(dataToGetSignCoordinateDetails);
+          await this.createFile(this.state.txnrefNo, 0);
         } else {
-            confirmAlert({
-                message: responseJson.statusDetails,
-                buttons: [
-                    {
-                        label: "OK",
-                        className: "confirmBtn",
-                        onClick: () => {this.setState({ loaded: true });},
-                    },
-                ],
-            });
+          toast.success(responseJson.statusDetails, { autoClose: 1000 });
+          this.setState({ loaded: true });
+          this.setState({
+            msg: "The signed document can be downloaded from this page, or from the Inbox later.",
+          });
         }
+      } else {
+        confirmAlert({
+          message: responseJson.statusDetails,
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { this.setState({ loaded: true }); },
+            },
+          ],
+        });
+      }
+
     } catch (error) {
-        this.setState({ loaded: true });
-        alert(error);
+      this.setState({ loaded: true });
+      alert(error);
     }
   }
 
   //Fetch call to get the coordinates when user selects Discard and sign again option
   async getSignCoordinateDetails(data) {
     this.setState({ loaded: false });
-	let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     //getting access for external signer
     const response = await fetch(URL.getSignCoordinateDetails, {
       method: "POST",
@@ -575,33 +630,33 @@ export default class TokenSignDownload extends React.Component {
       body: JSON.stringify(data),
     })
     const responseJson = await response.json();
-    if (responseJson.status == "SUCCESS"){
-          this.setState({
-            loaded: true,
-            signMode: responseJson.signMode,
-            signInfo: responseJson.signInfo,
-            signCoordinates: responseJson.signCoordinates,
-            // signCoordinates: JSON.parse(responseJson.signCoordinates),
-            signPage: responseJson.signPage,
-            pageList: responseJson.pageList,
-          });
-        } else {
-          this.setState({ openOTPModal: false });
-          confirmAlert({
-            message: responseJson.statusDetails,
-            buttons: [
-              {
-                label: "OK",
-                className: "confirmBtn",
-                onClick: () => {
-                  this.props.history.push("/");
-                },
-              },
-            ],
-          });
-          //alert(responseJson.statusDetails)
-          this.setState({ loaded: true });
-        }
+    if (responseJson.status == "SUCCESS") {
+      this.setState({
+        loaded: true,
+        signMode: responseJson.signMode,
+        signInfo: responseJson.signInfo,
+        signCoordinates: responseJson.signCoordinates,
+        // signCoordinates: JSON.parse(responseJson.signCoordinates),
+        signPage: responseJson.signPage,
+        pageList: responseJson.pageList,
+      });
+    } else {
+      this.setState({ openOTPModal: false });
+      confirmAlert({
+        message: responseJson.statusDetails,
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn",
+            onClick: () => {
+              this.props.history.push("/");
+            },
+          },
+        ],
+      });
+      //alert(responseJson.statusDetails)
+      this.setState({ loaded: true });
+    }
   }
 
   //downloading PDF file
@@ -623,60 +678,60 @@ export default class TokenSignDownload extends React.Component {
     // Construct the URL with query parameters
     let url = `${URL.downloadfromtemp}?txnrefNo=${btoa(txnrefNo)}&signedStatus=${signedStatus}`;
     let response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${jsonWebToken}`
-          }
-        }
+      headers: {
+        'Authorization': `Bearer ${jsonWebToken}`
+      }
+    }
     );
     let data = await response.blob();
-      let arrayBuffer = await this.blobToArrayBuffer(data);
+    let arrayBuffer = await this.blobToArrayBuffer(data);
     let testResponse = this.test(arrayBuffer);
   }
 
   async blobToArrayBuffer(blob) {
     return new Promise((resolve, reject) => {
-        let reader = new FileReader();
-        reader.onload = function () {
-            resolve(reader.result);
-        };
-        reader.onerror = function (error) {
-            reject(error);
-        };
-        reader.readAsArrayBuffer(blob);
+      let reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+      reader.readAsArrayBuffer(blob);
     });
-}
+  }
 
   //routing to preview page
   async test(data) {
-    const loadingTask = pdfjs.getDocument({data});
+    const loadingTask = pdfjs.getDocument({ data });
     const pdf = await loadingTask.promise;
-            const numPages = pdf.numPages;
-            const pageDimensionsArr = [];
-            let equalPageDimensionsValue = true;
-            for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
-              const page = await pdf.getPage(pageNumber);
-              const viewport = page.getViewport({ scale: 1 });
+    const numPages = pdf.numPages;
+    const pageDimensionsArr = [];
+    let equalPageDimensionsValue = true;
+    for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1 });
 
-              pageDimensionsArr.push({
-                  pageNumber: pageNumber,
-                  width: viewport.width,
-                  height: viewport.height,
-              });
-          }
-          this.setState({ pageDimensions: pageDimensionsArr });
+      pageDimensionsArr.push({
+        pageNumber: pageNumber,
+        width: viewport.width,
+        height: viewport.height,
+      });
+    }
+    this.setState({ pageDimensions: pageDimensionsArr });
 
-          // Iterate through the array and compare dimensions
-          for (let i = 1; i < pageDimensionsArr.length; i++) {
-            if (pageDimensionsArr.length != 1) {
+    // Iterate through the array and compare dimensions
+    for (let i = 1; i < pageDimensionsArr.length; i++) {
+      if (pageDimensionsArr.length != 1) {
 
-              if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width || 
-                pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
-                  equalPageDimensionsValue = false;
-                  this.setState({ equalPageDimensions: false});
-                  break;
-              }
-            }
-          }
+        if (pageDimensionsArr[i].width !== pageDimensionsArr[0].width ||
+          pageDimensionsArr[i].height !== pageDimensionsArr[0].height) {
+          equalPageDimensionsValue = false;
+          this.setState({ equalPageDimensions: false });
+          break;
+        }
+      }
+    }
 
     let metadata = {
       type: "application/pdf",
@@ -713,6 +768,22 @@ export default class TokenSignDownload extends React.Component {
     });
   }
 
+  registerUser = () => {
+    let windowFeatures = "popup";
+
+    // Data to send
+    const mobileNo = this.state.mobileNo;
+    const email = this.state.emailId;
+    const referalName = this.state.referalName;
+    const unregisteredDocId = this.state.unregisteredDocId;
+    // Build the URL with query parameters
+    //const registerURL = `${URL.registerUser}?mobileNo=${encodeURIComponent(mobileNo)}&email=${encodeURIComponent(email)}`;
+    const registerURL = `${URL.registerUser}?mobileNo=${btoa(mobileNo)}&email=${btoa(email)}&referalName=${btoa(referalName)}&docId=${btoa(unregisteredDocId)}`;
+    // Open the new window with the modified URL
+    var win = window.open(registerURL, windowFeatures);
+  };
+
+
   render() {
     const { isFinish, fileName, blobUrl, actualFileName } = this.state;
 
@@ -738,7 +809,27 @@ export default class TokenSignDownload extends React.Component {
           loadedClassName="loadedContent"
         />
         <ToastContainer></ToastContainer>
-        <div className="login-main-container"> 
+
+        <div className="login-main-container">
+          <div
+
+            className="consenteSignLink"
+            id="registerUser"
+            style={{ display: "none" }}
+            onClick={this.consenteSignLink}
+          >
+            <p>
+              <a title="register" href="" onClick={this.registerUser}>
+                <span className="blink">
+                  Click here to join DocuExec and link the signed document to your account.
+                </span>
+              </a>{" "}
+
+            </p>
+
+
+          </div>
+
           <div className="" id="discardOptionsdiv" style={{ display: "none" }}>
             {/* <nav class="" id="performActionnavid" aria-label="breadcrumb">
               <ol id="performActionBreadcrumbid" class="breadcrumb"> */}
@@ -907,8 +998,8 @@ export default class TokenSignDownload extends React.Component {
               </button>
             </div>
           </Modal>
-        </div>
-      </div>
+        </div >
+      </div >
     );
   }
 }

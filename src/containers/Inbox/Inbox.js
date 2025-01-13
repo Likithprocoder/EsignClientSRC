@@ -259,6 +259,13 @@ export default class Inbox extends React.Component {
           //sessionStorage.setItem("items", JSON.stringify(responseJson.menu));
           // sessionStorage.setItem("mobileNo", responseJson.mobileNo);
           // this.createFileforSigningasSender(responseJson.fileName);
+
+          // Parse the additionalData JSON string
+          if (responseJson?.additionalData) {
+            const additionalData = JSON?.parse(responseJson?.additionalData);
+            sessionStorage.setItem('declineSigning', additionalData.declineSigning);
+          }
+
           //changed for encryption
           this.createFileforSigningasSender(
             responseJson.fileName,
@@ -428,13 +435,13 @@ export default class Inbox extends React.Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
       URL.downloadStoredFileV2 +
-        "?docID=" +
-        btoa(docID),
-        {
-          headers: {
-              'Authorization': `Bearer ${jsonWebToken}`
-          }
+      "?docID=" +
+      btoa(docID),
+      {
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
         }
+      }
     );
     // console.log(response);
     let data = await response.blob();
@@ -551,9 +558,9 @@ export default class Inbox extends React.Component {
       "?docID=" +
       btoa(doc.DOC_ID),
       {
-          headers: {
-              'Authorization': `Bearer ${jsonWebToken}`
-          }
+        headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
       }
     );
     let data = await response.blob();
@@ -1060,18 +1067,18 @@ export default class Inbox extends React.Component {
     }
   };
 
-//-----------------View File--------------------
-viewStoredFile = async (e) => {
-  let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-  try {
-    let response = await fetch(
-      URL.viewStoredFileV2 + "?docID=" + btoa(e.DOC_ID),
-      {
-        headers: {
-          'Authorization': 'Bearer ' + jsonWebToken
+  //-----------------View File--------------------
+  viewStoredFile = async (e) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    try {
+      let response = await fetch(
+        URL.viewStoredFileV2 + "?docID=" + btoa(e.DOC_ID),
+        {
+          headers: {
+            'Authorization': 'Bearer ' + jsonWebToken
+          }
         }
-      }
-    );
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok " + response.statusText);
@@ -2089,15 +2096,15 @@ viewStoredFile = async (e) => {
               icon: () => (
                 <Delete
                   style={{
-                    color: (rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec') ? 'gray' : 'red',
+                    color: (rowData.DOC_OWNER === 'jsign' || rowData.DOC_OWNER === 'Docuexec') ? 'gray' : 'red',
                   }}
                 />
               ),
-              tooltip:(rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec') ? "T&C cannot be deleted" : "Delete",
+              tooltip: (rowData.DOC_OWNER === 'jsign' || rowData.DOC_OWNER === 'Docuexec') ? "T&C cannot be deleted" : "Delete",
               onClick: (event) => this.fileDelete(rowData),
               isFreeAction: false,
               hidden: false,
-              disabled:(rowData.DOC_OWNER === 'jsign'||rowData.DOC_OWNER === 'Docuexec'), // Disable icon if DOC_OWNER is 'jsign'
+              disabled: (rowData.DOC_OWNER === 'jsign' || rowData.DOC_OWNER === 'Docuexec'), // Disable icon if DOC_OWNER is 'jsign'
               cellStyle: {
                 padding: "0px",
               },
