@@ -3530,6 +3530,8 @@ const Preview = (props) => {
                         signPage: signPg,
                         pages: pgList,
                     }],
+                    senderComments: "Please review and sign the document",
+                    emailSubject: "Notification for Digital Signing"
                 },
             };
 
