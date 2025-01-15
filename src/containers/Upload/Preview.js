@@ -52,6 +52,7 @@ const defaultDragHeightMob = "37px";//35
 
 const Preview = (props) => {
   // alert("PREVIEW PAGE");
+  console.log(props);
   const frompath = props?.location?.frompath;
 
   //-------Declaring a new state variable dragArray, count, currentPage, containmentPage----
@@ -2453,7 +2454,7 @@ const Preview = (props) => {
       });
       return;
     }
-    console.log(result);
+    // console.log(result);
     if (result == true) {
       confirmAlert({
         message: "Please verify and place the signing position on the document",
@@ -3503,16 +3504,16 @@ const Preview = (props) => {
             }
         }
 
-        // console.log("authToken: "+authToken);
+        console.log("authToken: "+authToken);
         let obj = {};
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+        if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
             let loginname = sessionStorage.getItem("username");
             obj = {
                 //****starts here
                 //added the keys for template based generated PDF.
                 loginname: loginname,
-                authToken: authToken,
+                // authToken: authToken,
                 userIP: sessionStorage.getItem("userIP"),
                 fileRefNo: fileRefNo,
                 csvFileRefNo: csvFileRefNo,
@@ -3629,10 +3630,6 @@ const Preview = (props) => {
                     docdata: "",
                 },
             };
-            // if (authToken !== null) {
-            //   obj.authToken = authToken; // Add authToken as a key-value pair
-            // }
-            // console.log({ obj });
 
             const headers = {
                 enctype: "multipart/form-data",
@@ -3724,6 +3721,7 @@ const Preview = (props) => {
                                 canvas_height: canvas_height,
                                 canvas_width: canvas_width,
                             };
+                            console.log(data);
                             props.history.push({
                                 pathname: "/download/tokenSignDownload",
                                 frompath: "/preview",

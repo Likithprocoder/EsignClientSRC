@@ -234,13 +234,6 @@ export default class BulkSigningSummary extends React.Component {
     }));
   }
 
-  //fetch call to export signer status report
-  //  exportToCSV = (e) => {
-  //   e.preventDefault()
-  //   const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
-  //   window.location.href = url;
-
-  // };
   exportToCSV = async (e) => {
     e.preventDefault();
     const url = `${URL.exportSignerStatusReport}?batchNumber=${this.state.batchNo}`;

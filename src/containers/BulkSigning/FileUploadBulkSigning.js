@@ -389,7 +389,6 @@ function UploadFileFrBulkSigning(props) {
             }
             else {
                 let validationData = {
-                    // authToken: sessionStorage.getItem("authToken"),
                     userIP: sessionStorage.getItem("userIP")
                 }
                 let data = new FormData();
