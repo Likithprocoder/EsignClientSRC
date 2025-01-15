@@ -726,6 +726,7 @@ function HtmlPreview(props) {
             userIP: sessionStorage.getItem("userIP"),
             htmlvalidations: finlDataToServerArray
         }
+        console.log({finlDataToServerArray});
         let data = new FormData();
         data.append("inputDetails", JSON.stringify(validationData));
         data.append("csvFile", csvFile);
