@@ -3507,7 +3507,7 @@ const Preview = (props) => {
       // console.log("authToken: "+authToken);
       let obj = {};
       let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
         let loginname = sessionStorage.getItem("username");
         obj = {
           //****starts here
@@ -3530,6 +3530,8 @@ const Preview = (props) => {
               signPage: signPg,
               pages: pgList
             }],
+            senderComments: signingComments,
+            emailSubject: signingSubject
           },
         };
 
