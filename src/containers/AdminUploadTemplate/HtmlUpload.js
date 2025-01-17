@@ -3,10 +3,91 @@ import { memo } from 'react'
 import Dropzone from "react-dropzone";
 import './HtmlUpload.css';
 import { confirmAlert } from 'react-confirm-alert'
-
+import { URL } from '../URLConstant';
 var Loader = require("react-loader");
 
 function HtmlUpload1(props) {
+  // Below call is not required for platform admin..
+  // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+  // If corporate is disabled then redirect to the old page.
+  useEffect(() => {
+    if (sessionStorage.getItem("roleID") !== "1") {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+        body: JSON.stringify({
+          corpId: sessionStorage.getItem("corpId")
+        })
+      }
+
+      fetch(URL.getCorpDetails, options)
+        .then(response => (response.json()))
+        .then(data => {
+          if (data.status === "SUCCESS") {
+            if (data.details[0]["status"] === 0) {
+              confirmAlert({
+                message: "Your corporate is currently disabled. Please contact your administrator!",
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      props.history.push("/");
+                    },
+                  },
+                ], closeOnClickOutside: false
+              });
+            };
+          }
+          else if (data.statusDetails === "Session Expired") {
+            confirmAlert({
+              message: data.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    props.history.push("/");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+          else {
+            confirmAlert({
+              message: "Failed to upload the template. Please try again!",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    props.history.push("/");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          confirmAlert({
+            message: `Something went wrong. please try again!`,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+              },
+            ], closeOnClickOutside: false
+          });
+          props.location.push('/login');
+        });
+    };
+  }, []);
+
   if (props.location.hash !== "") {
     let hashData = (props.location.hash).split("&");
     let hashDataJs = {};
@@ -48,19 +129,19 @@ function HtmlUpload1(props) {
         confirmAlert({
           message: "invalid file! please select html file",
           buttons: [
-              {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {
-                    props.history.push("/htmlUpload");
-                  },
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {
+                props.history.push("/htmlUpload");
               },
+            },
           ],
-      });        
+        });
       }
     });
     setAllowToRotate(true);
-  }
+  };
 
   const HtmlSelected = () => {
     if (valid.showFileName) {
@@ -84,10 +165,9 @@ function HtmlUpload1(props) {
         </>
       )
     }
-  }
+  };
 
   function proceedBy() {
-
     props.history.push({
       pathname: "/templatePreview",
       frompath: "/uploadTemplate",
@@ -95,7 +175,7 @@ function HtmlUpload1(props) {
         htmlFile: file
       }
     })
-  }
+  };
 
   return (
     <>

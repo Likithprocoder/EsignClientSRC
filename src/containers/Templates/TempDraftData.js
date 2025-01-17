@@ -126,14 +126,92 @@ function TempDraftData(props) {
   ];
 
   useEffect(() => {
+    // Check if the roleID is present 
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    if (sessionStorage.getItem("corpId") !== "undefined") {
+      // Fetch call to get the corporate details from the API and check for corporate is enable or disabled.
+      // If corporate is disabled then redirect to the old page.
+      const corpDataInputs = {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
+        },
+        body: JSON.stringify({
+          corpId: sessionStorage.getItem("corpId")
+        })
+      };
+
+      fetch(URL.getCorpDetails, corpDataInputs)
+        .then(response => (response.json()))
+        .then(data => {
+          if (data.status === "SUCCESS") {
+            if (data.details[0]["status"] === 0) {
+              confirmAlert({
+                message: "Your corporate is currently disabled. Please contact your administrator!",
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      props.history.push("/accountInfo");
+                    },
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+          }
+          else if (data.statusDetails === "Session Expired") {
+            confirmAlert({
+              message: data.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    props.history.push("/login");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+          else {
+            confirmAlert({
+              message: data.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    props.history.push("/accountInfo");
+                  },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          confirmAlert({
+            message: `Something went wrong. please try again!`,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+              },
+            ], closeOnClickOutside: false
+          });
+          props.location.push('/login');
+        });
+    }
+
     const options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
-      }),
+      body: JSON.stringify({}),
     };
 
     fetch(URL.getDraftTemplates, options).then((response) =>
@@ -161,13 +239,14 @@ function TempDraftData(props) {
 
   // to continue the edit of field inputs in template page below () is executed.
   const viewDraftTemplate = (draftRefNo, tempCode, templateName1) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     const options1 = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
         templateCode: tempCode,
         temptDrftRef: draftRefNo
       }),
@@ -176,9 +255,9 @@ function TempDraftData(props) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify({
-        authToken: sessionStorage.getItem("authToken"),
         temptDrftRef: draftRefNo,
       }),
     };
@@ -188,7 +267,7 @@ function TempDraftData(props) {
         if (data.status === "success") {
           setTimeout(() => { }, 1500);
           let state = {
-            userDetails: data.tempDetail, 
+            userDetails: data.tempDetail,
             templateCode: data.tempCode,
             templateName: data?.templateName,
             templateAttachments: data.templateAttachments,
@@ -243,14 +322,15 @@ function TempDraftData(props) {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               temptDrftRef: draftRefNo,
             };
             fetch(URL.deleteTempDraft, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })

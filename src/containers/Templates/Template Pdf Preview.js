@@ -52,6 +52,8 @@ class DisplayPdf1 extends Component {
     let templateData = {};
     let tempCode = "";
     let bodyData = "";
+    console.log(this.props);
+
 
     // iterating and converting the JSON Object to the JSON Array..
     let reptBlockArry = [];
@@ -63,6 +65,7 @@ class DisplayPdf1 extends Component {
     for (let key in this.props.location.state.reptBlckOfInputs) {
       reptBlckArrayInputs.push({ [key]: this.props.location.state.reptBlckOfInputs[key] });
     }
+
     // checking if the states which are passed are avilable..
     if (this.props.location.state.userDetails !== null) {
       templateData = this.props.location.state.userDetails;
@@ -73,29 +76,43 @@ class DisplayPdf1 extends Component {
         flag: this.props.location.state.flag,
         fromPath: this.props.location.state.frompath
       });
-
+      if (!this.props.location.state.flag) {
+        this.setState({
+          encodeBatchNdSequence: this.props.location.state.encodeBatchNdSequence
+        })
+      }
     }
+
     // converting dynamic tables data to array format and storing on server side.
     let additionalData = {};
     let reptData = { "reptDataToSveDraft": this.props.location.state.reptDataToSveDraft, "repeatAbleBlock": this.props.location.state.repeatAbleBlck };
     additionalData["repeatAbleBolckData"] = JSON.stringify(reptData);
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    if (this.props.location.state.flag) {
+      bodyData = {
 
-    bodyData = {
-      authToken: sessionStorage.getItem("authToken"),
-      templateCode: tempCode,
-      templateData: templateData,
-      templateAttachments: this.props.location.state.templateAttachments,
-      temptDrftRef: this.props.location.state.temptDrftRef,
-      dynaTableDataForSaveDraft: additionalData,
-      repeatAbleBlock: reptBlockArry,
-      reptBlckOfInputs: reptBlckArrayInputs,
-      templateName: this.props.location.state.templateName
+        templateCode: tempCode,
+        templateData: templateData,
+        templateAttachments: this.props.location.state.templateAttachments,
+        temptDrftRef: this.props.location.state.temptDrftRef,
+        dynaTableDataForSaveDraft: additionalData,
+        repeatAbleBlock: reptBlockArry,
+        reptBlckOfInputs: reptBlckArrayInputs,
+        templateName: this.props.location.state.templateName
+      };
+    }
+    else {
+      bodyData = {
+        encodedBatchAdSequencNO: this.props.location.state.encodeBatchNdSequence,
+        inputFieldValues: templateData
+      };
     };
 
     const options = {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(bodyData)
     };
@@ -138,29 +155,38 @@ class DisplayPdf1 extends Component {
                 label: "OK",
                 className: "confirmBtn",
                 onClick: () => {
+
+                  let stateCntnt = {
+                    userDetails: this.props.location.state.userDetails,
+                    templateCode: this.props.location.state.templateCode,
+                    templateName: this.props.location.state.templateName,
+                    templateAttachments: this.props.location.state.templateAttachments,
+                    temptDrftRef: this.props.location.state.temptDrftRef,
+                    toPathName: this.props.location.pathname,
+                    reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
+                    repeatAbleBlck: this.props.location.state.repeatAbleBlck,
+                    flag: this.props.location.state.flag,
+                    toPathName: this.props.location.pathname,
+                    noEditableFields: this.props.location.state.noEditableFields
+                  };
+                  if (!this.props.location.state.flag) {
+                    stateCntnt.encodeBatchNdSequence = this.state.encodeBatchNdSequence;
+                  }
+
                   this.props.history.push({
-                    pathname: "/template",
-                    frompath: "/templatePdfPreview",
-                    state: {
-                      userDetails: this.props.location.state.userDetails,
-                      templateCode: this.props.location.state.templateCode,
-                      templateName: this.props.location.state.templateName,
-                      templateAttachments: this.props.location.state.templateAttachments,
-                      temptDrftRef: this.props.location.state.temptDrftRef,
-                      toPathName: this.props.location.pathname,
-                      reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
-                      repeatAbleBlck: this.props.location.state.repeatAbleBlck,
-                    }
+                    pathname: this.state.fromPath,
+                    frompath: this.props.location.state.pathname,
+                    state: stateCntnt
                   });
                 },
               },
-            ],closeOnClickOutside: false
+            ], closeOnClickOutside: false
           });
 
         }
         else if (data.statusDetails === "Session Expired!!") {
           alert("Session Expired");
-          this.props.history.push("/login");
+          // this.props.history.push("/login");
         }
         else {
           this.setState({
@@ -192,10 +218,16 @@ class DisplayPdf1 extends Component {
       type: "application/pdf",
       lastModified: new Date(),
     });
-
+    if (!this.props.location.state.flag) {
+      // let file = new File([], this.state.templateName, { type: "application/pdf" });
+      let filenput = document.getElementById("fileInput");
+      let list = new DataTransfer();
+      list.items.add(file);
+      let myFileList = list.files;
+      filenput.files = myFileList;
+    }
     pdfjsforOnDrag.getDocument(url).promise.then(pdf => {
       let promises = [];
-
       // Fetch dimensions for each page
       for (let i = 1; i <= pdf.numPages; i++) {
         promises.push(pdf.getPage(i).then(page => {
@@ -206,7 +238,6 @@ class DisplayPdf1 extends Component {
           };
         }));
       }
-
       // Resolve all promises
       return Promise.all(promises);
     }).then(pages => {
@@ -244,49 +275,53 @@ class DisplayPdf1 extends Component {
     // document.getElementsByClassName("PDFDOC")[0].src = url + "#zoom=100";
   }
 
-  pushToPriview = (height, width) => {
+  pushToPriview = (height, width, docId) => {
     // this.onDrop(this.state.files1);
     // await delay(1000);
-  
+
     // Ensure files1 is an array with a File object
     // const filesArray = [this.state.files1];
-  
-    console.log(height);
-    console.log(width);
-    console.log(this.state.height);
-    console.log(this.state.width);
-    let data = {
-      files: this.state.files1,
-      height: height,
-      width: width,
-      tempCode: this.state.tempCode,
-      groupCode: this.state.groupCode,
-      subGroup: this.state.subGroup,
-      modeOfSignature: this.state.modeOfSignature,
-      temptDrftRef: this.props.location.state.temptDrftRef,
-      temptDrftRefFromServer: this.state.temptDrftRefFromServer,
-      pageDimensions: this.state.pageDimensions,
-      equalPageDimensions: this.state.equalPageDimensions,
-    };
+    if (this.state.flag) {
+      let data = {
+        files: this.state.files1,
+        height: height,
+        width: width,
+        tempCode: this.state.tempCode,
+        groupCode: this.state.groupCode,
+        subGroup: this.state.subGroup,
+        modeOfSignature: this.state.modeOfSignature,
+        temptDrftRef: this.props.location.state.temptDrftRef,
+        temptDrftRefFromServer: this.state.temptDrftRefFromServer,
+        pageDimensions: this.state.pageDimensions,
+        equalPageDimensions: this.state.equalPageDimensions,
+        docId: docId
 
-    // console.log(data);
+      };
 
-    // Navigation logic moved here
-    if (data.height != null && data.width != null) {
-      this.props.history.push({
-        pathname: "/preview",
-        frompath: "/templatePdfPreview",
-        state: {
-          details: data,
-        },
-      });
-    } else {
-      alert("Error reading PDF file. Please try again after sometime.");
+      // console.log(data);
+
+      // Navigation logic moved here
+      if (data.height != null && data.width != null) {
+        this.props.history.push({
+          pathname: "/preview",
+          frompath: "/templatePdfPreview",
+          state: {
+            details: data,
+          },
+        });
+      } else {
+        alert("Error reading PDF file. Please try again after sometime.");
+      }
+    }
+    else {
+      // form submit for INAPP API for document signing...
+      var form = document.getElementById("BKDocSigning");
+      form.submit();
     }
   };
 
   // used to get height and width of the pdf..
-  onDrop = () => {
+  onDrop = (docId) => {
     var file = this.state.files1;
     var reader = new FileReader();
     reader.onloadend = function (e) {
@@ -301,12 +336,12 @@ class DisplayPdf1 extends Component {
               a.getPage(1).then(
                 function (b) {
                   var viewport = b.getViewport({ scale: 1 });
-                  this.setState({ loaded: true });
+                  this.setState({ allowToRotate: true });
                   this.setState({
                     height: viewport.height,
                     width: viewport.width,
                   });
-                  this.pushToPriview(viewport.height, viewport.width);
+                  this.pushToPriview(viewport.height, viewport.width, docId);
                 }.bind(this)
               );
             }.bind(this)
@@ -317,8 +352,76 @@ class DisplayPdf1 extends Component {
     reader.readAsArrayBuffer(file);
   }
 
+  next = () => {
+    this.setState({
+      allowToRotate: false,
+    });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
+      loginname: sessionStorage.getItem("username"),
+      userIP: sessionStorage.getItem("userIP"),
+      docType: "PDF",
+    };
+    let data1 = new FormData();
+    console.log(this.state.files1);
+    data1.append("file", this.state.files1);
+    data1.append("inputDetails", JSON.stringify(body));
+
+    fetch(URLConstant.uploadDocument, {
+      method: "POST",
+      headers: {
+        enctype: "multipart/form-data",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: data1,
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        if (responseJson.status === "SUCCESS") {
+          this.setState({ docId: responseJson.docID });
+          this.onDrop(responseJson.docID);
+          this.setState({
+            allowToRotate: true,
+          });
+        } else {
+          if (responseJson.statusDetails === "Session Expired!!") {
+            sessionStorage.clear();
+            this.setState({
+              allowToRotate: true,
+            }); confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push("/login") },
+                },
+              ], closeOnClickOutside: false
+            });
+          } else {
+            this.setState({ allowToRotate: true });
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { },
+                },
+              ], closeOnClickOutside: false
+            });
+          }
+        }
+      })
+      .catch(e => {
+        this.setState({ allowToRotate: true });
+        alert(e);
+      });
+  }
+
   // push to old page with the data recieved..
   oldPage = () => {
+
     let state = {
       userDetails: this.props.location.state.userDetails,
       templateCode: this.props.location.state.templateCode,
@@ -328,14 +431,17 @@ class DisplayPdf1 extends Component {
       toPathName: this.props.location.pathname,
       repeatAbleBlck: this.props.location.state.repeatAbleBlck,
       reptDataToSveDraft: this.props.location.state.reptDataToSveDraft,
+      flag: this.props.location.state.flag,
+      toPathName: this.props.location.pathname,
+      noEditableFields: this.props.location.state.noEditableFields
     };
     if (!this.props.location.state.flag) {
       state.encodeBatchNdSequence = this.state.encodeBatchNdSequence;
     }
 
     this.props.history.push({
-      pathname: "/template",
-      frompath: "/templatePdfPreview",
+      pathname: this.props.location.state.frompath,
+      frompath: this.props.location.state.pathname,
       state: state,
     });
   };
@@ -363,10 +469,13 @@ class DisplayPdf1 extends Component {
           scale={1.0}
           loadedClassName="loadedContent"
         />
-        {/* <div style={{ display: "flex", flexDirection: "column",}}> */}
-        <div className="proceedback">
-          {/* <div> */}
+        <form style={{ display: "none" }} id="BKDocSigning" name="BKDocSigning" method="POST" action={URLConstant.inAPPAPI} encType="multipart/form-data">
+          <input type="file" name="file" id="fileInput" />
+          <input type="hidden" name="signingDetails" id="signingDetails" value={`{"refNo": "${this.state.encodeBatchNdSequence}"}`} />
+        </form>
+        <div className="proceedback" style={{ marginBottom: (!this.props.location.state.flag) ? "0px" : "7px" }}>
           <button
+            hidden={this.props.location.state.noEditableFields}
             style={{ marginRight: "10px" }}
             type="button"
             onClick={(e) => this.oldPage()}
@@ -374,24 +483,21 @@ class DisplayPdf1 extends Component {
           >
             Edit Form Details
           </button>
-          {/* </div> */}
-
-          {/* <div className="proceedCssv"> */}
           <button
             type="button"
-            onClick={(e) => this.onDrop()}
+            onClick={(e) => this.next()}
             className=" btn btn-success rounded-pill btn btn-secondary "
           >
             Proceed With Signing
           </button>
         </div>
 
-        <div className="parent-div" id="parent-div">
+        <div style={{ backgroundColor: "#F5F4D0" }} className="parent-div" id="parent-div">
           <div
             className="rpv-core__viewer"
             style={{
               display: 'flex',
-              height: '100%',
+              height: '100%'
             }}
           >
             <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.10.377/build/pdf.worker.min.js">

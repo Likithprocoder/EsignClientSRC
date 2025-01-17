@@ -11,6 +11,10 @@ import {
   Tooltip
 } from "reactstrap";
 import { URL } from "../URLConstant";
+import { Modal } from 'antd';
+// import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { NotificationOutlined } from '@ant-design/icons';
+import Notifications from "@material-ui/icons/Notifications";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -45,6 +49,7 @@ export default class Wallet extends React.Component {
       tooltipOpen: false,
       isHovered: false,
       planDescrip:"Current Plan",
+       isModalVisible: false, // State to control modal visibility
     };
   }
 
@@ -62,15 +67,17 @@ export default class Wallet extends React.Component {
   };
 
   componentWillMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
+      userIP: sessionStorage.getItem("userIP")
     };
     this.setState({ loaded: false });
     fetch(URL.getWalletInfo, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -98,7 +105,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => {},
                 },
               ],
             });
@@ -118,15 +125,15 @@ export default class Wallet extends React.Component {
   }
 
   componentDidMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
+      authToken: sessionStorage.getItem("authToken")
     };
-    // this.setState({ loaded: false })
     fetch(URL.getFlags, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -141,6 +148,12 @@ export default class Wallet extends React.Component {
             "is_KYC_verified",
             responseJson.is_KYC_verified
           );
+          // responseJson.pendingDocs = 1;//For testing purpose
+          if (responseJson.pendingDocs !== 0 &&  sessionStorage.getItem("actionExists") === "true") {
+            this.setState({ isModalVisible: true });
+          } else {
+            sessionStorage.setItem("actionExists", false); 
+          }
           sessionStorage.setItem("maxFilesize", responseJson.maxFilesize);
           //to check the role of the user to make the template groups visible(if corp admin) for voucher purchase
           sessionStorage.setItem("roleId", responseJson.roleId);
@@ -166,7 +179,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => {},
                 },
               ],
             });
@@ -182,16 +195,16 @@ export default class Wallet extends React.Component {
   }
 
   subscribedPlanDetails = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
-      // "activeStatus":1,
     };
-    fetch(URL.subscribedPlanDetails, {
+    fetch(URL.subscribedPlanDetailsV2, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -199,7 +212,6 @@ export default class Wallet extends React.Component {
         return response.json();
       })
       .then((responseJson) => {
-        console.log(responseJson.uatsetupenabled)
         let uatsetupenabled = responseJson.uatsetupenabled;
         sessionStorage.setItem("uatsetupenabled", uatsetupenabled);
         if (responseJson.status === "SUCCESS") {
@@ -253,7 +265,7 @@ export default class Wallet extends React.Component {
           sessionStorage.setItem("usedstoragelimit", resp.usedstoragelimit);
           sessionStorage.setItem("noOfDaysLeft", resp.noOfDaysLeft);
 
-
+      
 
           let defaultlimit = resp.storagelimit.split(" ")[0];
           let usedlimt = resp.usedstoragelimit.split(" ")[0];
@@ -277,7 +289,7 @@ export default class Wallet extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => {},
                 },
               ],
             });
@@ -289,15 +301,16 @@ export default class Wallet extends React.Component {
       });
   };
   submitOtp = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       loginname: btoa(sessionStorage.getItem("username")),
-      authToken: sessionStorage.getItem("authToken"),
       otp: btoa(this.state.otp),
     };
     fetch(URL.validateOtp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -312,7 +325,7 @@ export default class Wallet extends React.Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => { },
+                onClick: () => {},
               },
             ],
           });
@@ -326,7 +339,7 @@ export default class Wallet extends React.Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => { },
+                onClick: () => {},
               },
             ],
           });
@@ -340,7 +353,7 @@ export default class Wallet extends React.Component {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => { },
+              onClick: () => {},
             },
           ],
         });
@@ -349,14 +362,15 @@ export default class Wallet extends React.Component {
   };
 
   verifyMobile = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
       authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.getOtp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -374,7 +388,7 @@ export default class Wallet extends React.Component {
               {
                 label: "OK",
                 className: "confirmBtn",
-                onClick: () => { },
+                onClick: () => {},
               },
             ],
           });
@@ -388,7 +402,7 @@ export default class Wallet extends React.Component {
             {
               label: "OK",
               className: "confirmBtn",
-              onClick: () => { },
+              onClick: () => {},
             },
           ],
         });
@@ -535,6 +549,34 @@ export default class Wallet extends React.Component {
       }
     }
   };
+  
+  // Function to handle button click
+  handleButtonClick = () => {
+    sessionStorage.setItem("actionExists", false);
+    this.setState({ isModalVisible: false });
+  };
+
+  handleButtonClick1 = () => {
+    sessionStorage.setItem("actionExists", false);
+    confirmAlert({
+      // message: "Sign pending document will be available in pending actions inbox.",
+      message: "You can complete the signing later from the 'Pending Signatures' menu.",
+      buttons: [
+        {
+          label: "OK",
+          className: "confirmBtn",
+          onClick: () => {},
+        },
+      ],
+    });
+    this.setState({ isModalVisible: false });
+  }
+
+  handleActionClick = () => {
+    sessionStorage.setItem("actionExists", false);
+    this.setState({ isModalVisible: false });
+    this.props.history.push("/pendingSignsInbox");
+  };
 
   render() {
     const { openFirstModal } = this.state;
@@ -576,11 +618,11 @@ export default class Wallet extends React.Component {
                 <table>
                   <tbody>
                     <tr style={{ height: "30px" }}>
-                      <td style={{ width: "30%", height: "25px" }}>
+                      <td style={{ width: "50%", height: "25px" }}>
                         Full Name
                       </td>
                       <td style={{ width: "5%" }}>:</td>
-                      <td style={{ width: "65%" }} id="name"></td>
+                      <td style={{ width: "45%" }} id="name"></td>
                     </tr>
                     <tr style={{ height: "30px" }}>
                       <td>Aadhaar sign units</td>
@@ -667,11 +709,10 @@ export default class Wallet extends React.Component {
                         this.state.noSigns
                       )}
                     >
-                      {this.widgetvalue(
+                      {/* {this.widgetvalue(
                         this.state.signedcount,
                         this.state.noSigns
-                      )}{" "}
-                      %
+                      )}{" "} */}
                     </Progress>
                   </Progress>
                 </div>
@@ -700,11 +741,6 @@ export default class Wallet extends React.Component {
                         this.state.storagelimit
                       )}
                     >
-                      {this.widgetvalueforStorage(
-                        this.state.usedstoragelimit,
-                        this.state.storagelimit
-                      )}{" "}
-                      %
                     </Progress>
                   </Progress>
                 </div>
@@ -817,6 +853,26 @@ export default class Wallet extends React.Component {
             DocuExec
           </i>
         </h5>
+        <Modal
+          open={this.state.isModalVisible}
+          onCancel={this.handleButtonClick}
+          maskClosable={false}
+          footer={[
+            <Button key="cancel" type="link" color="primary" onClick={this.handleButtonClick1} style={{ marginRight: "10px"}} outline>
+              I'll do it later
+            </Button>,
+            <Button key="submit" type="primary" color="primary" onClick={this.handleActionClick}>
+              Review and Sign
+            </Button>,
+          ]}
+        >
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            {/* <ExclamationCircleOutlined style={{ color: '#faad14', marginRight: '10px' }} /> */}
+            <Notifications style={{ color: '#faad14', marginRight: '10px', fontSize: '65px', border: '1px solid rgb(255, 220, 150)' }} />
+            {/* You have sign pending action from your previous session(s). Please review and complete. */}
+            It looks like you haven't completed the signing process from your previous session(s). Please review and complete.
+          </span>
+        </Modal>
       </div>
     );
   }

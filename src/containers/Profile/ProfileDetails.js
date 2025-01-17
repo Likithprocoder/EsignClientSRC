@@ -47,8 +47,8 @@ export default class ProfileDetails extends React.Component {
   }
 
   componentWillMount() {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: sessionStorage.getItem("username"),
       authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
@@ -56,6 +56,7 @@ export default class ProfileDetails extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -107,14 +108,14 @@ export default class ProfileDetails extends React.Component {
 
     // KYC status getFlag call.
     var body = {
-      loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
+      authToken: sessionStorage.getItem("authToken")
     };
     this.setState({ loaded: false });
     fetch(URL.getFlags, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -224,13 +225,14 @@ export default class ProfileDetails extends React.Component {
   // to fetch the aadhaar details
   getAdharDetails() {
     document.getElementById("UserDetail").style.display = "";
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
     };
     fetch(URL.KYCDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -259,7 +261,7 @@ export default class ProfileDetails extends React.Component {
             message: responseJson.statusDetails,
             buttons: [
               {
-                label: "ok",
+                label: "OK",
                 className: "confirmBtn",
                 onClick: () => { },
               },
@@ -377,7 +379,58 @@ export default class ProfileDetails extends React.Component {
     }
   };
 
-  verify = () => {
+  decryptSecretKeyUsingAES = async(encryptedData, secretKey) => {
+    try {
+      // Decode the Base64 string to get the combined data
+      const combinedDataBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
+  
+      // Extract the salt, IV, and ciphertext
+      const salt = combinedDataBuffer.slice(0, 16); // First 16 bytes
+      const iv = combinedDataBuffer.slice(16, 32); // Next 16 bytes
+      const ciphertext = combinedDataBuffer.slice(32); // Remaining bytes
+  
+      // Derive the key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+  
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1", // Ensure this matches the encryption hash
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["decrypt"]
+      );
+  
+      // Decrypt the ciphertext
+      const decryptedBuffer = await crypto.subtle.decrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        ciphertext
+      );
+  
+      // Decode the decrypted buffer back into a string
+      const decryptedText = new TextDecoder().decode(decryptedBuffer);
+      return decryptedText;
+    } catch (error) {
+      console.error("Decryption Error:", error);
+      return null;
+    }
+  };
+
+  verify = async() => {
     let passwordLetters = new RegExp(
       "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])"
     );
@@ -385,10 +438,17 @@ export default class ProfileDetails extends React.Component {
       background: "#ff7675",
       text: "#FFFFFF",
     };
+
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      loginname: btoa(sessionStorage.getItem("username")),
-      authToken: sessionStorage.getItem("authToken"),
       optnType: "CHGPAS",
+    };
+    let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(body));
+
+    const decryptedData = await this.decryptSecretKeyUsingAES(encryptedData, sessionStorage.getItem('secretKey'))
+    var dataToserver = {
+      authToken: sessionStorage.getItem("authToken"),
+      encryptedData: encryptedData
     };
     if (this.state.password.length !== 0 && this.state.password.trim() !== "") {
       if (
@@ -398,14 +458,14 @@ export default class ProfileDetails extends React.Component {
         if (passwordLetters.test(this.state.password)) {
           if (this.state.password === this.state.repassword) {
             this.setState({ passwordSuggestionMessage: "" });
-
             this.setState({ loaded: false });
             fetch(URL.getOtp, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
-              body: JSON.stringify(body),
+              body: JSON.stringify(dataToserver),
             })
               .then((response) => {
                 return response.json();
@@ -536,7 +596,118 @@ export default class ProfileDetails extends React.Component {
     }
   };
 
-  changePassword = () => {
+  // encryptSecretKeyUsingAES = async(secretKey, json) => {
+  //   try {
+  //     // Generate a random salt
+  //     const salt = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Generate a random IV
+  //     const iv = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Derive a key using PBKDF2
+  //     const importedSecretKey = crypto.subtle.importKey(
+  //       "raw",
+  //       new TextEncoder().encode(secretKey),
+  //       { name: "PBKDF2" },
+  //       false,
+  //       ["deriveKey"]
+  //     );
+
+  //     const derivedKey = crypto.subtle.deriveKey(
+  //       {
+  //         name: "PBKDF2",
+  //         salt: salt,
+  //         iterations: 65536,
+  //         hash: "SHA-1"
+  //       },
+  //       importedSecretKey,
+  //       { name: "AES-CBC", length: 256 },
+  //       true,
+  //       ["encrypt"]
+  //     );
+
+  //     // Encrypt the JSON string using AES with CBC mode and PKCS5Padding (or PKCS7Padding)
+  //     const encryptedTextBuffer = crypto.subtle.encrypt(
+  //       {
+  //         name: "AES-CBC",
+  //         iv: iv
+  //       },
+  //       derivedKey,
+  //       new TextEncoder().encode(json)
+  //     );
+
+  //     // Combine salt, IV, and ciphertext
+  //     const combinedDataBuffer = new Uint8Array([...salt, ...iv, ...new Uint8Array(encryptedTextBuffer)]);
+
+  //     // Encode the combined data to Base64
+  //     const combinedData = btoa(String.fromCharCode.apply(null, combinedDataBuffer));
+  //     return combinedData;
+  //   } catch (error) {
+  //     console.error('Encryption Error:', error);
+  //     return null;
+  //   }
+  // }
+
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+  
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+  
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+  
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+  
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+  
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+
+  
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
+    }
+  };
+
+  changePassword = async() => {
     let myColor = {
       background: "#ff7675",
       text: "#FFFFFF",
@@ -547,11 +718,10 @@ export default class ProfileDetails extends React.Component {
       this.state.otp.length == 6 &&
       this.state.otp.trim() !== ""
     ) {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       let json = {
-        loginname: btoa(sessionStorage.getItem("username")),
         password: btoa(this.state.password),
         repassword: btoa(this.state.repassword),
-        authToken: sessionStorage.getItem("authToken"),
         optnType: "CHGPAS",
         emailOtp: btoa(this.state.otp),
         emailRefNo: btoa(this.state.emailRefNo),
@@ -559,14 +729,19 @@ export default class ProfileDetails extends React.Component {
         mobileNumOtp: btoa(this.state.otp),
         userIP: btoa(sessionStorage.getItem("userIP")),
       };
+      let encryptdData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(json));
+      var dataToserver = {
+        authToken: sessionStorage.getItem("authToken"),
+        encryptedData: encryptdData
+      };
       this.setState({ loaded: false });
-
       fetch(URL.changePassword, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
-        body: JSON.stringify(json),
+        body: JSON.stringify(dataToserver),
       })
         .then((response) => {
           return response.json();
@@ -749,12 +924,13 @@ export default class ProfileDetails extends React.Component {
   // to open the model to collect the corp and corp group list..
   openModalForCorpAccount = (e) => {
     var json = {
-      authToken: sessionStorage.getItem("authToken"),
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getCorpDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(json)
     })
@@ -792,7 +968,7 @@ export default class ProfileDetails extends React.Component {
             message: responseJson.statusDetails,
             buttons: [
               {
-                label: "ok",
+                label: "OK",
                 className: "confirmBtn",
                 onClick: () => { },
               },
@@ -838,14 +1014,15 @@ export default class ProfileDetails extends React.Component {
       corpoId = event.target.value;
     }
     if (corpoId !== '' || boolean) {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       var json = {
-        authToken: sessionStorage.getItem("authToken"),
         corpId: corpoId
       };
       fetch(URL.getTemplateGrps, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(json),
       })
@@ -878,7 +1055,7 @@ export default class ProfileDetails extends React.Component {
               message: responseJson.statusDetails,
               buttons: [
                 {
-                  label: "ok",
+                  label: "OK",
                   className: "confirmBtn",
                   onClick: () => { },
                 },
@@ -892,7 +1069,7 @@ export default class ProfileDetails extends React.Component {
               message: responseJson.statusDetails,
               buttons: [
                 {
-                  label: "ok",
+                  label: "OK",
                   className: "confirmBtn",
                   onClick: () => { },
                 },
@@ -935,15 +1112,17 @@ export default class ProfileDetails extends React.Component {
       })
       this.closeTheModal(event);
 
+
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       var body = {
-        authToken: sessionStorage.getItem("authToken"),
         corpEntity: corpEntity
       };
 
       fetch(URL.addCorpMember, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body)
       })
@@ -1072,7 +1251,6 @@ export default class ProfileDetails extends React.Component {
     )
   }
 
-
   render() {
     return (
       <div>
@@ -1134,18 +1312,13 @@ export default class ProfileDetails extends React.Component {
                     </tr>
                   </tbody>
                 </table>
-                <div hidden={sessionStorage.getItem("roleID") !== "2"} id="disLinkToBecomCorpMem" style={{ display: 'flex', paddingTop: "6px", marginBottom:"7px" }}>
-                  <a href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a>
-                  {/* <div style={{ paddingTop: "6px" }}>
-                    To become member of the corporate entity.
-                  </div>
-                  <div>
-                    <button className="btn btn-link" onClick={e => this.openModalForCorpAccount(e)}>Click here</button>
-                  </div> */}
-                </div>
-                <a hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
+                <a hidden={sessionStorage.getItem("roleID") !== "2"} href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a> <br />
+                <a style={{ marginBottom: "7px" }} hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
                   this.props.history.push("/exitFromCorporate");
-                }}>Exit from corporate entity?</a>
+                }}>Exit from corporate entity?</a> <br />
+                <a hidden={!(sessionStorage.getItem("roleID") === "2")} href="" onClick={() => {
+                  this.props.history.push("/userFeedback");
+                }}>Got any feedback/suggestions on your mind?</a>
               </CardBody>
             </Card>
             <Row id="buttons" className="mb-3">

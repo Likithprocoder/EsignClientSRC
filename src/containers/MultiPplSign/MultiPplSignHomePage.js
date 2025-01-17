@@ -68,8 +68,9 @@ export default class MultiPplSignHomePage extends React.Component {
   componentDidMount() {
     this.setState({ loaded: false, openOTPModal: false });
     var path = null;
+    var isInapp = null;
     let pathURL = this.props.location.search;
-   
+
     var data = null;
     // console.log(pathURL.includes("mobak"));
     this.setState({ loaded: true });
@@ -79,15 +80,23 @@ export default class MultiPplSignHomePage extends React.Component {
     // if link is only with mobak param without ref number show modal with asking ref no.
     //if link is with mobak param along with ref number as a part of link validate ref no and show modal with aking otp with prefield ref no.
     // if (pathURL.includes("mobak") && !pathURL.includes("=")) {
-       if (pathURL.includes("mview")) {
-     
+    if (pathURL.includes("mview")) {
+
       this.setState({ loaded: true, openOTPModal: true, isCompleteUrl: false });
     } else if (pathURL.includes("mobak=")) {
       path = pathURL.split("mobak=");
-      //console.log(path[1]);
-      this.setState({ refid: path[1], isCompleteUrl: true });
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = path[1].split("=");
+        isInapp = path[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      this.setState({ refid: path, isCompleteUrl: true });
 
-      if (!regNum.test(path[1])) {
+      if (!regNum.test(path)) {
         confirmAlert({
           message: "Invalid reference number",
           buttons: [
@@ -106,11 +115,11 @@ export default class MultiPplSignHomePage extends React.Component {
         // data = accesskey;
         let obj = {
           optnType: "MPSJOB",
-          mobRefNo: path[1],
+          mobRefNo: path,
           //  loginname: loginName,
           userIP: sessionStorage.getItem("userIP"),
         };
-        this.setState({ refid: path[1], readOnly: true });
+        this.setState({ refid: path, readOnly: true });
 
         this.setState({ loaded: true, openOTPModal: true });
         this.generateotp(obj);
@@ -118,17 +127,40 @@ export default class MultiPplSignHomePage extends React.Component {
       }
     } else if (pathURL.includes("jsak=")) {
       path = pathURL.split("jsak=");
-      var accesskey = { accessKey: path[1] };
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = pathURL.split("&");
+        isInapp = isInapp[1].split("=")
+        isInapp = isInapp[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      console.log(isInapp);
+      if (isInapp === "true") {
+        sessionStorage.setItem("isInapp", true);
+      } else {
+
+      }
+      var accesskey = { accessKey: path };
       data = accesskey;
       this.mpsSigningJob(data);
     } else if (pathURL.includes("dwfl=")) {
       path = pathURL.split("dwfl=");
-      var accesskey = { accessKey: path[1] };
+      if (pathURL.includes("&")) {
+        path = path[1].split("&");
+        path = path[0];
+        isInapp = path[1].split("=");
+        isInapp = path[1];
+      } else {
+        path = path[1];
+      }
+      console.log(path);
+      var accesskey = { accessKey: path };
       data = accesskey;
       this.downloadSignCmpltd(data);
-    
-    
-    }  else {
+    } else {
       confirmAlert({
         message: "Invalid url",
         buttons: [
@@ -149,11 +181,11 @@ export default class MultiPplSignHomePage extends React.Component {
     this.setState({ timeleft: 30 });
     let resendOtpBtn = document.getElementById("resendotpbtn");
     let timerElement = document.getElementById("timer");
-  
+
     if (timerElement && resendOtpBtn) {
       resendOtpBtn.style.display = "none";
       timerElement.style.display = "";
-  
+
       let timeleftSec = this.state.timeleft;
       // Clear any existing timer event
       this.stopResendOtpTimer();
@@ -165,7 +197,7 @@ export default class MultiPplSignHomePage extends React.Component {
         } else {
           timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
         }
-  
+
         timeleftSec -= 1;
       }, 1000);
     }
@@ -203,7 +235,7 @@ export default class MultiPplSignHomePage extends React.Component {
   };
   mpsSigningJob(data) {
     //getting access for external signer
-    fetch(URL.mpsGetGuestAccessV2, {
+    fetch(URL.mpsGetGuestAccess1, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -222,7 +254,7 @@ export default class MultiPplSignHomePage extends React.Component {
           //   "Resend OTP in " + 30 + " Secs";
 
           clearInterval(timerEvent);
-    
+
           this.setState({
             loaded: true,
             signMode: responseJson.signMode,
@@ -252,6 +284,15 @@ export default class MultiPplSignHomePage extends React.Component {
             JSON.stringify(responseJson.signerListDetails)
             // responseJson.signerListDetails
           );
+          sessionStorage.setItem("declineSigning", responseJson.declineSigning);
+
+          // Parse the additionalData JSON string
+          if (responseJson?.additionalData) {
+            const additionalData = JSON?.parse(responseJson?.additionalData);
+            sessionStorage.setItem('declineSigning', additionalData.declineSigning);
+          }
+
+
 
           //   this.createFile(responseJson.fileName);
           //changed for encryption
@@ -282,21 +323,21 @@ export default class MultiPplSignHomePage extends React.Component {
     let windowFeatures = "popup";
 
     let data1 = (document.getElementById("loadingMessage").innerHTML =
-  "Downloading document please wait....");
-// data1.setAttribute("", "Please wait....");
+      "Downloading document please wait....");
+    // data1.setAttribute("", "Please wait....");
     var win = window.open(
       URL.downloadSignCmpltd + "?acskey=" + btoa(accessKeyValue),
-     // windowFeatures
+      // windowFeatures
     );
-   
-  //  console.log("Downloading document please wait....");
+
+    //  console.log("Downloading document please wait....");
     var winclose = window.close();
     //Self.close();
     // win.focus();
     // win.onblur=function(){win.close()};
     // win.close();
-      //URL.downloadSignCmpltd + "?acskey=" + btoa(accessKeyValue);
-    
+    //URL.downloadSignCmpltd + "?acskey=" + btoa(accessKeyValue);
+
   }
 
   onCloseOTPModal = () => {
@@ -306,14 +347,15 @@ export default class MultiPplSignHomePage extends React.Component {
   async createFile(docId) {
     let response = await fetch(
       URL.downloadStoredFile +
-        "?at=" +
-        btoa(sessionStorage.getItem("authToken")) +
-        "&docID=" +
-        btoa(docId)
+      "?at=" +
+      btoa(sessionStorage.getItem("authToken")) +
+      "&docID=" +
+      btoa(docId)
     );
     let data = await response.blob();
     let testResponse = await this.test(data);
   }
+
 
   //routing to preview page
   async test(data) {
@@ -329,9 +371,9 @@ export default class MultiPplSignHomePage extends React.Component {
     // console.log(file1);
     // console.log(file.preview);
 
-    
 
-    let numPages=null;
+
+    let numPages = null;
     // Initialize array to store page dimensions
     const pageDimensions = [];
     let equalPageDimensionsCheck = true;
@@ -346,33 +388,31 @@ export default class MultiPplSignHomePage extends React.Component {
 
       // Loop through each page to get its dimensions
       for (let i = 1; i <= numPages; i++) {
-          const page = await pdf.getPage(i);
-          const { width, height } = page.getViewport({ scale: 1 });
+        const page = await pdf.getPage(i);
+        const { width, height } = page.getViewport({ scale: 1 });
 
-          // Add page dimensions to the array
-          pageDimensions.push({
-              pageNumber: i,
-              width,
-              height
-          });
+        // Add page dimensions to the array
+        pageDimensions.push({
+          pageNumber: i,
+          width,
+          height
+        });
       }
 
       // Output page dimensions
-      console.log("Page dimensions:", pageDimensions);
 
       // Iterate through the array and compare dimensions
       for (let i = 1; i < pageDimensions.length; i++) {
         if (pageDimensions.length != 1) {
 
-          if (pageDimensions[i].width !== pageDimensions[0].width || 
+          if (pageDimensions[i].width !== pageDimensions[0].width ||
             pageDimensions[i].height !== pageDimensions[0].height) {
-              equalPageDimensionsCheck = false;
-              this.setState({ equalPageDimensions: false});
-              break;
+            equalPageDimensionsCheck = false;
+            this.setState({ equalPageDimensions: false });
+            break;
           }
         }
       }
-      console.log(equalPageDimensionsCheck);
 
       // const response = await fetch(file1.preview);
       // const blob = await response.blob();
@@ -382,11 +422,9 @@ export default class MultiPplSignHomePage extends React.Component {
       // const regex = /\/Type\s*\/Page[^s]/g;
       // const matches = pdfString.match(regex);
       // numPages = matches ? matches.length : 0;
-      console.log("Number of pages:", numPages);
     } catch (error) {
       console.error("Error:", error);
     }
-    console.log(this.state.signCoordinates);
     // console.log(this.state.signCoordinates.signCoordinates[0].signCoordinatesValues[0].totHeight);
 
     let data1 = null;
@@ -432,8 +470,6 @@ export default class MultiPplSignHomePage extends React.Component {
       };
     }
     this.setState({ loaded: true });
-
-    console.log({data1});
     // console.log(data1.signCoordinates.signPage);
     // if (data1.signCoordinates.signPage != "A" || data1.signCoordinates.signPage != "P") { 
     //   data1.signCoordinates.signPage = "P";
@@ -443,8 +479,8 @@ export default class MultiPplSignHomePage extends React.Component {
     // console.log(data1.totalPagesNum-1);
     if (data1 != null) {
       if (data1.signCoordinates.pageList.length == 1 && data1.signCoordinates.pageList[0] == -1) {
-        data1.signCoordinates.pageList[0] = data1.totalPagesNum-1;
-        data1.signCoordinates.signCoordinates[0].page = data1.totalPagesNum-1;
+        data1.signCoordinates.pageList[0] = data1.totalPagesNum - 1;
+        data1.signCoordinates.signCoordinates[0].page = data1.totalPagesNum - 1;
       }
       this.props.history.push({
         pathname: "/preview",
@@ -549,7 +585,7 @@ export default class MultiPplSignHomePage extends React.Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => {},
+                  onClick: () => { },
                 },
               ],
             });
@@ -596,7 +632,7 @@ export default class MultiPplSignHomePage extends React.Component {
       mobRefNo: this.state.refid,
       //  loginname: loginName,
       userIP: sessionStorage.getItem("userIP"),
-    
+
     };
     this.generateotp(obj);
   };
@@ -606,7 +642,7 @@ export default class MultiPplSignHomePage extends React.Component {
       mobRefNo: this.state.refid,
       //  loginname: loginName,
       userIP: sessionStorage.getItem("userIP"),
-     
+
     };
     this.generateotp(obj);
   };
@@ -634,12 +670,12 @@ export default class MultiPplSignHomePage extends React.Component {
           loadedClassName="loadedContent"
         />
         <div style={{ display: "none" }}>
-            <canvas className="xx" id="textCanvas" height="60"></canvas>
-            <img id="image" hidden={true} />
-          </div>
-          <div id="handSignContainer" style={{ display: "none" }}>
-            <HandSign  data={"dxgfx"} />
-          </div>
+          <canvas className="xx" id="textCanvas" height="60"></canvas>
+          <img id="image" hidden={true} />
+        </div>
+        <div id="handSignContainer" style={{ display: "none" }}>
+          <HandSign data={"dxgfx"} />
+        </div>
         <div
           id="loadingMessage"
           style={{
@@ -661,7 +697,7 @@ export default class MultiPplSignHomePage extends React.Component {
               <Modal
                 className="modal-container"
                 open={this.state.openOTPModal}
-                onClose={this.onCloseOTPModal}
+                // onClose={this.onCloseOTPModal}
                 center={true}
                 closeOnOverlayClick={false}
               >

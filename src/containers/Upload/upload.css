@@ -378,14 +378,19 @@
 }
 
 /* styles.css */
-#append, #allPage, #customPage, #removeAll {
+#append, #allPage, #customPage, #removeAll, #restoreBtn {
   cursor: pointer;
   /* font-size: 14px; */
   font-size: 13px;
   user-select: none;
 }
 
-#append:active, #allPage:active, #customPage:active {
+/* #restoreBtn:active { */
+  /* transform: scale(0.98); */
+  /* background-color: darken(, 20%); Adjust color as needed */
+/* } */
+
+#append:active, #allPage:active, #customPage:active, #restoreBtn:active {
   transform: scale(0.98);
   background-color: darken(#20a8d8, 20%); /* Adjust color as needed */
 }
@@ -468,3 +473,7 @@
     transform: translateY(0);
   }
 } */
+
+.customAlertOverlay {
+  width: 600px; /* Adjust the width as per your requirement */
+}

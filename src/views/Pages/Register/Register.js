@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
+  Dropdown, DropdownToggle,
   Row,
 } from "reactstrap";
 import Notifications, { notify } from "react-notify-toast";
@@ -28,11 +29,17 @@ import "../../../containers/Inbox/inbox.css"
 import Modal from "react-responsive-modal";
 import { ListItem, colors } from "@material-ui/core";
 import { object } from "prop-types";
+import { JSEncrypt } from 'jsencrypt';
 
 const DefaultFooter = React.lazy(() =>
   import("../../../containers/DefaultLayout/DefaultFooter")
 );
 var timerEvent = null;
+var secretKey;
+var refNo;
+
+var publicKey;
+var privateKey;
 
 class Register extends Component {
   constructor(props) {
@@ -77,13 +84,22 @@ class Register extends Component {
       selectedCorpEnty: "",
       awsTransactionID: "",
       errorJson: {},
+      publicKey: "",
+      privateKey: "",
+      secretKey: "",
+      referenceNo: "",
+      mobileNo: "",
+      email: "",
+      unregisteredDocId: "",
+      referalName: "",
+      unregisteredMessage: "Complete the registeration to link the signed document to your account for future use.",
     };
   }
 
   componentWillMount() {
     const awsTransactionID = this.getCookieValue('AWSTransactionID');
     // console.log('AWSTransactionID:', awsTransactionID);
-    this.setState({ awsTransactionID: awsTransactionID});
+    this.setState({ awsTransactionID: awsTransactionID });
 
     // Retrieve the 'errorDetails' cookie
     if (awsTransactionID == null) {
@@ -103,8 +119,117 @@ class Register extends Component {
     }
   }
 
+  generateRSAKeyPair = () => {
+    const encrypt = new JSEncrypt({ default_key_size: 2048 });
+    encrypt.getKey();
+
+    const publicKey1 = encrypt.getPublicKey();
+    const privateKey1 = encrypt.getPrivateKey();
+
+    const publicKeyContent = publicKey1.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\r\n/g, '');
+    const privateKeyContent = privateKey1.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\r\n/g, '');
+
+    var finalPublicKey = publicKeyContent.replace(/\n/g, '');
+    var finalPrivateKey = privateKeyContent.replace(/\n/g, '');
+    publicKey = finalPublicKey;
+    privateKey = privateKey1;
+
+    // Count the number of bits in the public key & private key
+    // const publicKeyBits = this.countBits(atob(publicKey));
+    // console.log('Public Key Size (bits):', publicKeyBits);
+
+    // const privateKeyBits = this.countBits(atob(finalPrivateKey));
+    // console.log('Private Key Size (bits):', privateKeyBits);
+    // We convert the Base64 encoded public and private keys to binary data.
+    //We then count the number of bytes and multiply by 8 to get the number of bits.
+    //Finally, we log the number of bits in both the public and private keys.
+
+    this.generateSecretKey();
+  };
+
+
+  generateSecretKey = async () => {
+    try {
+      this.setState({ loaded: false });
+      const response = await fetch(URL.getKey, {
+        method: 'POST',
+        headers: {
+          // 'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          publickey: publicKey,
+        })
+      });
+      const resdata = await response.json();
+      if (resdata.status === "SUCCESS") {
+
+        this.setState({ loaded: true });
+
+        const secretkey = resdata.data.secretkey;
+        const refno = resdata.data.referenceno;
+
+        this.setState({
+          referenceNo: refno,
+          secretKey: secretkey
+        });
+
+        sessionStorage.setItem('secretRefNo', refno);
+        sessionStorage.setItem('secretKey', secretkey);
+        // var decodedSecKey=atob(secretKey)
+        // Decrypt the session key
+        try {
+          const origSessionKey = await this.decryptSessionKey(secretkey, privateKey);
+
+          sessionStorage.setItem('secretKey', origSessionKey)
+          // Perform actions with decrypted values
+          secretKey = origSessionKey;
+          refNo = refno;
+          this.setState({
+            referenceNo: resdata.data.referenceno,
+            secretKey: secretKey
+          })
+        } catch (error) {
+          console.error('Decryption Error:', error);
+        }
+      }
+      this.setState({ loaded: true });
+    } catch (error) {
+      console.error('Error:', error);
+      this.setState({ loaded: true });
+    }
+  }
+
+  decryptSessionKey = async (encryptedSessionKey, privateKey) => {
+    try {
+      const decrypt = new JSEncrypt();
+      decrypt.setPrivateKey(privateKey);
+
+      // Decrypt the encrypted session key
+      const decryptedSessionKey = decrypt.decrypt(encryptedSessionKey);
+
+      return decryptedSessionKey;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  }
+
   componentDidMount() {
+    this.generateRSAKeyPair();
     // console.log(this.state.awsTransactionID);
+    //     const queryParams = new URLSearchParams(window.location.search);
+    //     const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
+    //     const email = queryParams.has("email") ? queryParams.get("email") : undefined;
+    //     const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
+    //     const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
+    //  // Set state only if values are present and not empty
+    //     this.setState({
+    //       moble: mobileNo ? mobileNo : "", // Set only if mobileNo exists
+    //       email: email ? email : "",         // Set only if email exists
+    //       unregisteredDocId:unregisteredDocId ? unregisteredDocId : "",
+    //       referalName:referalName ? referalName :"",
+    //     });
     if (this.state.awsTransactionID != null) {
       // Now delete the cookie
       this.deleteCookie('AWSTransactionID');
@@ -120,32 +245,44 @@ class Register extends Component {
     });
     this.getCaptchaCode();
 
+    //in case the assigned signer is not a registered user then we need to fetch the parameters
+    if (pathURL.includes("?mobileNo")) {
+      document.getElementById("unregisteredMessage").style.display = "";
+      const queryParams = new URLSearchParams(window.location.search);
+      const mobileNo = queryParams.has("mobileNo") ? queryParams.get("mobileNo") : undefined;
+      const email = queryParams.has("email") ? queryParams.get("email") : undefined;
+      const unregisteredDocId = queryParams.has("docId") ? queryParams.get("docId") : undefined;
+      const referalName = queryParams.has("referalName") ? queryParams.get("referalName") : undefined;
+
+      this.setState({
+        moble: mobileNo ? atob(mobileNo) : "", // Set only if mobileNo exists
+        email: email ? atob(email) : "", // Set only if email exists
+        unregisteredDocId: atob(unregisteredDocId) ? unregisteredDocId : "",
+        referalName: atob(referalName) ? referalName : "",
+      })
+    }
     //to fetch the tokenValue which is provided by the aws marketplace which contains the plan details
-    if (pathURL.includes("?")) {
+    else if (pathURL.includes("?")) {
       let awsRedirection = pathURL.split("?")[1];
       let tokenValue = awsRedirection.split("=")[1];
-      console.log("tokenValue",tokenValue);
       this.resolveCustomer(tokenValue);
     }
- 
+
 
     const token = document.cookie
-  .split('; ')
-  .find(row => row.startsWith('x-amzn-marketplace-token'))
-  ?.split('=')[1];
-console.log("token",token)
+      .split('; ')
+      .find(row => row.startsWith('x-amzn-marketplace-token'))
+      ?.split('=')[1];
 
-fetch(window.location.href)
-  .then(response => {
-    console.log("location.hrefToken:",response.headers.get('x-amzn-marketplace-token'));
-  });
+    fetch(window.location.href)
+      .then(response => {
+        console.log("location.hrefToken:", response.headers.get('x-amzn-marketplace-token'));
+      });
 
   }
 
   getCookieValue = (name) => {
-    console.log(document.cookie);
-    const cookies = document.cookie.split('; '); 
-    console.log(cookies); 
+    const cookies = document.cookie.split('; ');
     // Split cookies by '; ' to get individual cookie key-value pairs
     for (let cookie of cookies) {
       const [cookieName, cookieValue] = cookie.split('=');  // Split each cookie by '=' to separate the name and value
@@ -260,7 +397,120 @@ fetch(window.location.href)
     // }
   };
 
-  register = () => {
+  // encryptSecretKeyUsingAES = (secretKey, json) => {
+  //   try {
+  //     // Generate a random salt
+  //     const salt = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Generate a random IV
+  //     const iv = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Derive a key using PBKDF2
+  //     const importedSecretKey = crypto.subtle.importKey(
+  //       "raw",
+  //       new TextEncoder().encode(secretKey),
+  //       { name: "PBKDF2" },
+  //       false,
+  //       ["deriveKey"]
+  //     );
+
+  //     const derivedKey = crypto.subtle.deriveKey(
+  //       {
+  //         name: "PBKDF2",
+  //         salt: salt,
+  //         iterations: 65536,
+  //         hash: "SHA-1"
+  //       },
+  //       importedSecretKey,
+  //       { name: "AES-CBC", length: 256 },
+  //       true,
+  //       ["encrypt"]
+  //     );
+
+  //     // Encrypt the JSON string using AES with CBC mode and PKCS5Padding (or PKCS7Padding)
+  //     const encryptedTextBuffer = crypto.subtle.encrypt(
+  //       {
+  //         name: "AES-CBC",
+  //         iv: iv
+  //       },
+  //       derivedKey,
+  //       new TextEncoder().encode(json)
+  //     );
+
+  //     // Combine salt, IV, and ciphertext
+  //     const combinedDataBuffer = new Uint8Array([...salt, ...iv, ...new Uint8Array(encryptedTextBuffer)]);
+
+  //     // Encode the combined data to Base64
+  //     const combinedData = btoa(String.fromCharCode.apply(null, combinedDataBuffer));
+  //     return combinedData;
+  //   } catch (error) {
+  //     console.error('Encryption Error:', error);
+  //     return null;
+  //   }
+  // }
+
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+
+      // console.log("combinedDataBuffer:", combinedDataBuffer);
+
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
+    }
+  };
+
+
+  register = async () => {
     if (this.state.OTPValidtaionstatus == "N") {
       let response_data = {};
       let regEmail = new RegExp(/[\w-]+@([\w-]+\.)+([\w-]{2,3})+/);
@@ -320,6 +570,15 @@ fetch(window.location.href)
                               mobile: btoa(this.state.moble),
                               userIP: sessionStorage.getItem("userIP"),
                             };
+                            // Conditionally add `unregisteredDocId` if it has a value
+                            if (this.state.unregisteredDocId) {
+                              json.docId = this.state.unregisteredDocId;
+                            }
+
+                            // Conditionally add `referalName` if it has a value
+                            if (this.state.referalName) {
+                              json.referalName = this.state.referalName;
+                            }
 
                             if (this.state.awsTransactionID !== null) {
                               json.AWSTransactionID = this.state.awsTransactionID;
@@ -329,12 +588,17 @@ fetch(window.location.href)
                               json.corpEntity = this.state.corpEntity;
                             }
                             this.setState({ loaded: false });
+                            const encrytedData = await this.encryptSecretKeyUsingAES(this.state.secretKey, JSON.stringify(json));
+                            let dataToserver = {
+                              refNo: this.state.referenceNo,
+                              encryptedData: encrytedData
+                            }
                             fetch(URL.register, {
                               method: "POST",
                               headers: {
                                 "Content-Type": "application/json",
                               },
-                              body: JSON.stringify(json),
+                              body: JSON.stringify(dataToserver),
                             })
                               .then((response) => {
                                 return response.json();
@@ -589,7 +853,58 @@ fetch(window.location.href)
     window.location.reload(false);
   };
 
-  generateOTP(optnType) {
+  decryptSecretKeyUsingAES = async (encryptedData, secretKey) => {
+    try {
+      // Decode the Base64 string to get the combined data
+      const combinedDataBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
+
+      // Extract the salt, IV, and ciphertext
+      const salt = combinedDataBuffer.slice(0, 16); // First 16 bytes
+      const iv = combinedDataBuffer.slice(16, 32); // Next 16 bytes
+      const ciphertext = combinedDataBuffer.slice(32); // Remaining bytes
+
+      // Derive the key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1", // Ensure this matches the encryption hash
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["decrypt"]
+      );
+
+      // Decrypt the ciphertext
+      const decryptedBuffer = await crypto.subtle.decrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        ciphertext
+      );
+
+      // Decode the decrypted buffer back into a string
+      const decryptedText = new TextDecoder().decode(decryptedBuffer);
+      return decryptedText;
+    } catch (error) {
+      console.error("Decryption Error:", error);
+      return null;
+    }
+  };
+
+  async generateOTP(optnType) {
     // this.setState({ backToRegister: true});
     this.setState({ OTPValidtaionstatus: "N" });
     let regEmail = new RegExp(/[\w-]+@([\w-]+\.)+([\w-]{2,3})+/);
@@ -619,12 +934,20 @@ fetch(window.location.href)
                 optnType: optnType,
               };
               this.setState({ loaded: false });
+              let encryptedData = await this.encryptSecretKeyUsingAES(this.state.secretKey, JSON.stringify(json));
+
+              const decryptedData = await this.decryptSecretKeyUsingAES(encryptedData, this.state.secretKey)
+
+              var body = {
+                refNo: this.state.referenceNo,
+                encryptedData: encryptedData
+              };
               fetch(URL.getOtpforVerification, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(json),
+                body: JSON.stringify(body),
               })
                 .then((response) => {
                   return response.json();
@@ -693,7 +1016,7 @@ fetch(window.location.href)
                     });
 
 
-                    
+
                   } else {
                     this.setState({ loaded: true });
                     confirmAlert({
@@ -934,19 +1257,19 @@ fetch(window.location.href)
       .then((responseJson) => {
         if (responseJson.status === "SUCCESS") {
           this.setState({ loaded: true });
-     alert(responseJson.statusDetails)
+          alert(responseJson.statusDetails)
         } else {
-            this.setState({ loaded: true });
-            confirmAlert({
-              message: responseJson.statusDetails,
-              buttons: [
-                {
-                  label: "OK",
-                  className: "confirmBtn",
-                  onClick: () => {},
-                },
-              ],
-            });
+          this.setState({ loaded: true });
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { },
+              },
+            ],
+          });
         }
       })
       .catch((e) => {
@@ -960,11 +1283,11 @@ fetch(window.location.href)
     this.setState({ timeleft: 30 });
     let timerElement = document.getElementById("timer");
     let resendOtpBtn = document.getElementById("resendOTP");
-  
+
     if (timerElement && resendOtpBtn) {
       resendOtpBtn.style.display = "none";
       timerElement.style.display = "";
-  
+
       let timeleftSec = this.state.timeleft;
 
       // Clear any existing timer event
@@ -978,12 +1301,12 @@ fetch(window.location.href)
         } else {
           timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
         }
-  
+
         timeleftSec -= 1;
       }, 1000);
     }
   };
-  
+
   stopResendOtpTimer = () => {
     if (timerEvent) {
       clearInterval(timerEvent);
@@ -1252,7 +1575,7 @@ fetch(window.location.href)
     // let corpEntityID = this.state.corpEntity.corpID
     // let selectedGrp = this.state.corpEntity.requestedGrps
 
-   
+
 
     return (
       <div>
@@ -1402,9 +1725,12 @@ fetch(window.location.href)
 
 
   render() {
+    // Destructure state here inside the render method
+    const { moble, email } = this.state;
     return (
       <div className="app flex-row align-items-center">
         <Notifications />
+
         <Loader
           loaded={this.state.loaded}
           lines={13}
@@ -1424,14 +1750,26 @@ fetch(window.location.href)
           scale={1.0}
           loadedClassName="loadedContent"
         />
+
         <Container>
+          <div id="unregisteredMessage" style={{ display: "none" }}>
+            <span className="blink"
+
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+              {this.state.unregisteredMessage}
+            </span>
+          </div>
           <div className="isign-logo">
             <img style={{ height: "100%" }} src={mySignLogo}></img>
           </div>
           <Row className="justify-content-center">
             <Col md="11" lg="22" xl="7">
               <Card id="cardBody" className="mx-5">
-                <CardBody className="p-3" style={{backgroundColor:Object.keys(this.state.errorJson).length === 0 ? "#fff" : "antiquewhite"}}>
+                <CardBody className="p-3" style={{ backgroundColor: Object.keys(this.state.errorJson).length === 0 ? "#fff" : "antiquewhite" }}>
                   {(this.state.backToRegister) && (<Button id="backToReg" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.goBackToRegister}>
                     <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
                   </Button>)}
@@ -1444,6 +1782,12 @@ fetch(window.location.href)
                           <InputGroupText>
                             <i className="icon-screen-smartphone"></i>
                           </InputGroupText>
+                          {/* Fixed Dropdown for Country Code */}
+                          <Dropdown isOpen={false}>
+                            <DropdownToggle caret disabled style={{ zIndex: "0" }}>
+                              +91
+                            </DropdownToggle>
+                          </Dropdown>
                         </InputGroupAddon>
                         <Input
                           id="mobile"
@@ -1897,17 +2241,17 @@ fetch(window.location.href)
                       </p>
                     </div>
                   </Form> : <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
-                      <i
-                        className="fa fa-exclamation-triangle"
-                        aria-hidden="true"
-                        style={{
-                          color: "#f86c6b",
-                          fontSize: "1.5em", // Adjust size based on the p tag font size
-                          marginRight: "12px" // Adds spacing between icon and text
-                        }}
-                      ></i>
-                      <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p>
-                    </div>}
+                    <i
+                      className="fa fa-exclamation-triangle"
+                      aria-hidden="true"
+                      style={{
+                        color: "#f86c6b",
+                        fontSize: "1.5em", // Adjust size based on the p tag font size
+                        marginRight: "12px" // Adds spacing between icon and text
+                      }}
+                    ></i>
+                    <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p>
+                  </div>}
                 </CardBody>
               </Card>
             </Col>{" "}

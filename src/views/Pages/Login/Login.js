@@ -21,9 +21,16 @@ import $ from "jquery";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { AppFooter } from "@coreui/react";
+import { JSEncrypt } from 'jsencrypt';
 const DefaultFooter = React.lazy(() =>
   import("../../../containers/DefaultLayout/DefaultFooter")
 );
+
+var secretKey;
+var refNo;
+
+var publicKey;
+var privateKey;
 
 var Loader = require("react-loader");
 const publicIp = require("public-ip");
@@ -50,9 +57,15 @@ class Login extends Component {
       disabled: "true",
       timeleft: 30,
       backToLogin: false,
-     
-      userIPCount:0,
+
+      userIPCount: 0,
       errorJson: {},
+      publicKey: "",
+      privateKey: "",
+
+      secretKey: "",
+      referenceNo: "",
+
     };
     this.login = this.login.bind(this);
     this.keypressed = this.keypressed.bind(this);
@@ -67,14 +80,111 @@ class Login extends Component {
 
     // Retrieve the 'errorDetails' cookie
     // if (awsTransactionID == null) {
-      const errorDetails = this.getCookieErrorValue('errorDetails');
-      if (errorDetails) {
-        // Parse the decoded string as JSON
-        const errorJson = JSON.parse(errorDetails);
-        console.log('Error Details:', errorJson);
-        this.setState({ errorJson: errorJson });
-      }
+    const errorDetails = this.getCookieErrorValue('errorDetails');
+    if (errorDetails) {
+      // Parse the decoded string as JSON
+      const errorJson = JSON.parse(errorDetails);
+      console.log('Error Details:', errorJson);
+      this.setState({ errorJson: errorJson });
+    }
     // }
+  }
+
+
+  generateRSAKeyPair = () => {
+    const encrypt = new JSEncrypt({ default_key_size: 2048 });
+    encrypt.getKey();
+
+    const publicKey1 = encrypt.getPublicKey();
+    const privateKey1 = encrypt.getPrivateKey();
+
+    const publicKeyContent = publicKey1.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\r\n/g, '');
+    const privateKeyContent = privateKey1.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\r\n/g, '');
+
+    var finalPublicKey = publicKeyContent.replace(/\n/g, '');
+    var finalPrivateKey = privateKeyContent.replace(/\n/g, '');
+    publicKey = finalPublicKey;
+    privateKey = privateKey1;
+
+    // Count the number of bits in the public key & private key
+    // const publicKeyBits = this.countBits(atob(publicKey));
+    // console.log('Public Key Size (bits):', publicKeyBits);
+
+    // const privateKeyBits = this.countBits(atob(finalPrivateKey));
+    // console.log('Private Key Size (bits):', privateKeyBits);
+    // We convert the Base64 encoded public and private keys to binary data.
+    //We then count the number of bytes and multiply by 8 to get the number of bits.
+    //Finally, we log the number of bits in both the public and private keys.
+
+    this.generateSecretKey();
+  };
+
+  generateSecretKey = async () => {
+    try {
+      this.setState({ loaded: false });
+      const response = await fetch(URL.getKey, {
+        method: 'POST',
+        headers: {
+          // 'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          publickey: publicKey,
+        })
+      });
+      const resdata = await response.json();
+
+      if (resdata.status === "SUCCESS") {
+
+        this.setState({ loaded: true });
+
+        const secretkey = resdata.data.secretkey;
+        const refno = resdata.data.referenceno;
+
+        this.setState({
+          referenceNo: refno,
+          secretKey: secretkey
+        });
+
+        sessionStorage.setItem('secretRefNo', refno);
+        sessionStorage.setItem('secretKey', secretkey);
+        // var decodedSecKey=atob(secretKey)
+        // Decrypt the session key
+        try {
+          const origSessionKey = await this.decryptSessionKey(secretkey, privateKey);
+
+          sessionStorage.setItem('secretKey', origSessionKey)
+          // Perform actions with decrypted values
+          secretKey = origSessionKey;
+          refNo = refno;
+          this.setState({
+            referenceNo: resdata.data.referenceno,
+            secretKey: secretKey
+          })
+        } catch (error) {
+          console.error('Decryption Error:', error);
+        }
+      }
+      this.setState({ loaded: true });
+    } catch (error) {
+      console.error('Error:', error);
+      this.setState({ loaded: true });
+    }
+  }
+
+  decryptSessionKey = async (encryptedSessionKey, privateKey) => {
+    try {
+      const decrypt = new JSEncrypt();
+      decrypt.setPrivateKey(privateKey);
+
+      // Decrypt the encrypted session key
+      const decryptedSessionKey = decrypt.decrypt(encryptedSessionKey);
+
+      return decryptedSessionKey;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
   }
 
   setInput = (e) => {
@@ -122,6 +232,7 @@ class Login extends Component {
   };
 
   componentDidMount() {
+    this.generateRSAKeyPair();
     if (Object.keys(this.state.errorJson).length !== 0) {
       this.deleteCookie('errorDetails');
     }
@@ -130,7 +241,7 @@ class Login extends Component {
         event.preventDefault();
       }
     });
-     var userip = "";
+    var userip = "";
     //  $.getJSON("https://api.ipify.org?format=json", function (data) {
     //   userip = data.ip;
     //   sessionStorage.setItem("userIP", userip);
@@ -156,21 +267,21 @@ class Login extends Component {
 
   fetchIP = () => {
     $.getJSON("https://api.ipify.org?format=json", (data) => {
-      var userip=data.ip;
+      var userip = data.ip;
       let userIPPresent = this.checkUserIP(userip);
-      if (userIPPresent==true) {
+      if (userIPPresent == true) {
         sessionStorage.setItem("userIP", userip);
         return userip;
-      }else{
+      } else {
         this.fetchIP();
       }
     });
   }
-  
+
   checkUserIP = (userip) => {
-   
-    if (userip == null || userip == undefined ||userip=="" ) {   
-        return false;
+
+    if (userip == null || userip == undefined || userip == "") {
+      return false;
     } else {
       return true;
     }
@@ -185,72 +296,287 @@ class Login extends Component {
     this.setState({ passwordSuggestionMessage: "" });
   };
 
-  login = () => {
+  // login = () => {
+  //   if (this.state.username.length !== 0) {
+  //     if (this.state.password.length !== 0) {
+  //       if (sessionStorage.getItem("userIP") != null || sessionStorage.getItem("userIP") != undefined) {
+  //         console.log("userIp:" + sessionStorage.getItem("userIP"))
+  //         this.setState({ loaded: false });
+  //         var dataToEncypt = {
+  //           username: btoa(this.state.username),
+  //           password: btoa(this.state.password),
+  //           userIP: sessionStorage.getItem("userIP")
+  //         };
+  //         console.log(dataToEncypt);
+  //         let encrytedData = this.encryptSecretKeyUsingAES(this.state.secretKey, dataToEncypt);
+  //         console.log(encrytedData);
+  //         var body = {
+  //           refNo: this.state.referenceNo,
+  //           encryptedData: encrytedData
+  //         };
+
+  //         fetch(URL.login, {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             // 'Accept': 'application/json'
+  //           },
+  //           body: JSON.stringify(body),
+  //         })
+  //           .then((response) => {
+  //             return response.json();
+  //           })
+  //           .then((responseJson) => {
+  //             if (responseJson.status === "SUCCESS") {
+  //               let isAuthenticated = true;
+  //               sessionStorage.setItem("isAuthenticated", isAuthenticated);
+  //               this.setState({ loaded: true });
+  //               sessionStorage.setItem("authToken", responseJson.authToken);
+  //               sessionStorage.setItem("username", responseJson.name);
+  //               sessionStorage.setItem("firstName", responseJson.firstName);
+  //               // sessionStorage.setItem("verifyMobile", responseJson.verifyMobile)
+  //               sessionStorage.setItem("roleID", responseJson.roleId);
+  //               var menus = JSON.stringify(responseJson.menu);
+  //               sessionStorage.setItem("items", menus);
+  //               this.props.history.push("/");
+  //             } else {
+  //               this.setState({ loaded: true });
+  //               notify.show(responseJson.statusDetails, "custom", 5000, myColor);
+  //             }
+  //           })
+  //           .catch((e) => {
+  //             this.setState({ loaded: true });
+  //             notify.show("Failed to connect to server", "custom", 5000, myColor);
+  //           });
+  //       } else {
+  //         // notify.show("Failed to fetch User IP, Refresh the page and try again", "custom", 5000, myColor);
+
+  //         if (this.state.userIPCount >= 3) {
+  //           notify.show("Failed to fetch User IP, Refresh the page and try again", "custom", 5000, myColor);
+  //         } else {
+  //           this.setState((prevState) => ({
+  //             userIPCount: prevState.userIPCount + 1,
+  //           }));
+  //           { this.fetchIP() }
+  //         }
+  //       }
+  //     } else {
+  //       notify.show("please enter your password!", "custom", 5000, myColor);
+  //     }
+  //   } else {
+  //     notify.show("please enter your login name!", "custom", 5000, myColor);
+  //   }
+  // };
+
+  // encryptSecretKeyUsingAES = (secretKey, json) => {
+  //   try {
+  //     // Generate a random salt
+  //     const salt = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Generate a random IV
+  //     const iv = crypto.getRandomValues(new Uint8Array(16));
+
+  //     // Derive a key using PBKDF2
+  //     const importedSecretKey = crypto.subtle.importKey(
+  //       "raw",
+  //       new TextEncoder().encode(secretKey),
+  //       { name: "PBKDF2" },
+  //       false,
+  //       ["deriveKey"]
+  //     );
+
+  //     const derivedKey = crypto.subtle.deriveKey(
+  //       {
+  //         name: "PBKDF2",
+  //         salt: salt,
+  //         iterations: 65536,
+  //         hash: "SHA-1"
+  //       },
+  //       importedSecretKey,
+  //       { name: "AES-CBC", length: 256 },
+  //       true,
+  //       ["encrypt"]
+  //     );
+
+  //     // Encrypt the JSON string using AES with CBC mode and PKCS5Padding (or PKCS7Padding)
+  //     const encryptedTextBuffer = crypto.subtle.encrypt(
+  //       {
+  //         name: "AES-CBC",
+  //         iv: iv
+  //       },
+  //       derivedKey,
+  //       new TextEncoder().encode(json)
+  //     );
+
+  //     // Combine salt, IV, and ciphertext
+  //     const combinedDataBuffer = new Uint8Array([...salt, ...iv, ...new Uint8Array(encryptedTextBuffer)]);
+
+  //     console.log("combinedDataBuffer :" + combinedDataBuffer)
+  //     // Encode the combined data to Base64
+  //     const combinedData = btoa(String.fromCharCode.apply(null, combinedDataBuffer));
+  //     // const combinedData = this.arrayBufferToBase64(combinedDataBuffer);
+  //     return combinedData;
+  //   } catch (error) {
+  //     console.error('Encryption Error:', error);
+  //     return null;
+  //   }
+  // }
+
+  login = async () => {
     if (this.state.username.length !== 0) {
       if (this.state.password.length !== 0) {
-        if(sessionStorage.getItem("userIP")!= null || sessionStorage.getItem("userIP")!= undefined){
-         console.log("userIp:"+sessionStorage.getItem("userIP"))
-        this.setState({ loaded: false });
-        var body = {
-          username: btoa(this.state.username),
-          password: btoa(this.state.password),
-          userIP: sessionStorage.getItem("userIP"),
-        };
-
-        fetch(URL.login, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // 'Accept': 'application/json'
-          },
-          body: JSON.stringify(body),
-        })
-          .then((response) => {
-            return response.json();
-          })
-          .then((responseJson) => {
+        if (sessionStorage.getItem("userIP") != null) {
+          this.setState({ loaded: false });
+          const dataToEncrypt = {
+            username: btoa(this.state.username),
+            password: btoa(this.state.password),
+            userIP: sessionStorage.getItem("userIP"),
+          };
+  
+          try {
+            // Await the encrypted data
+            const encryptedData = await this.encryptSecretKeyUsingAES(
+              this.state.secretKey,
+              JSON.stringify(dataToEncrypt)
+            );
+            
+            const decryptedData = await this.decryptSecretKeyUsingAES(encryptedData, this.state.secretKey)
+            
+            const body = {
+              refNo: this.state.referenceNo,
+              encryptedData: encryptedData,
+            };
+  
+            const response = await fetch(URL.login, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+  
+            const responseJson = await response.json();
+  
             if (responseJson.status === "SUCCESS") {
               let isAuthenticated = true;
               sessionStorage.setItem("isAuthenticated", isAuthenticated);
               this.setState({ loaded: true });
-              sessionStorage.setItem("authToken", responseJson.authToken);
+              //sessionStorage.setItem("authToken", responseJson.authToken);
+              sessionStorage.setItem("jsonWebToken", responseJson.jsonWebToken);
               sessionStorage.setItem("username", responseJson.name);
               sessionStorage.setItem("firstName", responseJson.firstName);
-              // sessionStorage.setItem("verifyMobile", responseJson.verifyMobile)
               sessionStorage.setItem("roleID", responseJson.roleId);
-              var menus = JSON.stringify(responseJson.menu);
+              const menus = JSON.stringify(responseJson.menu);
               sessionStorage.setItem("items", menus);
+              sessionStorage.setItem("actionExists", true);
+              sessionStorage.setItem("corpId", responseJson.corporateID);
               this.props.history.push("/");
             } else {
               this.setState({ loaded: true });
               notify.show(responseJson.statusDetails, "custom", 5000, myColor);
             }
-          })
-          .catch((e) => {
+          } catch (error) {
+            console.error("Error during login:", error);
             this.setState({ loaded: true });
-            notify.show("Failed to connect to server", "custom", 5000, myColor);
-          });
+            notify.show(
+              "Failed to connect to server",
+              "custom",
+              5000,
+              myColor
+            );
+          }
         } else {
-         // notify.show("Failed to fetch User IP, Refresh the page and try again", "custom", 5000, myColor);
-        
-          if(this.state.userIPCount>=3){
-              notify.show("Failed to fetch User IP, Refresh the page and try again", "custom", 5000, myColor);
-            }else{
-              this.setState((prevState) => ({
-                userIPCount: prevState.userIPCount + 1,
-              }));
-              {this.fetchIP()}
-            }
+          if (this.state.userIPCount >= 3) {
+            notify.show(
+              "Failed to fetch User IP, Refresh the page and try again",
+              "custom",
+              5000,
+              myColor
+            );
+          } else {
+            this.setState((prevState) => ({
+              userIPCount: prevState.userIPCount + 1,
+            }));
+            this.fetchIP();
+          }
         }
       } else {
-        notify.show("please enter your password!", "custom", 5000, myColor);
+        notify.show("Please enter your password!", "custom", 5000, myColor);
       }
     } else {
-      notify.show("please enter your login name!", "custom", 5000, myColor);
+      notify.show("Please enter your login name!", "custom", 5000, myColor);
+    }
+  };
+  
+
+  encryptSecretKeyUsingAES = async (secretKey, json) => {
+    try {
+      // Generate a random salt
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+  
+      // Generate a random IV
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+  
+      // Derive a key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+  
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1",
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["encrypt"]
+      );
+  
+      // Encrypt the JSON string using AES with CBC mode
+      const encryptedTextBuffer = await crypto.subtle.encrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        new TextEncoder().encode(json)
+      );
+  
+      // Combine salt, IV, and ciphertext
+      const combinedDataBuffer = new Uint8Array([
+        ...salt,
+        ...iv,
+        ...new Uint8Array(encryptedTextBuffer),
+      ]);
+  
+      // Encode the combined data to Base64
+      const combinedData = btoa(
+        String.fromCharCode.apply(null, combinedDataBuffer)
+      );
+      return combinedData;
+    } catch (error) {
+      console.error("Encryption Error:", error);
+      return null;
     }
   };
 
-  resetPassword = () => {
+  arrayBufferToBase64 = (buffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+  resetPassword = async () => {
     let passwordLetters = new RegExp(
       "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])"
     );
@@ -263,15 +589,23 @@ class Login extends Component {
           if (this.state.password === this.state.repassword) {
             if (passwordLetters.test(this.state.password)) {
               this.setState({ passwordSuggestionMessage: "" });
-              var body = {
-                loginname: btoa(this.state.username),
+
+              let dataToEncypt = {
+                loginname: this.state.username,
                 emailOtp: btoa(this.state.otp),
                 emailRefNo: btoa(this.state.emailRefNo),
                 mobRefNo: btoa(this.state.mobRefNo),
                 mobileNumOtp: btoa(this.state.mobileNumOtp),
                 password: btoa(this.state.password),
                 userIP: btoa(sessionStorage.getItem("userIP")),
-                optnType: "FGTPAS",
+                optnType: "FGTPAS"
+              }
+              let encryptedData = await this.encryptSecretKeyUsingAES(this.state.secretKey, JSON.stringify(dataToEncypt));
+
+              const decryptedData = await this.decryptSecretKeyUsingAES(encryptedData, this.state.secretKey)
+              var body = {
+                refNo: this.state.referenceNo,
+                encryptedData: encryptedData
               };
               this.setState({ loaded: false });
               fetch(URL.forgotPassword, {
@@ -312,14 +646,14 @@ class Login extends Component {
                     confirmAlert({
                       message:
                         responseJson.statusDetails ===
-                        "Validation Failed.Enter Correct OTP"
+                          "Validation Failed.Enter Correct OTP"
                           ? "Invalid OTP, Enter Correct OTP"
                           : responseJson.statusDetails,
                       buttons: [
                         {
                           label: "OK",
                           className: "confirmBtn",
-                          onClick: () => {},
+                          onClick: () => { },
                         },
                       ],
                     });
@@ -361,14 +695,72 @@ class Login extends Component {
     }
   };
 
-  getOTP = () => {
-    this.setState({ password: ""});
-    this.setState({ repassword: ""});
+  decryptSecretKeyUsingAES = async (encryptedData, secretKey) => {
+    try {
+      // Decode the Base64 string to get the combined data
+      const combinedDataBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
+  
+      // Extract the salt, IV, and ciphertext
+      const salt = combinedDataBuffer.slice(0, 16); // First 16 bytes
+      const iv = combinedDataBuffer.slice(16, 32); // Next 16 bytes
+      const ciphertext = combinedDataBuffer.slice(32); // Remaining bytes
+  
+      // Derive the key using PBKDF2
+      const importedSecretKey = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+  
+      const derivedKey = await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 65536,
+          hash: "SHA-1", // Ensure this matches the encryption hash
+        },
+        importedSecretKey,
+        { name: "AES-CBC", length: 256 },
+        true,
+        ["decrypt"]
+      );
+  
+      // Decrypt the ciphertext
+      const decryptedBuffer = await crypto.subtle.decrypt(
+        {
+          name: "AES-CBC",
+          iv: iv,
+        },
+        derivedKey,
+        ciphertext
+      );
+  
+      // Decode the decrypted buffer back into a string
+      const decryptedText = new TextDecoder().decode(decryptedBuffer);
+      return decryptedText;
+    } catch (error) {
+      console.error("Decryption Error:", error);
+      return null;
+    }
+  };
+
+  getOTP = async () => {
+    this.setState({ password: "" });
+    this.setState({ repassword: "" });
     if (this.state.username.length !== 0 && this.state.username.trim() !== "") {
-      var body = {
-        loginname: btoa(this.state.username),
+      var dataToEncrypt = {
+        loginname: this.state.username,
         optnType: "FGTPAS",
       };
+      let encryptedData = await this.encryptSecretKeyUsingAES(this.state.secretKey, JSON.stringify(dataToEncrypt));
+
+      const decryptedData = await this.decryptSecretKeyUsingAES(encryptedData, this.state.secretKey)
+      let body = {
+        refNo: this.state.referenceNo,
+        encryptedData: encryptedData
+      }
       fetch(URL.getOtpForgotPassword, {
         method: "POST",
         headers: {
@@ -410,7 +802,7 @@ class Login extends Component {
                   {
                     label: "OK",
                     className: "confirmBtn",
-                    onClick: () => {},
+                    onClick: () => { },
                   },
                 ],
               });
@@ -422,7 +814,7 @@ class Login extends Component {
                   {
                     label: "OK",
                     className: "confirmBtn",
-                    onClick: () => {},
+                    onClick: () => { },
                   },
                 ],
               });
@@ -439,7 +831,7 @@ class Login extends Component {
   };
 
   forgetPassword = () => {
-    this.setState({ backToLogin: true});
+    this.setState({ backToLogin: true });
     document.getElementById("loginForm").style.display = "none";
     document.getElementById("forgotPasswordForm").style.display = "";
     document.getElementById("getOTPForm").style.display = "";//
@@ -448,9 +840,9 @@ class Login extends Component {
 
   // Function to go back to the Login form
   goBackToLogin = () => {
-    this.setState({ otp: ""});
-    this.setState({ password: ""});
-    this.setState({ backToLogin: false});
+    this.setState({ otp: "" });
+    this.setState({ password: "" });
+    this.setState({ backToLogin: false });
     const loginForm = document.getElementById("loginForm"); // Show the Login form
     const forgotPasswordForm = document.getElementById("forgotPasswordForm"); // Hide the Forgot Password form
 
@@ -459,7 +851,7 @@ class Login extends Component {
 
     // Show the Login form
     loginForm.style.display = "";
-  
+
     // Hide the Forgot Password form
     forgotPasswordForm.style.display = "none";
   };
@@ -516,32 +908,32 @@ class Login extends Component {
     obj.type = "password";
   };
 
-    // resend otp counter
-    startResendOtpTimer = () => {
-      this.setState({ timeleft: 30 });
-      let timerElement = document.getElementById("timer");
-      let resendOtpBtn = document.getElementById("resendOtpbtn");
-    
-      if (timerElement && resendOtpBtn) {
-        resendOtpBtn.style.display = "none";
-        timerElement.style.display = "";
-    
-        let timeleftSec = this.state.timeleft;
-        // Clear any existing timer event
-        this.stopResendOtpTimer();
-        timerEvent = setInterval(() => {
-          if (timeleftSec < 0) {
-            clearInterval(timerEvent);
-            resendOtpBtn.style.display = "";
-            timerElement.style.display = "none";
-          } else {
-            timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
-          }
-    
-          timeleftSec -= 1;
-        }, 1000);
-      }
-    };
+  // resend otp counter
+  startResendOtpTimer = () => {
+    this.setState({ timeleft: 30 });
+    let timerElement = document.getElementById("timer");
+    let resendOtpBtn = document.getElementById("resendOtpbtn");
+
+    if (timerElement && resendOtpBtn) {
+      resendOtpBtn.style.display = "none";
+      timerElement.style.display = "";
+
+      let timeleftSec = this.state.timeleft;
+      // Clear any existing timer event
+      this.stopResendOtpTimer();
+      timerEvent = setInterval(() => {
+        if (timeleftSec < 0) {
+          clearInterval(timerEvent);
+          resendOtpBtn.style.display = "";
+          timerElement.style.display = "none";
+        } else {
+          timerElement.innerHTML = "Resend OTP in " + timeleftSec + " Secs";
+        }
+
+        timeleftSec -= 1;
+      }, 1000);
+    }
+  };
 
   // resend otp counter for ending the timer
   stopResendOtpTimer = () => {
@@ -550,46 +942,7 @@ class Login extends Component {
       timerEvent = null; // Set timerEvent to null after clearing it
     }
   };
-
-  // // resend otp counter
-
-  // resendOtpTimer = () => {
-  //    document.getElementById("resendOtpbtn").style.display = "none";
-  //    document.getElementById("timer").style.display = "";
-  //   var timeleft = 30;
-  //   var downloadTimer = setInterval(function () {
-  //     //console.log(timeleft);
-  //     if (timeleft < 0) {
-  //       clearInterval(downloadTimer);
-  //       document.getElementById("resendOtpbtn").style.display = "";
-  //       document.getElementById("timer").style.display = "none";
-  //     } else {
-  //       document.getElementById("timer").innerHTML =
-  //         "Resend OTP in " + timeleft+" Secs";
-  //     }
-  //     timeleft -= 1;
-  //   }, 1000);
-  // };
-  // resend otp counter
-  // resendOtpTimer = () => {
-  //   this.setState({ timeleft: 30 });
-  //   document.getElementById("resendOtpbtn").style.display = "none";
-  //   document.getElementById("timer").style.display = "";
-
-  //   var timeleft = this.state.timeleft;
-  //   timerEvent = setInterval(function () {
-  //     if (timeleft < 0) {
-  //       clearInterval(timerEvent);
-  //       document.getElementById("resendOtpbtn").style.display = "";
-  //       document.getElementById("timer").style.display = "none";
-  //     } else {
-  //       document.getElementById("timer").innerHTML =
-  //         "Resend OTP in " + timeleft + " Secs";
-  //     }
-  //     timeleft -= 1;
-  //   }, 1000);
-  // };
-
+  
   render() {
     return (
       <div className="app flex-row align-items-center" id="loginAppBlock">
@@ -623,7 +976,7 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   {(this.state.backToLogin) && (<Button style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.goBackToLogin}>
-                    <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey"}}>&larr;</div>
+                    <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
                   </Button>)}
                   <CardBody>
                     <Form id="loginForm">
@@ -1003,17 +1356,17 @@ class Login extends Component {
                 higher)
               </p> */}
             </Col>
-          </Row> : <Row className="justify-content-center"><Col md="11" lg="22" xl="7"><Card id="cardBody" className="mx-5"><CardBody className="p-3" style={{  backgroundColor: "antiquewhite"}}> <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
-          <i
-                        className="fa fa-exclamation-triangle"
-                        aria-hidden="true"
-                        style={{
-                          color: "#f86c6b",
-                          fontSize: "1.5em", // Adjust size based on the p tag font size
-                          marginRight: "12px" // Adds spacing between icon and text
-                        }}
-                      ></i>
-                      <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p></div></CardBody></Card></Col></Row>}
+          </Row> : <Row className="justify-content-center"><Col md="11" lg="22" xl="7"><Card id="cardBody" className="mx-5"><CardBody className="p-3" style={{ backgroundColor: "antiquewhite" }}> <div style={{ display: "flex", alignItems: "center", fontWeight: "500" }}>
+            <i
+              className="fa fa-exclamation-triangle"
+              aria-hidden="true"
+              style={{
+                color: "#f86c6b",
+                fontSize: "1.5em", // Adjust size based on the p tag font size
+                marginRight: "12px" // Adds spacing between icon and text
+              }}
+            ></i>
+            <p style={{ margin: 0 }}>{this.state.errorJson.statusDetails}</p></div></CardBody></Card></Col></Row>}
         </Container>
 
         <div className="fixed-bottom">

@@ -7,10 +7,9 @@
         height: auto;
         /* width: auto; */
         width: -webkit-fill-available;
-    }
+    } 
 
-    #cardBody,
-    .mx-5 {
+    #cardBody, .mx-5 {
         margin-left: 0rem !important;
         margin-right: 0rem !important;
     }
@@ -20,9 +19,20 @@
     }
 }
 
-
-
 .voucher-confirm-overlay {
     z-index: 20001 !important;
-  }
-  
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+    color: green;
+    font-family: sans-serif;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

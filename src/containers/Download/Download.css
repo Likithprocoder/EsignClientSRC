@@ -76,3 +76,15 @@
 #discardsigningdiv,#cancelandsigningdiv{
  text-align:center;
 }
+
+.blink {
+    animation: blinker 1s linear infinite;
+    color: darkblue;
+    font-family: sans-serif;
+  }
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }

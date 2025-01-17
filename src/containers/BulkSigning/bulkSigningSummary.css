@@ -1,0 +1,63 @@
+.pending {
+    color: #da8302;
+}
+
+.completed {
+    color: #008000;
+}
+
+.expired {
+  color: #73818f;
+}
+
+.failure {
+    color: red;
+}
+
+.center-text {
+    text-align: center !important;
+}
+
+#downloadBtn,
+#sendReminderBtn {
+  line-height: 1;
+  float: right;
+}
+
+#moreOptions {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+    padding-right: 1.5%;
+  }
+
+.MultiSignBtn {
+    display: -webkit-box;
+    background-color: #e4e5e6;
+  }
+
+  #btnsDiv {
+    padding-top: 7px;
+    float: right;
+    width: 50%;
+    padding-right: 2%;
+    padding-bottom: 1%;
+  }
+
+  #sendReminderAlert {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+#pdfIcon {
+    cursor: pointer;
+    color: rgb(204, 0, 4);
+    padding: 0%;
+    width: 0%;
+}
+
+#moreDetails {
+    padding: 0px;
+}

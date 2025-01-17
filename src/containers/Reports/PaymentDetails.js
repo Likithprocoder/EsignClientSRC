@@ -32,13 +32,14 @@ export default class PaymentDetails extends React.Component {
   componentDidMount() {
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
     };
     this.setState({ loaded: false });
-    fetch(URL.getPaymentHistory, {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+     fetch(URL.getPaymentHistory, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -94,10 +95,94 @@ export default class PaymentDetails extends React.Component {
           <td>{data.description}</td>
           <td>{data.txnId}</td>
           <td>{data.units}</td>
+          <td><button style={{padding:"0px", fontSize:"14px"}} hidden={data.hasOwnProperty('InvoiceDownload')} onClick={e => this.downloadInvoiceReport(e, data.txnId)} className="btn btn-link">Download</button></td>
         </tr>
       );
     });
   }
+
+  // Fetch call to download invoice report
+  downloadInvoiceReport = (event, tansactionID) => {      
+    this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    let downloadInvoice =
+      "?loginname=" +
+      btoa(sessionStorage.getItem("username")) +
+      "&transitionID=" +
+      btoa(tansactionID);
+    fetch(URL.downloadInvoice + downloadInvoice, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+    }).then((response) => {
+      if (response.status === 204) {
+        confirmAlert({
+          message: "No data found for the selected transaction!",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {
+                window.location.reload(false);
+              },
+            },
+          ], closeOnClickOutside: false
+        });
+      } else if (response.status === 401) {
+        confirmAlert({
+          message: "Session Expired!",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {
+                sessionStorage.clear();
+                this.props.history.push("/login");
+              },
+            },
+          ], closeOnClickOutside: false
+        });
+      } else if (response.status === 409) {
+        confirmAlert({
+          message: "Failed to download the invoice!",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {
+                window.location.reload(false);
+              },
+            },
+          ], closeOnClickOutside: false
+        });
+      } else {
+        return response.blob();
+      }
+    })
+      .then((blob) => {
+        const href = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = href;
+        link.setAttribute("download", `${tansactionID}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((e) => {
+        confirmAlert({
+          message: "Failed to download the invoice!",
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn"
+            },
+          ], closeOnClickOutside: false
+        });
+      });
+      this.setState({ loaded: true });
+  };
 
   render() {
     return (
@@ -137,6 +222,7 @@ export default class PaymentDetails extends React.Component {
               <th>Transfer Type</th>
               <th>Transaction Ref. No.</th>
               <th>Units</th>
+              <th>Invoice</th>
             </tr>
           </thead>
           <tbody>{this.renderTableData()}</tbody>

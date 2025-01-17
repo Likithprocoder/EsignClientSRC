@@ -265,7 +265,7 @@ function HandSign(props) {
       return (
         <div>
           <img
-            style={{ height: "155px", width: "auto" }}
+            style={{ height: "155px", width: "100%" }}
             src={drawImg}
             alt=""
           />

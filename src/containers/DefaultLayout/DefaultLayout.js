@@ -28,6 +28,7 @@ import {
 import navigation from "../../_nav";
 // routes config
 import routes from "../../routes";
+var Loader = require("react-loader");
 
 const DefaultAside = React.lazy(() => import("./DefaultAside"));
 const DefaultFooter = React.lazy(() => import("./DefaultFooter"));
@@ -35,27 +36,40 @@ const DefaultHeader = React.lazy(() => import("./DefaultHeader"));
 
 class DefaultLayout extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       pushTo: "",
       openFirstModal: false,
+      loaded: true,
     };
   }
 
   loading() {
-    if (sessionStorage.getItem("authToken") === null) {
+    if (sessionStorage.getItem("jsonWebToken") === null && this.props.location.frompath !== "deGuest" && this.props.location.frompath !== "jsguest" && this.props.location.frompath !== "/preview") {
+
       this.props.history.push("/home");
       window.location.reload(false);
+
+
+
     } else {
       return <div className="animated fadeIn pt-1 text-center">Loading...</div>;
     }
   }
+  // loading() {
+  //   if (sessionStorage.getItem("authToken") === null) {
+  //     this.props.history.push("/home");
+  //     window.location.reload(false);
+  //   } else {
+  //     return <div className="animated fadeIn pt-1 text-center">Loading...</div>;
+  //   }
+  // }
 
   componentDidMount() {
     var roleID = sessionStorage.getItem("roleID");
     if (roleID === "1") {
       this.setState({ pushTo: "/" });
-    } else if (roleID === "2"||roleID === "6") {
+    } else if (roleID === "2" || roleID === "6") {
       this.setState({ pushTo: "/accountInfo" });
     }
     // else if (roleID === "3") {
@@ -68,12 +82,14 @@ class DefaultLayout extends Component {
     var body = {
       username: sessionStorage.getItem("username"),
       userIP: sessionStorage.getItem("userIP"),
-      authToken: sessionStorage.getItem("authToken"),
     };
+    this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.logOut, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -83,6 +99,7 @@ class DefaultLayout extends Component {
       .then((responseJson) => {
         localStorage.clear();
         sessionStorage.clear();
+        this.setState({ loaded: true });
         this.props.history.push("/login");
         window.location.reload(false);
         window.location.reload(false);
@@ -111,9 +128,33 @@ class DefaultLayout extends Component {
     this.props.history.push("/profileDetails");
   }
 
+  APIIntegrationsPage(e) {
+    e.preventDefault();
+    this.props.history.push("/apiIntegrationsPage");
+  }
+
   render() {
     return (
       <div className="app">
+        <Loader
+            loaded={this.state.loaded}
+            lines={13}
+            radius={20}
+            corners={1}
+            rotate={0}
+            direction={1}
+            color="#000"
+            speed={1}
+            trail={60}
+            shadow={false}
+            hwaccel={false}
+            className="spinner loader"
+            zIndex={2e9}
+            top="50%"
+            left="50%"
+            scale={1.0}
+            loadedClassName="loadedContent"
+          />
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
             <DefaultHeader
@@ -121,6 +162,7 @@ class DefaultLayout extends Component {
               onPaymentPage={(e) => this.paymentPage(e)}
               onDelete={(e) => this.deleteUserAccount(e)}
               onProfilePage={(e) => this.profilePage(e)}
+              onAPIIntegrationsPage={(e) => this.APIIntegrationsPage(e)}
             />
           </Suspense>
         </AppHeader>

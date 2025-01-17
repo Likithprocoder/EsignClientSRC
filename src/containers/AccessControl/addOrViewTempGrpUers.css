@@ -79,7 +79,7 @@
     }
 
     .viewAndAddUserBtn {
-        width: 25%;
+    	width: 25%;
         padding: 5px;
     }
 
@@ -87,6 +87,23 @@
         margin-bottom: 5px;
         margin-right: 8px;
         width: 22%;
+    }
+
+    .eachTempGroup {
+        display: flow;
+        height: 45px;
+        background-color: rgb(255, 255, 244);
+        margin-bottom: 10px;
+        width: 90%;
+        height: fit-content;
+        border-radius: 8px;
+        margin-left: 5px;
+    }
+    .groupNameCss {
+        width: 100%;
+        font-size: 16px;
+        margin-left: 5px;
+        padding: 8px;
     }
 }
 
@@ -186,6 +203,23 @@
         margin-right: 8px;
         width: 9%;
     }
+
+    .eachTempGroup {
+        display: flex;
+        height: 45px;
+        background-color: rgb(255, 255, 244);
+        margin-bottom: 10px;
+        width: 90%;
+        height: fit-content;
+        border-radius: 8px;
+        margin-left: 5px;
+    }
+    .groupNameCss {
+        width: 40%;
+        font-size: 16px;
+        margin-left: 5px;
+        padding: 8px;
+    }
 }
 
 .custom-modal {
@@ -268,27 +302,9 @@
 
 #tempGroupListCss {
     font-style: initial;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 500;
     width: 50%;
-}
-
-.eachTempGroup {
-    display: flex;
-    height: 45px;
-    background-color: rgb(255, 255, 244);
-    margin-bottom: 10px;
-    width: 90%;
-    height: fit-content;
-    border-radius: 8px;
-    margin-left: 5px;
-}
-
-.groupNameCss {
-    width: 70%;
-    font-size: 16px;
-    margin-left: 5px;
-    padding: 8px;
 }
 
 .inputLableCss {
@@ -429,3 +445,15 @@
     right: 10px;
     cursor: pointer;
 }
+  
+  .inputGrp {
+    margin-bottom: 10px;
+  }
+
+  .styles_overlay__CLSq- {
+    z-index: 0;
+  }
+
+  #disableReason {
+    align-items: center;
+  }

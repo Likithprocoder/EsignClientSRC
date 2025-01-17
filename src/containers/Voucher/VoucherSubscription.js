@@ -44,8 +44,9 @@ class VoucherSubscription extends Component {
       curntCrpId: "",
       corpUsage: 1,
       tempGroupsCheckBox: 1,
-      voucherUsageType: "Corporate Users Only" // Default value
-
+      voucherUsageType: "Corporate Users Only", // Default value
+      blobUrl: null,
+      isFinish: false,
     };
   }
 
@@ -61,6 +62,11 @@ class VoucherSubscription extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFinish !== this.state.isFinish) {
+    }
+  }
+
   componentDidMount() {
     if (this.state.loadSubscriptionComponent) {
     } else {
@@ -70,6 +76,21 @@ class VoucherSubscription extends Component {
         element.style.cursor = "no-drop";
       }
     }
+
+    let viewFileURL = "";
+    viewFileURL = URL.viewConsentFile;
+    this.setState({ viewFileURl: URL.viewConsentFile });
+    
+    let viewURL = "";
+
+    let headers = {
+      Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
+    };
+
+    viewURL = `${viewFileURL}`;
+
+    this.fetchDocument(viewURL, headers);
+    
     //checking if the user is normal enduser because  the template groups should be displayed only for the corporate admin.
     const roleId = sessionStorage.getItem("roleId");
     if ((roleId && roleId.trim() == 2)) {
@@ -212,9 +233,6 @@ class VoucherSubscription extends Component {
 
 
   custUnitstoQrCode = (e, i) => {
-
-
-
     const { name, value } = i.target;
     let responsedata = [...this.state.responsedata];
     if (name === "planID") {
@@ -356,7 +374,6 @@ class VoucherSubscription extends Component {
         additional_data.corpId = this.state.curntCrpId;
         additional_data.corpUsage = this.state.corpUsage;
         if (this.state.voucherUsageType !== "Any User") {
-          console.log(this.state.tempGroupsCheckBox);
           let corpSubGrpSelected = [];
           // Adding the list of selected template groups to the additional data
           for (let key in this.state.curntSubGrpList) {
@@ -379,6 +396,7 @@ class VoucherSubscription extends Component {
         paymentType: "VOUC",
         amount: this.state.amount * this.state.voucherQuantity,
         additional_data: additional_data,
+
       };
       // console.log(data);
       this.props.history.push({
@@ -418,14 +436,15 @@ class VoucherSubscription extends Component {
           else {
             //duplication check
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
               voucherCode: definedVoucherCode
             };
+            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
             this.setState({ loaded: false });
             fetch(URL.checkVoucherCodeAvailability, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -482,16 +501,17 @@ class VoucherSubscription extends Component {
     let response_data = {};
     var body = {
       loginname: sessionStorage.getItem("username"),
-      authToken: sessionStorage.getItem("authToken"),
       userIP: sessionStorage.getItem("userIP"),
       consentTnC: "consentTnC",
       docCode: "DOEXCONSENT",
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
     fetch(URL.consenteSign, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -572,15 +592,14 @@ class VoucherSubscription extends Component {
   }
 
   getTemplateGrps = () => {
-    var json = {
-      authToken: sessionStorage.getItem("authToken"),
-    };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getTemplateGrps, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
-      body: JSON.stringify(json),
+      body: JSON.stringify({}),
     })
       .then((response) => {
         return response.json();
@@ -668,7 +687,41 @@ class VoucherSubscription extends Component {
     )
   }
 
+  fetchDocument = async (viewFileURL, headers) => {
+    this.setState({ loaded: false });
+    const url = viewFileURL; // Encode docId if necessary
+
+    try {
+
+      // Fetch the document from the server
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/pdf')) {
+      throw new Error('Expected a PDF document but received: ' + contentType);
+      }
+
+      // Convert the response into a Blob
+      const blob = await response.blob();
+
+      if (blob.size > 0) {
+        const blobUrl = window.URL.createObjectURL(blob);
+        this.setState({ blobUrl });
+        this.setState({ loaded: true });
+      } else {
+        this.setState({ error: 'Document is empty', loading: false });
+      }
+    } catch (error) {
+      this.setState({ error: error.message, loading: false });
+    }
+  };
+
   render() {
+    const { isFinish, fileName, blobUrl } = this.state;
     const {
       openRedeemModal,
       amount,
@@ -1003,19 +1056,18 @@ class VoucherSubscription extends Component {
               /> */}
             {/* <br id="1" />
               <br id="2" /> */}
-            <PDF1
-              /* title="PDF preview"
-              ref="iframe"
-              type="application/pdf" */
+            {/* <PDF1
               url={
-                URL.viewConsentFile +
-                "?at=" +
-                btoa(sessionStorage.getItem("authToken"))
+                URL.viewConsentFile
               }
-            /* width="100%"
-            height="100%"
-            hidden */
-            />
+              httpHeaders={headers}
+            /> */}
+            {blobUrl && <PDF1
+                key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+                url={blobUrl}
+                filename={fileName}
+                finish={isFinish}  // Pass finish state to control Download button
+              />}
             <div style={{ marginTop: "20px" }}>
               <input
                 type="checkbox"
@@ -1027,6 +1079,17 @@ class VoucherSubscription extends Component {
                 &nbsp; I agree with all the terms and conditions of DocuExec
               </label>
             </div>
+            <div className="next-nav">
+            <button
+              className="upload-button"
+              id="submitConsentbutton"
+              disabled={this.state.isConsentdisable}
+              onClick={this.consenteSign.bind(this)}
+              style={{ margin: "auto" }}
+            >
+              <span>Submit &#8594;</span>
+            </button>
+          </div>
             {/* </div> */}
           </div>
           {/* <br></br> */}
@@ -1041,18 +1104,6 @@ class VoucherSubscription extends Component {
               &nbsp; I agree with all the terms and conditions of DocuExec
             </label>
           </div> */}
-
-          <div className="next-nav">
-            <button
-              className="upload-button"
-              id="submitConsentbutton"
-              disabled={this.state.isConsentdisable}
-              onClick={this.consenteSign.bind(this)}
-              style={{ margin: "auto" }}
-            >
-              <span>Submit &#8594;</span>
-            </button>
-          </div>
         </div>
       );
     }

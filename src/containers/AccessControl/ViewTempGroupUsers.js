@@ -91,37 +91,39 @@ function ViewTempGroupUsers(props) {
                 paddingLeft: "0px",
                 width: "10%",
             },
-            render: (rowData) => {
-                return (
-                    <div style={{ display: "flex" }}>
-                        <div>
-                            <a
-                                className='fa fa-trash'
-                                type="submit"
-                                style={{ color: "red", fontSize: "20px" }}
-                                onClick={(event) =>
-                                    removeTheEndUsers(event, rowData)
+            render: (rowData) => {            
+                if (!(sessionStorage.getItem("roleID") === "1")) {
+                    return (
+                        <div style={{ display: "flex" }}>
+                            <div>
+                                <a
+                                    className='fa fa-trash'
+                                    type="submit"
+                                    style={{ color: "red", fontSize: "20px" }}
+                                    onClick={(event) =>
+                                        removeTheEndUsers(event, rowData)
+                                    }
+                                >
+                                </a>
+                            </div>
+                            <div style={{ marginLeft: "2px", marginRight: "2px" }} hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
+                                <>/</>
+                            </div>
+                            <div hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
+                                {
+                                    enableOrDisable(rowData)
                                 }
-                            >
-                            </a>
+                            </div>
                         </div>
-                        <div style={{ marginLeft: "2px", marginRight: "2px" }} hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
-                            <>/</>
-                        </div>
-                        <div hidden={sessionStorage.getItem("roleID") === "1" ? false : true}>
-                            {
-                                enableOrDisable(rowData)
-                            }
-                        </div>
-                    </div>
-                );
+                    );
+                }
             },
         },
     ];
 
     // to () called to enable or disable the adminUser form the corp group..
     const enableOrDisableTheUser = (event, rowData) => {
-
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         confirmAlert({
             message: `User ${rowData.fullName} will be ${rowData.status === 1 ? "Disabled" : "Enabled"}!`,
             buttons: [
@@ -132,10 +134,10 @@ function ViewTempGroupUsers(props) {
                         const options = {
                             method: "POST",
                             headers: {
-                                "Content-Type": "appiaction/json"
+                                "Content-Type": "appiaction/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 code: props.location.state.templateCode,
                                 userDetails: [
                                     {
@@ -254,13 +256,14 @@ function ViewTempGroupUsers(props) {
 
     const viewEndUsers = () => {
         const url = URL.viewAddedTemplateUsers;
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
                 code: props.location.state.templateCode
             }),
         };
@@ -324,13 +327,14 @@ function ViewTempGroupUsers(props) {
                     className: "confirmBtn",
                     onClick: () => {
                         setAllowLoader(false);
+                        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                         const options = {
                             method: "POST",
                             headers: {
-                                "Content-Type": "appiaction/json"
+                                "Content-Type": "application/json",
+                                'Authorization': `Bearer ${jsonWebToken}`
                             },
                             body: JSON.stringify({
-                                authToken: sessionStorage.getItem("authToken"),
                                 code: props.location.state.templateCode,
                                 userDetails: userDetails
                             })
@@ -431,7 +435,7 @@ function ViewTempGroupUsers(props) {
             />
             <div>
                 <div className='temGrpName' style={{ marginBottom: "5px" }}>
-                    <span >Template Group: </span>
+                    <span >{sessionStorage.getItem("roleID") === "1" ? "Corporate:" : "Template Group:"} </span>
                     <span style={{ fontSize: "16px" }}>{props.location.state.templateName}</span>
                 </div>
                 <MaterialTable

@@ -45,22 +45,17 @@ class QRDetails extends Component {
     if (sessionStorage.hasOwnProperty("paymentType")) {
       paymentType = sessionStorage.getItem("paymentType");
     }
-
+    
     let additional_data = sessionStorage.getItem("additional_data");
 
     let jsonObject = {};
-    if (additional_data) {
-      console.log('Content of additional_data:', additional_data);
-
+    if (additional_data !== "undefined") {
       try {
         jsonObject = JSON.parse(additional_data);
         delete jsonObject.vouchrCodeNote;
-        console.log('Parsed JSON object:', jsonObject);
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
-    } else {
-      console.error('additional_data is null or undefined');
     }
 
     // console.log('additional_data:', typeof additional_data);
@@ -70,26 +65,32 @@ class QRDetails extends Component {
     if (sessionStorage.getItem("paymentType") === "VOUC") {
       body = {
         authToken: sessionStorage.getItem("authToken"),
-        loginname: sessionStorage.getItem("username"),
-        amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
-        additional_data: add_data,//
+        additional_data: add_data
       };
-    } else {
+    } else if (sessionStorage.getItem("paymentType") === "SUBM") {
       body = {
         authToken: sessionStorage.getItem("authToken"),
-        loginname: sessionStorage.getItem("username"),
-        amount: sessionStorage.getItem("amount"),
         paymentType: paymentType,
+        planID: sessionStorage.getItem("planID"),
+        additional_data: { "userIp": sessionStorage.getItem("userIP") }
+      };
+    } 
+    else {
+      body = {
+        authToken: sessionStorage.getItem("authToken"),
+        units: sessionStorage.getItem("units"),
+        paymentType: paymentType
       };
     }
 
-    console.log(body);
     this.setState({ loaded: false });
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     fetch(URL.getQR, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
@@ -98,8 +99,8 @@ class QRDetails extends Component {
       })
       .then((responseJson) => {
         if (responseJson.status == "SUCCESS") {
-          sessionStorage.removeItem("paymentType");
-
+          // sessionStorage.removeItem("paymentType");
+          sessionStorage.setItem("totalAmount", responseJson.totalAmount);
           if (sessionStorage.hasOwnProperty("additional_data")) {
             sessionStorage.removeItem("additional_data");
           }
@@ -128,6 +129,7 @@ class QRDetails extends Component {
             sessionStorage.clear();
             this.setState({ loaded: true });
             this.props.history.push("/login");
+            this.setState({ loaded: true });
           } else {
             confirmAlert({
               message: responseJson.statusDetails,
@@ -135,14 +137,14 @@ class QRDetails extends Component {
                 {
                   label: "OK",
                   className: "confirmBtn",
-                  onClick: () => { },
+                  onClick: () => { this.props.history.push('/rateCard') },
                 },
-              ],
+              ], closeOnClickOutside: false
             });
             //alert(responseJson.statusDetails)
-            this.setState({ loaded: true });
           }
         }
+        this.setState({ loaded: true });
       });
   }
 
@@ -150,15 +152,16 @@ class QRDetails extends Component {
   autoPaymentCheck = () => {
     const body = {
       authToken: sessionStorage.getItem("authToken"),
-      loginname: sessionStorage.getItem("username"),
       mysignTxnId: this.state.uuid,
       bankTxnId: this.state.txnId,
     };
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (this.state.statusCheckCount <= 30) {
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(body),
       })
@@ -244,15 +247,16 @@ class QRDetails extends Component {
     if (this.state.txnId.length !== 0 && this.state.txnId.trim() !== "") {
       let body = {
         authToken: sessionStorage.getItem("authToken"),
-        loginname: sessionStorage.getItem("username"),
         mysignTxnId: "",
         bankTxnId: this.state.txnId,
       };
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       this.setState({ loaded: false });
       fetch(URL.getPaymentStatus, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         cache: "no-store",
         body: JSON.stringify(body),
@@ -315,7 +319,7 @@ class QRDetails extends Component {
           {
             label: "OK",
             className: "confirmBtn",
-            onClick: () => {},
+            onClick: () => { },
           },
         ],
       });
@@ -385,22 +389,22 @@ class QRDetails extends Component {
             <tr style={{ height: "25px" }}>
               <td>Net Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.netAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.netAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>GST Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.gstAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.gstAmount}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Other Charges</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.addCharge}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.addCharge}</td>
             </tr>
             <tr style={{ height: "25px" }}>
               <td>Total Amount</td>
               <td>:</td>
-              <td>{URL.rupeeSymbol+" "}{this.state.totalAmount}</td>
+              <td>{URL.rupeeSymbol + " "}{this.state.totalAmount}</td>
             </tr>
 
             <tr style={{ height: "25px" }}>
@@ -423,7 +427,7 @@ class QRDetails extends Component {
         >
           {/* For Mobile Payments{" "} */}
           <a href={QrURL} class="upi-pay">
-            <Button id="invoicepayBtn" color="primary" onClick={() => {}}>
+            <Button id="invoicepayBtn" color="primary" onClick={() => { }}>
               Pay Using UPI App
             </Button>
           </a>{" "}

@@ -1,0 +1,130 @@
+/*!
+ * Signature Pad v2.3.2
+ * https://github.com/szimek/signature_pad
+ *
+ * Copyright 2017 Szymon Nowak
+ * Released under the MIT license
+ *
+ * The main idea and some parts of the code (e.g. drawing variable width Bézier curve) are taken from:
+ * http://corner.squareup.com/2012/07/smoother-signatures.html
+ *
+ * Implementation of interpolation using cubic Bézier curves is taken from:
+ * http://benknowscode.wordpress.com/2012/09/14/path-interpolation-using-cubic-bezier-and-control-point-estimation-in-javascript
+ *
+ * Algorithm for approximated length of a Bézier curve is taken from:
+ * http://www.lemoda.net/maths/bezier-length/index.html
+ *
+ */
+
+/*!
+ * jQuery UI :data 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Disable Selection 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Draggable 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Mouse 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Resizable 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Scroll Parent 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * jQuery UI Touch Punch 0.2.3
+ *
+ * Copyright 2011–2014, Dave Furfero
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * Depends:
+ *  jquery.ui.widget.js
+ *  jquery.ui.mouse.js
+ */
+
+/*!
+ * jQuery UI Widget 1.13.2
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+/*!
+ * reactjs-popup v1.5.0
+ * (c) 2019-present Youssouf EL AZIZI <youssoufelazizi@gmail.com>
+ * Released under the MIT License.
+ */
+
+/**
+ * A React component to view a PDF document
+ *
+ * @see https://react-pdf-viewer.dev
+ * @license https://react-pdf-viewer.dev/license
+ * @copyright 2019-2022 Nguyen Huu Phuoc <me@phuoc.ng>
+ */
+
+/**!
+ * @fileOverview Kickass library to create and place poppers near their reference elements.
+ * @version 1.16.1
+ * @license
+ * Copyright (c) 2016 Federico Zivolo and contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
