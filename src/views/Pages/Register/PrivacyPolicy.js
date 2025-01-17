@@ -162,7 +162,7 @@ export default class PrivacyPolicy extends Component {
             information in the testimonial. You will be given an opportunity to
             review and approve the testimonial before we post it. If you wish to
             update or delete your testimonial, you can contact us at{" "}
-            <span class="ft8">docuexec@integramicro.com</span>
+            <span class="ft8">support@docuexec.com</span>
           </p>
           <p class="p3 ft1">
             <b>
@@ -295,7 +295,7 @@ export default class PrivacyPolicy extends Component {
             If someone has referred any of our products or services to you
             through any of our referral programs, that person may have provided
             us your name, email address and other personal information. You may
-            contact us at docuexec@integramicro.com to request that we remove
+            contact us at support@docuexec.com to request that we remove
             your information from our database. If you provide us information
             about another person, or if another person gives us your
             information, we will only use that information for the specific
@@ -827,7 +827,7 @@ export default class PrivacyPolicy extends Component {
             a child under 16 has provided us with personal information, we will
             take steps to delete such information. If you believe that a child
             under 16 years has provided personal information to us, please write
-            to <span class="ft8">docuexec@integramicro.com</span> with the
+            to <span class="ft8">support@docuexec.com</span> with the
             details, and we will take the necessary steps to delete the
             information we hold about that child.
           </p>

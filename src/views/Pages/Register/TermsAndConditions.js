@@ -135,7 +135,7 @@ export default class TermsAndConditions extends Component {
             accounts. You may specify a process to be followed for recovering
             control in the event of such loss of control of the administrator
             accounts by sending{" "}
-            <span class="ft5">an email to docuexec@integramicro.com</span>{" "}
+            <span class="ft5">an email to support@docuexec.com</span>{" "}
             provided that the process is acceptable to IMSPL. In the absence of
             any specified administrator account recovery process, IMSPL may
             provide control of an administrator account to an individual
@@ -156,7 +156,7 @@ export default class TermsAndConditions extends Component {
             username, password and other sensitive information. You are
             responsible for all activities that occur in your user account and
             you agree to inform us immediately of any unauthorized use of your
-            user account by email to docuexec@integramicro.com or by calling us
+            user account by email to support@docuexec.com or by calling us
             on any of the numbers listed on <nobr>1-800-</nobr>{" "}
             <nobr>425-1340.</nobr> We are not responsible for any loss or damage
             to you or to any third party incurred as a result of any
@@ -304,7 +304,7 @@ export default class TermsAndConditions extends Component {
             In case of any grievance, the term as defined under Information
             Technology (Intermediary Guidelines and Digital Media Ethics Code)
             Rules 2021, our Grievance Officer, D Nagaraja, can be contacted by
-            sending an email to grievance.docuexec@integramicro.com or by phone
+            sending an email to support@docuexec.com or by phone
             at <nobr>1-800-425-1340.</nobr>
           </p>
           <b>
@@ -475,7 +475,7 @@ export default class TermsAndConditions extends Component {
             whole or part of any Service in the event of any suspected illegal
             activity, extended periods of inactivity or requests by law
             enforcement or other government agencies. Objections to suspension
-            or disabling of user accounts should be made to ______________
+            or disabling of user accounts should be made to support@docuexec.com
             within thirty
           </p>
           <p class="p18 ft8">
@@ -768,7 +768,7 @@ export default class TermsAndConditions extends Component {
             our blogs or forums.
           </p>
           <p class="p43 ft8">
-            We will contact you to let you know if we make any major changes to
+            We will contact or notify you through our platform to let you know if we make any major changes to
             our privacy policy, or in the highly unlikely event that we ever
             decide to sell our business.
           </p>
