@@ -253,7 +253,7 @@ export default class LandingPage extends Component {
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#services"
-                    // style={{ marginRight: "2px" }}
+                  // style={{ marginRight: "2px" }}
                   >
                     Services
                   </a>
@@ -263,7 +263,7 @@ export default class LandingPage extends Component {
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#about"
-                    // style={{ marginRight: "2px" }}
+                  // style={{ marginRight: "2px" }}
                   >
                     About
                   </a>
@@ -273,7 +273,7 @@ export default class LandingPage extends Component {
                     className="nav-link js-scroll-trigger"
                     onClick={this.menuClick}
                     href="#subscriptions"
-                    // style={{ marginRight: "2px" }}
+                  // style={{ marginRight: "2px" }}
                   >
                     Subscriptions
                   </a>
@@ -287,7 +287,7 @@ export default class LandingPage extends Component {
                     Contact
                   </a>
                 </li> */}
-                <li className="nav-item" style={{marginBottom:"5px"}}>
+                <li className="nav-item" style={{ marginBottom: "5px" }}>
                   <Button
                     color="primary"
                     className="px-4"
@@ -579,7 +579,7 @@ export default class LandingPage extends Component {
               <h2 className="section-heading text-uppercase">SubscriptionS</h2>
             </div>
             <div>
-              <Row className="align-items-center" style={{ justifyContent: "center"}}>
+              <Row className="align-items-center" style={{ justifyContent: "center" }}>
                 <br></br>
                 {this.createUI()}
               </Row>
@@ -664,14 +664,17 @@ export default class LandingPage extends Component {
                                 <a className="btn btn-dark btn-social mx-2" href="#!"><i className="fab fa-facebook-f"></i></a>
                                 <a className="btn btn-dark btn-social mx-2" href="#!"><i className="fab fa-linkedin-in"></i></a>
                             </div> */}
-              <div className="col-lg-4 text-lg-right">
-                <a className="mr-3" href="#!" hidden>
+              <div className="">
+                <a className="mr-3" href="https://docuexec.com/privacyPolicy" >
                   Privacy Policy
                 </a>
-                <a href="#!" hidden>
+                <a href="https://docuexec.com/termsandconditions"  >
                   Terms of Use
                 </a>
               </div>
+              {/* <div className="col-lg-4 text-lg-right">
+               
+              </div> */}
             </div>
           </div>
         </footer>

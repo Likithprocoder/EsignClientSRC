@@ -15,7 +15,7 @@ const { UpdateRounded } = require("@material-ui/icons");
 // var paymenturl = "http://10.10.40.57:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
+  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
