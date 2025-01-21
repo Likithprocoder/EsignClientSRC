@@ -139,3 +139,17 @@
 .DetailsHeading{
     font-size: 16px;
 }
+
+.notificationContent{
+    width: 100%;
+    border: 1px solid deepskyblue;
+    padding: 2%;
+    border-radius: 3%;
+    margin-bottom: 1%;
+}
+
+.notifyIntFild{
+    display: inline-flex;
+    width: 100%;
+    margin-bottom: 2%;
+}

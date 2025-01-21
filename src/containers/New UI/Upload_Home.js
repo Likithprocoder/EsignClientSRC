@@ -71,19 +71,19 @@ function Upload_Home(props) {
                 return response.json();
             })
             .then(async (responseJson) => {
+                // Subscription call data.
+                await subscriptionCall(wallInfoData);
+                // Getflag call
+                await getFlags(wallInfoData);
+                // Subscription list call
+                await subscriptionList();
+                setLoader(true);
                 if (responseJson.status === "SUCCESS") {
                     let responseData = responseJson;
                     // (120.00 units --->  120.00). for rendering in UI.
                     responseData["units"] = responseJson.units.split("units")[0];
                     setEsignData(responseData);
                     sessionStorage.setItem("units", responseJson.units);
-                    // Subscription call data.
-                    await subscriptionCall(wallInfoData);
-                    // Getflag call
-                    await getFlags(wallInfoData);
-                    // Subscription list call
-                    await subscriptionList();
-                    setLoader(true);
                 } else {
                     if (responseJson.statusDetails === "Session Expired!!") {
                         sessionStorage.clear();
@@ -103,7 +103,8 @@ function Upload_Home(props) {
                             buttons: [
                                 {
                                     label: "OK",
-                                    className: "confirmBtn"
+                                    className: "confirmBtn",
+                                    onClick: () => { setLoader(true); }
                                 }
                             ], closeOnClickOutside: false
                         });

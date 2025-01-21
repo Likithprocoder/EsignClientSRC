@@ -162,7 +162,8 @@ let URL = {
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
   registerUser: "/register",
   exportSignerStatusReport: HOST + "exportSignerStatusReport",
-  notifyBulkSigners: HOST + "/notifyBulkSigners"
+  notifyBulkSigners: HOST + "/notifyBulkSigners",
+  updateBulkSignerData: HOST + "BulkSigning/updateSignerData"
 };
 
 module.exports = { URL };

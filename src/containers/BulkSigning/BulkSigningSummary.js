@@ -11,13 +11,13 @@ import './bulkSigningSummary.css';
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import { Row } from "reactstrap";
 import AccessAlarm from "@material-ui/icons/AccessAlarm";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { Delete, MoreVert, MoreHoriz, BorderColor } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import GetApp from "@material-ui/icons/GetApp";
 
 var Loader = require("react-loader");
-
-
 
 export default class BulkSigningSummary extends React.Component {
   constructor(props) {
@@ -32,6 +32,10 @@ export default class BulkSigningSummary extends React.Component {
       authToken: "",
       showSubListTable: false,
       batchNo: "",
+      openModal: false,
+      UptedSignerMobileNo: "",
+      UptedsignerEmailID: "",
+      signerData: null
     };
   }
 
@@ -213,7 +217,6 @@ export default class BulkSigningSummary extends React.Component {
 
   //------------File Download----------------------
   fileDownload(data) {
-    console.log(data);
     var DocId = data.docId;
     window.location.href =
       URL.downloadStoredFile +
@@ -513,23 +516,11 @@ export default class BulkSigningSummary extends React.Component {
 
     const subTableColumns = [
       {
-        title: "",
-        field: "",
-        cellStyle: {
-          width: "0px",
-          padding: "0px",
-          // paddingRight: "0%",
-          //   paddingLeft: "1%",
-          //   textAlign: "center",
-        },
-      },
-      {
         title: "Signer Name",
         field: "signerName",
         type: "string",
         cellStyle: {
           width: "26%",
-          padding: "0px",
         },
       },
       {
@@ -612,11 +603,104 @@ export default class BulkSigningSummary extends React.Component {
           let dateTime = dateTimeFully.split(".");
           return (rowdata.signedOn !== "null") ? dateTime[0] : "-";
         }
-      },
+      }
     ];
 
     // Apply custom sorting to table data
     // const sortedData = [...subTableColumns].sort(customSort);
+
+    const updateSignerData = (e) => {
+      // Validate if any of the values the enduser has edited.
+      if (this.state.signerData["signerMobile"] === document.getElementById("blkSignEdtMoblNum").value &&
+        this.state.signerData["signerEmail"] === document.getElementById("bkSgnEdtEmlId").value) {
+        confirmAlert({
+          message: 'Edit any of the fields to make an update!',
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+            },
+          ], closeOnClickOutside: false
+        });
+      } else {
+        this.setState({ loaded: false });
+        // Update API Call.
+        var signerIntsFrUpdt = {
+          authToken: sessionStorage.getItem("authToken"),
+          batchNumber: this.state.signerData["batchNo"],
+          sequenceNumber: this.state.signerData["sequenceNumber"],
+          ...(this.state.signerData["signerMobile"] !== document.getElementById("blkSignEdtMoblNum").value && {
+            upatdMobileNo: document.getElementById("blkSignEdtMoblNum").value
+          }),
+          ...(this.state.signerData["signerEmail"] !== document.getElementById("bkSgnEdtEmlId").value && {
+            upatdEmailId: document.getElementById("bkSgnEdtEmlId").value
+          })
+        };
+        // Check for the edited fields, the edited fields shall be added to body and passed to server.
+        fetch(URL.updateBulkSignerData, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signerIntsFrUpdt)
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJson) => {
+            if (responseJson.status === "SUCCESS") {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      this.setState({ loaded: true });
+                      window.location.reload();
+                    }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+            else if (responseJson.statusDetails === "Session Expired!!") {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { this.props.history.push('/login') }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+            else {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { this.props.history.push('/') }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+          }).catch((e) => {
+            confirmAlert({
+              message: 'Technical issues! Please try later.',
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push('/') }
+                },
+              ], closeOnClickOutside: false
+            });
+          });
+      }
+    };
 
     return (
       <div>
@@ -832,17 +916,13 @@ export default class BulkSigningSummary extends React.Component {
               color: "black",
               fontWeight: "normal",
               fontSize: "16px",
-              paddingLeft: "2px",
+              paddingLeft: "16px",
+              paddingRight: "12px",
               borderBottom: "2px inset ",
             },
             searchFieldStyle: {
-              marginTop: "0px",
-              paddingTop: "0px",
-              paddingRight: "0px",
               color: "Black",
-              top: "0px",
-              marginBottom: "20px",
-              border: "outset",
+              border: "outset"
             },
             pageSize: 10,
             pageSizeOptions: [10, 15, 20],
@@ -852,12 +932,31 @@ export default class BulkSigningSummary extends React.Component {
               // console.log(rowData);
               if (rowData.status === 0) {
                 return {
-                  icon: () => <AccessAlarm style={{ color: "#ffc107" }} />,
-                  id: "accessAlarmIcon",
-                  tooltip: "Send Reminder",
-                  onClick: (event, rowData) => this.sendReminder(rowData),
+                  icon: () => (
+                    <div style={{ display: "inline-flex", marginLeft: "30%" }}>
+                      <div title="Send Reminder!" className="sendReminder">
+                        <AccessAlarm
+                          style={{ color: "#ffc107", marginRight: "10px", cursor: "pointer" }}
+                          onClick={(event) => {
+                            event.stopPropagation(); // Prevent row click
+                            this.sendReminder(rowData); // Function for AccessAlarm
+                          }}
+                        />
+                      </div>
+                      <div title="Edit Signer Data!" className="editSignData">
+                        <FontAwesomeIcon onClick={event => {
+                          event.stopPropagation(); // Prevent row click 
+                          this.setState({
+                            openModal: true,
+                            signerData: rowData
+                          })
+                        }} icon={faPenToSquare} />
+                      </div>
+                    </div>
+                  ),
+                  id: "accessAlarmAndEDitIcon",
                   isFreeAction: false,
-                  hidden: false,
+                  hidden: false
                 };
               } else if (rowData.status === 1) {
                 return {
@@ -906,6 +1005,67 @@ export default class BulkSigningSummary extends React.Component {
           }
           }
         ></MaterialTable>}
+        {
+          this.state.openModal && (
+            <>
+              <div className="custom-modal">
+                <div className="CustomModal-contentBLKSIGNSUM">
+                  <span style={{ cursor: "pointer" }} className="close" onClick={e => this.setState({ openModal: false })}>&times;</span>
+                  <div>
+                    <div className="DetailsHeadingSum">
+                      <span>Bulk Signing: Update Signer Data</span>
+                    </div>
+                    <div className="notificationContent">
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Signer Name: </span>
+                        </div>
+                        <div className="signerNme" >
+                          <span>{this.state.signerData["signerName"]}</span>
+                        </div>
+                      </div>
+
+                      {/* <div className="notifyIntFild" >
+                        <div className="FldDIV" style={{ width: "100%", justifyContent: "end" }}>
+                          <span>{this.state.signerData["signerName"]}</span>
+                        </div>
+                      </div> */}
+
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Mobile Number: </span>
+                        </div>
+                        <div style={{ width: "68%" }}>
+                          <input id="blkSignEdtMoblNum" onChange={e => { this.setState({ UptedSignerMobileNo: e.target.value }) }} maxLength={10} className="inputCss" defaultValue={this.state.signerData["signerMobile"]} type="number" />
+                        </div>
+                      </div>
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Email ID: </span>
+                        </div>
+                        <div style={{ width: "68%" }}>
+                          <input id="bkSgnEdtEmlId" onChange={e => { this.setState({ UptedsignerEmailID: e.target.value }) }} maxLength={40} defaultValue={this.state.signerData["signerEmail"]} className="inputCss"
+                            type="text" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="confirmAlrt">
+                      <span>
+                        <span style={{ fontWeight: "600", color: "red" }}>Note:</span> The current singer details ({this.state.signerData["signerMobile"]},
+                        <span style={{ color: "lightskyblue" }}>{this.state.signerData["signerEmail"]}</span>)
+                        will be replaced with ({this.state.UptedSignerMobileNo}, <span style={{ color: "lightskyblue" }}>{this.state.UptedsignerEmailID}</span>),
+                        and a signing notification will be sent to the above edited fields.
+                      </span>
+                    </div>
+                    <div className="UTDBTN">
+                      <button onClick={e => updateSignerData(e)} type="button" class="btn btn-primary">Update</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        }
       </div>
     );
   }
