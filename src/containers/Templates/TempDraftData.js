@@ -201,7 +201,7 @@ function TempDraftData(props) {
           };
           props.history.push({
             frompath: "/draftTemplates",
-            pathname: "/template",
+            pathname: "/templateEditing",
             state: state
           });
         } else if (data.statusDetails === "Session Expired") {
