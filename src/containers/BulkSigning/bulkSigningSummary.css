@@ -1,9 +1,37 @@
+
+@media screen and (max-width: 800px) {
+  .CustomModal-contentBLKSIGNSUM {
+    background-color: white;
+    padding: 15px;
+    border-radius: 16px;
+    max-width: 80%;
+    max-height: 70%;
+    overflow: auto;
+    position: relative;
+    width: 80%;
+  }
+  
+}
+@media screen and (min-width: 801px) {
+  .CustomModal-contentBLKSIGNSUM {
+    background-color: white;
+    padding: 15px;
+    border-radius: 16px;
+    max-width: 60%;
+    max-height: 70%;
+    overflow: auto;
+    position: relative;
+    width: 40%;
+  }
+  
+}
+
 .pending {
-    color: #da8302;
+  color: #da8302;
 }
 
 .completed {
-    color: #008000;
+  color: #008000;
 }
 
 .expired {
@@ -11,11 +39,11 @@
 }
 
 .failure {
-    color: red;
+  color: red;
 }
 
 .center-text {
-    text-align: center !important;
+  text-align: center !important;
 }
 
 #downloadBtn,
@@ -25,39 +53,121 @@
 }
 
 #moreOptions {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    width: 100%;
-    padding-right: 1.5%;
-  }
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+  padding-right: 1.5%;
+}
 
 .MultiSignBtn {
-    display: -webkit-box;
-    background-color: #e4e5e6;
-  }
+  display: -webkit-box;
+  background-color: #e4e5e6;
+}
 
-  #btnsDiv {
-    padding-top: 7px;
-    float: right;
-    width: 50%;
-    padding-right: 2%;
-    padding-bottom: 1%;
-  }
+#btnsDiv {
+  padding-top: 7px;
+  float: right;
+  width: 50%;
+  padding-right: 2%;
+  padding-bottom: 1%;
+}
 
-  #sendReminderAlert {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: 0px;
-    margin-left: 0px;
+#sendReminderAlert {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 0px;
+  margin-left: 0px;
 }
 
 #pdfIcon {
-    cursor: pointer;
-    color: rgb(204, 0, 4);
-    padding: 0%;
-    width: 0%;
+  cursor: pointer;
+  color: rgb(204, 0, 4);
+  padding: 0%;
+  width: 0%;
 }
 
 #moreDetails {
-    padding: 0px;
+  padding: 0px;
+}
+
+.sendReminder:hover {
+  transform: scale(1.2);
+}
+
+.editSignData:hover {
+  transform: scale(1.2);
+}
+
+
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.DetailsHeadingSum {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2%;
+  color: #c6b700;
+}
+
+
+.notificationContent {
+  width: 100%;
+  padding: 2%;
+  border-radius: 3%;
+  margin-bottom: 1%;
+  background-color: #f3f3f3;
+}
+
+
+.notifyIntFild {
+  display: inline-flex;
+  width: 100%;
+  margin-bottom: 2%;
+}
+
+.inputCss {
+  width: 100%;
+  border: 2px solid black;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.FldDIV{
+  width: 32%;
+  padding-top: 1%;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.confirmAlrt{
+  padding: 2%;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.UTDBTN{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signerNme{
+  width: 68%;
+  display: flex;
+  align-items: end;
+  font-size: 14px;
+  font-weight: 600;
 }
