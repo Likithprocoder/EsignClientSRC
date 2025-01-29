@@ -94,11 +94,104 @@ export default class Inbox extends React.Component {
     // this.GoToPreviousPageButton = this.pageNavigationPluginInstance.GoToPreviousPageButton;
   }
 
+  buttonStyle = {
+    backgroundColor: '#4285F4', // Google Drive blue
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    border: 'none',
+  };
   componentDidMount() {
-    this.getInbocDocDetails();
-    // this.getEmailValidation();
-    this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
-    // console.log(typeof sessionStorage.getItem("maxFilesize"));
+    if (this.props.location.search !== "") {
+      const params = new URLSearchParams(this.props.location.search);
+      this.setState({ loaded: false });
+      let error = params.get('error');
+      if (error !== null) {
+        confirmAlert({
+          message: 'Google Authorization failed!',
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => {
+                window.location.reload();
+              },
+            },
+          ], closeOnClickOutside: false
+        });
+      } else {
+        var body = {
+          code: params.get('code'),
+          scope: params.get('scope'),
+          state: params.get('state')
+        }
+        fetch(URL.fetchAccessToken, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJson) => {
+            if (responseJson.status === "SUCCESS") {
+              window.close();
+              this.setState({ loaded: true });
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      window.location.href = window.location.origin + window.location.pathname;;
+                    }
+                  }
+                ], onClickOutside: false
+              });
+            }
+            else {
+              this.setState({ loaded: true });
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      window.location.href = window.location.origin + window.location.pathname;;
+
+                    },
+                  },
+                ], onClickOutside: false
+              });
+            }
+          })
+          .catch((e) => {
+            this.setState({ loaded: true });
+            confirmAlert({
+              message: "Failed to upload the document! Please try after some time.",
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => {
+                    window.location.href = window.location.origin + window.location.pathname;;
+
+                  },
+                },
+              ], onClickOutside: false
+            });
+          });
+      }
+    } else {
+      this.getInbocDocDetails();
+      // this.getEmailValidation();
+      this.setState({ maxUploadFileSize: sessionStorage.getItem("maxFilesize") });
+    }
   }
 
   onCloseSignersCommentsModal = () => {
@@ -1535,6 +1628,52 @@ export default class Inbox extends React.Component {
       });
   }
 
+  uploadDocument(event, data) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+    var body = {
+      docID: btoa(data.DOC_ID)
+    };
+    fetch(URL.getOAuthEndPointURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
+      },
+      body: JSON.stringify(body)
+
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        this.setState({ loaded: false });
+        if (responseJson.status === "SUCCESS") {
+          window.location.href = responseJson.authURL;
+        } else {
+          this.setState({ loaded: true });
+          if (responseJson.statusDetails === "Session Expired") {
+            sessionStorage.clear();
+            this.props.history.push("/login");
+          } else {
+            confirmAlert({
+              message: responseJson.statusDetails,
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { }
+                }
+              ]
+            });
+          }
+        }
+      })
+      .catch((e) => {
+        this.setState({ loaded: true });
+        alert(e);
+      });
+  }
+
   render() {
     let commentsValue = this.state.signerListDetails;
     const { opensignersCommentsModal } = this.state;
@@ -2329,6 +2468,18 @@ export default class Inbox extends React.Component {
                         </div>
                         <div id="moreOptions">
                           {" "}
+                          <span
+                            title="Upload to google drive"
+                            id="viewBtn"
+                            style={{ color: "white", marginLeft: "4%" }} //spaing between buttons
+                            onClick={event => this.uploadDocument(event, this.state.rowData)}
+                          >
+                            <img
+                              src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_Drive_logo.png/600px-Google_Drive_logo.png"
+                              alt="Google Drive Logo"
+                              style={{ width: '27px' }}
+                            />
+                          </span>
                           <button
                             id="viewBtn"
                             className="btn btn-primary rounded-pill"
@@ -2965,6 +3116,18 @@ export default class Inbox extends React.Component {
 
                       <div id="btnsDiv">
                         {" "}
+                        <span
+                          title="Upload to google drive"
+                          id="viewBtn"
+                          style={{ color: "white", marginLeft: "4%" }} //spaing between buttons
+                          onClick={event => this.uploadDocument(event, this.state.rowData)}
+                        >
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_Drive_logo.png/600px-Google_Drive_logo.png"
+                            alt="Google Drive Logo"
+                            style={{ width: '27px' }}
+                          />
+                        </span>
                         <button
                           id="viewBtn"
                           className="btn btn-primary rounded-pill"
@@ -3013,6 +3176,18 @@ export default class Inbox extends React.Component {
                       </div>
                       <div id="btnsDiv">
                         {" "}
+                        <span
+                          title="Upload to google drive"
+                          id="viewBtn"
+                          style={{ color: "white", marginLeft: "4%" }} //spaing between buttons
+                          onClick={event => this.uploadDocument(event, this.state.rowData)}
+                        >
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_Drive_logo.png/600px-Google_Drive_logo.png"
+                            alt="Google Drive Logo"
+                            style={{ width: '27px' }}
+                          />
+                        </span>
                         <button
                           id="viewBtn"
                           className="btn btn-primary rounded-pill"
@@ -3062,6 +3237,18 @@ export default class Inbox extends React.Component {
 
                       <div id="btnsDiv">
                         {" "}
+                        <span
+                          title="Upload to google drive"
+                          id="viewBtn"
+                          style={{ color: "white", marginLeft: "4%" }} //spaing between buttons
+                          onClick={event => this.uploadDocument(event, this.state.rowData)}
+                        >
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Google_Drive_logo.png/600px-Google_Drive_logo.png"
+                            alt="Google Drive Logo"
+                            style={{ width: '27px' }}
+                          />
+                        </span>
                         <button
                           id="viewBtn"
                           className="btn btn-primary rounded-pill"
