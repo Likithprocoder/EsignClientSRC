@@ -1,21 +1,21 @@
 
-const HOST = "/MYSIGN/";
-var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "/MYSIGN/";
+// var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
 
 const { UpdateRounded } = require("@material-ui/icons");
 
 // const HOST = "https://uat.docuexec.com/MYSIGN/";
 // var paymenturl = "https://uat.docuexec.com/PAYMENTSIMULATOR/getunitscalltesting";
 
-// const HOST = "http://localhost:8090/MYSIGN/";
-// var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
+const HOST = "http://localhost:8090/MYSIGN/";
+var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
 // const HOST = "http://10.10.40.57:8090/MYSIGN/";
 // var paymenturl = "http://10.10.40.57:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.29";
+  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
@@ -163,7 +163,10 @@ let URL = {
   registerUser:"/register",
   exportSignerStatusReport:HOST + "exportSignerStatusReport",
   notifyBulkSigners: HOST + "/notifyBulkSigners",
-  updateBulkSignerData: HOST + "BulkSigning/updateSignerData"
+  updateBulkSignerData: HOST + "BulkSigning/updateSignerData",
+  cancelBulkSigning: HOST +"/cancelBulkSigning",
+  getOAuthEndPointURL: HOST +"/getOAuthEndPointURL",
+  fetchAccessToken: HOST +"/fetchAccessToken"
 };
 
 module.exports = { URL };

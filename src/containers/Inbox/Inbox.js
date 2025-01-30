@@ -1629,15 +1629,14 @@ export default class Inbox extends React.Component {
   }
 
   uploadDocument(event, data) {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
+      authToken: sessionStorage.getItem("authToken"),
       docID: btoa(data.DOC_ID)
     };
     fetch(URL.getOAuthEndPointURL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
 

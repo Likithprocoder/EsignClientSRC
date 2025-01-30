@@ -33,6 +33,10 @@
 .completed {
   color: #008000;
 }
+.cancelled {
+  color: #f86c6b;
+}
+
 
 .expired {
   color: #73818f;
@@ -90,6 +94,33 @@
   padding: 0px;
 }
 
+#addCommentsModalpara-text{
+  max-width: 400px;
+  margin-Top: 20px;
+}
+
+#signercommentsLabel{
+  font-size: 15px;
+  color:black;
+  }
+
+  #cancelReasonid,#signerCommentsid1{
+    display: inline-flex;
+     /* width: 550px; */
+      width: 375px;
+     font-size: 15px;
+     line-height: 1.25;
+     color: #55595c;
+     background-color: #fff;
+     background-image: none;
+     background-clip: padding-box;
+     border-top: 0;
+     border-right: 0;
+     border-left: 0;
+     border-radius: 3px;
+     margin: 2px;
+     /* margin-left: 10px; */
+   }
 .sendReminder:hover {
   transform: scale(1.2);
 }

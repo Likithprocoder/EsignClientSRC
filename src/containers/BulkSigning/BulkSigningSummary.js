@@ -16,11 +16,15 @@ import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { Delete, MoreVert, MoreHoriz, BorderColor } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import GetApp from "@material-ui/icons/GetApp";
+import Modal from "react-responsive-modal";
 
 var Loader = require("react-loader");
 
+
+
 export default class BulkSigningSummary extends React.Component {
   constructor(props) {
+
     super(props);
     this.toggleSubListTable = this.toggleSubListTable.bind(this);
     this.state = {
@@ -35,14 +39,41 @@ export default class BulkSigningSummary extends React.Component {
       openModal: false,
       UptedSignerMobileNo: "",
       UptedsignerEmailID: "",
-      signerData: null
+      signerData: null,
+      openCancelSigningModal: false,
+      cancelReason: "",
+      cancelMsg: "",
+      disableRemindr: false
     };
   }
 
   componentDidMount() {
     let rowData = "";
     this.getBulkSigningDetails(rowData);
+
   }
+
+  onCloseCancelSigningModal = () => {
+    this.setState({ openCancelSigningModal: false })
+
+  };
+
+  onOpenCancelSigningModal = (e) => {
+    var unSignedCount = "" + this.state.pendingCount + "";
+    var msg;
+    var signMsg;
+    if (unSignedCount == 1) {
+      signMsg = "signature";
+    } else {
+      signMsg = "signnatures";
+    }
+
+    this.setState({
+      openCancelSigningModal: true,
+      cancelMsg: unSignedCount + " pending " + signMsg + " will be canceled, and all the signers on the list will receive a notification regarding the cancellation."
+    })
+
+  };
 
   getBulkSigningDetails = (rowData) => {
     this.setState({ loaded: false });
@@ -228,21 +259,27 @@ export default class BulkSigningSummary extends React.Component {
   }
 
   toggleSubListTable = (data) => {
-    this.setState({ loaded: false });
-    this.setState({ batchNo: data.batchNo });
+    if (data.status === 2 || data.pendingCount === 0) {
+      this.setState({
+        disableRemindr: true
+      });
+    } else {
+      this.setState({
+        disableRemindr: false
+      });
+    }
+    this.setState({
+      loaded: false,
+      batchNo: data.batchNo,
+      pendingCount: data.pendingCount,
+      cancelReason: ""
+    });
     this.getBulkSigningDetails(data);
     this.setState(prevState => ({
       showSubListTable: !prevState.showSubListTable
     }));
   }
 
-  //fetch call to export signer status report
-  //  exportToCSV = (e) => {
-  //   e.preventDefault()
-  //   const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
-  //   window.location.href = url;
-
-  // };
   exportToCSV = async (e) => {
     e.preventDefault();
     const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
@@ -271,6 +308,90 @@ export default class BulkSigningSummary extends React.Component {
       this.setState({ loaded: true });
     }
   };
+
+  cancelJob = async (e) => {
+
+    // var unSignedCount = 0;
+    var unSignedCount = "" + this.state.pendingCount + "";
+    // unSignedCount = unSignedList.length;
+    var msg;
+    var signMsg;
+    if (unSignedCount == 1) {
+      signMsg = "sign";
+    } else {
+      signMsg = "signs";
+    }
+    // if (unSigned === "undefined" || data.IS_OWNER == 1) {
+    msg = (
+      <div>
+        {/* <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p> */}
+        <Row>
+          <i className="fa fa-exclamation-triangle" id="warningIcon"></i>
+          <p style={{ color: "red" }}>
+            {unSignedCount + " pending " + signMsg + " will be cancelled"}
+          </p>
+        </Row>
+      </div>
+    );
+
+  }
+
+
+  CancelSigning = async (e) => {
+    this.onCloseCancelSigningModal();
+
+    this.setState({ loaded: false });
+    var body = {
+      authToken: sessionStorage.getItem("authToken"),
+      batchNumber: this.state.batchNo,
+      cancelReason: this.state.cancelReason,
+    };
+
+    fetch(URL.cancelBulkSigning, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body)
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.status === "SUCCESS") {
+          this.setState({ loaded: true });
+          // this.setState({cancelReason:""});
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  window.location.reload(false);
+                },
+              },
+            ],
+          });
+        } else {
+          this.setState({ loaded: true });
+          //this.setState({cancelReason:""});
+          confirmAlert({
+
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  window.location.reload(false);
+                },
+              },
+            ],
+          });
+        }
+      });
+  }
 
   sendBulkReminder = (e) => {
     // Logic to take a count of number of unSigned users count.
@@ -375,37 +496,44 @@ export default class BulkSigningSummary extends React.Component {
 
   }
 
+  setCancelReason = (e) => {
+    const { name, value } = e.target;
+    if (name === "cancelReason") {
+      this.setState({
+        cancelReason: value.replace(/[^\w\s@#_,'":.\\-]/gi, ""),
+      });
+    }
+  };
+
 
   render() {
     const { bulkSigningInfo, bulkSigningSummary } = this.state;
-
-    // {console.log(bulkSigningInfo)}
-    // {console.log(bulkSigningSummary)}
 
     const columns = [
       {
         title: "",
         field: "",
-        cellStyle: {
-          //   width: "0px",
-          //   padding: "0px",
-          //   paddingRight: "0%",
-          //   paddingLeft: "1%",
-          //   textAlign: "center",
-        },
         render: (rowData) => {
-          if (rowData.pendingCount == 0) {
+          if (rowData.status === 2) {
+            return (
+              <i class="fa fa-times"
+                style={{ color: "#f86c6b", fontSize: "25px", padding: "0px" }}
+              ></i>
+            );
+          }
+          else if (rowData.pendingCount == 0) {
             return (
               <i
                 className="fa fa-check"
                 style={{ color: "green", fontSize: "25px", padding: "0px" }}
               ></i>
             );
+
           } else {
             return (
               <i
                 class="fa fa-clock-o"
-                style={{ fontSize: "20px", padding: "0px" }}
+                style={{ fontSize: "25px", padding: "0px" }}
               ></i>
             );
           }
@@ -417,9 +545,7 @@ export default class BulkSigningSummary extends React.Component {
         type: "string",
         cellStyle: {
           width: "40%",
-          padding: "0px",
-          //   paddingLeft: "15%",
-          //   fontSize: "15px",
+          padding: "0px"
         },
         render: (rowdata) => {
           let filePath = rowdata.filePath;
@@ -440,8 +566,6 @@ export default class BulkSigningSummary extends React.Component {
       {
         title: "Initiated On",
         field: "requestedOn",
-        // type: "datetime",
-
         cellStyle: {
           width: "20%",
           paddingLeft: "3px",
@@ -469,11 +593,15 @@ export default class BulkSigningSummary extends React.Component {
           width: "7%",
         },
         render: (rowdata) => {
+
           let statusText;
           let statusClass;
           let pendingCount = rowdata.pendingCount;
-          // console.log(pendingCount);
-          if (pendingCount == 0) {
+
+          if (rowdata.status == 2) {
+            statusText = "Signing cancelled";
+            statusClass = "cancelled";
+          } else if (pendingCount == 0) {
             statusText = "Completed";
             statusClass = "completed";
           } else {
@@ -504,15 +632,6 @@ export default class BulkSigningSummary extends React.Component {
       },
     ];
 
-    // Custom sorting function
-    const customSort = (a, b) => {
-      // console.log(a);
-      // console.log(b);
-      // Sort by status value: 0 (top), 1 (middle), -1 (bottom)
-      if (a.status < b.status) return -1;
-      if (a.status > b.status) return 1;
-      return 0;
-    };
 
     const subTableColumns = [
       {
@@ -564,6 +683,11 @@ export default class BulkSigningSummary extends React.Component {
               statusClass = "completed";
               // document.getElementById("accessAlarmIcon").style.display = "none";
               break;
+            case 2:
+              statusText = "Cancelled";
+              statusClass = "cancelled";
+              // document.getElementById("accessAlarmIcon").style.display = "none";
+              break;
             default:
               statusText = "Expired";
               statusClass = "expired";
@@ -606,8 +730,7 @@ export default class BulkSigningSummary extends React.Component {
       }
     ];
 
-    // Apply custom sorting to table data
-    // const sortedData = [...subTableColumns].sort(customSort);
+
 
     const updateSignerData = (e) => {
       // Validate if any of the values the enduser has edited.
@@ -723,6 +846,70 @@ export default class BulkSigningSummary extends React.Component {
           scale={1.0}
           loadedClassName="loadedContent"
         />
+        <Modal
+          className="modal-container"
+          open={this.state.openCancelSigningModal}
+          onClose={this.onCloseCancelSigningModal}
+          center={true}
+          closeOnOverlayClick={false}
+        >
+          <div className="para-text" id="addCommentsModalpara-text">
+            <div className="para-content">
+              <Row id="otpmodalrow1">
+                <label style={{ Color: "Blue" }} id="addcommentsLabel">
+                  Add cancel reason
+                  <i
+                    style={{ marginLeft: "10px" }}
+                    class="fa fa-comment-o"
+                  ></i>
+                </label>
+                <textarea
+                  style={{ marginLeft: "0px", fontSize: "13px" }}
+                  class="cancelReason"
+                  id="cancelReasonid"
+                  name="cancelReason"
+                  placeholder="maximum 255 characters allowed"
+                  title="maximum 255 characters allowed"
+                  rows="3"
+
+                  onChange={this.setCancelReason}
+
+                  value={this.state.cancelReason}
+                  required={true}
+                  minLength={0}
+                  maxLength={455}
+                  autoComplete="off"
+                ></textarea>
+                <div>
+                  <label
+                    for="acceptance"
+                    id="makeprivatecommentlabel"
+                    style={{ fontSize: "15px", marginLeft: "5px" }}
+                  >
+                    Note:{this.state.cancelMsg}
+                  </label>
+                </div>
+                <Button
+                  id="addcommentsOkbutton"
+                  style={{
+                    float: "right",
+                    marginLeft: "auto",
+                    marginTop: "15px",
+                    marginBottom: "-10px",
+                  }}
+                  color="primary"
+
+                  onClick={(e) =>
+                    // this.cancelJob(e)
+                    this.CancelSigning(e)
+                  }
+                >
+                  OK
+                </Button>
+              </Row>
+            </div>
+          </div>
+        </Modal>
         {this.state.showSubListTable && <div style={{ marginBottom: "10px" }}>
           <Button title="back" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.toggleSubListTable}>
             <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
@@ -996,12 +1183,13 @@ export default class BulkSigningSummary extends React.Component {
                 {/* Original Toolbar (search box, etc.) */}
                 <MTableToolbar {...props} />
                 <div>
-                  <Button style={{ color: "white" }} onClick={(e) => this.sendBulkReminder(e)} title="Signing reminder notification" color="warning"   >Reminder</Button>
+                  <Button style={{ color: "white", display: (this.state.disableRemindr ? "none" : "") }} onClick={(e) => this.sendBulkReminder(e)} title="Signing reminder notification" color="warning"   >Reminder</Button>
                   <Button style={{ marginLeft: "10px" }} title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
+                  <Button style={{ marginLeft: "10px", display: (this.state.disableRemindr ? "none" : "") }} id="cancelSigningBulkSigningBtn" title="Cancel Signing" onClick={(e) => this.onOpenCancelSigningModal(e)} color="danger"> Cancel Signing</Button>
+
                 </div>
               </div>
-
-            ),
+            )
           }
           }
         ></MaterialTable>}

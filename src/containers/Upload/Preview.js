@@ -3301,6 +3301,7 @@ const Preview = (props) => {
           loginname: loginname,
           authToken: authToken,
           userIP: sessionStorage.getItem("userIP"),
+          endDate: endDateTime,
           fileRefNo: fileRefNo,
           csvFileRefNo: csvFileRefNo,
           signingDetails: {
