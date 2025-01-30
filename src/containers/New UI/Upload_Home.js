@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Dropzone from "react-dropzone";
 import { confirmAlert } from "react-confirm-alert";
 import "./Upload_Home.css";
-import pdfImage from 'D:/Git Projects/docuExec-client/src/views/Icons/PDF.png';
+// import pdfImage from 'D:/Git Projects/docuExec-client/src/views/Icons/PDF.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileSignature, faIdCard, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { URL } from "../URLConstant";
@@ -686,9 +686,9 @@ function Upload_Home(props) {
     };
 
     // To scroll the subscription list to next/previous set, on click of 'viewMore' and'viewLess' button.
-    const viewToNxtLst = (scrollID) => {
+    const viewToNxtLst = (currentIndex, scrollID) => {
         const container = document.getElementById('subListParent');
-        const element = document.getElementById(scrollID);
+        const element = document.getElementById(currentIndex * scrollID);        
         const containerRect = container.getBoundingClientRect();
         const elementRect = element.getBoundingClientRect();
         const scrollLeft = container.scrollLeft;
@@ -698,7 +698,7 @@ function Upload_Home(props) {
         });
         // Storing the scroll Index, in usestate..
         // The logic to scroll the subscription list, to next/previous the below state is used.
-        setCurntIndex(scrollID);
+        setCurntIndex(currentIndex);
     };
 
     return (
@@ -789,7 +789,7 @@ function Upload_Home(props) {
                                 (
                                     <div className="dropInfoAferDrop">
                                         <div className="PDFImageDIV" style={{ height: "50%" }}>
-                                            <img className="PDFImage" alt="Group" src={pdfImage} />
+                                            {/* <img className="PDFImage" alt="Group" src={pdfImage} /> */}
                                         </div>
                                         <div className="UpldFleName">
                                             <span>{file.name}</span>
@@ -907,7 +907,7 @@ function Upload_Home(props) {
                         <span className="subscriptinHead" >Top-Up Plans</span>
                     </div>
                     <div className="moreOrLessBtnPrnt" >
-                        <div hidden={curentIndex === 0} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst(curentIndex - (isMobile ? 2 : 4))}>
+                        <div hidden={curentIndex === 0} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst((curentIndex - 1), (isMobile ? 2 : 4))}>
                             <div className="chevronRight" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <FontAwesomeIcon icon={faChevronLeft} />
                             </div>
@@ -915,7 +915,7 @@ function Upload_Home(props) {
                                 &nbsp;&nbsp;View Less
                             </div>
                         </div>
-                        <div hidden={curentIndex === (subscriptionLst.length - (isMobile ? 2 : 4))} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst(curentIndex + (isMobile ? 2 : 4))}>
+                        <div hidden={curentIndex === ((Math.ceil(subscriptionLst.length / (isMobile ? 2 : 4))) - 1)} className="viewMoreAdLessBtn" onClick={e => viewToNxtLst((curentIndex + 1), (isMobile ? 2 : 4))}>
                             <div>
                                 View More&nbsp;&nbsp;
                             </div>
