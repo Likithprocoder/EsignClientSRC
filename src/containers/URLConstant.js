@@ -167,7 +167,10 @@ let URL = {
   updateBulkSignerData: HOST + "BulkSigning/updateSignerData",
   cancelBulkSigning: HOST +"/cancelBulkSigning",
   getOAuthEndPointURL: HOST +"/getOAuthEndPointURL",
-  fetchAccessToken: HOST +"/fetchAccessToken"
+  fetchAccessToken: HOST +"/fetchAccessToken",
+  internalTopUp: HOST + "internalTopUp",
+  switchProvider: HOST + "V2/switchProvider",
+  saveConfigKeys: HOST + "V2/saveConfigKeys"
 };
 
 module.exports = { URL };

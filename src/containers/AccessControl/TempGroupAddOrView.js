@@ -34,7 +34,7 @@ function TempGroupAddOrView(props) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken"),
+                authToken: sessionStorage.getItem("authToken")
 
             }),
         };
@@ -265,6 +265,86 @@ function TempGroupAddOrView(props) {
         })
     }
 
+
+    // to top up corpoarte admin Wallet account.
+    const topUpcrpAdminAccount = (event, corporateCode) => {
+        // fetch corporate admin credentails of this corpoaret entity.
+        const url = URL.viewAddedTemplateUsers;
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                authToken: sessionStorage.getItem("authToken"),
+                code: corporateCode
+
+            })
+        }
+        fetch(url, options)
+            .then((response) => response.json())
+            .then((responsedata) => {
+                if (responsedata.status === "SUCCESS") {
+                    // check for response data.
+                    if (responsedata.userList.length === 0) {
+                        confirmAlert({
+                            message: "Cannot perform topUp! This corporate entity has no corporte admin.",
+                            buttons: [
+                                {
+                                    label: "OK",
+                                    className: "confirmBtn"
+                                },
+                            ], closeOnClickOutside: false
+                        });
+                    } else {
+                        let userData = responsedata.userList[0];
+                        userData.corporateId = corporateCode;
+                        props.history.push({
+                            pathname: "/corporteAdminTopUp",
+                            frompath: "/addOrViewTempGroup",
+                            corporateAdminCredntails: userData
+                        })
+                    }
+                }
+                else if (responsedata.statusDetails === "Session Expired!!") {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/login");
+                                },
+
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                } else {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                            },
+                        ], closeOnClickOutside: false
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                confirmAlert({
+                    message: `Unable to perform topup operation! Please try after some time.`,
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn",
+                        },
+                    ], closeOnClickOutside: false
+                });
+            });
+    };
     return (
         <div>
             <Loader
@@ -302,6 +382,9 @@ function TempGroupAddOrView(props) {
                         <div key={index} className='eachTempGroup'>
                             <div key={posts.code} className='groupNameCss'>
                                 <span>{posts.name}</span>
+                            </div>
+                            <div hidden={!(sessionStorage.getItem("roleID") === "1")} className='topUp viewAndAddUserBtn'>
+                                <button style={{ width: "100%", height: "fit-content" }} type='submit' onClick={e => topUpcrpAdminAccount(e, posts.code)} className='btn btn-primary' disabled={posts.status === 0}>TopUp</button>
                             </div>
                             <div className='viewAndAddUserBtn'>
                                 <button style={{ width: "100%", height: "fit-content" }} type='submit' onClick={e => addEndUsrToTempGrp(e, posts.code, posts.name)} className='btn btn-success'>Add Users</button>

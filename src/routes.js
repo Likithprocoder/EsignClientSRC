@@ -87,6 +87,7 @@ const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUse
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
 const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const corporateAdminTopUp= React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
 const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
 const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
 const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
@@ -316,6 +317,11 @@ const routes = [
     path: "/newUIUpload",
     name: "newUIUpload",
     component: newUIUpload
+  },
+  {
+    path: "/corporteAdminTopUp",
+    name: "Corporate Admin TopUp",
+    component: corporateAdminTopUp
   },
 
   { path: "/accountDetails", name: "Account Details", component: AccountDetails },
