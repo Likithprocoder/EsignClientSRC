@@ -219,7 +219,6 @@ export default class Inbox extends React.Component {
 
         if (responseJson.status == "SUCCESS") {
           this.setState({
-            loaded: true,
             signMode: responseJson.signMode,
             fileName: responseJson.fileName,
             // signCoordinates: JSON.parse(responseJson.signCoordinates),
@@ -283,8 +282,8 @@ export default class Inbox extends React.Component {
               },
             ],
           });
+          this.setState({loaded: true});
           //alert(responseJson.statusDetails)
-          this.setState({ loaded: true });
         }
       });
   }
@@ -380,7 +379,6 @@ export default class Inbox extends React.Component {
         if (responseJson.status == "SUCCESS") {
 
           this.setState({
-            loaded: true,
             signMode: responseJson.signMode,
             signInfo: responseJson.signInfo,
             signCoordinates: responseJson.signCoordinates,
@@ -416,6 +414,7 @@ export default class Inbox extends React.Component {
   //------------------Signing from inbox call(self signing or third party signing)------------------
   CheckSigningMode = (rowData) => {
     // console.log(rowData.DOC_ID);
+    this.setState({loaded: false});
     let dataToGetSignCoordinateDetails = {
       docId: rowData.DOC_ID,
       authToken: sessionStorage.getItem("authToken"),
@@ -491,6 +490,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
+      this.setState({loaded: true});
       console.error("Error:", error);
     }
     // console.log(this.state.signCoordinates);
@@ -517,7 +517,6 @@ export default class Inbox extends React.Component {
       pageDimensions: pageDimensions,
       equalPageDimensions: equalPageDimensionsCheck,
     };
-    this.setState({ loaded: true });
     this.props.history.push({
       pathname: "/preview",
       frompath: "inbox",
@@ -608,6 +607,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
+      this.setState({loaded: true});
       console.error("Error:", error);
     }
 
@@ -704,7 +704,6 @@ export default class Inbox extends React.Component {
                   equalPageDimensions: this.state.equalPageDimensions,
                 };
 
-                this.setState({ loaded: true });
                 this.props.history.push({
                   pathname: "/preview",
                   frompath: "inbox",
