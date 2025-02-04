@@ -44,6 +44,11 @@ pdfjsforOnDrag.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs
 export default class Inbox extends React.Component {
   constructor(props) {
     super(props);
+    const today = new Date();
+    const min = today.toISOString().split("T")[0]; // Today's date in YYYY-MM-DD format
+    const max = new Date(today.setMonth(today.getMonth() + 1))
+    .toISOString()
+    .split("T")[0]; // One month from today
     this.state = {
       loaded: false,
       inboxDataList: [],
@@ -75,7 +80,7 @@ export default class Inbox extends React.Component {
       maxUploadFileSize: "",
       signerListDetails: [],
       opensignersCommentsModal: false,
-      CommentsHeading: " ",
+      CommentsHeading:" ",
       totalPagesNum: null,
       signInfo: "",
       signPage: "",
@@ -86,6 +91,12 @@ export default class Inbox extends React.Component {
       currentPageView: 1,
       pageDimensions: "",
       equalPageDimensions: true,
+      extendDate:"",
+      min: "",
+       max, // Maximum date (1 month from today)
+   datePicker:false,
+
+      
     };
     this.customPlugin = this.customPlugin.bind(this);
     // Initialize component properties
@@ -197,7 +208,11 @@ export default class Inbox extends React.Component {
   onCloseSignersCommentsModal = () => {
     this.setState({ opensignersCommentsModal: false });
   };
+  onCloseDatePicker = () => {
+    this.setState({ datePicker: false });
+  };
 
+ 
   //------------------Getting the signer details from API----------------------
   signFromInboxForThirdPart(accesskey) {
     var body = {
@@ -236,7 +251,7 @@ export default class Inbox extends React.Component {
             authToken: responseJson.authToken,
           });
           sessionStorage.setItem("customDocName", responseJson.customDocName);
-
+          
           if (responseJson.hasOwnProperty("signerListDetails")) {
             this.setState({
               signerListDetails: responseJson.signerListDetails,
@@ -1672,10 +1687,164 @@ export default class Inbox extends React.Component {
         alert(e);
       });
   }
+  extendValidity(data){
+    confirmAlert({
+      // title: "Extend Signing Validity",
+      message: "Extend the " + data.DOC_NAME + " document signing validity upto "+ this.state.extendDate,
+      buttons: [
+        {
+          label: "Confirm",
+          className: "confirmBtn",
+          onClick: () => {
+            var body = {
+              authToken: sessionStorage.getItem("authToken"),
+              docId: data.DOC_ID,
+              endDate:this.state.extendDate + " 23:59:59"
+            };
+            fetch(URL.extendSigningValidity, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => {
+                return response.json();
+              })
+              .then((responseJson) => {
+                if (responseJson.status === "SUCCESS") {
+                  confirmAlert({
+                    message: "Signing Validity Extended.",
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => {
+                          window.location.reload(false);
+                        },
+                      },
+                    ],
+                  });
+                } else {
+                  confirmAlert({
+                    message: responseJson.statusDetails,
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => {},
+                      },
+                    ],
+                  });
+                }
+              });
+          },
+        },
+        {
+          label: "Cancel",
+          className: "cancelBtn",
+          onClick: () => {},
+        },
+      ],
+    });
+  }
+
+  setSEDate() {
+    let d = new Date();
+    let e = new Date();
+    e.setDate(e.getDate() + 15);
+    let extendDate = "";
+    // to display the default enddate in the browser
+
+    // date format yyyy-mm-dd
+    const year = e.getFullYear();
+    const month = String(e.getMonth() + 1).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
+    const day = String(e.getDate()).padStart(2, '0'); // ensures 2 digits, pads with 0 if necessary
+    extendDate = `${year}-${month}-${day}`;
+    console.log(extendDate);
+
+    this.setState({
+     
+      extendDate: extendDate,
+    });
+  }
+
+  
+
+  finalDate = (e) => {
+    const { name, value } = e.target;
+    this.setState({
+      [name]: value,
+    });
+  };
+  
+  handleDateInput(e) {
+    const dateValue = e.target.value;
+    const today = new Date();
+    const minDate = new Date(today); // Today
+    const maxDate = new Date(today.setMonth(today.getMonth() + 1)); // One month from today
+  
+    const datePattern = /^\d{0,4}-\d{0,2}-\d{0,2}$/;
+  
+    // Check if input matches the expected date format
+    if (!datePattern.test(dateValue)) {
+      this.showError("Invalid format. Use YYYY-MM-DD.");
+      this.resetInput(e); // Reset to previous value
+      return;
+    }
+  
+    const [year, month, day] = dateValue.split("-");
+  
+    // Validate year length
+    if (year && year.length > 4) {
+      this.showError("Year must be 4 digits.");
+      this.resetInput(e);
+      return;
+    }
+  
+    // Validate month range
+    if (month && (parseInt(month, 10) < 1 || parseInt(month, 10) > 12)) {
+      this.showError("Month must be between 01 and 12.");
+      this.resetInput(e);
+      return;
+    }
+  
+    // Validate day range only for complete dates
+    if (year && month && day) {
+      const selectedDate = new Date(dateValue);
+  
+      // Ensure the selected date is not in the past
+      if (selectedDate < minDate) {
+        this.showError(`Date must not be in the past.`);
+        this.resetInput(e);
+        return;
+      }
+  
+      // Ensure the selected date is within the next 1 month
+      if (selectedDate > maxDate) {
+        this.showError(`Date must be within the next 1 month.`);
+        this.resetInput(e);
+        return;
+      }
+    }
+  
+    // If validation passes, update the state
+    this.setState({ extendDate: dateValue });
+  }
+  
+  resetInput(e) {
+    e.target.value = this.state.extendDate || ""; // Reset to last valid state
+  }
+  
+  showError(message) {
+    console.error(message); // Replace with your preferred error display logic
+  }
 
   render() {
     let commentsValue = this.state.signerListDetails;
     const { opensignersCommentsModal } = this.state;
+    const { datePicker } = this.state;
+
     const shown = this.state.shown;
     const columns = [
       {
@@ -2587,7 +2756,17 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
-
+                    <input
+            id="enddatefield"
+            className="signerfield"
+            type="date"
+            value={this.state.extendDate}
+            min={this.state.min}
+            max="2037-12-31"
+            name="endDate"
+            onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
+          />
                         </div>
                       </div>
                       <div style={{ backgroundColor: " #f57e7d" }}>
@@ -2662,9 +2841,21 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
+                          
+                          <input
+            id="enddatefield"
+            className="signerfield"
+            type="date"
+            value={this.state.extendDate}
+            min={this.state.min}
+            max="2037-12-31"
+            name="endDate"
+            onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
+          />
                         </div>
                       </div>
-
+                     
                       <div style={{ backgroundColor: " #e4e5e6" }}>
                         {this.signersInfo(rowData.SIGNED_LIST, true)}
                       </div>
@@ -2745,6 +2936,18 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
+                          
+                          <input
+            id="enddatefield"
+            className="signerfield"
+            type="date"
+            value={this.state.extendDate}
+            min={this.state.min}
+            max="2037-12-31"
+            name="endDate"
+            onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
+          />
                         </div>
                       </div>
                       <div style={{ backgroundColor: " #e4e5e6" }}>
@@ -2928,6 +3131,18 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
+                          
+                          <input
+            id="enddatefield"
+            className="signerfield"
+            type="date"
+            value={this.state.extendDate}
+            min={this.state.min}
+            max="2037-12-31"
+            name="endDate"
+            onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
+          />
                         </div>
                       </div>
                       <div style={{ backgroundColor: " #e4e5e6" }}>
@@ -3006,6 +3221,18 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
+                          
+                          <input
+            id="enddatefield"
+            className="signerfield"
+            type="date"
+            value={this.state.extendDate}
+            min={this.state.min}
+            max="2037-12-31"
+            name="endDate"
+            onChange={this.finalDate.bind(this)}
+            onInput={this.handleDateInput.bind(this)}
+          />
                         </div>
                       </div>
                       <div style={{ backgroundColor: " #e4e5e6" }}>
@@ -3089,6 +3316,40 @@ export default class Inbox extends React.Component {
                           >
                             Cancel Signing
                           </button>
+                         
+                          
+{/* <div style={{ display: "flex", alignItems: "center", position: "relative" }}> */}
+<div>
+<button
+                            className="btn btn-success"
+                            id="extendValidityBtn"
+                            style={{lineHeight: "1",
+                              float: "right",marginRight:"0px",marginTop: "5px"}}
+                            onClick={(event) =>
+                              this.extendValidity(this.state.rowData)
+                            }
+                          >
+                            Extend Validity{" "}
+                          </button>
+  {/* Input field (left half) */}
+  <input
+    id="enddatefield"
+    style={{lineHeight: "1",
+      float: "right",marginRight:"0px",borderBottom: "0px"}}
+     className="btn signerfield"
+    type="date"
+    value={this.state.extendDate}
+    min={this.state.min} // Minimum date: today
+    max={this.state.max} // Maximum date: 1 month from today
+    name="extendDate"
+    data-tip="Extend Validity"
+    onChange={this.finalDate}
+    onInput={this.handleDateInput.bind(this)}
+  />
+  {/* Button (right half) */}
+
+</div>
+
                         </div>
                       </div>
                       <div style={{ backgroundColor: " #e4e5e6" }}>
@@ -3520,6 +3781,38 @@ export default class Inbox extends React.Component {
               </div>
             </div>
           </Modal>
+           <Modal
+              style={{ marginTop: "10%" }}
+              className="modal-container"
+              id="datePickerModel"
+              open={this.state.datePicker}
+              onClose={this.onCloseDatePicker}
+              center={true}
+              closeOnOverlayClick={false}
+            >
+              <input
+    id="enddatefield"
+    style={{lineHeight: "1",
+      float: "right"}}
+    className="btn  signerfield"
+    type="date"
+    value={this.state.extendDate}
+    min={this.state.min} // Minimum date: today
+    max={this.state.max} // Maximum date: 1 month from today
+    name="extendDate"
+    data-tip="Extend Validity"
+    onChange={this.finalDate}
+    onInput={this.handleDateInput.bind(this)}
+  />
+              <div className="submit-details" id="submitBtn">
+                <button
+                  className="upload-button"
+                  // onClick={this.getEmailDetails}
+                >
+                  <span>EXTEND &#8594;</span>
+                </button>
+              </div>
+            </Modal>
         </Col>
       </div>
     );

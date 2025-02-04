@@ -1775,7 +1775,7 @@ class Register extends Component {
                     <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
                   </Button>)}
                   {(Object.keys(this.state.errorJson).length === 0) ? <Form>
-                    <h2 class="text-center mb-3">Register </h2>
+                    <h2 className="text-center mb-3">Register </h2>
 
                     <div id="mobileandEmail">
                       <InputGroup className="mb-2 ">

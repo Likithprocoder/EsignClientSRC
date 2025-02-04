@@ -10,6 +10,7 @@ const RateCard = React.lazy(() => import("./containers/Rate_Card/RateCard"));
 const Payment = React.lazy(() => import("./containers/Payment/Payment"));
 const Recharge = React.lazy(() => import("./containers/Upload/Recharge"));
 const extFrmCorp = React.lazy(() => import("./containers/Profile/ExitFromCorporate"));
+const AccountDetails=React.lazy(() => import("./containers/Wallet/AccountDetails"));
 const PaymentDetails = React.lazy(() =>
   import("./containers/Reports/PaymentDetails")
 );
@@ -315,8 +316,8 @@ const routes = [
     path: "/newUIUpload",
     name: "newUIUpload",
     component: newUIUpload
-  }
-  
+  },
 
+  { path: "/accountDetails", name: "Account Details", component: AccountDetails },
 ];
 export default routes;
