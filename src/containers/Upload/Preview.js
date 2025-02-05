@@ -4722,7 +4722,7 @@ const Preview = (props) => {
                   selectedMode !== "4")
               ) {
                 setIsInsufficientUnits(true);
-                $("#topUpBtn").removeAttr("hidden");
+                // $("#topUpBtn").removeAttr("hidden");
                 var requiredAmount = difference * 5;
                 sessionStorage.setItem("amount", requiredAmount);
               } else {
@@ -5512,7 +5512,7 @@ const Preview = (props) => {
                 className="px-4"
                 id="topUpBtn"
                 onClick={toQRcode}
-                hidden
+                hidden ={true}
               >
                 TopUp
               </Button>
