@@ -146,76 +146,79 @@ function PropertiesConfig(props) {
     // To fetch data (key and values)..
     const fetchConfigData = (event, type) => {
         setAllowLoader(false);
-        // let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        // const options = {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         'Authorization': `Bearer ${jsonWebToken}`
-        //     },
-        //     body: JSON.stringify({ "OPTYPE": type })
-        // };
-        // fetch(URL.fetchConfigKeys, options)
-        //     .then((response) => response.json())
-        //     .then(async (responsedata) => {
-        //         if (responsedata.status === "SUCCESS") {
-        setOTType(type);
-        if (type === "SMS") {
-            // From server side, an active SMS provider key is sent, that will be assigned..
-            // key ---> activeProvider
-            setSMSProvider("AQUA");
-        }
-        //             let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));
-        //             // Response mandatory key check..
-        //             if (decryptedData.hasOwnProperty('configKeys')) {
-        //                 setPropertiesRecord(decryptedData["configKeys"]);
-        //                 setAllowLoader(true);
-        //             } else {
-        //                 console.error('Missing data from server!')
-        //         setAllowLoader(false);
-        // }
-        setPropertiesRecord([{ key: "sms.from.email", value: "RameshTheITGuy@gmail.com", descrptn: "Email configuration" },
-        { key: "sms.from.mobileNumber", value: "9988776655", descrptn: "Mobile number configuration" },]);
-        setAllowLoader(true);
-        //     } else if (responsedata.statusDetails === "Session Expired") {
-        //         confirmAlert({
-        //             message: responsedata.statusDetails,
-        //             buttons: [
-        //                 {
-        //                     label: "OK",
-        //                     className: "confirmBtn",
-        //                     onClick: () => {
-        //                         props.history.push("/login");
-        //                     },
-        //                 },
-        //             ], closeOnClickOutside: false,
-        //         });
-        //        setAllowLoader(false);
-        //     } else {
-        //         confirmAlert({
-        //             message: responsedata.statusDetails,
-        //             buttons: [
-        //                 {
-        //                     label: "OK",
-        //                     className: "confirmBtn"
-        //                 }
-        //             ], closeOnClickOutside: false,
-        //         });
-        //         setAllowLoader(false);
-        //     }
-        // }).catch((error) => {
-        //     console.error(error);
-        //     confirmAlert({
-        //         message: `SomeThing Went Wrong PLease Try Again`,
-        //         buttons: [
-        //             {
-        //                 label: "OK",
-        //                 className: "confirmBtn",
-        //             },
-        //         ], closeOnClickOutside: false,
-        //     });
-        //       setAllowLoader(false);
-        // });
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
+            },
+            body: JSON.stringify({ "optType": type })
+        };
+        fetch(URL.fetchConfigKeys, options)
+            .then((response) => response.json())
+            .then(async (responsedata) => {
+                if (responsedata.status === "SUCCESS") {
+                    console.log(responsedata);
+                    setOTType(type);
+                    if (type === "SMS") {
+                        // If the input 'type' contains value 'SMS',then server response with 
+                        // key ---> activeProvider
+                        setSMSProvider(responsedata.activeProvider);
+                    }
+                    let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));
+                    // Response mandatory key check..
+                    console.log(decryptedData);
+                    
+                    // if (decryptedData.hasOwnProperty('configKeys')) {
+                    //     setPropertiesRecord(decryptedData["configKeys"]);
+                    //     setAllowLoader(true);
+                    // } else {
+                    //     console.error('Missing data from server!')
+                    //     setAllowLoader(false);
+                    // }
+                    // setPropertiesRecord([{ key: "sms.from.email", value: "RameshTheITGuy@gmail.com", descrptn: "Email configuration" },
+                    // { key: "sms.from.mobileNumber", value: "9988776655", descrptn: "Mobile number configuration" },]);
+                    // setAllowLoader(true);
+                } else if (responsedata.statusDetails === "Session Expired") {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn",
+                                onClick: () => {
+                                    props.history.push("/login");
+                                },
+                            },
+                        ], closeOnClickOutside: false,
+                    });
+                    setAllowLoader(false);
+                } else {
+                    confirmAlert({
+                        message: responsedata.statusDetails,
+                        buttons: [
+                            {
+                                label: "OK",
+                                className: "confirmBtn"
+                            }
+                        ], closeOnClickOutside: false,
+                    });
+                    setAllowLoader(false);
+                }
+            }).catch((error) => {
+                console.error(error);
+                confirmAlert({
+                    message: `SomeThing Went Wrong PLease Try Again`,
+                    buttons: [
+                        {
+                            label: "OK",
+                            className: "confirmBtn",
+                        },
+                    ], closeOnClickOutside: false,
+                });
+                setAllowLoader(false);
+            });
     };
 
     // Updating new config properties data.

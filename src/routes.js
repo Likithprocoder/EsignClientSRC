@@ -10,7 +10,7 @@ const RateCard = React.lazy(() => import("./containers/Rate_Card/RateCard"));
 const Payment = React.lazy(() => import("./containers/Payment/Payment"));
 const Recharge = React.lazy(() => import("./containers/Upload/Recharge"));
 const extFrmCorp = React.lazy(() => import("./containers/Profile/ExitFromCorporate"));
-const AccountDetails=React.lazy(() => import("./containers/Wallet/AccountDetails"));
+const AccountDetails = React.lazy(() => import("./containers/Wallet/AccountDetails"));
 const PaymentDetails = React.lazy(() =>
   import("./containers/Reports/PaymentDetails")
 );
@@ -86,12 +86,14 @@ const AddressBookGroups = React.lazy(() => import("./containers/AddressBook/Grou
 const AddUsersToGroup = React.lazy(() => import("./containers/AddressBook/AddUsers"));
 const DesignationBonus = React.lazy(() => import("./containers/DesignationManagement/DesignationBonus"));
 const CSVUpload = React.lazy(() => import("./containers/EmpManagement/CSVUpload"));
-const EmployeeList= React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
-const corporateAdminTopUp= React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
+const EmployeeList = React.lazy(() => import("./containers/EmpManagement/EmployeeList"));
+const corporateAdminTopUp = React.lazy(() => import("./containers/AccessControl/PlatFormAdminTopUp"));
 const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
 const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
 const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
 const newUIUpload = React.lazy(() => import("./containers/New UI/Upload_Home"));
+const configProperties = React.lazy(() => import("./containers/PropertiesConfiguration/PropertiesConfig"));
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -274,18 +276,18 @@ const routes = [
   {
     path: "/addUsersToGroup",
     name: "Add Users To Groups",
-    component: AddUsersToGroup 
+    component: AddUsersToGroup
   },
   {
     path: "/designationBonus",
     name: "Designation Bonus Management",
-    component: DesignationBonus 
+    component: DesignationBonus
   },
-  
+
   {
     path: "/uploadEmpDetails",
     name: "Upload Emp Details",
-    component: CSVUpload 
+    component: CSVUpload
   },
 
   {
@@ -323,7 +325,11 @@ const routes = [
     name: "Corporate Admin TopUp",
     component: corporateAdminTopUp
   },
-
   { path: "/accountDetails", name: "Account Details", component: AccountDetails },
+  {
+    path: "/editConfigProperties",
+    name: "Edit Configuration Properties",
+    component: configProperties
+  },
 ];
 export default routes;
