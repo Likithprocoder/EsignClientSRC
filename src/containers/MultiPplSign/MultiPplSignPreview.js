@@ -1477,7 +1477,7 @@ const MultiPplSignPreview = (props) => {
                   selectedMode !== "4")
               ) {
                 setIsInsufficientUnits(true);
-                $("#topUpBtn").removeAttr("hidden");
+                // $("#topUpBtn").removeAttr("hidden");
                 var requiredAmount = difference * 5;
                 sessionStorage.setItem("amount", requiredAmount);
                 sessionStorage.setItem("paymentType", "ESM");
@@ -2794,7 +2794,7 @@ const shouldShowToggle = (totalPages, pagesToSign) => {
                 className="px-4"
                 id="topUpBtn"
                 onClick={toQRcode}
-                hidden
+                hidden={true}
               >
                 TopUp
               </Button>
