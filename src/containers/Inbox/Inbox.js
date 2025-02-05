@@ -297,6 +297,7 @@ export default class Inbox extends React.Component {
               },
             ],
           });
+          this.setState({loaded: true});
           //alert(responseJson.statusDetails)
         }
       });
@@ -428,6 +429,7 @@ export default class Inbox extends React.Component {
   CheckSigningMode = (rowData) => {
     this.setState({ loaded: false });
     // console.log(rowData.DOC_ID);
+    this.setState({loaded: false});
     let dataToGetSignCoordinateDetails = {
       docId: rowData.DOC_ID,
       authToken: sessionStorage.getItem("authToken"),
@@ -506,6 +508,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
+      this.setState({loaded: true});
       console.error("Error:", error);
     }
     // console.log(this.state.signCoordinates);
@@ -622,6 +625,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
+      this.setState({loaded: true});
       console.error("Error:", error);
     }
 
@@ -718,7 +722,6 @@ export default class Inbox extends React.Component {
                   equalPageDimensions: this.state.equalPageDimensions,
                 };
 
-                this.setState({ loaded: true });
                 this.props.history.push({
                   pathname: "/preview",
                   frompath: "inbox",
