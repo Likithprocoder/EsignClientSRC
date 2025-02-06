@@ -146,40 +146,34 @@ function PropertiesConfig(props) {
     // To fetch data (key and values)..
     const fetchConfigData = (event, type) => {
         setAllowLoader(false);
-        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+        hideValuesWithpassword(true);
         const options = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${jsonWebToken}`
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({ "optType": type })
+            body: JSON.stringify(
+                {
+                    "optType": type,
+                    authToken: sessionStorage.getItem("authToken")
+                }
+            )
         };
         fetch(URL.fetchConfigKeys, options)
             .then((response) => response.json())
             .then(async (responsedata) => {
                 if (responsedata.status === "SUCCESS") {
-                    console.log(responsedata);
                     setOTType(type);
                     if (type === "SMS") {
                         // If the input 'type' contains value 'SMS',then server response with 
                         // key ---> activeProvider
                         setSMSProvider(responsedata.activeProvider);
                     }
-                    let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));
-                    // Response mandatory key check..
-                    console.log(decryptedData);
-                    
-                    // if (decryptedData.hasOwnProperty('configKeys')) {
-                    //     setPropertiesRecord(decryptedData["configKeys"]);
-                    //     setAllowLoader(true);
-                    // } else {
-                    //     console.error('Missing data from server!')
-                    //     setAllowLoader(false);
-                    // }
-                    // setPropertiesRecord([{ key: "sms.from.email", value: "RameshTheITGuy@gmail.com", descrptn: "Email configuration" },
-                    // { key: "sms.from.mobileNumber", value: "9988776655", descrptn: "Mobile number configuration" },]);
-                    // setAllowLoader(true);
+                    // let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));
+                    // console.log(decryptedData);
+
+                    setPropertiesRecord(responsedata.encryptedData);
+                    setAllowLoader(true);
                 } else if (responsedata.statusDetails === "Session Expired") {
                     confirmAlert({
                         message: responsedata.statusDetails,
@@ -284,12 +278,12 @@ function PropertiesConfig(props) {
                             className: "confirmBtn",
                             onClick: async e => {
                                 setAllowLoader(false);
-                                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                                 let dataTobeEncrypted = { configKeys: newUpdatedCOnfigData };
                                 let encryptedData = await encryptSecretKeyUsingAES(sessionStorage.getItem("secretKey"), dataTobeEncrypted);
                                 let updateConfigData = {
                                     optType: OTType,
-                                    encryptedData: encryptedData
+                                    encryptedData: encryptedData,
+                                    authToken: sessionStorage.getItem("authToken")
                                 };
                                 // for 'OTType' to be SMS, an extra key 'smsProvider' and its respective value is sent..
                                 if (OTType === "SMS") {
@@ -300,8 +294,7 @@ function PropertiesConfig(props) {
                                 const options = {
                                     method: "POST",
                                     headers: {
-                                        "Content-Type": "application/json",
-                                        'Authorization': `Bearer ${jsonWebToken}`
+                                        "Content-Type": "application/json"
                                     },
                                     body: JSON.stringify({ updateConfigData })
                                 };
@@ -386,30 +379,31 @@ function PropertiesConfig(props) {
                         className: "confirmBtn",
                         onClick: e => {
                             setAllowLoader(false);
-                            let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                             const options = {
                                 method: "POST",
                                 headers: {
-                                    "Content-Type": "application/json",
-                                    'Authorization': `Bearer ${jsonWebToken}`
+                                    "Content-Type": "application/json"
                                 },
                                 body: JSON.stringify({
                                     OPTYPE: "SMS",
-                                    smsProvider: value
+                                    smsProvider: value,
+                                    authToken: sessionStorage.getItem("authToken")
                                 })
                             };
                             fetch(URL.switchProvider, options)
                                 .then((response) => response.json())
                                 .then(async (responsedata) => {
                                     if (responsedata.status === "SUCCESS") {
-                                        setSMSProvider(value);
                                         // Response mandatory key check..
                                         confirmAlert({
                                             message: responsedata.statusDetails,
                                             buttons: [
                                                 {
                                                     label: "OK",
-                                                    className: "confirmBtn"
+                                                    className: "confirmBtn",
+                                                    onClick: () => {
+                                                        window.location.reload()
+                                                    }
                                                 }
                                             ], closeOnClickOutside: false,
                                         });
@@ -433,7 +427,10 @@ function PropertiesConfig(props) {
                                             buttons: [
                                                 {
                                                     label: "OK",
-                                                    className: "confirmBtn"
+                                                    className: "confirmBtn",
+                                                    onClick: () => {
+                                                        window.location.reload()
+                                                    },
                                                 }
                                             ], closeOnClickOutside: false,
                                         });
@@ -461,8 +458,49 @@ function PropertiesConfig(props) {
                 ], closeOnClickOutside: false,
             });
         }
-
     };
+
+    // Common method, which could hide the values displayed.
+    const hideValuesWithpassword = (boolean) => {
+        // If block executes when this method is not called from the 'eye' icon present.
+        if (boolean) {
+            // Perform multiple operations in the true block
+            // For maskOff, change Input type to 'password'
+            (function () {
+                document.getElementById("maskBtn").className = "fa fa-eye-slash"; document.getElementById("maskBtn").title = "Hide values";
+                document.getElementById("maskBtn").title = "View values";
+                propertiesRecord.forEach(item => {
+                    document.getElementById(`VALUE${item["key"]}`).type = "password";
+                });
+            })()
+        } else {
+            document.getElementById("maskBtn").className === "fa fa-eye-slash" ?
+                (
+                    // Perform multiple operations in the true block
+                    // For maskOn, change Input type to 'text'
+                    (function () {
+                        document.getElementById("maskBtn").className = "fa fa-eye";
+                        document.getElementById("maskBtn").title = "Hide values";
+                        propertiesRecord.forEach(item => {
+                            document.getElementById(`VALUE${item["key"]}`).type = "text";
+                        });
+                    })()
+                )
+                :
+                (
+                    // Perform multiple operations in the true block
+                    // For maskOff, change Input type to 'password'
+                    (function () {
+                        document.getElementById("maskBtn").className = "fa fa-eye-slash"; document.getElementById("maskBtn").title = "Hide values";
+                        document.getElementById("maskBtn").title = "View values";
+                        propertiesRecord.forEach(item => {
+                            document.getElementById(`VALUE${item["key"]}`).type = "password";
+                        });
+                    })()
+                )
+        }
+
+    }
 
     return (
         <React.Fragment>
@@ -489,32 +527,7 @@ function PropertiesConfig(props) {
                 <div className="heading" style={{ width: "100%" }}>
                     <div style={{ width: "78%" }}><span >SMS and Email Configurations</span></div>
                     <div style={{ width: "2%", fontSize: "20px" }}><i title="View values" className="fa fa-eye-slash" id="maskBtn"
-                        onClick={() => {
-                            document.getElementById("maskBtn").className === "fa fa-eye-slash" ?
-                                (
-                                    // Perform multiple operations in the true block
-                                    // For maskOn, change Input type to 'text'
-                                    (function () {
-                                        document.getElementById("maskBtn").className = "fa fa-eye";
-                                        document.getElementById("maskBtn").title = "Hide values";
-                                        propertiesRecord.forEach(item => {
-                                            document.getElementById(`VALUE${item["key"]}`).type = "text";
-                                        });
-                                    })()
-                                )
-                                :
-                                (
-                                    // Perform multiple operations in the true block
-                                    // For maskOff, change Input type to 'password'
-                                    (function () {
-                                        document.getElementById("maskBtn").className = "fa fa-eye-slash"; document.getElementById("maskBtn").title = "Hide values";
-                                        document.getElementById("maskBtn").title = "View values";
-                                        propertiesRecord.forEach(item => {
-                                            document.getElementById(`VALUE${item["key"]}`).type = "password";
-                                        });
-                                    })()
-                                )
-                        }}
+                        onClick={() => hideValuesWithpassword(false)}
                     ></i></div>
                     <div style={{ width: "10%" }} className="editBTN" >
                         <Button onClick={() => {
@@ -547,10 +560,11 @@ function PropertiesConfig(props) {
                             propertiesRecord.map((posts, index) => (
                                 <React.Fragment key={index}>
                                     <div className="PCParntHeading">
-                                        <div style={{ padding: "5px", fontWeight: "" }} className="variables" ><span>{OTType === "SMS" ? (posts["key"]).substring(4, (posts["key"]).length) : (posts["key"]).substring(6, (posts["key"]).length)}</span></div>
+                                        <div style={{ padding: "5px", fontWeight: "" }} className="variables" ><span>{OTType === "SMS" ? (posts["key"]).substring(((smsProvider.length) + 6), (posts["key"]).length) : (posts["key"]).substring(5, (posts["key"]).length)}</span></div>
                                         <div style={{ padding: "5px", fontWeight: "" }} className="variables" ><span>{posts["descrptn"]}</span></div>
-                                        <div className="values" >
-                                            <Input disabled={disableEnable} id={`VALUE${posts["key"]}`} style={{ borderWidth: "0px", padding: "5px" }} type="password" defaultValue={posts["value"]} /></div>
+                                        <div className="values">
+                                            <Input disabled={disableEnable} id={`VALUE${posts["key"]}`} style={{ borderWidth: "0px", padding: "5px" }} type="password" defaultValue={posts["value"]} />
+                                        </div>
                                     </div>
                                 </React.Fragment>
                             ))
