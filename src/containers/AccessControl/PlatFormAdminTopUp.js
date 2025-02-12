@@ -2,8 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CardBody, Table } from 'reactstrap';
 import { confirmAlert } from "react-confirm-alert";
 import { URL } from "../URLConstant";
+var Loader = require("react-loader");
 
 function PlatFormAdminTopUp(props) {
+    const [allowLoader, setAllowLoader] = useState(true);
+
     const [topUp, SetTopUp] = useState(0);
 
     // To render the type of topUp
@@ -27,7 +30,7 @@ function PlatFormAdminTopUp(props) {
             sessionStorage.removeItem('hasReloaded');
             props.history.push("/addOrViewTempGroup");
         } else {
-
+            setAllowLoader(false);
             setCorporateAdminCredntails(props.location.corporateAdminCredntails);
             // check the corporate is enabled or disabled
             const corpDataInputs = {
@@ -58,6 +61,7 @@ function PlatFormAdminTopUp(props) {
                                     },
                                 ], closeOnClickOutside: false
                             });
+                            setAllowLoader(true);
                         } else {
                             // get the subscription topUp data
                             const subscriptionTopUpDataInputs = {
@@ -75,6 +79,7 @@ function PlatFormAdminTopUp(props) {
                                     if (data.status === "SUCCESS") {
                                         setSubscriptionTopUpData(data.list);
                                         setSelectedSubscriptionTopUpData(data.list[0]);
+                                        setAllowLoader(true);
                                     }
                                     else if (data.statusDetails === "Session Expired") {
                                         confirmAlert({
@@ -113,6 +118,9 @@ function PlatFormAdminTopUp(props) {
                                             {
                                                 label: "OK",
                                                 className: "confirmBtn",
+                                                onClick: () => {
+                                                    setAllowLoader(true);
+                                                }
                                             },
                                         ], closeOnClickOutside: false
                                     });
@@ -156,6 +164,9 @@ function PlatFormAdminTopUp(props) {
                             {
                                 label: "OK",
                                 className: "confirmBtn",
+                                onClick: () => {
+                                    setAllowLoader(true);
+                                }
                             },
                         ], closeOnClickOutside: false
                     });
@@ -204,6 +215,7 @@ function PlatFormAdminTopUp(props) {
                                         ], closeOnClickOutside: false,
                                     });
                                 } else {
+                                    setAllowLoader(false);
                                     // eSign topUp operation fetch call goes here..
                                     const options = {
                                         method: "POST",
@@ -220,7 +232,8 @@ function PlatFormAdminTopUp(props) {
                                             corpuserId: corporateAdminCredntails.userID,
                                             topUpType: "ESM",
                                             amount: (Number(topUp) * 5).toString(),
-                                            userIp: sessionStorage.getItem("userIP")
+                                            userIp: sessionStorage.getItem("userIP"),
+                                            units: (Number(topUp)).toString()
                                         })
                                     };
                                     TopUpFetchCall(options);
@@ -243,6 +256,7 @@ function PlatFormAdminTopUp(props) {
                                     ], closeOnClickOutside: false,
                                 });
                             } else {
+                                setAllowLoader(false);
                                 // Subscription topUp operation fetch call goes here..
                                 const options = {
                                     method: "POST",
@@ -290,13 +304,11 @@ function PlatFormAdminTopUp(props) {
                         buttons: [
                             {
                                 label: "OK",
-                                className: "confirmBtn",
-                                onClick: () => {
-                                    props.history.push("/addOrViewTempGroup");
-                                }
+                                className: "confirmBtn"
                             }
                         ], closeOnClickOutside: false
                     });
+                    setAllowLoader(true);
                 }
                 else if (responsedata.statusDetails === "Session Expired!!") {
                     confirmAlert({
@@ -336,11 +348,13 @@ function PlatFormAdminTopUp(props) {
                             label: "OK",
                             className: "confirmBtn",
                             onClick: () => {
-                                props.history.push("/addOrViewTempGroup");
+                                setAllowLoader(true);
+                                props.history.push("/");
                             }
                         },
                     ], closeOnClickOutside: false
                 });
+
             });
     };
 
@@ -351,6 +365,25 @@ function PlatFormAdminTopUp(props) {
 
     return (
         <>
+            <Loader
+                loaded={allowLoader}
+                lines={13}
+                radius={20}
+                corners={1}
+                rotate={0}
+                direction={1}
+                color="#000"
+                speed={1}
+                trail={60}
+                shadow={false}
+                hwaccel={false}
+                className="spinner loader"
+                zIndex={2e9}
+                top="50%"
+                left="50%"
+                scale={1.0}
+                loadedClassName="loadedContent"
+            />
             <div style={{ backgroundColor: "white", width: "100%", height: "100%", borderRadius: "10px", padding: "20px" }}>
                 <div className="Headinng" >
                     <div style={{ width: "50%", fontSize: "16px", }}>

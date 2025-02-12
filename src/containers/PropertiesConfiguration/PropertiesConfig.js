@@ -12,6 +12,8 @@ function PropertiesConfig(props) {
     // Key/Values Records..
     const [propertiesRecord, setPropertiesRecord] = useState([]);
 
+    const [forValidation, setForValidation] = useState([]);
+
     const [disableEnable, setDisableEnable] = useState(true);
 
     const [OTType, setOTType] = useState();
@@ -171,8 +173,8 @@ function PropertiesConfig(props) {
                     }
                     // let decryptedData = await decryptSecretKeyUsingAES(JSON.stringify(responsedata.encryptedData), sessionStorage.getItem("secretKey"));
                     // console.log(decryptedData);
-
                     setPropertiesRecord(responsedata.encryptedData);
+                    setForValidation(responsedata.encryptedData);
                     setAllowLoader(true);
                 } else if (responsedata.statusDetails === "Session Expired") {
                     confirmAlert({
@@ -232,7 +234,7 @@ function PropertiesConfig(props) {
         } else {
             let newUpdatedCOnfigData = [];
             // Logic to identify the modified values only!
-            for (let posts of propertiesRecord) {
+            for (let posts of forValidation) {
                 // Iterate over data, by using DOM and fetch values and descriptions.
                 let value = document.getElementById(`VALUE${posts["key"]}`).value;
                 // Empty check..
@@ -279,7 +281,7 @@ function PropertiesConfig(props) {
                             onClick: async e => {
                                 setAllowLoader(false);
                                 let dataTobeEncrypted = { configKeys: newUpdatedCOnfigData };
-                                let encryptedData = await encryptSecretKeyUsingAES(sessionStorage.getItem("secretKey"), dataTobeEncrypted);
+                                let encryptedData = await encryptSecretKeyUsingAES(sessionStorage.getItem("secretKey"), JSON.stringify(dataTobeEncrypted));
                                 let updateConfigData = {
                                     optType: OTType,
                                     encryptedData: encryptedData,
@@ -296,7 +298,7 @@ function PropertiesConfig(props) {
                                     headers: {
                                         "Content-Type": "application/json"
                                     },
-                                    body: JSON.stringify({ updateConfigData })
+                                    body: JSON.stringify(updateConfigData)
                                 };
                                 fetch(URL.saveConfigKeys, options)
                                     .then((response) => response.json())
@@ -308,7 +310,8 @@ function PropertiesConfig(props) {
                                                 buttons: [
                                                     {
                                                         label: "OK",
-                                                        className: "confirmBtn"
+                                                        className: "confirmBtn",
+                                                        onClick: () => { window.location.reload() }
                                                     }
                                                 ], closeOnClickOutside: false,
                                             });
@@ -563,7 +566,13 @@ function PropertiesConfig(props) {
                                         <div style={{ padding: "5px", fontWeight: "" }} className="variables" ><span>{OTType === "SMS" ? (posts["key"]).substring(((smsProvider.length) + 6), (posts["key"]).length) : (posts["key"]).substring(5, (posts["key"]).length)}</span></div>
                                         <div style={{ padding: "5px", fontWeight: "" }} className="variables" ><span>{posts["descrptn"]}</span></div>
                                         <div className="values">
-                                            <Input disabled={disableEnable} id={`VALUE${posts["key"]}`} style={{ borderWidth: "0px", padding: "5px" }} type="password" defaultValue={posts["value"]} />
+                                            <Input onChange={e => {
+                                                setPropertiesRecord((prevData) =>
+                                                    prevData.map((item, i) =>
+                                                        i === index ? { ...item, ["value"]: e.target.value.trim() } : item
+                                                    )
+                                                );
+                                            }} disabled={disableEnable} id={`VALUE${posts["key"]}`} style={{ borderWidth: "0px", padding: "5px" }} type="password" value={posts["value"]} />
                                         </div>
                                     </div>
                                 </React.Fragment>
