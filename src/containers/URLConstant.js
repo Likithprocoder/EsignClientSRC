@@ -15,9 +15,7 @@ var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 // var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-
   "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
-
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
@@ -174,10 +172,15 @@ let URL = {
   getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
   uploadBulkSigndetails: HOST + "V2/uploadBulkSigndetails",
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
-  getApplicationKeys: HOST + "V2/getApplicationKeys",
-  fetchInputFieldsData: HOST + "V2/fetchInputFieldsData",
-  registerUser: "/register",
-  exportSignerStatusReport: HOST + "V2/exportSignerStatusReport",
+  getApplicationKeys: HOST + "getApplicationKeys",
+  fetchInputFieldsData: HOST + "fetchInputFieldsData",
+  registerUser:"/register",
+  exportSignerStatusReport:HOST + "exportSignerStatusReport",
+  notifyBulkSigners: HOST + "/notifyBulkSigners",
+  updateBulkSignerData: HOST + "BulkSigning/updateSignerData",
+  cancelBulkSigning: HOST +"/cancelBulkSigning",
+  getOAuthEndPointURL: HOST +"/getOAuthEndPointURL",
+  fetchAccessToken: HOST +"/fetchAccessToken"
 };
 
 module.exports = { URL };

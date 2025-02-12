@@ -3504,36 +3504,35 @@ const Preview = (props) => {
             }
         }
 
-        console.log("authToken: "+authToken);
-        let obj = {};
-        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
-            let loginname = sessionStorage.getItem("username");
-            obj = {
-                //****starts here
-                //added the keys for template based generated PDF.
-                loginname: loginname,
-                // authToken: authToken,
-                userIP: sessionStorage.getItem("userIP"),
-                fileRefNo: fileRefNo,
-                csvFileRefNo: csvFileRefNo,
-                signingDetails: {
-                    declineSign: false,
-                    customDocName: customDocName,
-                    endDate: endDateTime,
-                    signersInfo: [{
-                        signMode: selectedMode,
-                        startDate: startDate,
-                        endDate: endDateTime,
-                        signOrder: "0",
-                        signCoordinates: signCoordinatesArray,
-                        signPage: signPg,
-                        pages: pgList,
-                    }],
-                    senderComments: "Please review and sign the document",
-                    emailSubject: "Notification for Digital Signing"
-                },
-            };
+      let obj = {};
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
+        let loginname = sessionStorage.getItem("username");
+        obj = {
+          //****starts here
+          //added the keys for template based generated PDF.
+          loginname: loginname,
+          authToken: authToken,
+          userIP: sessionStorage.getItem("userIP"),
+          endDate: endDateTime,
+          fileRefNo: fileRefNo,
+          csvFileRefNo: csvFileRefNo,
+          signingDetails: {
+            declineSign: false,
+            customDocName: customDocName,
+            endDate: endDateTime,
+            signersInfo: [{
+              signMode: selectedMode,
+              startDate: startDate,
+              endDate: endDateTime,
+              signOrder: "0",
+              signCoordinates: signCoordinatesArray,
+              signPage: signPg,
+              pages: pgList,
+            }],
+            senderComments: signingComments,
+            emailSubject: signingSubject
+          },
+        };
 
             fetch(URL.uploadBulkSigndetails, {
                 method: "POST",
@@ -5020,7 +5019,7 @@ const Preview = (props) => {
                   selectedMode !== "4")
               ) {
                 setIsInsufficientUnits(true);
-                $("#topUpBtn").removeAttr("hidden");
+                // $("#topUpBtn").removeAttr("hidden");
                 var requiredAmount = difference * 5;
                 sessionStorage.setItem("amount", requiredAmount);
               } else {
@@ -5813,7 +5812,7 @@ const Preview = (props) => {
                 className="px-4"
                 id="topUpBtn"
                 onClick={toQRcode}
-                hidden
+                hidden ={true}
               >
                 TopUp
               </Button>
