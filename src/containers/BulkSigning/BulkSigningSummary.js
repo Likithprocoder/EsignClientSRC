@@ -159,6 +159,7 @@ export default class BulkSigningSummary extends React.Component {
 
   //----------------send reminder-----------------
   sendReminder(data) {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     confirmAlert({
       title: "",
       message: `The signing reminder notification will be sent to the signer, ${data.signerName}.`,

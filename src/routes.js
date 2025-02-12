@@ -97,7 +97,6 @@ const EmployeeList = React.lazy(() => import("./containers/EmpManagement/Employe
 const FileUploadBulkSigning = React.lazy(() => import("./containers/BulkSigning/FileUploadBulkSigning"));
 const HtmlPreview = React.lazy(() => import("./containers/BulkSigning/HtmlPreview"));
 const BulkSigningSummary = React.lazy(() => import("./containers/BulkSigning/BulkSigningSummary"));
-const newUIUpload = React.lazy(() => import("./containers/New UI/Upload_Home"));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -319,11 +318,7 @@ const routes = [
     name: "Bulk Signing Summary",
     component: BulkSigningSummary
   },
-  {
-    path: "/newUIUpload",
-    name: "newUIUpload",
-    component: newUIUpload
-  }, {
+   {
 
 
     path: "/getApiKeyList",

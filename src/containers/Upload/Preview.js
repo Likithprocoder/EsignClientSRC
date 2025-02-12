@@ -3538,7 +3538,7 @@ const Preview = (props) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${jsonWebToken}`
+                    // 'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify(obj)
             })
@@ -3639,7 +3639,7 @@ const Preview = (props) => {
             if (authToken !== null) {
                 obj.authToken = authToken;
             } else {
-                headers["Authorization"] = `Bearer ${jsonWebToken}`;
+                headers["Authorization"] = `Bearer ${ sessionStorage.getItem("jsonWebToken")}`;
             }
 
 
