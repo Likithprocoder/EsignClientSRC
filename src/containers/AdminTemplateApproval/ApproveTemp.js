@@ -275,7 +275,7 @@ function ApproveTemp(props) {
     fetch(URL.getTemplateToBeApproved, options).then((response) =>
       response.json().then((data) => {
         if (data.status === "success") {
-          setTempDetail(data.data);
+          setTempDetail(data.data.reverse());
           setallow(true);
         } else if (data.statusDetails === "Session Expired") {
           confirmAlert({

@@ -19,8 +19,8 @@ class DefaultFooter extends Component {
           <a href="https://www.integramicro.com/" target="_blank">
             <img src={integraLogo} width="45px"></img>
           </a>{" "}
-          Copyright &copy; 2024 Integra Micro Systems Private Ltd. All Rights
-          Reserved. Version : 1.9.29
+          Copyright &copy; 2025 Integra Micro Systems Private Ltd. All Rights
+          Reserved. Version : 1.9.30
         </span>
       </React.Fragment>
     );

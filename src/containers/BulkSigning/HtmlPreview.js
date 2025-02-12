@@ -81,7 +81,7 @@ function HtmlPreview(props) {
             setHtmlContent(text);
             setAllowHtmlFile(true);
         }
-        console.log(props.location.state.additionalColumValues);
+        // console.log(props.location.state.additionalColumValues);
         
         setCsvKeys(props.location.state.htmlKeys);
         setHtmlKeys(props.location.state.additionalColumValues);
@@ -119,13 +119,14 @@ function HtmlPreview(props) {
     // use effect for fetch calls
     useEffect(() => {
         setLoader(false);
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
             })
         }
         fetch(URL.getValidationKeys, options)
@@ -181,10 +182,10 @@ function HtmlPreview(props) {
         const option = {
             method: "POST",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: JSON.stringify({
-                authToken: sessionStorage.getItem("authToken")
             })
         }
         fetch(URL.getApplicationKeys, option)
@@ -722,19 +723,21 @@ function HtmlPreview(props) {
             }
         }
         let validationData = {
-            authToken: sessionStorage.getItem("authToken"),
             userIP: sessionStorage.getItem("userIP"),
             htmlvalidations: finlDataToServerArray
         }
+        console.log({finlDataToServerArray});
         let data = new FormData();
         data.append("inputDetails", JSON.stringify(validationData));
         data.append("csvFile", csvFile);
         data.append("file", htmlFile);
         setLoader(false);
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         const options = {
             method: "POST",
             headers: {
-                enctype: "multipart/form-data"
+                enctype: "multipart/form-data",
+                'Authorization': `Bearer ${jsonWebToken}`
             },
             body: data
         }

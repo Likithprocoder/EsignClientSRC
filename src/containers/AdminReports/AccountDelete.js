@@ -143,7 +143,6 @@ export default class AccountDelete extends React.Component {
       let encryptedData = await this.encryptSecretKeyUsingAES(sessionStorage.getItem('secretKey'), JSON.stringify(body));
       this.setState({ loaded: false });
       var dataToserver = {
-        authToken: sessionStorage.getItem("authToken"),
         encryptedData: encryptedData
       };
       fetch(URL.getOtp, {

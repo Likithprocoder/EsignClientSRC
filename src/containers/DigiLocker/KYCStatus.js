@@ -36,7 +36,6 @@ class KYCStatus extends React.Component {
 
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
-      authToken: sessionStorage.getItem("authToken")
     };
     this.setState({ loaded: false });
     fetch(URL.getFlags, {

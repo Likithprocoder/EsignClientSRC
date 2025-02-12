@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.4.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.integra</groupId>
+	<artifactId>MYSIGN</artifactId>
+	
+	<version>00.01.39</version>
+	<name>MYSIGN</name>
+	<description>MYSIGN -Document Signing Application</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+	</properties>
+
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.18.2-GA</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>1.63</version>
+		</dependency>
+	<!--  <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate</artifactId> 
+			<version>3.2.5.ga</version> </dependency>  -->
+		
+		
+		<!-- 	<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.11.Final</version> 
+		</dependency> -->
+		 <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.6.15.Final</version> 
+		</dependency>
+		
+		<!-- <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>4.3.11.Final</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>5.6.15.Final</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
+		<dependency>
+			<groupId>com.mchange</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.5.1</version>
+		</dependency>
+		
+		
+
+<!-- 
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.3.1.GA</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+			<version>3.0.0.ga</version>
+		</dependency> -->
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml</groupId>
+			<artifactId>jaxp-api</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency> -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.univocity/univocity-parsers -->
+		<dependency>
+			<groupId>com.univocity</groupId>
+			<artifactId>univocity-parsers</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>5.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+		</dependency>
+
+		<!-- <dependency> <groupId>org.json</groupId> <artifactId>json</artifactId> 
+			<version>20090211</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20190722</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-bundle</artifactId>
+			<version>1.8-ea03</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<!-- Our code PDFBOX dependency -->
+		<!-- <dependency> <groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox</artifactId> 
+			<version>2.0.12</version> </dependency> -->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!-- Minio dependency -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>7.1.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox -->
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>fontbox</artifactId>
+			<version>2.0.8</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5</version>
+		</dependency>
+		<!-- External NSDL and pdfbox jar from NSDL -->
+		<dependency>
+			<groupId>nsdl.esign.multi</groupId>
+			<artifactId>nsdl.esign.multi</artifactId>
+			<scope>system</scope>
+			<version>1</version>
+			<systemPath>${project.basedir}/src/main/resources/lib/v1.0_Nsdl_eSign2.1_MultiO.jar</systemPath>
+			<!-- <systemPath>${project.basedir}/src/main/resources/lib/v1.0_Nsdl_eSign2.1_MultiO.jar</systemPath> -->
+		</dependency>
+		<dependency>
+			<groupId>nsdl.pdfbox.multi</groupId>
+			<artifactId>nsdl.pdfbox.multi</artifactId>
+			<scope>system</scope>
+			<version>1</version>
+			<systemPath>${project.basedir}/src/main/resources/lib/v1.4_pdfbox-2.0.8_MultiO.jar</systemPath>
+		</dependency>
+		<!-- Below dependency are for OpenJDK 11 -->
+		<!-- API, java.xml.bind module -->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>2.3.2</version>
+		</dependency>
+
+		<!-- Runtime, com.sun.xml.bind module -->
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.3.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.8</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.3</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.16.1</version>
+		</dependency>
+		
+		<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.26</version>
+    <scope>provided</scope>
+    
+    
+</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka -->
+<dependency>
+    <groupId>org.springframework.kafka</groupId>
+    <!-- 2.3.5.RELEASE -->
+    <artifactId>spring-kafka</artifactId>
+</dependency>
+
+
+		
+		  <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/marketplacemetering -->
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>marketplacemetering</artifactId>
+    <version>2.27.12</version>
+</dependency>
+
+
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>sdk-core</artifactId>
+    <version>2.27.21</version> <!-- Latest stable version -->
+</dependency>
+
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>apache-client</artifactId>
+    <version>2.27.21</version> <!-- Latest stable version -->
+</dependency>
+
+  <dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>s3</artifactId>
+    <version>2.20.0</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/marketplaceentitlement -->
+<dependency>
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>marketplaceentitlement</artifactId>
+    <version>2.27.21</version>
+    <exclusions>
+        <exclusion>
+            <groupId>conflicting.group</groupId>
+            <artifactId>conflicting-artifact</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+		
+		
+		<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.5.13</version>
+</dependency>
+		
+
+		
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<includeSystemScope>true</includeSystemScope>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

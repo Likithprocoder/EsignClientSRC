@@ -1,23 +1,21 @@
 
-const HOST = "/MYSIGN/";
-var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "/MYSIGN/";
+// var paymenturl = "/PAYMENTSIMULATOR/getunitscalltesting";
 
 const { UpdateRounded } = require("@material-ui/icons");
 
 // const HOST = "https://uat.docuexec.com/MYSIGN/";
 // var paymenturl = "https://uat.docuexec.com/PAYMENTSIMULATOR/getunitscalltesting";
 
-// const HOST = "http://localhost:8090/MYSIGN/";
-// var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
+const HOST = "http://localhost:8090/MYSIGN/";
+var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 
-// const HOST = "http://10.10.40.57:8090/MYSIGN/";
-// var paymenturl = "http://10.10.40.57:8095/PAYMENTSIMULATOR/getunitscalltesting";
+// const HOST = "http://10.10.40.50:8090/MYSIGN/";
+// var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-
-  "Copyright ©️ 2024 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
-
+  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
 
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
@@ -170,14 +168,19 @@ let URL = {
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
   fetchAccessToken: HOST + "fetchAccessToken",
   getKey: HOST + "getkey",
-  uploadBulkSignFile: HOST + "uploadBulkSignFile",
-  getbulkSigningdetails: HOST + "getbulkSigningdetails",
-  uploadBulkSigndetails: HOST + "uploadBulkSigndetails",
+  uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",///
+  getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
+  uploadBulkSigndetails: HOST + "V2/uploadBulkSigndetails",
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
   getApplicationKeys: HOST + "getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
-  registerUser: "/register",
-  exportSignerStatusReport: HOST + "exportSignerStatusReport",
+  registerUser:"/register",
+  exportSignerStatusReport:HOST + "exportSignerStatusReport",
+  notifyBulkSigners: HOST + "/notifyBulkSigners",
+  updateBulkSignerData: HOST + "BulkSigning/updateSignerData",
+  cancelBulkSigning: HOST +"/cancelBulkSigning",
+  getOAuthEndPointURL: HOST +"/getOAuthEndPointURL",
+  fetchAccessToken: HOST +"/fetchAccessToken"
 };
 
 module.exports = { URL };

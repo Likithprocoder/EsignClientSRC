@@ -389,18 +389,18 @@ function UploadFileFrBulkSigning(props) {
             }
             else {
                 let validationData = {
-                    authToken: sessionStorage.getItem("authToken"),
                     userIP: sessionStorage.getItem("userIP")
                 }
                 let data = new FormData();
                 data.append("inputDetails", JSON.stringify(validationData));
                 data.append("csvFile", toBeSignedCSV);
                 data.append("file", toBeSignedDoc);
-
+                let jsonWebToken = sessionStorage.getItem("jsonWebToken");
                 const options = {
                     method: "POST",
                     headers: {
-                        enctype: "multipart/form-data"
+                        enctype: "multipart/form-data",
+                        'Authorization': `Bearer ${jsonWebToken}`
                     },
                     body: data
                 }
@@ -687,8 +687,8 @@ function UploadFileFrBulkSigning(props) {
                                 <div className="DetailsHeading">
                                     <span>Please provide the signing details for email notification</span>
                                 </div>
-                                <div style={{ width: "100%", border: "1px solid deepskyblue", padding: "2%", borderRadius: "3%", marginBottom: "1%" }}>
-                                    <div style={{ display: "inline-flex", width: "100%", marginBottom: "2%" }}>
+                                <div className="notificationContent">
+                                    <div className="notifyIntFild" >
                                         <div style={{ width: "25%", paddingTop: "1%" }}>
                                             <span> Sign by<span id="mandatoryRed">*</span>: </span>
                                         </div>
@@ -701,7 +701,7 @@ function UploadFileFrBulkSigning(props) {
                                             }} className="inputCss" type="date" />
                                         </div>
                                     </div>
-                                    <div style={{ display: "inline-flex", width: "100%", marginBottom: "2%" }}>
+                                    <div className="notifyIntFild" >
                                         <div style={{ width: "25%", paddingTop: "1%" }}>
                                             <span>  Document title<span id="mandatoryRed">*</span>: </span>
                                         </div>

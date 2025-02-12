@@ -52,6 +52,7 @@ const defaultDragHeightMob = "37px";//35
 
 const Preview = (props) => {
   // alert("PREVIEW PAGE");
+  console.log(props);
   const frompath = props?.location?.frompath;
 
   //-------Declaring a new state variable dragArray, count, currentPage, containmentPage----
@@ -2453,7 +2454,7 @@ const Preview = (props) => {
       });
       return;
     }
-    console.log(result);
+    // console.log(result);
     if (result == true) {
       confirmAlert({
         message: "Please verify and place the signing position on the document",
@@ -3503,38 +3504,41 @@ const Preview = (props) => {
             }
         }
 
-        // console.log("authToken: "+authToken);
-        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigning") {
-            let loginname = sessionStorage.getItem("username");
-            obj = {
-                //****starts here
-                //added the keys for template based generated PDF.
-                loginname: loginname,
-                authToken: authToken,
-                userIP: sessionStorage.getItem("userIP"),
-                fileRefNo: fileRefNo,
-                csvFileRefNo: csvFileRefNo,
-                signingDetails: {
-                    declineSign: false,
-                    customDocName: customDocName,
-                    endDate: endDateTime,
-                    signersInfo: [{
-                        signMode: selectedMode,
-                        startDate: startDate,
-                        endDate: endDateTime,
-                        signOrder: "0",
-                        signCoordinates: signCoordinatesArray,
-                        signPage: signPg,
-                        pages: pgList,
-                    }],
-                },
-            };
+      let obj = {};
+      if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
+        let loginname = sessionStorage.getItem("username");
+        obj = {
+          //****starts here
+          //added the keys for template based generated PDF.
+          loginname: loginname,
+          authToken: authToken,
+          userIP: sessionStorage.getItem("userIP"),
+          endDate: endDateTime,
+          fileRefNo: fileRefNo,
+          csvFileRefNo: csvFileRefNo,
+          signingDetails: {
+            declineSign: false,
+            customDocName: customDocName,
+            endDate: endDateTime,
+            signersInfo: [{
+              signMode: selectedMode,
+              startDate: startDate,
+              endDate: endDateTime,
+              signOrder: "0",
+              signCoordinates: signCoordinatesArray,
+              signPage: signPg,
+              pages: pgList,
+            }],
+            senderComments: signingComments,
+            emailSubject: signingSubject
+          },
+        };
 
             fetch(URL.uploadBulkSigndetails, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    // 'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify(obj)
             })
@@ -3627,10 +3631,6 @@ const Preview = (props) => {
                     docdata: "",
                 },
             };
-            // if (authToken !== null) {
-            //   obj.authToken = authToken; // Add authToken as a key-value pair
-            // }
-            // console.log({ obj });
 
             const headers = {
                 enctype: "multipart/form-data",
@@ -3639,7 +3639,7 @@ const Preview = (props) => {
             if (authToken !== null) {
                 obj.authToken = authToken;
             } else {
-                headers["Authorization"] = `Bearer ${jsonWebToken}`;
+                headers["Authorization"] = `Bearer ${ sessionStorage.getItem("jsonWebToken")}`;
             }
 
 
@@ -3722,6 +3722,7 @@ const Preview = (props) => {
                                 canvas_height: canvas_height,
                                 canvas_width: canvas_width,
                             };
+                            console.log(data);
                             props.history.push({
                                 pathname: "/download/tokenSignDownload",
                                 frompath: "/preview",
@@ -5018,7 +5019,7 @@ const Preview = (props) => {
                   selectedMode !== "4")
               ) {
                 setIsInsufficientUnits(true);
-                $("#topUpBtn").removeAttr("hidden");
+                // $("#topUpBtn").removeAttr("hidden");
                 var requiredAmount = difference * 5;
                 sessionStorage.setItem("amount", requiredAmount);
               } else {
@@ -5811,7 +5812,7 @@ const Preview = (props) => {
                 className="px-4"
                 id="topUpBtn"
                 onClick={toQRcode}
-                hidden
+                hidden ={true}
               >
                 TopUp
               </Button>

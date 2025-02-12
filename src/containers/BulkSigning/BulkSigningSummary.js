@@ -11,9 +11,12 @@ import './bulkSigningSummary.css';
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import { Row } from "reactstrap";
 import AccessAlarm from "@material-ui/icons/AccessAlarm";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { Delete, MoreVert, MoreHoriz, BorderColor } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import GetApp from "@material-ui/icons/GetApp";
+import Modal from "react-responsive-modal";
 
 var Loader = require("react-loader");
 
@@ -21,6 +24,7 @@ var Loader = require("react-loader");
 
 export default class BulkSigningSummary extends React.Component {
   constructor(props) {
+
     super(props);
     this.toggleSubListTable = this.toggleSubListTable.bind(this);
     this.state = {
@@ -32,26 +36,56 @@ export default class BulkSigningSummary extends React.Component {
       authToken: "",
       showSubListTable: false,
       batchNo: "",
+      openModal: false,
+      UptedSignerMobileNo: "",
+      UptedsignerEmailID: "",
+      signerData: null,
+      openCancelSigningModal: false,
+      cancelReason: "",
+      cancelMsg: "",
+      disableRemindr: false
     };
   }
 
   componentDidMount() {
     let rowData = "";
     this.getBulkSigningDetails(rowData);
+
   }
+
+  onCloseCancelSigningModal = () => {
+    this.setState({ openCancelSigningModal: false })
+
+  };
+
+  onOpenCancelSigningModal = (e) => {
+    var unSignedCount = "" + this.state.pendingCount + "";
+    var msg;
+    var signMsg;
+    if (unSignedCount == 1) {
+      signMsg = "signature";
+    } else {
+      signMsg = "signnatures";
+    }
+
+    this.setState({
+      openCancelSigningModal: true,
+      cancelMsg: unSignedCount + " pending " + signMsg + " will be canceled, and all the signers on the list will receive a notification regarding the cancellation."
+    })
+
+  };
 
   getBulkSigningDetails = (rowData) => {
     this.setState({ loaded: false });
     let bulkSigningInfoArr = [];
     let body = {};
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     //If rowdata is empty it will make a summary call
     if (rowData == "") {
       body = {
-        "authToken": sessionStorage.getItem("authToken")
       };
     } else { //this will fetching bulkSigningInfo details
       body = {
-        "authToken": sessionStorage.getItem("authToken"),
         "batchNo": rowData.batchNo,
       };
     }
@@ -59,7 +93,8 @@ export default class BulkSigningSummary extends React.Component {
       // fetch(URL.subscribedPlanDetails, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body)
     }).then((response) => {
@@ -124,49 +159,26 @@ export default class BulkSigningSummary extends React.Component {
 
   //----------------send reminder-----------------
   sendReminder(data) {
-    // var unSignedCount = 0;
-    // var unSigned = "" + data.PENDING_LIST + "";
-    // var unSignedList = unSigned.split(",");
-    // unSignedCount = unSignedList.length;
-    var msg = "";
-    // "Reminder will be sent to signer(" + data.signerEmail + ")?";
-    // var signMsg;
-    // if (unSignedCount == 1) {
-    //   signMsg = "signer";
-    // } else {
-    //   signMsg = "signers";
-    // }
-    // if (unSigned === "undefined" || data.IS_OWNER == 1) {
-    msg = (
-      <div>
-        {/* <p style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>File Name: {data.DOC_NAME}</p> */}
-        <Row id="sendReminderAlert">
-          <p>
-            {"Reminder will be sent to signer(" + data.signerEmail + ")"}
-          </p>
-        </Row>
-      </div>
-    );
-    // }
-
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     confirmAlert({
-      title: "Send Reminder",
-      message: msg,
+      title: "",
+      message: `The signing reminder notification will be sent to the signer, ${data.signerName}.`,
       buttons: [
         {
           label: "Confirm",
           className: "confirmBtn",
           onClick: () => {
+            this.setState({ loaded: false });
             var body = {
               authToken: sessionStorage.getItem("authToken"),
-              docId: data.docId,
-              refNo: data.batchNo,
-              //   userId: data.USER_ID,
+              batchNumber: data.batchNo,
+              sequenceNumber: data.sequenceNumber
             };
-            fetch(URL.sendReminder, {
+            fetch(URL.notifyBulkSigners, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${jsonWebToken}`
               },
               body: JSON.stringify(body),
             })
@@ -182,38 +194,62 @@ export default class BulkSigningSummary extends React.Component {
                         label: "OK",
                         className: "confirmBtn",
                         onClick: () => {
-                          window.location.reload(false);
-                        },
+                          this.setState({ loaded: true });
+                        }
                       },
-                    ],
+                    ], closeOnClickOutside: false
                   });
-                } else {
+                }
+                else if (responseJson.statusDetails === "Session Expired!!") {
                   confirmAlert({
                     message: responseJson.statusDetails,
                     buttons: [
                       {
                         label: "OK",
                         className: "confirmBtn",
-                        onClick: () => { },
+                        onClick: () => { this.props.history.push('/login') }
                       },
-                    ],
+                    ], closeOnClickOutside: false
                   });
                 }
+                else {
+                  this.setState({ loaded: true });
+                  confirmAlert({
+                    message: responseJson.statusDetails,
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { this.props.history.push('/') }
+                      },
+                    ], closeOnClickOutside: false
+                  });
+                }
+              }).catch((e) => {
+                this.setState({ loaded: true });
+                confirmAlert({
+                  message: 'Technical issues! Please try later.',
+                  buttons: [
+                    {
+                      label: "OK",
+                      className: "confirmBtn",
+                      onClick: () => { this.props.history.push('/') }
+                    },
+                  ], closeOnClickOutside: false
+                });
               });
           },
         },
         {
           label: "Cancel",
-          className: "cancelBtn",
-          onClick: () => { },
+          className: "cancelBtn"
         },
-      ],
+      ], closeOnClickOutside: false
     });
   }
 
   //------------File Download----------------------
   fileDownload(data) {
-    console.log(data);
     var DocId = data.docId;
     window.location.href =
       URL.downloadStoredFile +
@@ -225,31 +261,39 @@ export default class BulkSigningSummary extends React.Component {
   }
 
   toggleSubListTable = (data) => {
-    this.setState({ loaded: false });
-    this.setState({ batchNo: data.batchNo });
+    if (data.status === 2 || data.pendingCount === 0) {
+      this.setState({
+        disableRemindr: true
+      });
+    } else {
+      this.setState({
+        disableRemindr: false
+      });
+    }
+    this.setState({
+      loaded: false,
+      batchNo: data.batchNo,
+      pendingCount: data.pendingCount,
+      cancelReason: ""
+    });
     this.getBulkSigningDetails(data);
     this.setState(prevState => ({
       showSubListTable: !prevState.showSubListTable
     }));
   }
 
-  //fetch call to export signer status report
-  //  exportToCSV = (e) => {
-  //   e.preventDefault()
-  //   const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
-  //   window.location.href = url;
-
-  // };
   exportToCSV = async (e) => {
     e.preventDefault();
-    const url = `${URL.exportSignerStatusReport}?at=${sessionStorage.getItem("authToken")}&batchNumber=${this.state.batchNo}`;
-
+    const url = `${URL.exportSignerStatusReport}?batchNumber=${this.state.batchNo}`;
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     try {
       // Show a loading indicator
       this.setState({ loaded: false });
 
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'GET',  headers: {
+          'Authorization': `Bearer ${jsonWebToken}`
+        }
       });
 
 
@@ -269,37 +313,231 @@ export default class BulkSigningSummary extends React.Component {
     }
   };
 
+  cancelJob = async (e) => {
+
+    // var unSignedCount = 0;
+    var unSignedCount = "" + this.state.pendingCount + "";
+    // unSignedCount = unSignedList.length;
+    var msg;
+    var signMsg;
+    if (unSignedCount == 1) {
+      signMsg = "sign";
+    } else {
+      signMsg = "signs";
+    }
+    // if (unSigned === "undefined" || data.IS_OWNER == 1) {
+    msg = (
+      <div>
+        {/* <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>File Name: {data.DOC_NAME}</p> */}
+        <Row>
+          <i className="fa fa-exclamation-triangle" id="warningIcon"></i>
+          <p style={{ color: "red" }}>
+            {unSignedCount + " pending " + signMsg + " will be cancelled"}
+          </p>
+        </Row>
+      </div>
+    );
+
+  }
+
+
+  CancelSigning = async (e) => {
+    this.onCloseCancelSigningModal();
+
+    this.setState({ loaded: false });
+    var body = {
+      authToken: sessionStorage.getItem("authToken"),
+      batchNumber: this.state.batchNo,
+      cancelReason: this.state.cancelReason,
+    };
+
+    fetch(URL.cancelBulkSigning, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body)
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        if (responseJson.status === "SUCCESS") {
+          this.setState({ loaded: true });
+          // this.setState({cancelReason:""});
+          confirmAlert({
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  window.location.reload(false);
+                },
+              },
+            ],
+          });
+        } else {
+          this.setState({ loaded: true });
+          //this.setState({cancelReason:""});
+          confirmAlert({
+
+            message: responseJson.statusDetails,
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => {
+                  window.location.reload(false);
+                },
+              },
+            ],
+          });
+        }
+      });
+  }
+
+  sendBulkReminder = (e) => {
+    // Logic to take a count of number of unSigned users count.
+    let unSigndCunt = this.state.bulkSigningInfo.filter((data) => (data.status === 0));
+    let batchNumber = this.state.bulkSigningInfo[0]["batchNo"];
+    if (unSigndCunt.length > 0) {
+      confirmAlert({
+        title: "",
+        message: `The signing reminder notification will be sent to ${unSigndCunt.length} unsigned signers.`,
+        buttons: [
+          {
+            label: "Confirm",
+            className: "confirmBtn",
+            onClick: () => {
+              this.setState({ loaded: false });
+              var body = {
+                authToken: sessionStorage.getItem("authToken"),
+                batchNumber: batchNumber
+              };
+              fetch(URL.notifyBulkSigners, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              })
+                .then((response) => {
+                  return response.json();
+                })
+                .then((responseJson) => {
+                  if (responseJson.status === "SUCCESS") {
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => {
+                            this.setState({ loaded: true });
+                          }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                  else if (responseJson.statusDetails === "Session Expired!!") {
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => { this.props.history.push('/login') }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                  else {
+                    this.setState({ loaded: true });
+                    confirmAlert({
+                      message: responseJson.statusDetails,
+                      buttons: [
+                        {
+                          label: "OK",
+                          className: "confirmBtn",
+                          onClick: () => { this.props.history.push('/') }
+                        },
+                      ], closeOnClickOutside: false
+                    });
+                  }
+                }).catch((e) => {
+                  this.setState({ loaded: true });
+                  confirmAlert({
+                    message: 'Technical issues! Please try later.',
+                    buttons: [
+                      {
+                        label: "OK",
+                        className: "confirmBtn",
+                        onClick: () => { this.props.history.push('/') }
+                      },
+                    ], closeOnClickOutside: false
+                  });
+                });
+            },
+          },
+          {
+            label: "Cancel",
+            className: "cancelBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    } else {
+      confirmAlert({
+        message: 'Signings completed!',
+        buttons: [
+          {
+            label: "OK",
+            className: "confirmBtn"
+          },
+        ], closeOnClickOutside: false
+      });
+    }
+
+  }
+
+  setCancelReason = (e) => {
+    const { name, value } = e.target;
+    if (name === "cancelReason") {
+      this.setState({
+        cancelReason: value.replace(/[^\w\s@#_,'":.\\-]/gi, ""),
+      });
+    }
+  };
+
 
   render() {
     const { bulkSigningInfo, bulkSigningSummary } = this.state;
-
-    // {console.log(bulkSigningInfo)}
-    // {console.log(bulkSigningSummary)}
 
     const columns = [
       {
         title: "",
         field: "",
-        cellStyle: {
-          //   width: "0px",
-          //   padding: "0px",
-          //   paddingRight: "0%",
-          //   paddingLeft: "1%",
-          //   textAlign: "center",
-        },
         render: (rowData) => {
-          if (rowData.pendingCount == 0) {
+          if (rowData.status === 2) {
+            return (
+              <i class="fa fa-times"
+                style={{ color: "#f86c6b", fontSize: "25px", padding: "0px" }}
+              ></i>
+            );
+          }
+          else if (rowData.pendingCount == 0) {
             return (
               <i
                 className="fa fa-check"
                 style={{ color: "green", fontSize: "25px", padding: "0px" }}
               ></i>
             );
+
           } else {
             return (
               <i
                 class="fa fa-clock-o"
-                style={{ fontSize: "20px", padding: "0px" }}
+                style={{ fontSize: "25px", padding: "0px" }}
               ></i>
             );
           }
@@ -311,9 +549,7 @@ export default class BulkSigningSummary extends React.Component {
         type: "string",
         cellStyle: {
           width: "40%",
-          padding: "0px",
-          //   paddingLeft: "15%",
-          //   fontSize: "15px",
+          padding: "0px"
         },
         render: (rowdata) => {
           let filePath = rowdata.filePath;
@@ -334,8 +570,6 @@ export default class BulkSigningSummary extends React.Component {
       {
         title: "Initiated On",
         field: "requestedOn",
-        // type: "datetime",
-
         cellStyle: {
           width: "20%",
           paddingLeft: "3px",
@@ -363,11 +597,15 @@ export default class BulkSigningSummary extends React.Component {
           width: "7%",
         },
         render: (rowdata) => {
+
           let statusText;
           let statusClass;
           let pendingCount = rowdata.pendingCount;
-          // console.log(pendingCount);
-          if (pendingCount == 0) {
+
+          if (rowdata.status == 2) {
+            statusText = "Signing cancelled";
+            statusClass = "cancelled";
+          } else if (pendingCount == 0) {
             statusText = "Completed";
             statusClass = "completed";
           } else {
@@ -398,35 +636,14 @@ export default class BulkSigningSummary extends React.Component {
       },
     ];
 
-    // Custom sorting function
-    const customSort = (a, b) => {
-      // console.log(a);
-      // console.log(b);
-      // Sort by status value: 0 (top), 1 (middle), -1 (bottom)
-      if (a.status < b.status) return -1;
-      if (a.status > b.status) return 1;
-      return 0;
-    };
 
     const subTableColumns = [
-      {
-        title: "",
-        field: "",
-        cellStyle: {
-          width: "0px",
-          padding: "0px",
-          // paddingRight: "0%",
-          //   paddingLeft: "1%",
-          //   textAlign: "center",
-        },
-      },
       {
         title: "Signer Name",
         field: "signerName",
         type: "string",
         cellStyle: {
           width: "26%",
-          padding: "0px",
         },
       },
       {
@@ -470,6 +687,11 @@ export default class BulkSigningSummary extends React.Component {
               statusClass = "completed";
               // document.getElementById("accessAlarmIcon").style.display = "none";
               break;
+            case 2:
+              statusText = "Cancelled";
+              statusClass = "cancelled";
+              // document.getElementById("accessAlarmIcon").style.display = "none";
+              break;
             default:
               statusText = "Expired";
               statusClass = "expired";
@@ -509,11 +731,103 @@ export default class BulkSigningSummary extends React.Component {
           let dateTime = dateTimeFully.split(".");
           return (rowdata.signedOn !== "null") ? dateTime[0] : "-";
         }
-      },
+      }
     ];
 
-    // Apply custom sorting to table data
-    // const sortedData = [...subTableColumns].sort(customSort);
+
+
+    const updateSignerData = (e) => {
+      // Validate if any of the values the enduser has edited.
+      if (this.state.signerData["signerMobile"] === document.getElementById("blkSignEdtMoblNum").value &&
+        this.state.signerData["signerEmail"] === document.getElementById("bkSgnEdtEmlId").value) {
+        confirmAlert({
+          message: 'Edit any of the fields to make an update!',
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+            },
+          ], closeOnClickOutside: false
+        });
+      } else {
+        this.setState({ loaded: false });
+        // Update API Call.
+        var signerIntsFrUpdt = {
+          authToken: sessionStorage.getItem("authToken"),
+          batchNumber: this.state.signerData["batchNo"],
+          sequenceNumber: this.state.signerData["sequenceNumber"],
+          ...(this.state.signerData["signerMobile"] !== document.getElementById("blkSignEdtMoblNum").value && {
+            upatdMobileNo: document.getElementById("blkSignEdtMoblNum").value
+          }),
+          ...(this.state.signerData["signerEmail"] !== document.getElementById("bkSgnEdtEmlId").value && {
+            upatdEmailId: document.getElementById("bkSgnEdtEmlId").value
+          })
+        };
+        // Check for the edited fields, the edited fields shall be added to body and passed to server.
+        fetch(URL.updateBulkSignerData, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signerIntsFrUpdt)
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseJson) => {
+            if (responseJson.status === "SUCCESS") {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      this.setState({ loaded: true });
+                      window.location.reload();
+                    }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+            else if (responseJson.statusDetails === "Session Expired!!") {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { this.props.history.push('/login') }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+            else {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { this.props.history.push('/') }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+          }).catch((e) => {
+            confirmAlert({
+              message: 'Technical issues! Please try later.',
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push('/') }
+                },
+              ], closeOnClickOutside: false
+            });
+          });
+      }
+    };
 
     return (
       <div>
@@ -536,6 +850,70 @@ export default class BulkSigningSummary extends React.Component {
           scale={1.0}
           loadedClassName="loadedContent"
         />
+        <Modal
+          className="modal-container"
+          open={this.state.openCancelSigningModal}
+          onClose={this.onCloseCancelSigningModal}
+          center={true}
+          closeOnOverlayClick={false}
+        >
+          <div className="para-text" id="addCommentsModalpara-text">
+            <div className="para-content">
+              <Row id="otpmodalrow1">
+                <label style={{ Color: "Blue" }} id="addcommentsLabel">
+                  Add cancel reason
+                  <i
+                    style={{ marginLeft: "10px" }}
+                    class="fa fa-comment-o"
+                  ></i>
+                </label>
+                <textarea
+                  style={{ marginLeft: "0px", fontSize: "13px" }}
+                  class="cancelReason"
+                  id="cancelReasonid"
+                  name="cancelReason"
+                  placeholder="maximum 255 characters allowed"
+                  title="maximum 255 characters allowed"
+                  rows="3"
+
+                  onChange={this.setCancelReason}
+
+                  value={this.state.cancelReason}
+                  required={true}
+                  minLength={0}
+                  maxLength={455}
+                  autoComplete="off"
+                ></textarea>
+                <div>
+                  <label
+                    for="acceptance"
+                    id="makeprivatecommentlabel"
+                    style={{ fontSize: "15px", marginLeft: "5px" }}
+                  >
+                    Note:{this.state.cancelMsg}
+                  </label>
+                </div>
+                <Button
+                  id="addcommentsOkbutton"
+                  style={{
+                    float: "right",
+                    marginLeft: "auto",
+                    marginTop: "15px",
+                    marginBottom: "-10px",
+                  }}
+                  color="primary"
+
+                  onClick={(e) =>
+                    // this.cancelJob(e)
+                    this.CancelSigning(e)
+                  }
+                >
+                  OK
+                </Button>
+              </Row>
+            </div>
+          </div>
+        </Modal>
         {this.state.showSubListTable && <div style={{ marginBottom: "10px" }}>
           <Button title="back" style={{ color: "black", background: "#f0f3f5", height: "30px", width: "60px" }} onClick={this.toggleSubListTable}>
             <div style={{ marginTop: "-12px", fontSize: "x-large", color: "grey" }}>&larr;</div>
@@ -729,17 +1107,13 @@ export default class BulkSigningSummary extends React.Component {
               color: "black",
               fontWeight: "normal",
               fontSize: "16px",
-              paddingLeft: "2px",
+              paddingLeft: "16px",
+              paddingRight: "12px",
               borderBottom: "2px inset ",
             },
             searchFieldStyle: {
-              marginTop: "0px",
-              paddingTop: "0px",
-              paddingRight: "0px",
               color: "Black",
-              top: "0px",
-              marginBottom: "20px",
-              border: "outset",
+              border: "outset"
             },
             pageSize: 10,
             pageSizeOptions: [10, 15, 20],
@@ -749,12 +1123,31 @@ export default class BulkSigningSummary extends React.Component {
               // console.log(rowData);
               if (rowData.status === 0) {
                 return {
-                  icon: () => <AccessAlarm style={{ color: "#ffc107" }} />,
-                  id: "accessAlarmIcon",
-                  tooltip: "Send Reminder",
-                  onClick: (event, rowData) => this.sendReminder(rowData),
+                  icon: () => (
+                    <div style={{ display: "inline-flex", marginLeft: "30%" }}>
+                      <div title="Send Reminder!" className="sendReminder">
+                        <AccessAlarm
+                          style={{ color: "#ffc107", marginRight: "10px", cursor: "pointer" }}
+                          onClick={(event) => {
+                            event.stopPropagation(); // Prevent row click
+                            this.sendReminder(rowData); // Function for AccessAlarm
+                          }}
+                        />
+                      </div>
+                      <div title="Edit Signer Data!" className="editSignData">
+                        <FontAwesomeIcon onClick={event => {
+                          event.stopPropagation(); // Prevent row click 
+                          this.setState({
+                            openModal: true,
+                            signerData: rowData
+                          })
+                        }} icon={faPenToSquare} />
+                      </div>
+                    </div>
+                  ),
+                  id: "accessAlarmAndEDitIcon",
                   isFreeAction: false,
-                  hidden: true,
+                  hidden: false
                 };
               } else if (rowData.status === 1) {
                 return {
@@ -793,13 +1186,78 @@ export default class BulkSigningSummary extends React.Component {
               >
                 {/* Original Toolbar (search box, etc.) */}
                 <MTableToolbar {...props} />
-                <Button title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
-              </div>
+                <div>
+                  <Button style={{ color: "white", display: (this.state.disableRemindr ? "none" : "") }} onClick={(e) => this.sendBulkReminder(e)} title="Signing reminder notification" color="warning"   >Reminder</Button>
+                  <Button style={{ marginLeft: "10px" }} title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
+                  <Button style={{ marginLeft: "10px", display: (this.state.disableRemindr ? "none" : "") }} id="cancelSigningBulkSigningBtn" title="Cancel Signing" onClick={(e) => this.onOpenCancelSigningModal(e)} color="danger"> Cancel Signing</Button>
 
-            ),
+                </div>
+              </div>
+            )
           }
           }
         ></MaterialTable>}
+        {
+          this.state.openModal && (
+            <>
+              <div className="custom-modal">
+                <div className="CustomModal-contentBLKSIGNSUM">
+                  <span style={{ cursor: "pointer" }} className="close" onClick={e => this.setState({ openModal: false })}>&times;</span>
+                  <div>
+                    <div className="DetailsHeadingSum">
+                      <span>Bulk Signing: Update Signer Data</span>
+                    </div>
+                    <div className="notificationContent">
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Signer Name: </span>
+                        </div>
+                        <div className="signerNme" >
+                          <span>{this.state.signerData["signerName"]}</span>
+                        </div>
+                      </div>
+
+                      {/* <div className="notifyIntFild" >
+                        <div className="FldDIV" style={{ width: "100%", justifyContent: "end" }}>
+                          <span>{this.state.signerData["signerName"]}</span>
+                        </div>
+                      </div> */}
+
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Mobile Number: </span>
+                        </div>
+                        <div style={{ width: "68%" }}>
+                          <input id="blkSignEdtMoblNum" onChange={e => { this.setState({ UptedSignerMobileNo: e.target.value }) }} maxLength={10} className="inputCss" defaultValue={this.state.signerData["signerMobile"]} type="number" />
+                        </div>
+                      </div>
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Email ID: </span>
+                        </div>
+                        <div style={{ width: "68%" }}>
+                          <input id="bkSgnEdtEmlId" onChange={e => { this.setState({ UptedsignerEmailID: e.target.value }) }} maxLength={40} defaultValue={this.state.signerData["signerEmail"]} className="inputCss"
+                            type="text" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="confirmAlrt">
+                      <span>
+                        <span style={{ fontWeight: "600", color: "red" }}>Note:</span> The current singer details ({this.state.signerData["signerMobile"]},
+                        <span style={{ color: "lightskyblue" }}>{this.state.signerData["signerEmail"]}</span>)
+                        will be replaced with ({this.state.UptedSignerMobileNo}, <span style={{ color: "lightskyblue" }}>{this.state.UptedsignerEmailID}</span>),
+                        and a signing notification will be sent to the above edited fields.
+                      </span>
+                    </div>
+                    <div className="UTDBTN">
+                      <button onClick={e => updateSignerData(e)} type="button" class="btn btn-primary">Update</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        }
       </div>
     );
   }
