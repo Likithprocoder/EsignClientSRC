@@ -606,6 +606,7 @@ function ViewTemplate(props) {
 
   // to collect the reason of rejected..
   const rejectTemplate = (e, prop) => {
+    setAllowloader(false);
     let comments = document.getElementById(`${prop}`).value + "";
     if (comments === "") {
       e.preventDefault();
@@ -663,6 +664,7 @@ function ViewTemplate(props) {
                   {
                     label: "OK",
                     className: "confirmBtn",
+                    onClick: () => { setAllowloader(true) }
                   },
                 ], closeOnClickOutside: false
               });
@@ -670,7 +672,16 @@ function ViewTemplate(props) {
           }))
         .catch(error => {
           console.log(error);
-          alert("SomeThing Went Wrong PLease Try Again");
+          confirmAlert({
+            message: "SomeThing Went Wrong PLease Try Again",
+            buttons: [
+              {
+                label: "OK",
+                className: "confirmBtn",
+                onClick: () => { setAllowloader(true) }
+              },
+            ], closeOnClickOutside: false
+          });
         })
     }
   }

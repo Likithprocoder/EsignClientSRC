@@ -257,8 +257,8 @@ class Register extends Component {
       this.setState({
         moble: mobileNo ? atob(mobileNo) : "", // Set only if mobileNo exists
         email: email ? atob(email) : "", // Set only if email exists
-        unregisteredDocId: atob(unregisteredDocId) ? unregisteredDocId : "",
-        referalName: atob(referalName) ? referalName : "",
+        unregisteredDocId: atob(unregisteredDocId),
+        referalName: atob(referalName) 
       })
     }
     //to fetch the tokenValue which is provided by the aws marketplace which contains the plan details

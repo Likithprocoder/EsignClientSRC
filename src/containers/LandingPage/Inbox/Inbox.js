@@ -35,6 +35,7 @@ export default class Inbox extends React.Component {
   }
   //------------------Inbox Table API--------------
   getInbocDocDetails = () => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       authToken: sessionStorage.getItem("authToken"),
     };
@@ -43,6 +44,7 @@ export default class Inbox extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body),
     })
