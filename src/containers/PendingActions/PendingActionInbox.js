@@ -190,6 +190,7 @@ export default class PendingActionInbox extends React.Component {
     let data = {
       docId: rowData.DOC_ID,
       txnrefNo: rowData.token,
+      filename:rowData.DOC_NAME
     }
     this.setState({ loaded: true });
     this.props.history.push({

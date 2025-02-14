@@ -75,6 +75,7 @@ let URL = {
   getOtpforVerification: HOST + "getOtpforVerification",
   footerContent: footerContent,
   getOtpforEditProfileVerftn: HOST + "V2/getOtpforEditProfileVerftn",
+  viewSignedFileV1: HOST + "viewSignedFile",
   viewSignedFile: HOST + "V2/viewSignedFile",
   getstoredFilefrmTempDetails: HOST + "V2/getstoredFilefrmTempDetails",
   downloadfromtemp: HOST + "V2/downloadfromtemp",
@@ -119,8 +120,9 @@ let URL = {
   getAllTemplateGrps: HOST + "V2/getTemplateGrps",
   getUserDetails: HOST + "V2/getUserDetails",
   viewAddedTemplateUsers: HOST + "V2/viewTemplateUsers",
+
   addCorporateUsers: HOST + "V2/addCorporateUsers",
-  addTemplateUsers: HOST + "V2/addTemplateUsers",
+  addTemplateUsers: HOST + "V2/addTemplateUsers", //not used
   removeTemplateUsers: HOST + "V2/removeTemplateUsers",
   getCorpDetailsReg: HOST + "getCorpDetails",
   getCorpDetails: HOST + "V2/getCorpDetails",

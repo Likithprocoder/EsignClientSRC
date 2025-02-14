@@ -177,7 +177,6 @@ const Preview = (props) => {
   };
 
   const getWalletDetailsonLoad = () => {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       // loginname: sessionStorage.getItem("username"),
       // authToken: sessionStorage.getItem("authToken"),
@@ -187,7 +186,7 @@ const Preview = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
+        'Authorization': `Bearer ${sessionStorage.getItem("jsonWebToken")}`
       },
       body: JSON.stringify(body),
     })
@@ -3539,7 +3538,7 @@ const Preview = (props) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${jsonWebToken}`
+                    'Authorization': `Bearer ${sessionStorage.getItem("jsonWebToken")}`
                 },
                 body: JSON.stringify(obj)
             })

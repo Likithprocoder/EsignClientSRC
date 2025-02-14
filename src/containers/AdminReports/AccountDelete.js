@@ -149,6 +149,7 @@ export default class AccountDelete extends React.Component {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `Bearer ${sessionStorage.getItem("jsonWebToken")}`
         },
         body: JSON.stringify(dataToserver),
       })

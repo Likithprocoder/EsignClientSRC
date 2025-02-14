@@ -125,23 +125,23 @@ export default class Download extends React.Component {
     }
 
     let viewFileURL = "";
-    if (sessionStorage.getItem("externalSigner") === "false") {
-      viewFileURL = URL.viewSignedFile;
-      this.setState({ viewFileURl: URL.viewSignedFile });
-      document.getElementById("discardOptionsdiv").style.display = "";
-      this.setState({
-        username: username,
-        //docId: sessionStorage.getItem("docId"),
-        email: email,
-        msg: "",
-      });
-      // document.getElementById("previewSignAgainBtn").style.display = "";
-      // document.getElementById("completeSigningBtn").style.display = "";
-      // document.getElementById("cancelSigningBtn").style.display = "";
-    } else {
-      viewFileURL = URL.viewStoredFile;
-      this.setState({ viewFileURl: URL.viewStoredFile });
-    }
+    // if (sessionStorage.getItem("externalSigner") === "false") {
+    //   viewFileURL = URL.viewSignedFile;
+    //   this.setState({ viewFileURl: URL.viewSignedFile });
+    //   document.getElementById("discardOptionsdiv").style.display = "";
+    //   this.setState({
+    //     username: username,
+    //     //docId: sessionStorage.getItem("docId"),
+    //     email: email,
+    //     msg: "",
+    //   });
+    //   // document.getElementById("previewSignAgainBtn").style.display = "";
+    //   // document.getElementById("completeSigningBtn").style.display = "";
+    //   // document.getElementById("cancelSigningBtn").style.display = "";
+    // } else {
+    //   viewFileURL = URL.viewStoredFile;
+    //   this.setState({ viewFileURl: URL.viewStoredFile });
+    // }
     let docID = sessionStorage.getItem("docid");
     console.log("docID: "+docID);
 
@@ -157,12 +157,40 @@ export default class Download extends React.Component {
       // Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
     };
 
-    if (sessionStorage.getItem("authToken") != null) {
-      viewURL = `${URL.viewStoredFile}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+    if (sessionStorage.getItem("externalSigner") === "false") {
+      // viewFileURL = viewSignedFile;
+      this.setState({ viewFileURl: URL.viewSignedFile });
+      document.getElementById("discardOptionsdiv").style.display = "";
+      this.setState({
+        username: username,
+        //docId: sessionStorage.getItem("docId"),
+        email: email,
+        msg: "",
+      });
+      // document.getElementById("previewSignAgainBtn").style.display = "";
+      // document.getElementById("completeSigningBtn").style.display = "";
+      // document.getElementById("cancelSigningBtn").style.display = "";
+
+
+      if (sessionStorage.getItem("authToken") != null) {
+        viewURL = `${URL.viewSignedFileV1}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+      } else {
+        viewURL = `${URL.viewSignedFile}?docID=${btoa(docID)}`;
+        headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+      }
     } else {
-      viewURL = `${URL.viewStoredFileV2}?docID=${btoa(docID)}`;
-      headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+      // viewFileURL = viewStoredFile;
+      this.setState({ viewFileURl: URL.viewStoredFile });
+      if (sessionStorage.getItem("authToken") != null) {
+        viewURL = `${URL.viewStoredFile}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+      } else {
+        viewURL = `${URL.viewStoredFileV2}?docID=${btoa(docID)}`;
+        headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+      }
     }
+
+
+   
 
     this.fetchDocument(viewURL, headers);
   }
