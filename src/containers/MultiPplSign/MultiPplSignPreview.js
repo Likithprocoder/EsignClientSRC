@@ -2066,7 +2066,6 @@ const MultiPplSignPreview = (props) => {
   };
 
   const nextPreview = () => {
-    console.log(dragArray);
     setSelectedOptionArray([]);
 
     let result = false;

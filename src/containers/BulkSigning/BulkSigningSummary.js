@@ -170,7 +170,7 @@ export default class BulkSigningSummary extends React.Component {
           onClick: () => {
             this.setState({ loaded: false });
             var body = {
-              authToken: sessionStorage.getItem("authToken"),
+              // authToken: sessionStorage.getItem("authToken"),
               batchNumber: data.batchNo,
               sequenceNumber: data.sequenceNumber
             };
@@ -343,10 +343,10 @@ export default class BulkSigningSummary extends React.Component {
 
   CancelSigning = async (e) => {
     this.onCloseCancelSigningModal();
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
     this.setState({ loaded: false });
     var body = {
-      authToken: sessionStorage.getItem("authToken"),
       batchNumber: this.state.batchNo,
       cancelReason: this.state.cancelReason,
     };
@@ -355,6 +355,7 @@ export default class BulkSigningSummary extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${jsonWebToken}`
       },
       body: JSON.stringify(body)
     })
@@ -398,6 +399,7 @@ export default class BulkSigningSummary extends React.Component {
   }
 
   sendBulkReminder = (e) => {
+    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     // Logic to take a count of number of unSigned users count.
     let unSigndCunt = this.state.bulkSigningInfo.filter((data) => (data.status === 0));
     let batchNumber = this.state.bulkSigningInfo[0]["batchNo"];
@@ -419,6 +421,7 @@ export default class BulkSigningSummary extends React.Component {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  'Authorization': `Bearer ${jsonWebToken}`
                 },
                 body: JSON.stringify(body),
               })
@@ -737,6 +740,7 @@ export default class BulkSigningSummary extends React.Component {
 
 
     const updateSignerData = (e) => {
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       // Validate if any of the values the enduser has edited.
       if (this.state.signerData["signerMobile"] === document.getElementById("blkSignEdtMoblNum").value &&
         this.state.signerData["signerEmail"] === document.getElementById("bkSgnEdtEmlId").value) {
@@ -768,6 +772,7 @@ export default class BulkSigningSummary extends React.Component {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `Bearer ${jsonWebToken}`
           },
           body: JSON.stringify(signerIntsFrUpdt)
         })

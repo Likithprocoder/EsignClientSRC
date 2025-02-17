@@ -166,7 +166,6 @@ let URL = {
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken: HOST + "fetchAccessToken",
   getKey: HOST + "getkey",
   uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",///
   getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
@@ -175,11 +174,10 @@ let URL = {
   getApplicationKeys: HOST + "getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
   registerUser:"/register",
-  exportSignerStatusReport:HOST + "exportSignerStatusReport",
-  notifyBulkSigners: HOST + "/notifyBulkSigners",
-  updateBulkSignerData: HOST + "BulkSigning/updateSignerData",
-  cancelBulkSigning: HOST +"/cancelBulkSigning",
-  getOAuthEndPointURL: HOST +"/getOAuthEndPointURL",
+  exportSignerStatusReport:HOST + "V2/exportSignerStatusReport",
+  notifyBulkSigners: HOST + "V2/notifyBulkSigners",
+  updateBulkSignerData: HOST + "V2/BulkSigning/updateSignerData",
+  cancelBulkSigning: HOST +"V2/cancelBulkSigning",
   fetchAccessToken: HOST +"/fetchAccessToken"
 };
 
