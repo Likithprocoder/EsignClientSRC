@@ -433,13 +433,13 @@ export default class MultiPplSignMobilePage extends React.Component {
       equalPageDimensions: equalPageDimensionsCheck,
     };
     this.setState({ loaded: true });
-    // this.props.history.push({
-    //   pathname: "/preview",
-    //   frompath: "deGuest",
-    //   state: {
-    //     details: data1,
-    //   },
-    // });
+    this.props.history.push({
+      pathname: "/preview",
+      frompath: "deGuest",
+      state: {
+        details: data1,
+      },
+    });
   }
 
   digitValidate(ele) {

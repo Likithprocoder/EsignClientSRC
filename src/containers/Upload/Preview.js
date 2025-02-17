@@ -3504,6 +3504,7 @@ const Preview = (props) => {
         }
 
       let obj = {};
+      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         let loginname = sessionStorage.getItem("username");

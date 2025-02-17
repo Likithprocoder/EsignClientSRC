@@ -166,7 +166,6 @@ let URL = {
   insertUsersFeedback: HOST + "V2/insertUsersFeedback",
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
-  fetchAccessToken: HOST + "fetchAccessToken",
   getKey: HOST + "getkey",
   uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",
   getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
@@ -174,12 +173,12 @@ let URL = {
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
   getApplicationKeys: HOST + "/V2/getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
-  registerUser:"register",
+  registerUser:"/register",
   exportSignerStatusReport:HOST + "V2/exportSignerStatusReport",
   notifyBulkSigners: HOST + "V2/notifyBulkSigners",
   updateBulkSignerData: HOST + "V2/BulkSigning/updateSignerData",
   cancelBulkSigning: HOST +"V2/cancelBulkSigning",
-  getOAuthEndPointURL: HOST +"V2/getOAuthEndPointURL"
+  fetchAccessToken: HOST +"/fetchAccessToken"
 };
 
 module.exports = { URL };
