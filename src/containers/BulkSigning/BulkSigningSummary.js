@@ -170,7 +170,6 @@ export default class BulkSigningSummary extends React.Component {
           onClick: () => {
             this.setState({ loaded: false });
             var body = {
-              // authToken: sessionStorage.getItem("authToken"),
               batchNumber: data.batchNo,
               sequenceNumber: data.sequenceNumber
             };
@@ -342,9 +341,8 @@ export default class BulkSigningSummary extends React.Component {
 
 
   CancelSigning = async (e) => {
-    this.onCloseCancelSigningModal();
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-
+    this.onCloseCancelSigningModal();
     this.setState({ loaded: false });
     var body = {
       batchNumber: this.state.batchNo,
@@ -414,7 +412,6 @@ export default class BulkSigningSummary extends React.Component {
             onClick: () => {
               this.setState({ loaded: false });
               var body = {
-                authToken: sessionStorage.getItem("authToken"),
                 batchNumber: batchNumber
               };
               fetch(URL.notifyBulkSigners, {
@@ -757,7 +754,6 @@ export default class BulkSigningSummary extends React.Component {
         this.setState({ loaded: false });
         // Update API Call.
         var signerIntsFrUpdt = {
-          authToken: sessionStorage.getItem("authToken"),
           batchNumber: this.state.signerData["batchNo"],
           sequenceNumber: this.state.signerData["sequenceNumber"],
           ...(this.state.signerData["signerMobile"] !== document.getElementById("blkSignEdtMoblNum").value && {

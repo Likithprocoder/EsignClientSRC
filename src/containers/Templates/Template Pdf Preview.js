@@ -90,7 +90,6 @@ class DisplayPdf1 extends Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     if (this.props.location.state.flag) {
       bodyData = {
-
         templateCode: tempCode,
         templateData: templateData,
         templateAttachments: this.props.location.state.templateAttachments,
@@ -360,7 +359,7 @@ class DisplayPdf1 extends Component {
     var body = {
       loginname: sessionStorage.getItem("username"),
       userIP: sessionStorage.getItem("userIP"),
-      docType: "PDF",
+      docType: "PDF"
     };
     let data1 = new FormData();
     console.log(this.state.files1);

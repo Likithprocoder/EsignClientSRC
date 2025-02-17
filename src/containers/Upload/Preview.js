@@ -177,7 +177,6 @@ const Preview = (props) => {
   };
 
   const getWalletDetailsonLoad = () => {
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     var body = {
       // loginname: sessionStorage.getItem("username"),
       // authToken: sessionStorage.getItem("authToken"),
@@ -187,7 +186,7 @@ const Preview = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
+        'Authorization': `Bearer ${sessionStorage.getItem("jsonWebToken")}`
       },
       body: JSON.stringify(body),
     })
@@ -3507,6 +3506,7 @@ const Preview = (props) => {
       let obj = {};
       let jsonWebToken = sessionStorage.getItem("jsonWebToken");
       if (props.location.frompath === "/htmlPreview" || props.location.frompath === "/bulkSigningUpload") {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
         let loginname = sessionStorage.getItem("username");
         obj = {
           //****starts here

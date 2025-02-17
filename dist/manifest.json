@@ -1,0 +1,15 @@
+{
+  "short_name": "jSign-React",
+  "name": "jSign-React sample",
+  "icons": [
+    {
+      "src": "/src/views/Pages/Login/logo/logoStamp.png",
+      "sizes": "10x100",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

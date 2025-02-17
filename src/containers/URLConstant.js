@@ -10,20 +10,17 @@ const { UpdateRounded } = require("@material-ui/icons");
 const HOST = "http://localhost:8090/MYSIGN/";
 var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
-
 // const HOST = "http://10.10.40.50:8090/MYSIGN/";
 // var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
-
+  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.31";
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
-
 let URL = {
-  appName: "DocuExec",//
-  register: HOST + "userRegister",//
-  regValidateOtp: HOST + "regValidateOtp",//
+  appName: "DocuExec",
+  register: HOST + "userRegister",
+  regValidateOtp: HOST + "regValidateOtp",
   validateOtp: HOST + "V2/validateOtp",
   login: HOST + "V2/loginValidate",
   getOtp: HOST + "V2/getOtp",
@@ -32,7 +29,7 @@ let URL = {
   getTermsAndConditionsV2: HOST + "V2/getTermsAndConditions",
   getSignedDoc: HOST + "getSignedDoc",
   getSignedDocV2: HOST + "V2/getSignedDoc",
-  download: HOST + "download",//Unused
+  download: HOST + "download",
   getWalletInfo: HOST + "V2/getWalletDetails",
   getUnitsHistory: HOST + "V2/getUnitsHistory",
   getPaymentHistory: HOST + "V2/getPaymentHistory",
@@ -51,39 +48,41 @@ let URL = {
   geteSignReports: HOST + "V2/geteSignReports",
   getUsersReports: HOST + "V2/getUsersReports",
   consenteSign: HOST + "V2/consenteSign",
-  getSummaryPDF: HOST + "V2/getSummaryPDF",//////
+  getSummaryPDF: HOST + "V2/getSummaryPDF",
   mpsGetGuestAccess: HOST + "mpsGetGuestAccess",
   mpsCreateJobsV2: HOST + "mpsCreateJobsV2",
   getInboxDocDetails: HOST + "V2/getInboxDocDetails",
-  downloadStoredFile: HOST + "inbox/downloadFile",//////
-  downloadStoredFileV2: HOST + "inbox/V2/downloadFile",//////
+  downloadStoredFile: HOST + "inbox/downloadFile",
+  downloadStoredFileV2: HOST + "inbox/V2/downloadFile",
   deleteStoredFile: HOST + "inbox/V2/deleteFile",
   cancelSigningJob: HOST + "inbox/V2/cancelJob",
-  selfTokenSign: HOST + "V2/selfTokenSign",//////
-  viewStoredFile: HOST + "inbox/viewFile",//////
-  viewStoredFileV2: HOST + "inbox/V2/viewFile",//////
-  downloadClientProgram: HOST + "V2/downloadClientProgram",//
+  selfTokenSign: HOST + "V2/selfTokenSign",
+  viewStoredFile: HOST + "inbox/viewFile",
+  viewStoredFileV2: HOST + "inbox/V2/viewFile",
+  downloadClientProgram: HOST + "V2/downloadClientProgram",
   generateOTP: HOST + "V2/generateOTP",
   resendEsignOtp: HOST + "V2/resendEsignOtp",
-  generatedscaccesscode: HOST + "generatedscaccesscodeV2",//
-  unlockdscdocument: HOST + "unlockdscdocument",//
+  generatedscaccesscode: HOST + "generatedscaccesscodeV2",
+  unlockdscdocument: HOST + "V2/unlockdscdocument",
   getSubscriptionLists: HOST + "getSubscriptionLists",
   subscribedPlanDetails: HOST + "subscribedPlanDetails",
   subscribedPlanDetailsV2: HOST + "V2/subscribedPlanDetails",
   checkinQueuePlan: HOST + "V2/checkSubscriptionDetails",
+  //------- harshith-
   viewConsentFile: HOST + "V2/viewConsentFile",
   sendReminder: HOST + "inbox/V2/sendReminder",
   paymenturl: paymenturl,
-  getOtpforVerification: HOST + "getOtpforVerification",//
+  getOtpforVerification: HOST + "getOtpforVerification",
   footerContent: footerContent,
   getOtpforEditProfileVerftn: HOST + "V2/getOtpforEditProfileVerftn",
+  viewSignedFileV1: HOST + "viewSignedFile",
   viewSignedFile: HOST + "V2/viewSignedFile",
   getstoredFilefrmTempDetails: HOST + "V2/getstoredFilefrmTempDetails",
   downloadfromtemp: HOST + "V2/downloadfromtemp",
-  digiLocker: HOST + "digilocker/makedigilockercall",//
+  digiLocker: HOST + "digilocker/makedigilockercall",
   KYCDetails: HOST + "V2/getUserAadharDetails",
-  BulkRegistration: HOST + "V2/bulkRegistration",///////
-  generateOtpforMobAccess: HOST + "generateOtpforMobAccess",/////
+  BulkRegistration: HOST + "V2/bulkRegistration",
+  generateOtpforMobAccess: HOST + "generateOtpforMobAccess",
   withdrawMoney: HOST + "withdrawMoney",
   getBankDetails: HOST + "getBankDetails",
   downloadSignCmpltd: HOST + "downloadSignCmpltd",//
@@ -121,8 +120,9 @@ let URL = {
   getAllTemplateGrps: HOST + "V2/getTemplateGrps",
   getUserDetails: HOST + "V2/getUserDetails",
   viewAddedTemplateUsers: HOST + "V2/viewTemplateUsers",
+
   addCorporateUsers: HOST + "V2/addCorporateUsers",
-  addTemplateUsers: HOST + "V2/addTemplateUsers",
+  addTemplateUsers: HOST + "V2/addTemplateUsers", //not used
   removeTemplateUsers: HOST + "V2/removeTemplateUsers",
   getCorpDetailsReg: HOST + "getCorpDetails",
   getCorpDetails: HOST + "V2/getCorpDetails",
@@ -167,11 +167,11 @@ let URL = {
   getUsersFeedback: HOST + "V2/getUsersFeedback",
   getOAuthEndPointURL: HOST + "V2/getOAuthEndPointURL",
   getKey: HOST + "getkey",
-  uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",///
+  uploadBulkSignFile: HOST + "V2/uploadBulkSignFile",
   getbulkSigningdetails: HOST + "V2/getbulkSigningdetails",
   uploadBulkSigndetails: HOST + "V2/uploadBulkSigndetails",
   inAPPAPI: HOST + "INAPP/mpsCreateJobsV2",
-  getApplicationKeys: HOST + "getApplicationKeys",
+  getApplicationKeys: HOST + "/V2/getApplicationKeys",
   fetchInputFieldsData: HOST + "fetchInputFieldsData",
   registerUser:"/register",
   exportSignerStatusReport:HOST + "V2/exportSignerStatusReport",

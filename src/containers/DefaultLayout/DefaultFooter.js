@@ -20,7 +20,7 @@ class DefaultFooter extends Component {
             <img src={integraLogo} width="45px"></img>
           </a>{" "}
           Copyright &copy; 2025 Integra Micro Systems Private Ltd. All Rights
-          Reserved. Version : 1.9.30
+          Reserved. Version : 1.9.31
         </span>
       </React.Fragment>
     );

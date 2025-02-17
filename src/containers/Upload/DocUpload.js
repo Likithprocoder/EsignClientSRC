@@ -562,7 +562,7 @@ export default class DocUpload extends React.Component {
     var body = {
       loginname: sessionStorage.getItem("username"),
     };
-    fetch(URL.subscribedPlanDetails, {
+    fetch(URL.subscribedPlanDetailsV2, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

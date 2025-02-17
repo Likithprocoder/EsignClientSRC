@@ -240,7 +240,9 @@ export default class MultiPplSignMobilePage extends React.Component {
     this.setState({ loaded: false });
     let signingDetails = {};
     //getting access for external signer
-    fetch(URL.mpsGetGuestAccess1, {
+    // URL changes depending on the feature 
+    // For bulk signing
+    fetch(URL.mpsGetGuestAccessV2, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

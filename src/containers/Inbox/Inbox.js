@@ -1,7 +1,7 @@
 // material ui table ref link-----------------https://blog.logrocket.com/material-table-react-tutorial-with-examples/
 import React from "react";
 import { Row } from "reactstrap";
-import { URL } from "../URLConstant";
+import { URL as url } from "../URLConstant";
 import "./inbox.css";
 import "../../scss/jquery.dataTables.css";
 import { confirmAlert } from "react-confirm-alert";
@@ -109,13 +109,15 @@ export default class Inbox extends React.Component {
       let error = params.get('error');
       if (error !== null) {
         confirmAlert({
-          message: 'Google Authorization failed!',
+          message: 'Failed to upload the document!',
           buttons: [
             {
               label: "OK",
               className: "confirmBtn",
               onClick: () => {
-                window.location.reload();
+                const urL = new URL(window.location.href);
+                urL.searchParams.delete("error"); // Remove the error query param
+                window.location.href = urL.href;
               },
             },
           ], closeOnClickOutside: false
@@ -126,7 +128,7 @@ export default class Inbox extends React.Component {
           scope: params.get('scope'),
           state: params.get('state')
         }
-        fetch(URL.fetchAccessToken, {
+        fetch(url.fetchAccessToken, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -205,7 +207,7 @@ export default class Inbox extends React.Component {
     };
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
 
-    fetch(URL.mpsGetGuestAccessV2, {
+    fetch(url.mpsGetGuestAccessV2, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -283,7 +285,7 @@ export default class Inbox extends React.Component {
               },
             ],
           });
-          this.setState({loaded: true});
+          this.setState({ loaded: true });
           //alert(responseJson.statusDetails)
         }
       });
@@ -293,7 +295,7 @@ export default class Inbox extends React.Component {
   getInbocDocDetails = () => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     this.setState({ loaded: false });
-    fetch(URL.getInboxDocDetails, {
+    fetch(url.getInboxDocDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -365,7 +367,7 @@ export default class Inbox extends React.Component {
     // console.log(data);
     //getting access for external signer
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    fetch(URL.getSignCoordinateDetails, {
+    fetch(url.getSignCoordinateDetails, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -416,7 +418,7 @@ export default class Inbox extends React.Component {
   //------------------Signing from inbox call(self signing or third party signing)------------------
   CheckSigningMode = (rowData) => {
     // console.log(rowData.DOC_ID);
-    this.setState({loaded: false});
+    this.setState({ loaded: false });
     let dataToGetSignCoordinateDetails = {
       docId: rowData.DOC_ID,
     }
@@ -433,7 +435,7 @@ export default class Inbox extends React.Component {
   async createFileforSigningasSender(filename, docID) {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
-      URL.downloadStoredFileV2 +
+      url.downloadStoredFileV2 +
       "?docID=" +
       btoa(docID),
       {
@@ -495,7 +497,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
-      this.setState({loaded: true});
+      this.setState({ loaded: true });
       console.error("Error:", error);
     }
     // console.log(this.state.signCoordinates);
@@ -553,7 +555,7 @@ export default class Inbox extends React.Component {
     let rowData = doc;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
-      URL.viewStoredFileV2 +
+      url.viewStoredFileV2 +
       "?docID=" +
       btoa(doc.DOC_ID),
       {
@@ -616,7 +618,7 @@ export default class Inbox extends React.Component {
         }
       }
     } catch (error) {
-      this.setState({loaded: true});
+      this.setState({ loaded: true });
       console.error("Error:", error);
     }
 
@@ -802,7 +804,7 @@ export default class Inbox extends React.Component {
   //--API Call For getting the Template Validations from server-----------
   getEmailValidation = () => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    fetch(URL.getEmailTemplateValidation, {
+    fetch(url.getEmailTemplateValidation, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -1002,7 +1004,7 @@ export default class Inbox extends React.Component {
           userIP: sessionStorage.getItem("userIP"),
         };
         let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-        fetch(URL.sendEmail, {
+        fetch(url.sendEmail, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1071,7 +1073,7 @@ export default class Inbox extends React.Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     try {
       let response = await fetch(
-        URL.viewStoredFileV2 + "?docID=" + btoa(e.DOC_ID),
+        url.viewStoredFileV2 + "?docID=" + btoa(e.DOC_ID),
         {
           headers: {
             'Authorization': 'Bearer ' + jsonWebToken
@@ -1254,7 +1256,7 @@ export default class Inbox extends React.Component {
               userId: data.USER_ID,
             };
             let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-            fetch(URL.cancelSigningJob, {
+            fetch(url.cancelSigningJob, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -1342,7 +1344,7 @@ export default class Inbox extends React.Component {
               userId: data.USER_ID,
             };
             let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-            fetch(URL.sendReminder, {
+            fetch(url.sendReminder, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -1446,7 +1448,7 @@ export default class Inbox extends React.Component {
               username: sessionStorage.getItem("username"),
             };
             let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-            fetch(URL.deleteStoredFile, {
+            fetch(url.deleteStoredFile, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -1498,7 +1500,7 @@ export default class Inbox extends React.Component {
   fileDownload = async (data) => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let DocId = data.DOC_ID;
-    let url = URL.downloadStoredFileV2 + "?docID=" + btoa(DocId);
+    let url = url.downloadStoredFileV2 + "?docID=" + btoa(DocId);
 
     try {
       let response = await fetch(url, {
@@ -1646,7 +1648,7 @@ export default class Inbox extends React.Component {
       docId: e.DOC_ID,
     };
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    fetch(URL.getSignerComments, {
+    fetch(url.getSignerComments, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1688,7 +1690,7 @@ export default class Inbox extends React.Component {
     var body = {
       docID: btoa(data.DOC_ID)
     };
-    fetch(URL.getOAuthEndPointURL, {
+    fetch(url.getOAuthEndPointURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
