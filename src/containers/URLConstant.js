@@ -14,7 +14,7 @@ var paymenturl = "http://localhost:8095/PAYMENTSIMULATOR/getunitscalltesting";
 // var paymenturl = "http://10.10.40.50:8095/PAYMENTSIMULATOR/getunitscalltesting";
 
 const footerContent =
-  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.30";
+  "Copyright ©️ 2025 Integra Micro Systems Private Ltd. All Rights Reserved. Version : 1.9.31";
 // const rupeeIcon = '\&#x20B9';
 const rupeeSymbol = '\u20B9';
 let URL = {

@@ -457,7 +457,7 @@ export default class ApplicationInbox extends React.Component {
     let rowData = doc;
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let response = await fetch(
-      URL.viewStoredFile +
+      URL.viewStoredFileV2 +
       "?docID=" +
       btoa(doc.DOC_ID),
       {
@@ -884,7 +884,7 @@ export default class ApplicationInbox extends React.Component {
   viewStoredFile = async (e) => {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let docId = btoa(e.DOC_ID);
-    let pdfurl = URL.viewStoredFile + "?docID=" + docId;
+    let pdfurl = URL.viewStoredFileV2 + "?docID=" + docId;
 
     try {
       let response = await fetch(pdfurl, {
