@@ -4739,13 +4739,23 @@ const Preview = (props) => {
       userId: signeruserId,
       mobileNo: signerMobileNumber,
     };
-    let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    fetch(URL.generatedscaccesscode, {
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    let generateaccesscodeUrl;
+    if (AuthToken !== null) {
+      generateaccesscodeUrl = URL.generatedscaccesscodeV1;
+      body.authToken = AuthToken;
+    } else {
+      generateaccesscodeUrl = URL.generatedscaccesscode;
+      headers["Authorization"] = `Bearer ${ sessionStorage.getItem("jsonWebToken")}`;
+    }
+
+    fetch(generateaccesscodeUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${jsonWebToken}`
-      },
+      headers: headers,
       body: JSON.stringify(body),
     })
       .then((response) => {
@@ -5436,21 +5446,32 @@ const Preview = (props) => {
         }
       }
     } else {
-      let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      // let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+      console.log(props);
       const body = {
-        authToken: AuthToken,
+        // authToken: AuthToken,
         isPrivate: isPrivate,
         signerComments: signerComments,
         docId: props.docId,
         userIP: sessionStorage.getItem("userIP"),
       };
 
-      fetch(URL.declineSigning, {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      let declineSigningUrl;
+      if (AuthToken !== null) {
+        declineSigningUrl = URL.declineSigningV1
+          body.authToken = AuthToken;
+      } else {
+        declineSigningUrl = URL.declineSigning;
+          headers["Authorization"] = `Bearer ${ sessionStorage.getItem("jsonWebToken")}`;
+      }
+
+      fetch(declineSigningUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${jsonWebToken}`
-        },
+        headers: headers,
         body: JSON.stringify(body),
       })
         .then((response) => {

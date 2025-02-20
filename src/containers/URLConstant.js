@@ -62,6 +62,7 @@ let URL = {
   downloadClientProgram: HOST + "V2/downloadClientProgram",
   generateOTP: HOST + "V2/generateOTP",
   resendEsignOtp: HOST + "V2/resendEsignOtp",
+  generatedscaccesscodeV1: HOST + "generatedscaccesscode",
   generatedscaccesscode: HOST + "generatedscaccesscodeV2",
   unlockdscdocument: HOST + "V2/unlockdscdocument",
   getSubscriptionLists: HOST + "getSubscriptionLists",
@@ -141,6 +142,7 @@ let URL = {
   approveCorpMemberRequests: HOST + "V2/approveCorpMemberRequests",//////
   addCorpMember: HOST + "V2/addCorpMember",
   checkVoucherCodeAvailability: HOST + "V2/checkUsrDefinedVchrCode",////////
+  declineSigningV1: HOST + "declineSigning",
   declineSigning: HOST + "V2/declineSigning",////
   fetchAddressBook: HOST + "V2/fetchAddressBook",
   insertToAddressBook: HOST + "V2/insertToAddressBook",
