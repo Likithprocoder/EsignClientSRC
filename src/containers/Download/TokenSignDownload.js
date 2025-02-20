@@ -195,9 +195,9 @@ export default class TokenSignDownload extends React.Component {
     };
 
     if (sessionStorage.getItem("authToken") != null) {
-      viewURL = `${URL.viewStoredFile}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+      viewURL = `${viewFileURL}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
     } else {
-      viewURL = `${URL.viewStoredFileV2}?docID=${btoa(docID)}`;
+      viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
       headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
     }
 

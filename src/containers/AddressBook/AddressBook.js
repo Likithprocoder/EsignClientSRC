@@ -532,15 +532,15 @@ class AddressBook extends Component {
     setInput = (e) => {
         let value = e.target.value;
         if (e.target.id == 'contactName') {
-            // let filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
-            let filteredValue = value.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\s+/g, ' ');
+            let filteredValue = value.replace(/[^a-zA-Z0-9]/g, '');
             this.setState({ filteredName: filteredValue });
         }
         else if (e.target.id == 'contactMobile') {
             this.setState({ filteredMobile: value });
         }
         else {
-            this.setState({ filteredEmail: value.trim() });
+            let filteredValue = value.replace(/\s/g, '');
+            this.setState({ filteredEmail: filteredValue });
         }
 
     }

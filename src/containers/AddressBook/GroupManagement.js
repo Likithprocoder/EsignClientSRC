@@ -375,8 +375,17 @@ class GroupManagement extends Component {
                                                         this.setState({ loaded: true })
                                                         if (this.state.editMode === 0 || this.state.info.length == 0) { this.backToAddressBook(e); }
                                                         else {
-                                                            window.location.reload()
+                                                            this.setState({ initialInfo: this.state.info })
+
                                                         }
+
+                                                        // else {
+                                                        //     // window.onbeforeunload = () => {
+                                                        //     sessionStorage.setItem('editMode', 1);
+                                                        //     // };
+                                                        //     window.location.reload()
+
+                                                        // }
                                                     }
                                                 },
                                             ]
@@ -566,7 +575,9 @@ class GroupManagement extends Component {
                 {
                     label: "Cancel",
                     className: "cancelBtn",
-                    onClick: () => { window.location.reload() }
+                    onClick: () => { 
+                        // window.location.reload()
+                     }
                 }
 
             ]
