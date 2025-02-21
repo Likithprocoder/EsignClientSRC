@@ -174,32 +174,47 @@ export default class TokenSignDownload extends React.Component {
       }
     }
 
+    let docID = this.props.location.state.details.docId;
+
+    let viewURL = "";
     let viewFileURL = "";
+    let headers = {
+    };
     if (sessionStorage.getItem("externalSigner") === "false" || this.props.location.frompath === "/pendingSignsInbox") {
       viewFileURL = URL.viewSignedFile;
       this.setState({ viewFileURl: URL.viewSignedFile, msg: "" });
       document.getElementById("discardOptionsdiv").style.display = "";
+
+
+
+      if (sessionStorage.getItem("authToken") != null) {
+        viewURL = `${viewFileURL}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+      } else {
+        viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+        headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+      }
+
     } else {
-      viewFileURL = URL.viewStoredFileV2;
-      //console.log("viewstoredfile");
-      this.setState({ viewFileURl: URL.viewStoredFileV2 });
+
+      if (sessionStorage.getItem("authToken") != null) {
+        viewFileURL = URL.viewStoredFile;
+        this.setState({ viewFileURl: URL.viewStoredFile });
+
+        viewURL = `${viewFileURL}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+      } else {
+        viewFileURL = URL.viewStoredFileV2;
+        this.setState({ viewFileURl: URL.viewStoredFileV2 });
+        viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+        headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+      }
+
     }
-    // console.log(viewFileURL);
-
-    let docID = this.props.location.state.details.docId;
-
-    let viewURL = "";
-
-    let headers = {
-      // Authorization: `Bearer ${sessionStorage.getItem("jsonWebToken")}`
-    };
-
-    if (sessionStorage.getItem("authToken") != null) {
-      viewURL = `${viewFileURL}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
-    } else {
-      viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
-      headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
-    }
+    // if (sessionStorage.getItem("authToken") != null) {
+    //   viewURL = `${viewFileURL}?at=${btoa(sessionStorage.getItem("authToken"))}&docID=${btoa(docID)}`;
+    // } else {
+    //   viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
+    //   headers["Authorization"] = `Bearer ${sessionStorage.getItem("jsonWebToken")}`;
+    // }
 
     this.fetchDocument(viewURL, headers);
   }
