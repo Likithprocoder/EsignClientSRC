@@ -80,7 +80,7 @@ class VoucherSubscription extends Component {
     let viewFileURL = "";
     viewFileURL = URL.viewConsentFile;
     this.setState({ viewFileURl: URL.viewConsentFile });
-    
+
     let viewURL = "";
 
     let headers = {
@@ -90,7 +90,7 @@ class VoucherSubscription extends Component {
     viewURL = `${viewFileURL}`;
 
     this.fetchDocument(viewURL, headers);
-    
+
     //checking if the user is normal enduser because  the template groups should be displayed only for the corporate admin.
     const roleId = sessionStorage.getItem("roleId");
     if ((roleId && roleId.trim() == 2)) {
@@ -265,10 +265,22 @@ class VoucherSubscription extends Component {
 
   };
 
+  isHidden = (subMsdata) => {
+    if (subMsdata.planId === "C001") {
+      if (!(sessionStorage.getItem("roleID") === "2")) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  };
+
   createUI() {
     // console.log(this.state.responsedata);
     return this.state.responsedata.map((el, i) => (
-      <div className="align-items-center">
+      <div className="align-items-center" key={i + "ParentKey"} hidden={this.isHidden(el)}>
         {/* {console.log(el.signs)} */}
         {/* {console.log(el.storage)} */}
         <div key={i}>
@@ -702,7 +714,7 @@ class VoucherSubscription extends Component {
 
       const contentType = response.headers.get('Content-Type');
       if (!contentType || !contentType.includes('application/pdf')) {
-      throw new Error('Expected a PDF document but received: ' + contentType);
+        throw new Error('Expected a PDF document but received: ' + contentType);
       }
 
       // Convert the response into a Blob
@@ -1063,11 +1075,11 @@ class VoucherSubscription extends Component {
               httpHeaders={headers}
             /> */}
             {blobUrl && <PDF1
-                key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
-                url={blobUrl}
-                filename={fileName}
-                finish={isFinish}  // Pass finish state to control Download button
-              />}
+              key={isFinish ? 'finished' : 'notFinished'}  // Key to force re-render
+              url={blobUrl}
+              filename={fileName}
+              finish={isFinish}  // Pass finish state to control Download button
+            />}
             <div style={{ marginTop: "20px" }}>
               <input
                 type="checkbox"
@@ -1080,16 +1092,16 @@ class VoucherSubscription extends Component {
               </label>
             </div>
             <div className="next-nav">
-            <button
-              className="upload-button"
-              id="submitConsentbutton"
-              disabled={this.state.isConsentdisable}
-              onClick={this.consenteSign.bind(this)}
-              style={{ margin: "auto" }}
-            >
-              <span>Submit &#8594;</span>
-            </button>
-          </div>
+              <button
+                className="upload-button"
+                id="submitConsentbutton"
+                disabled={this.state.isConsentdisable}
+                onClick={this.consenteSign.bind(this)}
+                style={{ margin: "auto" }}
+              >
+                <span>Submit &#8594;</span>
+              </button>
+            </div>
             {/* </div> */}
           </div>
           {/* <br></br> */}

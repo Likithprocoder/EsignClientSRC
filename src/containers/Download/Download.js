@@ -50,6 +50,7 @@ export default class Download extends React.Component {
       mobileNo: "",
       referalName: "",
       unregisteredDocId: "",
+      voucherCode: "",
       blobUrl: null,
     };
   }
@@ -75,7 +76,8 @@ export default class Download extends React.Component {
         referalName: parsed.referalName,
         mobileNo: parsed.unRegmobileNo,
         emailId: parsed.unRegemailId,
-        unregisteredDocId: parsed.docid
+        unregisteredDocId: parsed.docid,
+        voucherCode: parsed.voucher !== "" ? parsed.voucher : ""
       });
     }
     // console.log(fileName);
@@ -143,7 +145,7 @@ export default class Download extends React.Component {
     //   this.setState({ viewFileURl: URL.viewStoredFile });
     // }
     let docID = sessionStorage.getItem("docid");
-    console.log("docID: "+docID);
+    console.log("docID: " + docID);
 
     // let viewURL = `${viewFileURL}?docID=${btoa(docID)}`;
 
@@ -190,7 +192,7 @@ export default class Download extends React.Component {
     }
 
 
-   
+
 
     this.fetchDocument(viewURL, headers);
   }
@@ -214,7 +216,7 @@ export default class Download extends React.Component {
 
       const contentType = response.headers.get('Content-Type');
       if (!contentType || !contentType.includes('application/pdf')) {
-      throw new Error('Expected a PDF document but received: ' + contentType);
+        throw new Error('Expected a PDF document but received: ' + contentType);
       }
 
       // Convert the response into a Blob
@@ -566,14 +568,14 @@ export default class Download extends React.Component {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
     let dataToGetSignCoordinateDetails = {
       docId: this.state.docId,
-  };
+    };
 
     try {
       const response = await fetch(URL.getstoredFilefrmTempDetails, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            'Authorization': `Bearer ${jsonWebToken}`
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${jsonWebToken}`
         },
         body: JSON.stringify(data),
       });
@@ -801,7 +803,7 @@ export default class Download extends React.Component {
   };
 
   render() {
-    const {blobUrl} = this.state;
+    const { blobUrl } = this.state;
     // Define the headers to include in the fetch request
     return (
       <div className="login-main-container">
@@ -815,8 +817,9 @@ export default class Download extends React.Component {
           <p>
             <a title="register" href="" onClick={this.registerUser}>
               <span className="blink">
-              Click here to join DocuExec and link the signed document to your account.
-              </span>
+                Click here to join DocuExec and link the signed document to your account.
+                {this.state.voucherCode === "true" ?
+                  " By registering your account, you will receive a bonus — an active subscription plan will be added to your account!" : ""}              </span>
             </a>{" "}
 
           </p>

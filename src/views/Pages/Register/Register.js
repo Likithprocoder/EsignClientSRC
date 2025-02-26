@@ -630,6 +630,7 @@ class Register extends Component {
                                       },
                                     ],
                                   });
+                                  sessionStorage.clear();
                                 } else {
                                   this.setState({
                                     loaded: true,

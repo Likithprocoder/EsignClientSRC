@@ -114,7 +114,7 @@ export default class LandingPage extends Component {
 
   createUI() {
     return this.state.responsedata.map((el, i) => (
-      <div className="align-items-center">
+      <div className="align-items-center" hidden={(el.planId === "C001")}>
         <div key={i}>
           <Col xs="11" sm="4" md="3">
             <Card id="subscard">

@@ -180,7 +180,9 @@ let URL = {
   notifyBulkSigners: HOST + "V2/notifyBulkSigners",
   updateBulkSignerData: HOST + "V2/BulkSigning/updateSignerData",
   cancelBulkSigning: HOST +"V2/cancelBulkSigning",
-  fetchAccessToken: HOST +"/fetchAccessToken"
+  fetchAccessToken: HOST +"/fetchAccessToken",
+  linkSubscriptionToBulkSigners: HOST + "V2/linkSubscriptionToBulkSigners"
+
 };
 
 module.exports = { URL };

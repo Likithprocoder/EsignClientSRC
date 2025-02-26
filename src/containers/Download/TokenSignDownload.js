@@ -60,7 +60,7 @@ export default class TokenSignDownload extends React.Component {
       mobileNo: "",
       referalName: "",
       unregisteredDocId: "",
-
+      voucherCode: "false",
       isFinish: false,
       blobUrl: null,
     };
@@ -80,7 +80,8 @@ export default class TokenSignDownload extends React.Component {
         referalName: this.props.location.state.details.referalName,
         mobileNo: this.props.location.state.details.mobileNo,
         emailId: this.props.location.state.details.emailId,
-        unregisteredDocId: this.props.location.state.details.docId
+        unregisteredDocId: this.props.location.state.details.docId,
+        voucherCode: this.props.location.state.details.hasOwnProperty("voucher") ? this.props.location.state.details.voucher : "false"
       })
       //document.getElementById("registerUser").style.display = "";
 
@@ -836,7 +837,8 @@ export default class TokenSignDownload extends React.Component {
             <p>
               <a title="register" href="" onClick={this.registerUser}>
                 <span className="blink">
-                  Click here to join DocuExec and link the signed document to your account.
+                Click here to join DocuExec and link the signed document to your account.{this.state.voucherCode === "true" ?
+                    " By registering your account, you will receive a bonus — an active subscription plan will be added to your account!" : ""}
                 </span>
               </a>{" "}
 

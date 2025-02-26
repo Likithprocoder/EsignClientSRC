@@ -166,10 +166,22 @@ if (sessionStorage.getItem("consenteSign") === "true") {
         }
       });
   }
+  
+  isHidden = (subMsdata) => {
+    if (subMsdata.planId === "C001") {
+      if (!(sessionStorage.getItem("roleID") === "2")) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  };
 
   createUI() {
     return this.state.responsedata.map((el, i) => (
-      <div className="align-items-center">
+      <div className="align-items-center" hidden={this.isHidden(el)}>
         <div key={i}>
           <Col xs="11" sm="4" md="3">
             <Card id="subscard">

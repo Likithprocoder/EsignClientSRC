@@ -17,6 +17,7 @@ import { Delete, MoreVert, MoreHoriz, BorderColor } from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import GetApp from "@material-ui/icons/GetApp";
 import Modal from "react-responsive-modal";
+import { number } from "prop-types";
 
 var Loader = require("react-loader");
 
@@ -43,7 +44,10 @@ export default class BulkSigningSummary extends React.Component {
       openCancelSigningModal: false,
       cancelReason: "",
       cancelMsg: "",
-      disableRemindr: false
+      disableRemindr: false,
+      voucherOpenModal: false,
+      voucherCode: "",
+      rowData: ""
     };
   }
 
@@ -273,7 +277,8 @@ export default class BulkSigningSummary extends React.Component {
       loaded: false,
       batchNo: data.batchNo,
       pendingCount: data.pendingCount,
-      cancelReason: ""
+      cancelReason: "",
+      rowData: data
     });
     this.getBulkSigningDetails(data);
     this.setState(prevState => ({
@@ -734,6 +739,130 @@ export default class BulkSigningSummary extends React.Component {
       }
     ];
 
+    // Voucher addition to the bulk signing summary.
+    const voucherAddition = (event, data) => {
+      // Check if the voucher code is empty or less than 10 charactor.
+      if (this.state.voucherCode === "" || this.state.voucherCode.length < 10 || this.state.voucherCode === null) {
+        confirmAlert({
+          message: 'Please enter the valid 10 digit voucher code!',
+          buttons: [
+            {
+              label: "OK",
+              className: "confirmBtn",
+              onClick: () => { return }
+            },
+          ], closeOnClickOutside: false
+        });
+      } else {
+        let jsonWebToken = sessionStorage.getItem("jsonWebToken");
+        this.setState({ loaded: false });
+        fetch(URL.linkSubscriptionToBulkSigners, {
+          // fetch(URL.subscribedPlanDetails, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jsonWebToken}`
+          },
+          body: JSON.stringify(data)
+        }).then((response) => {
+          return response.json()
+        }).then((responseJson) => {
+          // console.log(responseJson);
+          if (responseJson.status === "SUCCESS") {
+            this.setState({ loaded: true });
+            if (!responseJson.hasOwnProperty("info")) {
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { window.location.reload() }
+                  },
+                ], closeOnClickOutside: false
+              });
+            } else {
+              let msg = null;
+              if (`${responseJson.voucherInfo.voucherCodeType}` === "0") {
+                msg = "Only one signer can be registered with this voucher code due to the code being unique";
+              } else {
+                if (Number(this.state.pendingCount) <= Number(responseJson.voucherInfo.availableVouchers)) {
+                  msg = `Total Pending Signers: ${this.state.pendingCount}. Your voucher subscription allows linking up to ${responseJson.voucherInfo.availableVouchers} signers. 
+                  All pending signers who register will be linked with the voucher. Do you wish to proceed?`;
+                } else {
+                  msg = `Total Pending Signers: ${this.state.pendingCount}. Your voucher subscription allows linking up to 
+                  ${responseJson.voucherInfo.availableVouchers} signers.
+                  Some users who register will not be linked with the voucher. Do you wish to proceed?`
+                }
+              }
+              confirmAlert({
+                message: msg,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => {
+                      let data = {
+                        code: this.state.voucherCode,
+                        batchNumber: this.state.batchNo,
+                        info: responseJson.info
+                      };
+                      voucherAddition(null, data)
+                    }
+                  },
+                  {
+                    label: "Cancel",
+                    className: "cancelBtn",
+                    onClick: () => {
+                      this.setState({ voucherOpenModal: false, loaded: true });
+                    }
+                  }
+                ], closeOnClickOutside: false
+              });
+            }
+          } else {
+            if (responseJson.statusDetails === "Session Expired") {
+              sessionStorage.clear();
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { this.props.history.push("/login") }
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+            else {
+              this.setState({ loaded: true });
+              confirmAlert({
+                message: responseJson.statusDetails,
+                buttons: [
+                  {
+                    label: "OK",
+                    className: "confirmBtn",
+                    onClick: () => { window.location.reload() },
+                  },
+                ], closeOnClickOutside: false
+              });
+            }
+          }
+        })
+          .catch((e) => {
+            confirmAlert({
+              message: 'Technical issues, please try later.',
+              buttons: [
+                {
+                  label: "OK",
+                  className: "confirmBtn",
+                  onClick: () => { this.props.history.push("/login"); },
+                },
+              ], closeOnClickOutside: false
+            });
+          });
+      }
+    }
 
 
     const updateSignerData = (e) => {
@@ -1191,13 +1320,20 @@ export default class BulkSigningSummary extends React.Component {
                   <Button style={{ color: "white", display: (this.state.disableRemindr ? "none" : "") }} onClick={(e) => this.sendBulkReminder(e)} title="Signing reminder notification" color="warning"   >Reminder</Button>
                   <Button style={{ marginLeft: "10px" }} title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
                   <Button style={{ marginLeft: "10px", display: (this.state.disableRemindr ? "none" : "") }} id="cancelSigningBulkSigningBtn" title="Cancel Signing" onClick={(e) => this.onOpenCancelSigningModal(e)} color="danger"> Cancel Signing</Button>
-
+                  <Button style={{ marginLeft: "10px" }} title={
+                    Number(this.state.rowData.linkedVoucherCount) >= 2
+                      ? `The maximum number of voucher linking attempts has been reached! (${this.state.rowData.linkedVoucherCode})`
+                      : Number(this.state.rowData.linkedVoucherCount) === 1
+                        ? `Linked voucher code (${this.state.rowData.linkedVoucherCode})`
+                        : "Link voucher code"
+                  }
+                    disabled={((Number(this.state.rowData.linkedVoucherCount) >= 2) ? true : false)} onClick={e => this.setState({ voucherOpenModal: true })} color="success"   >Vouchers</Button>
                 </div>
               </div>
             )
           }
           }
-        ></MaterialTable>}
+        ></MaterialTable >}
         {
           this.state.openModal && (
             <>
@@ -1259,7 +1395,48 @@ export default class BulkSigningSummary extends React.Component {
             </>
           )
         }
-      </div>
+        {
+          this.state.voucherOpenModal && (
+            <>
+              <div className="custom-modal">
+                <div className="CustomModal-contentBLKSIGNSUM">
+                  <span style={{ cursor: "pointer" }} className="close" onClick={e => this.setState({ voucherOpenModal: false })}>&times;</span>
+                  <div>
+                    <div className="DetailsHeadingSum">
+                      <span>Promotional Voucher Linking</span>
+                    </div>
+                    <div className="notificationContent">
+                      <div className="notifyIntFild" >
+                        <div className="FldDIV">
+                          <span>Voucher Code :</span>
+                        </div>
+                        <div style={{ width: "68%" }}>
+                          <input id="bkSgnEdtEmlId" onChange={e => this.setState({ voucherCode: e.target.value })} placeholder="Please enter your valid 10 digit voucher code" maxLength={10} className="inputCss"
+                            type="text" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="confirmAlrt">
+                      <span>
+                        <span style={{ fontWeight: "600", color: "red" }}>Note: </span>Users registering from this batch will automatically receive a voucher as a registration bonus.</span>
+                    </div>
+                    <div className="UTDBTN">
+                      <button onClick={e => {
+                        let data = {
+                          code: this.state.voucherCode,
+                          batchNumber: this.state.batchNo
+                        };
+                        voucherAddition(e, data);
+                      }
+                      } type="button" class="btn btn-primary">Proceed</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        }
+      </div >
     );
   }
 }

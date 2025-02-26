@@ -3723,8 +3723,11 @@ const Preview = (props) => {
                   actualFileName: responseJson.actualFileName,
                   canvas_height: canvas_height,
                   canvas_width: canvas_width,
+                  referalName: responseJson?.referalName,
+                  mobileNo: responseJson?.mobileNo,
+                  emailId: responseJson?.emailId,
+                  voucher: responseJson?.voucher
                 };
-                console.log(data);
                 props.history.push({
                   pathname: "/download/tokenSignDownload",
                   frompath: "/preview",
@@ -4070,6 +4073,7 @@ const Preview = (props) => {
             referalName: responseJson?.referalName,
             mobileNo: responseJson?.mobileNo,
             emailId: responseJson?.emailId,
+            voucher: responseJson?.voucher
           };
           props.history.push({
             pathname: "/download/tokenSignDownload",
