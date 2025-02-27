@@ -92,7 +92,9 @@ function ViewTempGroupUsers(props) {
                 width: "10%",
             },
             render: (rowData) => {            
-                if (!(sessionStorage.getItem("roleID") === "1")) {
+                // if (!(sessionStorage.getItem("roleID") === "1")) {
+                if (!`${rowData.mobileNo}`.startsWith("1000")) {
+                    // {console.log(rowData)}
                     return (
                         <div style={{ display: "flex" }}>
                             <div>
