@@ -264,6 +264,8 @@ export default class BulkSigningSummary extends React.Component {
   }
 
   toggleSubListTable = (data) => {
+    console.log(data);
+    
     if (data.status === 2 || data.pendingCount === 0) {
       this.setState({
         disableRemindr: true
@@ -1321,13 +1323,13 @@ export default class BulkSigningSummary extends React.Component {
                   <Button style={{ marginLeft: "10px" }} title="Export" onClick={(e) => this.exportToCSV(e)} color="primary"   >Export as CSV</Button>
                   <Button style={{ marginLeft: "10px", display: (this.state.disableRemindr ? "none" : "") }} id="cancelSigningBulkSigningBtn" title="Cancel Signing" onClick={(e) => this.onOpenCancelSigningModal(e)} color="danger"> Cancel Signing</Button>
                   <Button style={{ marginLeft: "10px" }} title={
-                    Number(this.state.rowData.linkedVoucherCount) >= 2
+                    Number(this.state.rowData.linkedVoucherCount) >= 10
                       ? `The maximum number of voucher linking attempts has been reached! (${this.state.rowData.linkedVoucherCode})`
-                      : Number(this.state.rowData.linkedVoucherCount) === 1
+                      : Number(this.state.rowData.linkedVoucherCount) >= 1
                         ? `Linked voucher code (${this.state.rowData.linkedVoucherCode})`
                         : "Link voucher code"
                   }
-                    disabled={((Number(this.state.rowData.linkedVoucherCount) >= 2) ? true : false)} onClick={e => this.setState({ voucherOpenModal: true })} color="success"   >Vouchers</Button>
+                    disabled={((Number(this.state.rowData.linkedVoucherCount) >= 10) ? true : false)} onClick={e => this.setState({ voucherOpenModal: true })} color="success"   >Vouchers</Button>
                 </div>
               </div>
             )
