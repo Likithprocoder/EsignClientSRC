@@ -51,8 +51,6 @@ const defaultDragWidthMob = "72px";//67
 const defaultDragHeightMob = "37px";//35
 
 const Preview = (props) => {
-  // alert("PREVIEW PAGE");
-  console.log(props);
   const frompath = props?.location?.frompath;
 
   //-------Declaring a new state variable dragArray, count, currentPage, containmentPage----
@@ -266,7 +264,6 @@ const Preview = (props) => {
       }
       const assignedSealInfo = document.getElementById("assignedSealInfo");
       if (assignedSealInfo) {
-        console.log("AssignedSealInfo");
         assignedSealInfo.style.display = 'none';
       }
       const mainClass = document.querySelector(".main");
@@ -1293,11 +1290,9 @@ const Preview = (props) => {
       setSigneremail(props?.location?.state?.details?.email);
       setSigneruserId(props?.location?.state?.details?.userId);
 
-      console.log(props?.location?.state?.details?.userId)
       setSignerMobileNumber(props?.location?.state?.details?.mobileNo);
       setOwnerloginName(props?.location?.state?.details?.ownerloginName);
       setCustomDocName(props?.location?.state?.details?.customDocName || sessionStorage.getItem("customDocName"));
-      // console.log(data.docId);
       setDocId(data.docId);
       sessionStorage.setItem("externalSigner", false);
       if (
@@ -1312,14 +1307,19 @@ const Preview = (props) => {
 
       // for multi user external signer fixing coordinates
       if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
+        
         setHeight(data.height);
         setWidth(data.width);
         setRange_array(data.signCoordinates.pages);
         setSelectedOption(data.signCoordinates.signPage);
         setDocId(props?.location?.state?.details?.docId);
+        
         sessionStorage.setItem("externalSigner", true);
       }
+
+
     } else if (frompath === "/htmlPreview" || frompath === "/bulkSigningUpload") {
+      
       let today = new Date().toISOString().split("T")[0];
       setMin(today);
       setCsvFileRefNo(props?.location?.state?.details?.csvFileRefNo);
@@ -1336,9 +1336,10 @@ const Preview = (props) => {
       document.getElementById("otpsigningtext").style.display = "none";
       document.getElementById("handSignContainer").style.display = "none";
     } else {
-      // alert("Hiii");
       props.history.push("/");
     }
+    setDocId(props?.location?.state?.details?.docId);
+   
     setFile(props?.location?.state?.details?.files);
     setCanvas_width(props?.location?.state?.details?.width);
     setCanvas_height(props?.location?.state?.details?.height);
@@ -1350,7 +1351,6 @@ const Preview = (props) => {
     //Preparing equal and unequal pages incase of multiple page document
     const unequalPages = [];
     const equalPages = [];
-    // console.log(pageDimensions);
     //Enters into this block only if the document has more than 1 page
     if (pageDimensions.length > 1) {
       pageDimensions.forEach(page => {
@@ -1396,7 +1396,7 @@ const Preview = (props) => {
 
           //One record from equal pages to create All pages object
           const pageElementEqual = document.getElementById(`docuPageTest${equalPages[0]}`);
-          // console.log(pageElementEqual)
+         
           if (pageElementEqual) {
             setLoaded(false);
             const pageNumberValue = pageElementEqual.getAttribute('aria-label');
@@ -1441,7 +1441,6 @@ const Preview = (props) => {
             }
           }
           jumpToPage(0);
-          // console.log(capturedDimensions);
           // Check if the dimensions of any unequal page match with those of any equal page
           const matchFound = unequalPages.some(unequalPageNumber => {
             const unequalPage = capturedDimensions.find(page => page.pageNumber === `Page ${unequalPageNumber}`);
@@ -1489,7 +1488,7 @@ const Preview = (props) => {
               clientWidth: docuPageTestElement.clientWidth,
               clientHeight: docuPageTestElement.clientHeight
             };
-            // console.log(newDimensions);
+            
             // Assign values to clientDimensions array
             finalDimensions.push(newDimensions);
           }
@@ -1642,8 +1641,9 @@ const Preview = (props) => {
         if (data.signCoordinates.signMode + "" === "2" || data.signCoordinates.signMode + "" === "3" || data.signCoordinates.signMode + "" === "4") {
           setSelectedMode(data.signCoordinates.signMode + "");
         } else if (data.signCoordinates.signMode + "" === "1" && !setModeValue) {
+         
           setSelectedMode(data.signCoordinates.signMode + "");
-          setDocId(sessionStorage.getItem("docid"));
+          // setDocId(sessionStorage.getItem("docid"));
           setSetModeValue(true);
         }
         if (data.signCoordinates.signMode == "1") {
@@ -2472,11 +2472,10 @@ const Preview = (props) => {
   }
 
   const submit = () => {
-
-    // console.log(selectedMode);
     //since signcoordinates are available in session
     let data1 = {};
     if (sessionStorage.getItem("txnrefNo") != null && sessionStorage.getItem("ud") == "true") {
+      
       data1.signCoordinates = JSON.parse(sessionStorage.getItem("signCoordinates"));
     } else {
       data1 = props?.location?.state?.details;
@@ -2627,7 +2626,6 @@ const Preview = (props) => {
     let customPageListA = [];
     let docid = null;
     docid = docId;
-
 
     //specifing x, y values based on multi ppl external signer
     if (
@@ -3187,7 +3185,6 @@ const Preview = (props) => {
       let pageListArray = [];
       let pageListArray1 = [];
       let commonSignCoordinate;
-
       if (data1.hasOwnProperty("externalSigner") && data1.externalSigner) {
         signPg = data1.signCoordinates.signPage;
         pgList = data1.signCoordinates.pageList;
@@ -3204,6 +3201,7 @@ const Preview = (props) => {
           totWidth: "" + totalWidth,
           signature: "1",
         };
+
 
         if (data1.signCoordinates.signPage == "A") {
           if (data1.signCoordinates.signCoordinates.length == 1) {
@@ -3294,7 +3292,6 @@ const Preview = (props) => {
           totWidth: "" + width,
           signature: "1",
         };
-
         // creating pageListArray whichever pages seals are present
         dragArray.forEach(function (dragArr) {
           pageListArray.push(dragArr.pageNo);
@@ -3474,6 +3471,8 @@ const Preview = (props) => {
                 tempSignCoordinateArray1 = [];
               }
             }
+
+
           } else {
             for (let i = 0; i < pageListArray.length; i++) {
               for (let j = 0; j < dragArray.length; j++) {
@@ -3502,6 +3501,7 @@ const Preview = (props) => {
           }
         }
       }
+
 
       let obj = {};
       let jsonWebToken = sessionStorage.getItem("jsonWebToken");
@@ -3544,7 +3544,6 @@ const Preview = (props) => {
           body: JSON.stringify(obj)
         })
           .then((response) => {
-            console.log(response);
             // setLoaded(true);
             return response.json();
             // if (response.status === 400) {
@@ -3558,7 +3557,6 @@ const Preview = (props) => {
           .then((responseJson) => {
             response_data = responseJson;
             // setResponsedata(responseJson);
-            console.log(responseJson);
             if (responseJson.status === "SUCCESS") {
               confirmAlert({
                 message: "Signing request initiated!",
@@ -3649,12 +3647,13 @@ const Preview = (props) => {
         if (data?.hasOwnProperty("externalSigner") && data?.externalSigner) {
           data.append("file", null);
         } else {
-          // console.log(file);
           data.append("file", file);
           // data.append("file", null);
         }
         data.append("inputDetails", JSON.stringify(obj));
         // setLoaded(true);
+
+
         fetch(URL.getSignedDocV2, {
           method: "POST",
           headers: headers,
@@ -5308,7 +5307,6 @@ const Preview = (props) => {
   const setSEDate = () => {
     let d = new Date();
     let e = new Date();
-    console.log(e);
     e.setDate(e.getDate() + 15);
     let endDateValue = "";
     // to display the default enddate in the browser
@@ -5322,7 +5320,6 @@ const Preview = (props) => {
     } else {
       endDateValue = `${e.getFullYear()}-${e.getMonth() + 1}-${e.getDate()}`;
     }
-    console.log(endDateValue);
     setStartDate(`${d.getFullYear()}-${d.getMonth() + 1
       }-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`);
     setEndDateTime(endDateValue + " " + "23:59:59");
@@ -5466,8 +5463,6 @@ const Preview = (props) => {
         }
       }
     } else {
-      // let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-      console.log(props);
       const body = {
         // authToken: AuthToken,
         isPrivate: isPrivate,
@@ -5533,10 +5528,8 @@ const Preview = (props) => {
                   onClick: () => {
 
                     if (responseJson?.loginMode === 0) {
-                      console.log("Navigating to /inbox with loginMode:", responseJson.loginMode);
                       props.history.push("/inbox");
                     } else {
-                      console.log("Navigating to /home with loginMode:", responseJson.loginMode);
                       props.history.push("/home");
                     }
 

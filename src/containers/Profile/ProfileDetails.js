@@ -379,16 +379,16 @@ export default class ProfileDetails extends React.Component {
     }
   };
 
-  decryptSecretKeyUsingAES = async(encryptedData, secretKey) => {
+  decryptSecretKeyUsingAES = async (encryptedData, secretKey) => {
     try {
       // Decode the Base64 string to get the combined data
       const combinedDataBuffer = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
-  
+
       // Extract the salt, IV, and ciphertext
       const salt = combinedDataBuffer.slice(0, 16); // First 16 bytes
       const iv = combinedDataBuffer.slice(16, 32); // Next 16 bytes
       const ciphertext = combinedDataBuffer.slice(32); // Remaining bytes
-  
+
       // Derive the key using PBKDF2
       const importedSecretKey = await crypto.subtle.importKey(
         "raw",
@@ -397,7 +397,7 @@ export default class ProfileDetails extends React.Component {
         false,
         ["deriveKey"]
       );
-  
+
       const derivedKey = await crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
@@ -410,7 +410,7 @@ export default class ProfileDetails extends React.Component {
         true,
         ["decrypt"]
       );
-  
+
       // Decrypt the ciphertext
       const decryptedBuffer = await crypto.subtle.decrypt(
         {
@@ -420,7 +420,7 @@ export default class ProfileDetails extends React.Component {
         derivedKey,
         ciphertext
       );
-  
+
       // Decode the decrypted buffer back into a string
       const decryptedText = new TextDecoder().decode(decryptedBuffer);
       return decryptedText;
@@ -430,7 +430,7 @@ export default class ProfileDetails extends React.Component {
     }
   };
 
-  verify = async() => {
+  verify = async () => {
     let passwordLetters = new RegExp(
       "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])"
     );
@@ -652,10 +652,10 @@ export default class ProfileDetails extends React.Component {
     try {
       // Generate a random salt
       const salt = crypto.getRandomValues(new Uint8Array(16));
-  
+
       // Generate a random IV
       const iv = crypto.getRandomValues(new Uint8Array(16));
-  
+
       // Derive a key using PBKDF2
       const importedSecretKey = await crypto.subtle.importKey(
         "raw",
@@ -664,7 +664,7 @@ export default class ProfileDetails extends React.Component {
         false,
         ["deriveKey"]
       );
-  
+
       const derivedKey = await crypto.subtle.deriveKey(
         {
           name: "PBKDF2",
@@ -677,7 +677,7 @@ export default class ProfileDetails extends React.Component {
         true,
         ["encrypt"]
       );
-  
+
       // Encrypt the JSON string using AES with CBC mode
       const encryptedTextBuffer = await crypto.subtle.encrypt(
         {
@@ -687,7 +687,7 @@ export default class ProfileDetails extends React.Component {
         derivedKey,
         new TextEncoder().encode(json)
       );
-  
+
       // Combine salt, IV, and ciphertext
       const combinedDataBuffer = new Uint8Array([
         ...salt,
@@ -695,7 +695,7 @@ export default class ProfileDetails extends React.Component {
         ...new Uint8Array(encryptedTextBuffer),
       ]);
 
-  
+
       // Encode the combined data to Base64
       const combinedData = btoa(
         String.fromCharCode.apply(null, combinedDataBuffer)
@@ -707,7 +707,7 @@ export default class ProfileDetails extends React.Component {
     }
   };
 
-  changePassword = async() => {
+  changePassword = async () => {
     let myColor = {
       background: "#ff7675",
       text: "#FFFFFF",
@@ -1312,7 +1312,7 @@ export default class ProfileDetails extends React.Component {
                     </tr>
                   </tbody>
                 </table>
-                <a hidden={sessionStorage.getItem("roleID") !== "2"} href="#" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</a> <br />
+                <button style={{ padding: "0px" }} hidden={sessionStorage.getItem("roleID") !== "2"} className="btn btn-link" onClick={e => this.openModalForCorpAccount(e)}>Want to become a member of corporate entity?</button> <br />
                 <a style={{ marginBottom: "7px" }} hidden={!(sessionStorage.getItem("roleID") === "2" || sessionStorage.getItem("roleID") === "7")} href="" onClick={() => {
                   this.props.history.push("/exitFromCorporate");
                 }}>Exit from corporate entity?</a> <br />

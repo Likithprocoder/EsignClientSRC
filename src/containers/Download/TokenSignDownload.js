@@ -68,11 +68,6 @@ export default class TokenSignDownload extends React.Component {
 
   componentWillMount() {
 
-    // console.log(this.props);
-    // console.log(this.props.location.state.details.hasOwnProperty("referalName"));
-    // console.log(this.props.location.state);
-    // console.log(this.props.location.state.details);
-
     // -----------------resgister user-------
 
     if (this.props.location.state.details.hasOwnProperty("referalName")) {
@@ -138,7 +133,7 @@ export default class TokenSignDownload extends React.Component {
         draftRefNumber: sessionStorage.getItem("draftRefNumber")
       });
     } else if (this.props.location.frompath !== "" && this.props.location.frompath === "/pendingSignsInbox") {
-      // console.log(this.props.location.state.details.docId);
+      
       this.setState({
         docId: this.props.location.state.details.docId,
         txnrefNo: this.props.location.state.details.txnrefNo,
@@ -599,6 +594,7 @@ export default class TokenSignDownload extends React.Component {
         document.getElementById("discardOptionsdiv").style.display = "none";
 
         if (responseJson.statusDetails.includes("Cancelled")) {
+
           toast.error(responseJson.statusDetails, { autoClose: 1000 });
           this.sleep(50000);
           this.setState({ loaded: true });
@@ -690,7 +686,7 @@ export default class TokenSignDownload extends React.Component {
   //chnaged for encryption
   async createFile(txnrefNo, signedStatus) {
     let jsonWebToken = sessionStorage.getItem("jsonWebToken");
-    // console.log("CREATEFILE");
+   
     // Construct the URL with query parameters
     let url = `${URL.downloadfromtemp}?txnrefNo=${btoa(txnrefNo)}&signedStatus=${signedStatus}`;
     let response = await fetch(url, {
@@ -762,19 +758,19 @@ export default class TokenSignDownload extends React.Component {
       signPage: this.state.signPage,
       pageList: this.state.pageList
     }
-    // console.log({pageDimensionsArr});
 
     let data1 = {
       files: file1,
       docId: this.state.docId,
       signCoordinates: signCoordinates,
-      height: (this.state.height === null) ? pageDimensionsArr[0].height : this.state.height,
-      width: (this.state.width === null) ? pageDimensionsArr[0].width : this.state.width,
+      // height: (this.state.height === null) ? pageDimensionsArr[0].height : this.state.height,
+      // width: (this.state.width === null) ? pageDimensionsArr[0].width : this.state.width,
+      height: (!this.state.height) ? pageDimensionsArr[0].height : this.state.height,
+      width: (!this.state.width) ? pageDimensionsArr[0].width : this.state.width,
       pageDimensions: pageDimensionsArr,
       equalPageDimensions: equalPageDimensionsValue
     };
     this.setState({ loaded: true });
-    // console.log({data1});
     this.props.history.push({
       pathname: "/preview",
       frompath: "/download/tokenSignDownload",
@@ -837,7 +833,7 @@ export default class TokenSignDownload extends React.Component {
             <p>
               <a title="register" href="" onClick={this.registerUser}>
                 <span className="blink">
-                Click here to join DocuExec and link the signed document to your account.{this.state.voucherCode === "true" ?
+                  Click here to join DocuExec and link the signed document to your account.{this.state.voucherCode === "true" ?
                     " By registering your account, you will receive a bonus — an active subscription plan will be added to your account!" : ""}
                 </span>
               </a>{" "}
